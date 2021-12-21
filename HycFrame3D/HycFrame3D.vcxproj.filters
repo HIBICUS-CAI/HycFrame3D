@@ -41,4 +41,27 @@
       <UniqueIdentifier>{72f05bf5-6b2d-4901-9fec-d381a8a95ee0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="00_BasicFuncs\PrintLog.cpp">
+      <Filter>00_BasicFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="01_MiddleTools\JsonHelper.cpp">
+      <Filter>01_MiddleTools</Filter>
+    </ClCompile>
+    <ClCompile Include="01_MiddleTools\SoundHelper.cpp">
+      <Filter>01_MiddleTools</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="00_BasicFuncs\PrintLog.h">
+      <Filter>00_BasicFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="01_MiddleTools\JsonHelper.h">
+      <Filter>01_MiddleTools</Filter>
+    </ClInclude>
+    <ClInclude Include="01_MiddleTools\SoundHelper.h">
+      <Filter>01_MiddleTools</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
