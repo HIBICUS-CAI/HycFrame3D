@@ -1,17 +1,44 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="00_BasicFuncs">
+      <UniqueIdentifier>{c3a0eb51-6296-42a0-ad35-1d4379018011}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="01_MiddleTools">
+      <UniqueIdentifier>{7ca37b9d-a2b1-43ca-9274-0f5f6f6a7d6d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="02_FrameContent">
+      <UniqueIdentifier>{5098690b-54b2-4a85-bdfa-268c0e6de77d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03_ScriptFuncs">
+      <UniqueIdentifier>{4f0d0b92-906b-43fe-95c4-fc6a160fb9b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_FrameContent\Common">
+      <UniqueIdentifier>{59e19916-3650-49b7-9017-7f8935bd5c64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_FrameContent\Root">
+      <UniqueIdentifier>{30229343-e8f8-4a46-9879-59937c73a5dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_FrameContent\Factory">
+      <UniqueIdentifier>{116d0342-3b10-447c-a896-9370c6fa7782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_FrameContent\Scene">
+      <UniqueIdentifier>{00bbc66a-8d4f-4f7f-a656-4c69a7e6f9c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_FrameContent\System">
+      <UniqueIdentifier>{77c5d300-8d0c-4aa1-a56a-72058a5ee268}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_FrameContent\Object">
+      <UniqueIdentifier>{72b05b23-2142-4743-b88f-10405f91e657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_FrameContent\Component">
+      <UniqueIdentifier>{1a0af0a0-7c2d-4345-b957-fd52c4f45c89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_FrameContent\AssetsPool">
+      <UniqueIdentifier>{581b58d5-baec-4144-9af2-d4936f7d6b63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02_FrameContent\PhysicsWorld">
+      <UniqueIdentifier>{72f05bf5-6b2d-4901-9fec-d381a8a95ee0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
