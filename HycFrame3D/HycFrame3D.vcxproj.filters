@@ -63,5 +63,8 @@
     <ClInclude Include="01_MiddleTools\SoundHelper.h">
       <Filter>01_MiddleTools</Filter>
     </ClInclude>
+    <ClInclude Include="02_FrameContent\Hyc3DCommon.h">
+      <Filter>02_FrameContent\Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

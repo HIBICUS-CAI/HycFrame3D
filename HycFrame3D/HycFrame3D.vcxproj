@@ -152,6 +152,7 @@
     <ClInclude Include="00_BasicFuncs\PrintLog.h" />
     <ClInclude Include="01_MiddleTools\JsonHelper.h" />
     <ClInclude Include="01_MiddleTools\SoundHelper.h" />
+    <ClInclude Include="02_FrameContent\Hyc3DCommon.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\03_InputDevice\03_InputDevice.vcxproj">
