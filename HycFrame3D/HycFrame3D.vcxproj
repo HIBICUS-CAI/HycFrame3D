@@ -147,9 +147,14 @@
     <ClCompile Include="00_BasicFuncs\PrintLog.cpp" />
     <ClCompile Include="01_MiddleTools\JsonHelper.cpp" />
     <ClCompile Include="01_MiddleTools\SoundHelper.cpp" />
+    <ClCompile Include="02_FrameContent\AssetsPool.cpp" />
+    <ClCompile Include="02_FrameContent\ComponentContainer.cpp" />
+    <ClCompile Include="02_FrameContent\ObjectContainer.cpp" />
     <ClCompile Include="02_FrameContent\ObjectFactory.cpp" />
+    <ClCompile Include="02_FrameContent\PhysicsWorld.cpp" />
     <ClCompile Include="02_FrameContent\RootSystem.cpp" />
     <ClCompile Include="02_FrameContent\SceneManager.cpp" />
+    <ClCompile Include="02_FrameContent\SceneNode.cpp" />
     <ClCompile Include="02_FrameContent\SystemExecutive.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -158,10 +163,15 @@
     <ClInclude Include="00_BasicFuncs\PrintLog.h" />
     <ClInclude Include="01_MiddleTools\JsonHelper.h" />
     <ClInclude Include="01_MiddleTools\SoundHelper.h" />
+    <ClInclude Include="02_FrameContent\AssetsPool.h" />
+    <ClInclude Include="02_FrameContent\ComponentContainer.h" />
     <ClInclude Include="02_FrameContent\Hyc3DCommon.h" />
+    <ClInclude Include="02_FrameContent\ObjectContainer.h" />
     <ClInclude Include="02_FrameContent\ObjectFactory.h" />
+    <ClInclude Include="02_FrameContent\PhysicsWorld.h" />
     <ClInclude Include="02_FrameContent\RootSystem.h" />
     <ClInclude Include="02_FrameContent\SceneManager.h" />
+    <ClInclude Include="02_FrameContent\SceneNode.h" />
     <ClInclude Include="02_FrameContent\SystemExecutive.h" />
   </ItemGroup>
   <ItemGroup>

@@ -40,6 +40,9 @@
     <Filter Include="02_FrameContent\PhysicsWorld">
       <UniqueIdentifier>{72f05bf5-6b2d-4901-9fec-d381a8a95ee0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02_FrameContent\Container">
+      <UniqueIdentifier>{031dfb84-2f4d-458d-8195-f6927e11c371}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -66,6 +69,21 @@
     </ClCompile>
     <ClCompile Include="02_FrameContent\SceneManager.cpp">
       <Filter>02_FrameContent\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\SceneNode.cpp">
+      <Filter>02_FrameContent\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\ObjectContainer.cpp">
+      <Filter>02_FrameContent\Container</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\ComponentContainer.cpp">
+      <Filter>02_FrameContent\Container</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\AssetsPool.cpp">
+      <Filter>02_FrameContent\AssetsPool</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\PhysicsWorld.cpp">
+      <Filter>02_FrameContent\PhysicsWorld</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +113,21 @@
     </ClInclude>
     <ClInclude Include="02_FrameContent\SceneManager.h">
       <Filter>02_FrameContent\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\SceneNode.h">
+      <Filter>02_FrameContent\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ObjectContainer.h">
+      <Filter>02_FrameContent\Container</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ComponentContainer.h">
+      <Filter>02_FrameContent\Container</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\AssetsPool.h">
+      <Filter>02_FrameContent\AssetsPool</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\PhysicsWorld.h">
+      <Filter>02_FrameContent\PhysicsWorld</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
