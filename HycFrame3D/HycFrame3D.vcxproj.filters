@@ -52,6 +52,21 @@
     <ClCompile Include="01_MiddleTools\SoundHelper.cpp">
       <Filter>01_MiddleTools</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\RootSystem.cpp">
+      <Filter>02_FrameContent\Root</Filter>
+    </ClCompile>
+    <ClCompile Include="00_BasicFuncs\FineGrainedTimer.cpp">
+      <Filter>00_BasicFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\ObjectFactory.cpp">
+      <Filter>02_FrameContent\Factory</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\SystemExecutive.cpp">
+      <Filter>02_FrameContent\System</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\SceneManager.cpp">
+      <Filter>02_FrameContent\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -65,6 +80,21 @@
     </ClInclude>
     <ClInclude Include="02_FrameContent\Hyc3DCommon.h">
       <Filter>02_FrameContent\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\RootSystem.h">
+      <Filter>02_FrameContent\Root</Filter>
+    </ClInclude>
+    <ClInclude Include="00_BasicFuncs\FineGrainedTimer.h">
+      <Filter>00_BasicFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ObjectFactory.h">
+      <Filter>02_FrameContent\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\SystemExecutive.h">
+      <Filter>02_FrameContent\System</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\SceneManager.h">
+      <Filter>02_FrameContent\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

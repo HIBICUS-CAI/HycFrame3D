@@ -116,10 +116,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)00_BasicFuncs;$(ProjectDir)01_MiddleTools;$(ProjectDir)02_FrameContent;$(ProjectDir)03_ScriptFuncs;$(ProjectDir)ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)04_WindowManager;$(SolutionDir)03_RenderSystem_DX11;$(SolutionDir)03_InputDevice;$(ProjectDir)00_BasicFuncs;$(ProjectDir)01_MiddleTools;$(ProjectDir)02_FrameContent;$(ProjectDir)03_ScriptFuncs;$(ProjectDir)ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -132,10 +132,10 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)00_BasicFuncs;$(ProjectDir)01_MiddleTools;$(ProjectDir)02_FrameContent;$(ProjectDir)03_ScriptFuncs;$(ProjectDir)ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)04_WindowManager;$(SolutionDir)03_RenderSystem_DX11;$(SolutionDir)03_InputDevice;$(ProjectDir)00_BasicFuncs;$(ProjectDir)01_MiddleTools;$(ProjectDir)02_FrameContent;$(ProjectDir)03_ScriptFuncs;$(ProjectDir)ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -143,16 +143,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="00_BasicFuncs\FineGrainedTimer.cpp" />
     <ClCompile Include="00_BasicFuncs\PrintLog.cpp" />
     <ClCompile Include="01_MiddleTools\JsonHelper.cpp" />
     <ClCompile Include="01_MiddleTools\SoundHelper.cpp" />
+    <ClCompile Include="02_FrameContent\ObjectFactory.cpp" />
+    <ClCompile Include="02_FrameContent\RootSystem.cpp" />
+    <ClCompile Include="02_FrameContent\SceneManager.cpp" />
+    <ClCompile Include="02_FrameContent\SystemExecutive.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="00_BasicFuncs\FineGrainedTimer.h" />
     <ClInclude Include="00_BasicFuncs\PrintLog.h" />
     <ClInclude Include="01_MiddleTools\JsonHelper.h" />
     <ClInclude Include="01_MiddleTools\SoundHelper.h" />
     <ClInclude Include="02_FrameContent\Hyc3DCommon.h" />
+    <ClInclude Include="02_FrameContent\ObjectFactory.h" />
+    <ClInclude Include="02_FrameContent\RootSystem.h" />
+    <ClInclude Include="02_FrameContent\SceneManager.h" />
+    <ClInclude Include="02_FrameContent\SystemExecutive.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\03_InputDevice\03_InputDevice.vcxproj">

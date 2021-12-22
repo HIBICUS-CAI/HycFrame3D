@@ -1,10 +1,20 @@
-#include <iostream>
-#include "PrintLog.h"
+#include "RootSystem.h"
 
-int main()
+static RootSystem g_RootSystem = {};
+
+int WinMain(
+    _In_ HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPSTR szCmdLine,
+    _In_ int iCmdShow
+)
 {
-    std::cout << "hello world" << std::endl;
-    P_LOG(LOG_DEBUG, "hello world\n");
+    if (g_RootSystem.StartUp(hInstance, iCmdShow))
+    {
+        g_RootSystem.RunGameLoop();
+    }
+
+    g_RootSystem.CleanAndStop();
 
     return 0;
 }
