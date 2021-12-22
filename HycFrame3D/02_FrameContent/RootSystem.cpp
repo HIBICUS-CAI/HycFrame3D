@@ -1,5 +1,6 @@
 #include "Hyc3DCommon.h"
 #include "WM_Interface.h"
+#include "ID_Interface.h"
 #include "RootSystem.h"
 #include "SystemExecutive.h"
 #include "ObjectFactory.h"
