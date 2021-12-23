@@ -85,6 +85,27 @@
     <ClCompile Include="02_FrameContent\PhysicsWorld.cpp">
       <Filter>02_FrameContent\PhysicsWorld</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\Object.cpp">
+      <Filter>02_FrameContent\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\Actorobject.cpp">
+      <Filter>02_FrameContent\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\UiObject.cpp">
+      <Filter>02_FrameContent\Object</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\System.cpp">
+      <Filter>02_FrameContent\System</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\Component.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\ActorComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\UiComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -128,6 +149,27 @@
     </ClInclude>
     <ClInclude Include="02_FrameContent\PhysicsWorld.h">
       <Filter>02_FrameContent\PhysicsWorld</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\Object.h">
+      <Filter>02_FrameContent\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ActorObject.h">
+      <Filter>02_FrameContent\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UiObject.h">
+      <Filter>02_FrameContent\Object</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\System.h">
+      <Filter>02_FrameContent\System</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\Component.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ActorComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UiComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

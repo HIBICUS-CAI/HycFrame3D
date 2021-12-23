@@ -32,13 +32,13 @@ private:
 private:
     SceneNode& mSceneNodeOwner;
     
-    //std::vector<ActorObject> mActorObjVector;
+    std::vector<class ActorObject> mActorObjVector;
     std::unordered_map<std::string, class ActorObject&> mActorObjMap;
-    //std::vector<UiObject> mUiObjVector;
+    std::vector<class UiObject> mUiObjVector;
     std::unordered_map<std::string, class UiObject&> mUiObjMap;
 
-    //std::vector<ActorObject> mNewActorObjVector;
-    //std::vector<UiObject> mNewUiObjVector;
-    //std::vector<ActorObject> mDeadActorObjVector;
-    //std::vector<UiObject> mDeadUiObjVector;
+    std::vector<class ActorObject> mNewActorObjVector;
+    std::vector<class UiObject> mNewUiObjVector;
+    std::vector<class ActorObject> mDeadActorObjVector;
+    std::vector<class UiObject> mDeadUiObjVector;
 };

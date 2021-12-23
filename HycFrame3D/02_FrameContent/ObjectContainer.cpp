@@ -1,11 +1,13 @@
 #include "ObjectContainer.h"
 #include "SceneNode.h"
+#include "ActorObject.h"
+#include "UiObject.h"
 
 ObjectContainer::ObjectContainer(SceneNode& _sceneNode) :
     mSceneNodeOwner(_sceneNode),
-    mActorObjMap({}), mUiObjMap({})/*, mActorObjVector({}), mUiObjVector({}),
+    mActorObjMap({}), mUiObjMap({}), mActorObjVector({}), mUiObjVector({}),
     mNewActorObjVector({}), mNewUiObjVector({}),
-    mDeadActorObjVector({}), mDeadUiObjVector({})*/
+    mDeadActorObjVector({}), mDeadUiObjVector({})
 {
 
 }

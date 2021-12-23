@@ -42,3 +42,11 @@ enum class COMP_TYPE
 
     SIZE
 };
+
+enum class STATUS
+{
+    NEED_INIT,
+    ACTIVE,
+    PAUSE,
+    NEED_DESTORY
+};
