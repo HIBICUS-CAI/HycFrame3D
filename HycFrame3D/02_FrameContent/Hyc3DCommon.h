@@ -33,7 +33,7 @@ enum class COMP_TYPE
     U_TRANSFORM,
     U_SPRITE,
     U_ANIMATE,
-    U_TEXT,
+    //U_TEXT,
     U_TIMER,
     U_INPUT,
     U_INTERACT,

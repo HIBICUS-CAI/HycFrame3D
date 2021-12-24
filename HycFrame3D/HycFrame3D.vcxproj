@@ -169,9 +169,17 @@
     <ClCompile Include="02_FrameContent\SceneManager.cpp" />
     <ClCompile Include="02_FrameContent\SceneNode.cpp" />
     <ClCompile Include="02_FrameContent\System.cpp" />
+    <ClCompile Include="02_FrameContent\UAnimateComponent.cpp" />
+    <ClCompile Include="02_FrameContent\UAudioComponent.cpp" />
+    <ClCompile Include="02_FrameContent\UButtonComponent.cpp" />
     <ClCompile Include="02_FrameContent\UiComponent.cpp" />
+    <ClCompile Include="02_FrameContent\UInputComponent.cpp" />
+    <ClCompile Include="02_FrameContent\UInteractComponent.cpp" />
     <ClCompile Include="02_FrameContent\UiObject.cpp" />
     <ClCompile Include="02_FrameContent\SystemExecutive.cpp" />
+    <ClCompile Include="02_FrameContent\USpriteComponent.cpp" />
+    <ClCompile Include="02_FrameContent\UTimerComponent.cpp" />
+    <ClCompile Include="02_FrameContent\UTransformComponent.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -203,8 +211,16 @@
     <ClInclude Include="02_FrameContent\SceneNode.h" />
     <ClInclude Include="02_FrameContent\System.h" />
     <ClInclude Include="02_FrameContent\SystemExecutive.h" />
+    <ClInclude Include="02_FrameContent\UAnimateComponent.h" />
+    <ClInclude Include="02_FrameContent\UAudioComponent.h" />
+    <ClInclude Include="02_FrameContent\UButtonComponent.h" />
     <ClInclude Include="02_FrameContent\UiComponent.h" />
+    <ClInclude Include="02_FrameContent\UInputComponent.h" />
+    <ClInclude Include="02_FrameContent\UInteractComponent.h" />
     <ClInclude Include="02_FrameContent\UiObject.h" />
+    <ClInclude Include="02_FrameContent\USpriteComponent.h" />
+    <ClInclude Include="02_FrameContent\UTimerComponent.h" />
+    <ClInclude Include="02_FrameContent\UTransformComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\03_InputDevice\03_InputDevice.vcxproj">

@@ -133,6 +133,30 @@
     <ClCompile Include="02_FrameContent\AAudioComponent.cpp">
       <Filter>02_FrameContent\Component</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\UTransformComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\USpriteComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\UAnimateComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\UButtonComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\UInputComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\UTimerComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\UInteractComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\UAudioComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -223,6 +247,30 @@
       <Filter>02_FrameContent\Component</Filter>
     </ClInclude>
     <ClInclude Include="02_FrameContent\AAudioComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UTransformComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\USpriteComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UAnimateComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UButtonComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UInputComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UTimerComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UInteractComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UAudioComponent.h">
       <Filter>02_FrameContent\Component</Filter>
     </ClInclude>
   </ItemGroup>
