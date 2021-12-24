@@ -106,6 +106,33 @@
     <ClCompile Include="02_FrameContent\UiComponent.cpp">
       <Filter>02_FrameContent\Component</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\ATransformComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\AInputComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\AInteractComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\ATimerComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\AMeshComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\ACollisionComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\ALightComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\AParticleComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\AAudioComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -169,6 +196,33 @@
       <Filter>02_FrameContent\Component</Filter>
     </ClInclude>
     <ClInclude Include="02_FrameContent\UiComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ATransformComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\AInputComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\AInteractComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ATimerComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\AMeshComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ACollisionComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ALightComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\AParticleComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\AAudioComponent.h">
       <Filter>02_FrameContent\Component</Filter>
     </ClInclude>
   </ItemGroup>
