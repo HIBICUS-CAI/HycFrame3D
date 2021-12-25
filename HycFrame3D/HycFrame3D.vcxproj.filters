@@ -157,6 +157,9 @@
     <ClCompile Include="02_FrameContent\UAudioComponent.cpp">
       <Filter>02_FrameContent\Component</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\InputSystem.cpp">
+      <Filter>02_FrameContent\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -272,6 +275,9 @@
     </ClInclude>
     <ClInclude Include="02_FrameContent\UAudioComponent.h">
       <Filter>02_FrameContent\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\InputSystem.h">
+      <Filter>02_FrameContent\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

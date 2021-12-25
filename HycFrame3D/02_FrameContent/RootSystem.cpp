@@ -43,6 +43,11 @@ bool RootSystem::StartUp(HINSTANCE _hInstance, int _iCmdShow)
     mSystemExecutivePtr = new SystemExecutive();
     assert(mSceneManagerPtr && mObjectFactoryPtr && mSystemExecutivePtr);
 
+    if (!mSceneManagerPtr->StartUp(mObjectFactoryPtr))
+    {
+        P_LOG(LOG_ERROR, "cannot init scene manager correctly\n");
+        return false;
+    }
     if (!mSystemExecutivePtr->StartUp(mSceneManagerPtr))
     {
         P_LOG(LOG_ERROR, "cannot init system executive correctly\n");
@@ -50,12 +55,7 @@ bool RootSystem::StartUp(HINSTANCE _hInstance, int _iCmdShow)
     }
     if (!mObjectFactoryPtr->StartUp(mSceneManagerPtr))
     {
-        P_LOG(LOG_ERROR, "cannot init system executive correctly\n");
-        return false;
-    }
-    if (!mSceneManagerPtr->StartUp(mObjectFactoryPtr))
-    {
-        P_LOG(LOG_ERROR, "cannot init system executive correctly\n");
+        P_LOG(LOG_ERROR, "cannot init object factory correctly\n");
         return false;
     }
 
@@ -89,15 +89,7 @@ void RootSystem::RunGameLoop()
         {
             mTimer.TimeIn();
 
-            InputInterface::PollDevices();
-
-            // TEMP----------------------------------
-            if (InputInterface::IsKeyDownInSingle(KB_1) &&
-                InputInterface::IsKeyDownInSingle(KB_2))
-            {
-                PostQuitMessage(0);
-            }
-            // TEMP----------------------------------
+            mSystemExecutivePtr->RunAllSystems(mTimer);
 
             mTimer.TimeOut();
         }

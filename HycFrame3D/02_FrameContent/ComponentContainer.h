@@ -22,6 +22,8 @@ public:
 
     void DeleteAllComponent();
 
+    void* GetCompVecPtr(COMP_TYPE _type) const;
+
 private:
     const class SceneNode& mSceneNodeOwner;
 

@@ -81,3 +81,46 @@ void ComponentContainer::DeleteAllComponent()
 {
 
 }
+
+void* ComponentContainer::GetCompVecPtr(COMP_TYPE _type) const
+{
+    switch (_type)
+    {
+    case COMP_TYPE::A_TRANSFORM:
+        return (void*)&mATransformCompVector;
+    case COMP_TYPE::A_INPUT:
+        return (void*)&mAInputCompVector;
+    case COMP_TYPE::A_INTERACT:
+        return (void*)&mAInteractCompVector;
+    case COMP_TYPE::A_TIMER:
+        return (void*)&mATimerCompVector;
+    case COMP_TYPE::A_COLLISION:
+        return (void*)&mACollisionCompVector;
+    case COMP_TYPE::A_MESH:
+        return (void*)&mAMeshCompVector;
+    case COMP_TYPE::A_LIGHT:
+        return (void*)&mALightCompVector;
+    case COMP_TYPE::A_AUDIO:
+        return (void*)&mAAudioCompVector;
+    case COMP_TYPE::A_PARTICLE:
+        return (void*)&mAParticleCompVector;
+    case COMP_TYPE::U_TRANSFORM:
+        return (void*)&mUTransformCompVector;
+    case COMP_TYPE::U_SPRITE:
+        return (void*)&mUSpriteCompVector;
+    case COMP_TYPE::U_ANIMATE:
+        return (void*)&mUAnimateCompVector;
+    case COMP_TYPE::U_TIMER:
+        return (void*)&mUTimerCompVector;
+    case COMP_TYPE::U_INPUT:
+        return (void*)&mUInputCompVector;
+    case COMP_TYPE::U_INTERACT:
+        return (void*)&mUInteractCompVector;
+    case COMP_TYPE::U_BUTTON:
+        return (void*)&mUButtonCompVector;
+    case COMP_TYPE::U_AUDIO:
+        return (void*)&mUAudioCompVector;
+    default:
+        return nullptr;
+    }
+}

@@ -81,60 +81,52 @@ RSCamera* SceneNode::GetMainCamera()
 
 ActorObject* SceneNode::GetActorObject(std::string&& _actorName)
 {
-    // TEMP---------------------------
-    return nullptr;
-    // TEMP---------------------------
+    return mObjContainerPtr->GetActorObject(_actorName);
 }
 
 ActorObject* SceneNode::GetActorObject(std::string& _actorName)
 {
-    // TEMP---------------------------
-    return nullptr;
-    // TEMP---------------------------
+    return mObjContainerPtr->GetActorObject(_actorName);
 }
 
 void SceneNode::AddActorObject(class ActorObject& _newActor)
 {
-
+    mObjContainerPtr->AddActorObject(_newActor);
 }
 
 void SceneNode::DeleteActorObject(std::string&& _actorName)
 {
-
+    mObjContainerPtr->DeleteActorObject(_actorName);
 }
 
-void SceneNode::DeleteActorObject(std::string& _actorName_actorName)
+void SceneNode::DeleteActorObject(std::string& _actorName)
 {
-
+    mObjContainerPtr->DeleteActorObject(_actorName);
 }
 
 UiObject* SceneNode::GetUiObject(std::string&& _uiName)
 {
-    // TEMP---------------------------
-    return nullptr;
-    // TEMP---------------------------
+    return mObjContainerPtr->GetUiObject(_uiName);
 }
 
 UiObject* SceneNode::GetUiObject(std::string& _uiName)
 {
-    // TEMP---------------------------
-    return nullptr;
-    // TEMP---------------------------
+    return mObjContainerPtr->GetUiObject(_uiName);
 }
 
 void SceneNode::AddUiObject(class UiObject& _newUi)
 {
-
+    mObjContainerPtr->AddUiObject(_newUi);
 }
 
 void SceneNode::DeleteUiObject(std::string&& _uiName)
 {
-
+    mObjContainerPtr->DeleteUiObject(_uiName);
 }
 
 void SceneNode::DeleteUiObject(std::string& _uiName)
 {
-
+    mObjContainerPtr->DeleteUiObject(_uiName);
 }
 
 AssetsPool* SceneNode::GetAssetsPool() const
@@ -145,4 +137,9 @@ AssetsPool* SceneNode::GetAssetsPool() const
 PhysicsWorld* SceneNode::GetPhysicsWorld() const
 {
     return mPhysicsWorldPtr;
+}
+
+ComponentContainer* SceneNode::GetComponentContainer() const
+{
+    return mCompContainerPtr;
 }

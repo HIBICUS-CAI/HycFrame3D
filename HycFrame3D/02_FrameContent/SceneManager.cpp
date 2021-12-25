@@ -1,5 +1,9 @@
 #include "SceneManager.h"
 #include "ObjectFactory.h"
+#include "SceneNode.h"
+// TEMP--------------------------
+
+// TEMP--------------------------
 
 SceneManager::SceneManager() :
     mObjectFactoryPtr(nullptr), mLoadingScenePtr(nullptr),
@@ -17,6 +21,9 @@ bool SceneManager::StartUp(ObjectFactory* _objectFactory)
     }
 
     mObjectFactoryPtr = _objectFactory;
+
+    LoadLoadingScene();
+
     return true;
 }
 
@@ -42,11 +49,17 @@ ObjectFactory* SceneManager::GetObjectFactory() const
     return mObjectFactoryPtr;
 }
 
+SceneNode* SceneManager::GetCurrentSceneNode() const
+{
+    return mCurrentScenePtr;
+}
+
 bool SceneManager::LoadLoadingScene()
 {
-    // TEMP-------------------
-    return true;
-    // TEMP-------------------
+    mLoadingScenePtr = new SceneNode("loading-scene", this);
+    mCurrentScenePtr = mLoadingScenePtr;
+
+    return (mLoadingScenePtr ? true : false);
 }
 
 void SceneManager::ReleaseLoadingScene()

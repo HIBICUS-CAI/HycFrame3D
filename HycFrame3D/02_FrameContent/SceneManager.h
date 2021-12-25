@@ -17,6 +17,7 @@ public:
     void CheckLoadStatus();
 
     class ObjectFactory* GetObjectFactory() const;
+    class SceneNode* GetCurrentSceneNode() const;
 
 private:
     bool LoadLoadingScene();

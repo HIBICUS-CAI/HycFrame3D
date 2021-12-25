@@ -13,13 +13,14 @@ public:
     void CleanAndStop();
     void RunAllSystems(Timer& _timer);
 
+    class SceneManager* GetSceneManager() const;
+
 private:
     bool InitAllSystem();
     void CheckCurrentScene();
 
 private:
     class SceneManager* mSceneManagerPtr;
-    class SceneNode* mCurrentSceneNodePtr;
 
     std::vector<class System*> mSystemsVec;
 };
