@@ -166,6 +166,9 @@
     <ClCompile Include="01_MiddleTools\BasicRSPipeline.cpp">
       <Filter>01_MiddleTools</Filter>
     </ClCompile>
+    <ClCompile Include="03_ScriptFuncs\DevUsage.cpp">
+      <Filter>03_ScriptFuncs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -290,6 +293,9 @@
     </ClInclude>
     <ClInclude Include="01_MiddleTools\BasicRSPipeline.h">
       <Filter>01_MiddleTools</Filter>
+    </ClInclude>
+    <ClInclude Include="03_ScriptFuncs\DevUsage.h">
+      <Filter>03_ScriptFuncs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

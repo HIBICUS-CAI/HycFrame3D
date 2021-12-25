@@ -89,6 +89,7 @@ void RootSystem::RunGameLoop()
         {
             mTimer.TimeIn();
 
+            mSceneManagerPtr->CheckLoadStatus();
             mSystemExecutivePtr->RunAllSystems(mTimer);
 
             mTimer.TimeOut();

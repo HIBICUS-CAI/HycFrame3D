@@ -1,9 +1,8 @@
 #include "SceneManager.h"
 #include "ObjectFactory.h"
 #include "SceneNode.h"
-// TEMP--------------------------
 
-// TEMP--------------------------
+#include "DevUsage.h"
 
 SceneManager::SceneManager() :
     mObjectFactoryPtr(nullptr), mLoadingScenePtr(nullptr),
@@ -39,7 +38,21 @@ void SceneManager::LoadSceneNode(std::string&& _name, std::string&& _path)
 
 void SceneManager::CheckLoadStatus()
 {
+    // TEMP-----------------------
+    static bool firstTime = true;
+    if (firstTime)
+    {
+        mNextScenePtr = new SceneNode("dev-usage", this);
+        DevUsage(mNextScenePtr);
+        firstTime = false;
+    }
+    // TEMP-----------------------
 
+    if (mCurrentScenePtr == mLoadingScenePtr && mNextScenePtr)
+    {
+        mCurrentScenePtr = mNextScenePtr;
+        mNextScenePtr = nullptr;
+    }
 }
 
 ObjectFactory* SceneManager::GetObjectFactory() const

@@ -183,6 +183,7 @@
     <ClCompile Include="02_FrameContent\USpriteComponent.cpp" />
     <ClCompile Include="02_FrameContent\UTimerComponent.cpp" />
     <ClCompile Include="02_FrameContent\UTransformComponent.cpp" />
+    <ClCompile Include="03_ScriptFuncs\DevUsage.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +228,7 @@
     <ClInclude Include="02_FrameContent\USpriteComponent.h" />
     <ClInclude Include="02_FrameContent\UTimerComponent.h" />
     <ClInclude Include="02_FrameContent\UTransformComponent.h" />
+    <ClInclude Include="03_ScriptFuncs\DevUsage.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\03_InputDevice\03_InputDevice.vcxproj">
