@@ -3,6 +3,8 @@
 #include "UiComponent.h"
 #include <array>
 
+constexpr auto NULL_BTN = "null-btn";
+
 class UButtonComponent :public UiComponent
 {
 public:
@@ -30,6 +32,6 @@ public:
     UButtonComponent* GetRightBtn();
 
 private:
-    std::array<UButtonComponent*, 4> mSurroundBtns;
+    std::array<std::string, 4> mSurroundBtnCompNames;
     bool mIsSelected;
 };

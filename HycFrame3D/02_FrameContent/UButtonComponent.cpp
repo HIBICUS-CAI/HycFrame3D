@@ -3,14 +3,18 @@
 
 UButtonComponent::UButtonComponent(std::string&& _compName,
     UiObject& _uiOwner) :
-    UiComponent(_compName, _uiOwner), mSurroundBtns({}), mIsSelected(false)
+    UiComponent(_compName, _uiOwner),
+    mSurroundBtnCompNames({ NULL_BTN,NULL_BTN,NULL_BTN,NULL_BTN }),
+    mIsSelected(false)
 {
 
 }
 
 UButtonComponent::UButtonComponent(std::string& _compName,
     UiObject& _uiOwner) :
-    UiComponent(_compName, _uiOwner), mSurroundBtns({}), mIsSelected(false)
+    UiComponent(_compName, _uiOwner),
+    mSurroundBtnCompNames({ NULL_BTN,NULL_BTN,NULL_BTN,NULL_BTN }),
+    mIsSelected(false)
 {
 
 }

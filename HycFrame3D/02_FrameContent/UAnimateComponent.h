@@ -42,7 +42,7 @@ private:
     void SyncAniInfoToSprite();
 
 private:
-    std::unordered_map<std::string, ANIMATE_INFO> mAnimateMap;
+    std::unordered_map<std::string, ANIMATE_INFO*> mAnimateMap;
     UINT mCurrentAnimateCut;
     ANIMATE_INFO* mCurrentAnimate;
     bool mAnimateChangedFlg;
