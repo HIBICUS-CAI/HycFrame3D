@@ -160,6 +160,12 @@
     <ClCompile Include="02_FrameContent\InputSystem.cpp">
       <Filter>02_FrameContent\System</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\RenderSystem.cpp">
+      <Filter>02_FrameContent\System</Filter>
+    </ClCompile>
+    <ClCompile Include="01_MiddleTools\BasicRSPipeline.cpp">
+      <Filter>01_MiddleTools</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -278,6 +284,12 @@
     </ClInclude>
     <ClInclude Include="02_FrameContent\InputSystem.h">
       <Filter>02_FrameContent\System</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\RenderSystem.h">
+      <Filter>02_FrameContent\System</Filter>
+    </ClInclude>
+    <ClInclude Include="01_MiddleTools\BasicRSPipeline.h">
+      <Filter>01_MiddleTools</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

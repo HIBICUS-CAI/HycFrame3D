@@ -22,9 +22,7 @@ bool SceneManager::StartUp(ObjectFactory* _objectFactory)
 
     mObjectFactoryPtr = _objectFactory;
 
-    LoadLoadingScene();
-
-    return true;
+    return LoadLoadingScene();
 }
 
 void SceneManager::CleanAndStop()

@@ -2,6 +2,7 @@
 #include <vector>
 #include "RSCamerasContainer.h"
 #include "RSCamera.h"
+#include "RSRoot_DX11.h"
 #include "ObjectContainer.h"
 #include "ComponentContainer.h"
 #include "AssetsPool.h"
@@ -17,6 +18,15 @@ SceneNode::SceneNode(std::string&& _sceneName, SceneManager* _sceneManager) :
     mCompContainerPtr = new ComponentContainer(*this);
     mAssetsPoolPtr = new AssetsPool(*this);
     mPhysicsWorldPtr = new PhysicsWorld(*this);
+    if (_sceneName != "loading-scene")
+    {
+        std::string cam = "temp-cam";
+        mCameraAmbientInfo.mRSCameraPtr = GetRSRoot_DX11_Singleton()->
+            CamerasContainer()->GetRSCamera(cam);
+        bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
+            mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
+        assert(new_scene_fail);
+    }
 }
 
 SceneNode::SceneNode(std::string& _sceneName, SceneManager* _sceneManager) :
@@ -29,7 +39,15 @@ SceneNode::SceneNode(std::string& _sceneName, SceneManager* _sceneManager) :
     mCompContainerPtr = new ComponentContainer(*this);
     mAssetsPoolPtr = new AssetsPool(*this);
     mPhysicsWorldPtr = new PhysicsWorld(*this);
-    assert(mObjContainerPtr && mCompContainerPtr && mAssetsPoolPtr && mPhysicsWorldPtr);
+    if (_sceneName != "loading-scene")
+    {
+        std::string cam = "temp-cam";
+        mCameraAmbientInfo.mRSCameraPtr = GetRSRoot_DX11_Singleton()->
+            CamerasContainer()->GetRSCamera(cam);
+        bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
+            mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
+        assert(new_scene_fail);
+    }
 }
 
 SceneNode::~SceneNode()
