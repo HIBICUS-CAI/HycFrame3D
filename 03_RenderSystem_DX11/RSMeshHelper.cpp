@@ -239,7 +239,7 @@ void RSMeshHelper::CreateTexSrv(
     for (auto& tex : *_textures)
     {
         wstr = std::wstring(tex.begin(), tex.end());
-        wstr = L".\\Textures\\" + wstr;
+        wstr = L".\\Assets\\Textures\\" + wstr;
         if (tex.find(".dds") != std::string::npos ||
             tex.find(".DDS") != std::string::npos)
         {
