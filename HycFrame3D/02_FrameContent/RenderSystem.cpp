@@ -31,8 +31,6 @@ bool RenderSystem::Init()
             return false;
         }
 
-        CreateBasicPipeline();
-
         std::string name = "temp-cam";
         CAM_INFO ci = {};
         ci.mType = LENS_TYPE::PERSPECTIVE;
@@ -54,6 +52,8 @@ bool RenderSystem::Init()
         ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
         ci.mOWidthAndHeight = { 1280.f,720.f };
         mRenderSystemRoot->CamerasContainer()->CreateRSCamera(name, &ci);
+
+        if (!CreateBasicPipeline()) { return false; }
     }
 
     return true;
