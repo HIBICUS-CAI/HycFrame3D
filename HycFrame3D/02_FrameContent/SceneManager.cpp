@@ -1,6 +1,7 @@
 #include "SceneManager.h"
 #include "ObjectFactory.h"
 #include "SceneNode.h"
+#include "ObjectContainer.h"
 
 #include "DevUsage.h"
 
@@ -53,6 +54,9 @@ void SceneManager::CheckLoadStatus()
         mCurrentScenePtr = mNextScenePtr;
         mNextScenePtr = nullptr;
     }
+
+    mCurrentScenePtr->GetObjectContainer()->DeleteAllDeadObjects();
+    mCurrentScenePtr->GetObjectContainer()->InitAllNewObjects();
 }
 
 ObjectFactory* SceneManager::GetObjectFactory() const

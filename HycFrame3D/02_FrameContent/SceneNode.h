@@ -41,6 +41,7 @@ public:
 
     class AssetsPool* GetAssetsPool() const;
     class PhysicsWorld* GetPhysicsWorld() const;
+    class ObjectContainer* GetObjectContainer() const;
     class ComponentContainer* GetComponentContainer() const;
 
 private:

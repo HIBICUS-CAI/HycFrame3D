@@ -15,7 +15,7 @@ public:
     class ActorObject* GetActorObject(std::string& _actorName);
     void AddActorObject(class ActorObject& _newActor);
     void DeleteActorObject(std::string&& _actorName);
-    void DeleteActorObject(std::string& _actorName_actorName);
+    void DeleteActorObject(std::string& _actorName);
     class UiObject* GetUiObject(std::string&& _uiName);
     class UiObject* GetUiObject(std::string& _uiName);
     void AddUiObject(class UiObject& _newUi);
@@ -25,17 +25,14 @@ public:
     void DeleteAllActor();
     void DeleteAllUi();
 
-private:
     void InitAllNewObjects();
     void DeleteAllDeadObjects();
 
 private:
     SceneNode& mSceneNodeOwner;
     
-    std::vector<class ActorObject> mActorObjVector;
-    std::unordered_map<std::string, class ActorObject&> mActorObjMap;
-    std::vector<class UiObject> mUiObjVector;
-    std::unordered_map<std::string, class UiObject&> mUiObjMap;
+    std::unordered_map<std::string, class ActorObject> mActorObjMap;
+    std::unordered_map<std::string, class UiObject> mUiObjMap;
 
     std::vector<class ActorObject> mNewActorObjVector;
     std::vector<class UiObject> mNewUiObjVector;

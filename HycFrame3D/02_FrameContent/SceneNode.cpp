@@ -161,3 +161,8 @@ ComponentContainer* SceneNode::GetComponentContainer() const
 {
     return mCompContainerPtr;
 }
+
+ObjectContainer* SceneNode::GetObjectContainer() const
+{
+    return mObjContainerPtr;
+}
