@@ -37,8 +37,6 @@ bool ATransformComponent::Init()
 
 void ATransformComponent::Update(Timer& _timer)
 {
-    P_LOG(LOG_DEBUG, "hello\n");
-
     ApplyProcessingData();
 }
 

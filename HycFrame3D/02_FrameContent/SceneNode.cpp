@@ -60,11 +60,12 @@ SceneNode::~SceneNode()
 
 void SceneNode::ReleaseScene()
 {
-    mPhysicsWorldPtr->DeletePhysicsWorld();
-    mAssetsPoolPtr->DeleteAllAssets();
-    mCompContainerPtr->DeleteAllComponent();
     mObjContainerPtr->DeleteAllActor();
     mObjContainerPtr->DeleteAllUi();
+    mObjContainerPtr->DeleteAllDeadObjects();
+    mCompContainerPtr->DeleteAllComponent();
+    mPhysicsWorldPtr->DeletePhysicsWorld();
+    mAssetsPoolPtr->DeleteAllAssets();
 }
 
 const std::string& SceneNode::GetSceneNodeName() const

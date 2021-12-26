@@ -27,7 +27,12 @@ bool SceneManager::StartUp(ObjectFactory* _objectFactory)
 
 void SceneManager::CleanAndStop()
 {
-
+    if (mCurrentScenePtr != mLoadingScenePtr)
+    {
+        mCurrentScenePtr->ReleaseScene();
+        delete mCurrentScenePtr;
+    }
+    ReleaseLoadingScene();
 }
 
 void SceneManager::LoadSceneNode(std::string&& _name, std::string&& _path)
@@ -76,7 +81,8 @@ bool SceneManager::LoadLoadingScene()
 
 void SceneManager::ReleaseLoadingScene()
 {
-
+    mLoadingScenePtr->ReleaseScene();
+    delete mLoadingScenePtr;
 }
 
 void SceneManager::LoadNextScene()

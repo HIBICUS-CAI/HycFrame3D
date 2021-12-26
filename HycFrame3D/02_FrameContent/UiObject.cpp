@@ -70,6 +70,7 @@ void UiObject::Destory()
 #ifdef _DEBUG
         assert(comp);
 #endif // _DEBUG
+        comp->Destory();
         comp->SetCompStatus(STATUS::NEED_DESTORY);
         compContainer->DeleteComponent(compInfo.first, compInfo.second);
     }

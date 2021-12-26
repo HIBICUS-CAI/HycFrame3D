@@ -37,7 +37,12 @@ bool SystemExecutive::StartUp(SceneManager* _sceneManager)
 
 void SystemExecutive::CleanAndStop()
 {
-
+    for (auto& sys : mSystemsVec)
+    {
+        sys->Destory();
+        delete sys;
+    }
+    mSystemsVec.clear();
 }
 
 void SystemExecutive::RunAllSystems(Timer& _timer)

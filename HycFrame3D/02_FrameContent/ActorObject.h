@@ -2,6 +2,8 @@
 
 #include "Object.h"
 #include <unordered_map>
+#include "SceneNode.h"
+#include "ComponentContainer.h"
 
 class ActorObject :public Object
 {
@@ -11,13 +13,29 @@ public:
     virtual ~ActorObject();
 
     void AddAComponent(COMP_TYPE _compType);
-    // TEMP-------------------------------
+
     template <typename T>
     inline T* GetAComponent(COMP_TYPE _type)
     {
-        return nullptr;
+        auto container = GetSceneNode().GetComponentContainer();
+        std::string name = GetObjectName();
+
+        switch (_type)
+        {
+        case COMP_TYPE::A_TRANSFORM: name += "-transform"; break;
+        case COMP_TYPE::A_INPUT: name += "-input"; break;
+        case COMP_TYPE::A_INTERACT: name += "-interact"; break;
+        case COMP_TYPE::A_TIMER: name += "-timer"; break;
+        case COMP_TYPE::A_COLLISION: name += "-collision"; break;
+        case COMP_TYPE::A_MESH: name += "-mesh"; break;
+        case COMP_TYPE::A_LIGHT: name += "-light"; break;
+        case COMP_TYPE::A_AUDIO: name += "-audio"; break;
+        case COMP_TYPE::A_PARTICLE: name += "-particle"; break;
+        default: break;
+        }
+
+        return (T*)(container->GetComponent(name));
     }
-    // TEMP-------------------------------
 
 public:
     virtual bool Init();

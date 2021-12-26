@@ -22,9 +22,13 @@ AInputComponent::~AInputComponent()
 
 bool AInputComponent::Init()
 {
-    // TEMP-----------------
+    if (!mInputPrecessFunctionPtr)
+    {
+        P_LOG(LOG_ERROR, "there's still no input func in : %s\n",
+            GetCompName().c_str());
+    }
+
     return true;
-    // TEMP-----------------
 }
 
 void AInputComponent::Update(Timer& _timer)

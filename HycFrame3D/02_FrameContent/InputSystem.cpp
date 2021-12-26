@@ -41,6 +41,11 @@ void InputSystem::Run(Timer& _timer)
 {
     InputInterface::PollDevices();
 
+    for (auto& aic : *mAInputVecPtr)
+    {
+        aic.Update(_timer);
+    }
+
     // TEMP----------------------------------
     if (InputInterface::IsKeyDownInSingle(KB_1) &&
         InputInterface::IsKeyDownInSingle(KB_2))
