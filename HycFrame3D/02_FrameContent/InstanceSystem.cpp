@@ -5,10 +5,11 @@
 #include "ComponentContainer.h"
 #include "ATransformComponent.h"
 #include "UTransformComponent.h"
+#include "AMeshComponent.h"
 
 InstanceSystem::InstanceSystem(SystemExecutive* _sysExecutive) :
     System("instance-system", _sysExecutive),
-    mATransVecPtr(nullptr), mUTransVecPtr(nullptr)
+    mATransVecPtr(nullptr), mUTransVecPtr(nullptr), mAMeshVecPtr(nullptr)
 {
 
 }
@@ -30,8 +31,11 @@ bool InstanceSystem::Init()
     mUTransVecPtr = (std::vector<UTransformComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
         GetComponentContainer()->GetCompVecPtr(COMP_TYPE::U_TRANSFORM);
+    mAMeshVecPtr = (std::vector<AMeshComponent>*)GetSystemExecutive()->
+        GetSceneManager()->GetCurrentSceneNode()->
+        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_MESH);
 
-    if (!(mATransVecPtr && mUTransVecPtr)) { return false; }
+    if (!(mATransVecPtr && mUTransVecPtr && mAMeshVecPtr)) { return false; }
 
     return true;
 }
@@ -41,6 +45,11 @@ void InstanceSystem::Run(Timer& _timer)
     for (auto& atc : *mATransVecPtr)
     {
         atc.Update(_timer);
+    }
+
+    for (auto& amc : *mAMeshVecPtr)
+    {
+        amc.Update(_timer);
     }
 }
 

@@ -16,4 +16,5 @@ public:
 
 private:
     class RSRoot_DX11* mRenderSystemRoot;
+    class AssetsPool* mAssetsPool;
 };

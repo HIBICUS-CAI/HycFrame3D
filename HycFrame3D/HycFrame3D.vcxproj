@@ -147,6 +147,7 @@
     <ClCompile Include="00_BasicFuncs\PrintLog.cpp" />
     <ClCompile Include="01_MiddleTools\BasicRSPipeline.cpp" />
     <ClCompile Include="01_MiddleTools\JsonHelper.cpp" />
+    <ClCompile Include="01_MiddleTools\ModelHelper.cpp" />
     <ClCompile Include="01_MiddleTools\SoundHelper.cpp" />
     <ClCompile Include="02_FrameContent\AAudioComponent.cpp" />
     <ClCompile Include="02_FrameContent\ACollisionComponent.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="00_BasicFuncs\PrintLog.h" />
     <ClInclude Include="01_MiddleTools\BasicRSPipeline.h" />
     <ClInclude Include="01_MiddleTools\JsonHelper.h" />
+    <ClInclude Include="01_MiddleTools\ModelHelper.h" />
     <ClInclude Include="01_MiddleTools\SoundHelper.h" />
     <ClInclude Include="02_FrameContent\AAudioComponent.h" />
     <ClInclude Include="02_FrameContent\ACollisionComponent.h" />

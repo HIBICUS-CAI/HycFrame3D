@@ -2,6 +2,7 @@
 
 #include "ActorComponent.h"
 #include <vector>
+#include <DirectXMath.h>
 
 class AMeshComponent :public ActorComponent
 {
@@ -16,13 +17,16 @@ public:
     virtual void Destory();
 
 public:
-    bool BindInstanceToAssetsPool(std::string&& _meshName);
-    bool BindInstanceToAssetsPool(std::string& _meshName);
+    void AddMeshInfo(std::string&& _meshName,
+        DirectX::XMFLOAT3 _offset = { 0.f,0.f,0.f });
+    void AddMeshInfo(std::string& _meshName,
+        DirectX::XMFLOAT3 _offset = { 0.f,0.f,0.f });
 
 private:
+    bool BindInstanceToAssetsPool(std::string& _meshName);
     void SyncTransformDataToInstance();
 
 private:
     std::vector<std::string> mMeshesName;
-    std::vector<size_t> mInstancesIndex;
+    std::vector<DirectX::XMFLOAT3> mOffsetPosition;
 };

@@ -1,5 +1,7 @@
 #include "DevUsage.h"
+#include "ModelHelper.h"
 #include "SceneNode.h"
+#include "AssetsPool.h"
 #include "ActorObject.h"
 #include "UiObject.h"
 #include "ID_Interface.h"
@@ -8,6 +10,7 @@
 #include "UAnimateComponent.h"
 #include "AInputComponent.h"
 #include "AInteractComponent.h"
+#include "AMeshComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 
@@ -17,14 +20,20 @@ void TestADestory(AInteractComponent*);
 
 void DevUsage(SceneNode* _node)
 {
+    RS_SUBMESH_DATA sd = {};
+    LoadModelFile(".\\Assets\\Models\\Dragon.FBX.json",
+        MODEL_FILE_TYPE::JSON, &sd);
+    _node->GetAssetsPool()->InsertNewMesh("dragon", sd, MESH_TYPE::OPACITY);
+
     ActorObject a0("a0", *_node);
     ATransformComponent atc0("a0-transform", nullptr);
     AInputComponent aic0("a0-input", nullptr);
     AInteractComponent aitc0("a0-interact", nullptr);
+    AMeshComponent amc0("a0-mesh", nullptr);
 
-    atc0.ForcePosition({ 11.f,45.f,14.f });
-    atc0.ForceRotation({ 20.f,12.f,23.f });
-    atc0.ForceScaling({ 2.f,2.f,3.f });
+    atc0.ForcePosition({ 0.f,0.f,20.f });
+    atc0.ForceRotation({ 0.f,0.f,0.f });
+    atc0.ForceScaling({ 1.f,1.f,1.f });
     a0.AddAComponent(COMP_TYPE::A_TRANSFORM);
 
     aic0.SetInputFunction(TestAInput);
@@ -35,9 +44,13 @@ void DevUsage(SceneNode* _node)
     aitc0.SetDestoryFunction(TestADestory);
     a0.AddAComponent(COMP_TYPE::A_INTERACT);
 
+    amc0.AddMeshInfo("dragon");
+    a0.AddAComponent(COMP_TYPE::A_MESH);
+
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc0);
+    _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
 
     _node->AddActorObject(a0);
 }

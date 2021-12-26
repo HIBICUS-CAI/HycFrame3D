@@ -5,12 +5,18 @@
 #include "RSDrawCallsPool.h"
 #include "RSCamera.h"
 #include "RSCamerasContainer.h"
+#include "RSResourceManager.h"
+#include "RSLightsContainer.h"
 #include "WM_Interface.h"
 #include "BasicRSPipeline.h"
+#include "SystemExecutive.h"
+#include "SceneManager.h"
+#include "SceneNode.h"
+#include "AssetsPool.h"
 
 RenderSystem::RenderSystem(SystemExecutive* _sysExecutive) :
     System("render-system", _sysExecutive),
-    mRenderSystemRoot(nullptr)
+    mRenderSystemRoot(nullptr), mAssetsPool(nullptr)
 {
 
 }
@@ -56,6 +62,10 @@ bool RenderSystem::Init()
         if (!CreateBasicPipeline()) { return false; }
     }
 
+    mAssetsPool = GetSystemExecutive()->GetSceneManager()->
+        GetCurrentSceneNode()->GetAssetsPool();
+    if (!mAssetsPool) { return false; }
+
     return true;
 }
 
@@ -65,6 +75,50 @@ void RenderSystem::Run(Timer& _timer)
 #ifdef _DEBUG
     assert(mRenderSystemRoot);
 #endif // _DEBUG
+
+    static RS_DRAWCALL_DATA drawCall = {};
+    auto& meshPool = mAssetsPool->mMeshPool;
+
+    for (auto& mesh : meshPool)
+    {
+        mesh.second.mInstanceVector.clear();
+        for (auto& instance : mesh.second.mInstanceMap)
+        {
+            mesh.second.mInstanceVector.emplace_back(instance.second);
+        }
+
+        auto drawCallPool = mRenderSystemRoot->DrawCallsPool();
+        DRAWCALL_TYPE dType = DRAWCALL_TYPE::MAX;
+        MESH_TYPE mType = mesh.second.mMeshType;
+        switch (mType)
+        {
+        case MESH_TYPE::OPACITY: dType = DRAWCALL_TYPE::OPACITY; break;
+        case MESH_TYPE::LIGHT: dType = DRAWCALL_TYPE::LIGHT; break;
+        case MESH_TYPE::UI_SPRITE: dType = DRAWCALL_TYPE::UI_SPRITE; break;
+        default: break;
+        }
+
+        drawCall = {};
+        drawCall.mMeshData.mLayout = mesh.second.mMeshData.mLayout;
+        drawCall.mMeshData.mTopologyType = mesh.second.mMeshData.mTopologyType;
+        drawCall.mMeshData.mVertexBuffer = mesh.second.mMeshData.mVertexBuffer;
+        drawCall.mMeshData.mIndexBuffer = mesh.second.mMeshData.mIndexBuffer;
+        drawCall.mMeshData.mIndexCount = mesh.second.mMeshData.mIndexCount;
+        drawCall.mInstanceData.mDataPtr = &(mesh.second.mInstanceVector);
+        drawCall.mTextureDatas[0].mUse = true;
+        drawCall.mTextureDatas[0].mSrv = mRenderSystemRoot->ResourceManager()->
+            GetMeshSrv(mesh.second.mMeshData.mTextures[0]);
+        if (mesh.second.mMeshData.mTextures.size() > 1)
+        {
+            drawCall.mTextureDatas[1].mUse = true;
+            drawCall.mTextureDatas[1].mSrv = mRenderSystemRoot->
+                ResourceManager()->
+                GetMeshSrv(mesh.second.mMeshData.mTextures[1]);
+        }
+
+        drawCallPool->AddDrawCallToPipe(dType, drawCall);
+    }
+    mRenderSystemRoot->LightsContainer()->UploadLightBloomDrawCall();
 
     mRenderSystemRoot->PipelinesManager()->ExecuateCurrentPipeline();
     mRenderSystemRoot->Devices()->PresentSwapChain();
