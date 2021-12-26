@@ -19,7 +19,9 @@ void DevUsage(SceneNode* _node)
     ATransformComponent atc1("a0-transform", nullptr);
     UiObject u0("u0", *_node);
     u0.AddUComponent(COMP_TYPE::U_ANIMATE);
-    UAnimateComponent uac0("uac0", nullptr);
+    _node->AddUiObject(u0);
+
+    UAnimateComponent uac0("u0-animate", nullptr);
 
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::U_ANIMATE, uac0);

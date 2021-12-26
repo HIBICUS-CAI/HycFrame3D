@@ -63,5 +63,17 @@ bool ActorObject::Init()
 
 void ActorObject::Destory()
 {
+    auto compContainer = GetSceneNode().GetComponentContainer();
+
+    for (auto& compInfo : mActorCompMap)
+    {
+        auto comp = compContainer->GetComponent(compInfo.second);
+#ifdef _DEBUG
+        assert(comp);
+#endif // _DEBUG
+        comp->SetCompStatus(STATUS::NEED_DESTORY);
+        compContainer->DeleteComponent(compInfo.first, compInfo.second);
+    }
+
     mActorCompMap.clear();
 }
