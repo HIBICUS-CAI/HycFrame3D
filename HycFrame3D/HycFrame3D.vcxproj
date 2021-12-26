@@ -164,6 +164,7 @@
     <ClCompile Include="02_FrameContent\ComponentContainer.cpp" />
     <ClCompile Include="02_FrameContent\InputSystem.cpp" />
     <ClCompile Include="02_FrameContent\InstanceSystem.cpp" />
+    <ClCompile Include="02_FrameContent\InteractSystem.cpp" />
     <ClCompile Include="02_FrameContent\Object.cpp" />
     <ClCompile Include="02_FrameContent\ObjectContainer.cpp" />
     <ClCompile Include="02_FrameContent\ObjectFactory.cpp" />
@@ -210,6 +211,7 @@
     <ClInclude Include="02_FrameContent\Hyc3DCommon.h" />
     <ClInclude Include="02_FrameContent\InputSystem.h" />
     <ClInclude Include="02_FrameContent\InstanceSystem.h" />
+    <ClInclude Include="02_FrameContent\InteractSystem.h" />
     <ClInclude Include="02_FrameContent\Object.h" />
     <ClInclude Include="02_FrameContent\ObjectContainer.h" />
     <ClInclude Include="02_FrameContent\ObjectFactory.h" />
