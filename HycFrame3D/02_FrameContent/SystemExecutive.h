@@ -21,6 +21,7 @@ private:
 
 private:
     class SceneManager* mSceneManagerPtr;
+    class SceneNode* mCurrentSceneNode;
 
     std::vector<class System*> mSystemsVec;
 };

@@ -54,9 +54,6 @@ void SceneManager::CheckLoadStatus()
         mCurrentScenePtr = mNextScenePtr;
         mNextScenePtr = nullptr;
     }
-
-    mCurrentScenePtr->GetObjectContainer()->DeleteAllDeadObjects();
-    mCurrentScenePtr->GetObjectContainer()->InitAllNewObjects();
 }
 
 ObjectFactory* SceneManager::GetObjectFactory() const

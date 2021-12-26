@@ -1,11 +1,13 @@
 #include "SystemExecutive.h"
 #include "SceneNode.h"
+#include "SceneManager.h"
+#include "ObjectContainer.h"
 #include "System.h"
 #include "InputSystem.h"
 #include "RenderSystem.h"
 
 SystemExecutive::SystemExecutive() :
-    mSceneManagerPtr(nullptr), mSystemsVec({}) {}
+    mSceneManagerPtr(nullptr), mSystemsVec({}), mCurrentSceneNode(nullptr) {}
 
 SystemExecutive::~SystemExecutive() {}
 
@@ -18,6 +20,7 @@ bool SystemExecutive::StartUp(SceneManager* _sceneManager)
     }
 
     mSceneManagerPtr = _sceneManager;
+    mCurrentSceneNode = _sceneManager->GetCurrentSceneNode();
 
     System* sys = nullptr;
 
@@ -37,6 +40,11 @@ void SystemExecutive::CleanAndStop()
 void SystemExecutive::RunAllSystems(Timer& _timer)
 {
     CheckCurrentScene();
+
+    mSceneManagerPtr->GetCurrentSceneNode()->GetObjectContainer()->
+        DeleteAllDeadObjects();
+    mSceneManagerPtr->GetCurrentSceneNode()->GetObjectContainer()->
+        InitAllNewObjects();
 
     for (auto& sys : mSystemsVec)
     {
@@ -63,5 +71,15 @@ bool SystemExecutive::InitAllSystem()
 
 void SystemExecutive::CheckCurrentScene()
 {
+    SceneNode* nextNode = mSceneManagerPtr->GetCurrentSceneNode();
+    SceneNode* thisNode = mCurrentSceneNode;
 
+    if (nextNode != thisNode)
+    {
+        mCurrentSceneNode = nextNode;
+        bool next_scene_init = InitAllSystem();
+#ifdef _DEBUG
+        assert(next_scene_init);
+#endif // _DEBUG
+    }
 }
