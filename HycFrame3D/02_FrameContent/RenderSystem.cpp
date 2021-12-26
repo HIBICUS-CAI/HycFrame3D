@@ -59,6 +59,30 @@ bool RenderSystem::Init()
         ci.mOWidthAndHeight = { 1280.f,720.f };
         mRenderSystemRoot->CamerasContainer()->CreateRSCamera(name, &ci);
 
+        // TEMP------------------------------------
+        name = "direct-light-1";
+        LIGHT_INFO li = {};
+        li.mType = LIGHT_TYPE::DIRECT;
+        li.mWithShadow = true;
+        li.mPosition = { 0.f,30.f,-30.f };
+        li.mDirection = { 0.f,-1.f,1.f };
+        li.mStrength = { 0.8f,0.8f,0.8f };
+        li.mSpotPower = 2.f;
+        li.mFalloffStart = 5.f;
+        li.mFalloffEnd = 15.f;
+        ci = {};
+        ci.mType = LENS_TYPE::ORTHOGRAPHIC;
+        ci.mPosition = li.mPosition;
+        ci.mLookAt = li.mDirection;
+        ci.mUpVec = { 0.f,1.f,1.f };
+        ci.mNearFarZ = { 1.f,1000.f };
+        ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
+        ci.mOWidthAndHeight = { 128.f * 9.5f,72.f * 9.5f };
+        mRenderSystemRoot->LightsContainer()->CreateRSLight(
+            name, &li);
+        mRenderSystemRoot->LightsContainer()->CreateLightCameraFor(name, &ci);
+        // TEMP------------------------------------
+
         if (!CreateBasicPipeline()) { return false; }
     }
 
@@ -119,6 +143,10 @@ void RenderSystem::Run(Timer& _timer)
         drawCallPool->AddDrawCallToPipe(dType, drawCall);
     }
     mRenderSystemRoot->LightsContainer()->UploadLightBloomDrawCall();
+
+    mRenderSystemRoot->LightsContainer()->ForceCurrentAmbientLight(
+        GetSystemExecutive()->GetSceneManager()->
+        GetCurrentSceneNode()->GetCurrentAmbient());
 
     mRenderSystemRoot->PipelinesManager()->ExecuateCurrentPipeline();
     mRenderSystemRoot->Devices()->PresentSwapChain();

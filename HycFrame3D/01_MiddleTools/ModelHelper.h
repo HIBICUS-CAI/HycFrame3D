@@ -17,3 +17,5 @@ struct MODEL_TEXTURE_INFO
 
 void LoadModelFile(const std::string _filePath, MODEL_FILE_TYPE _type,
     RS_SUBMESH_DATA* _result);
+
+void AddBumpedTexTo(RS_SUBMESH_DATA* _result, std::string _filePath);

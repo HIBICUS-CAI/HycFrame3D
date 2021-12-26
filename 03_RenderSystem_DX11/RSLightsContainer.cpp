@@ -207,6 +207,16 @@ void RSLightsContainer::SetCurrentAmbientLight(std::string&& _name)
     mCurrentAmbient = GetAmbientLight(_name);
 }
 
+void RSLightsContainer::ForceCurrentAmbientLight(DirectX::XMFLOAT4&& _ambient)
+{
+    mCurrentAmbient = _ambient;
+}
+
+void RSLightsContainer::ForceCurrentAmbientLight(DirectX::XMFLOAT4& _ambient)
+{
+    mCurrentAmbient = _ambient;
+}
+
 DirectX::XMFLOAT4& RSLightsContainer::GetCurrentAmbientLight()
 {
     return mCurrentAmbient;

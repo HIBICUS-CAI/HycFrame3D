@@ -32,6 +32,8 @@ public:
         DirectX::XMFLOAT4&& _light);
     void EraseAmbientLight(std::string&& _name);
     void SetCurrentAmbientLight(std::string&& _name);
+    void ForceCurrentAmbientLight(DirectX::XMFLOAT4&& _ambient);
+    void ForceCurrentAmbientLight(DirectX::XMFLOAT4& _ambient);
     DirectX::XMFLOAT4& GetCurrentAmbientLight();
 
     std::vector<class RSLight*>* GetLights();
