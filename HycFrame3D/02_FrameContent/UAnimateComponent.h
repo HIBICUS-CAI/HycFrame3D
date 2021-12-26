@@ -17,8 +17,8 @@ struct ANIMATE_INFO
 class UAnimateComponent :public UiComponent
 {
 public:
-    UAnimateComponent(std::string&& _compName, class UiObject& _uiOwner);
-    UAnimateComponent(std::string& _compName, class UiObject& _uiOwner);
+    UAnimateComponent(std::string&& _compName, class UiObject* _uiOwner);
+    UAnimateComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UAnimateComponent();
 
 public:

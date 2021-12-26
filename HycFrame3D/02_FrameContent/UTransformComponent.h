@@ -6,8 +6,8 @@
 class UTransformComponent :public UiComponent
 {
 public:
-    UTransformComponent(std::string&& _compName, class UiObject& _uiOwner);
-    UTransformComponent(std::string& _compName, class UiObject& _uiOwner);
+    UTransformComponent(std::string&& _compName, class UiObject* _uiOwner);
+    UTransformComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UTransformComponent();
 
 public:

@@ -2,7 +2,7 @@
 #include "ActorObject.h"
 
 ACollisionComponent::ACollisionComponent(std::string&& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
     mCollisionObject(nullptr), mCollisionShape(nullptr)
 {
@@ -10,7 +10,7 @@ ACollisionComponent::ACollisionComponent(std::string&& _compName,
 }
 
 ACollisionComponent::ACollisionComponent(std::string& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
     mCollisionObject(nullptr), mCollisionShape(nullptr)
 {

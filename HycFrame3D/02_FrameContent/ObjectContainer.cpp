@@ -178,21 +178,25 @@ void ObjectContainer::InitAllNewObjects()
 {
     for (auto& newActor : mNewActorObjVector)
     {
-        bool result = newActor.Init();
+        std::string name = newActor.GetObjectName();
+        mActorObjMap.insert({ name,newActor });
+        auto& actor = mActorObjMap.find(name)->second;
+        bool result = actor.Init();
 #ifdef _DEBUG
         assert(result);
 #endif // _DEBUG
-        mActorObjMap.insert({ newActor.GetObjectName(),newActor });
     }
     mNewActorObjVector.clear();
 
     for (auto& newUi : mNewUiObjVector)
     {
-        bool result = newUi.Init();
+        std::string name = newUi.GetObjectName();
+        mUiObjMap.insert({ name,newUi });
+        auto& ui = mUiObjMap.find(name)->second;
+        bool result = ui.Init();
 #ifdef _DEBUG
         assert(result);
 #endif // _DEBUG
-        mUiObjMap.insert({ newUi.GetObjectName(),newUi });
     }
     mNewUiObjVector.clear();
 }

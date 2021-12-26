@@ -5,11 +5,12 @@
 class UiComponent :public Component
 {
 public:
-    UiComponent(std::string&& _compName, class UiObject& _uiOwner);
-    UiComponent(std::string& _compName, class UiObject& _uiOwner);
+    UiComponent(std::string&& _compName, class UiObject* _uiOwner);
+    UiComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UiComponent();
 
-    class UiObject& GetUiOwner() const;
+    class UiObject* GetUiOwner() const;
+    void ResetUiOwner(class UiObject* _owner);
 
 public:
     virtual bool Init() = 0;
@@ -17,5 +18,5 @@ public:
     virtual void Destory() = 0;
 
 private:
-    class UiObject& mUiOwner;
+    class UiObject* mUiOwner;
 };

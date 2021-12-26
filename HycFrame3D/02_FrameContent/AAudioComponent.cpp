@@ -2,14 +2,14 @@
 #include "ActorObject.h"
 
 AAudioComponent::AAudioComponent(std::string&& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mAudioMap({})
 {
 
 }
 
 AAudioComponent::AAudioComponent(std::string& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mAudioMap({})
 {
 

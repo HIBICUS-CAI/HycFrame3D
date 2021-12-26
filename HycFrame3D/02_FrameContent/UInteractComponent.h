@@ -9,8 +9,8 @@ using UiInteractDestoryFuncType = void(*)(class UInteractComponent*);
 class UInteractComponent :public UiComponent
 {
 public:
-    UInteractComponent(std::string&& _compName, class UiObject& _uiOwner);
-    UInteractComponent(std::string& _compName, class UiObject& _uiOwner);
+    UInteractComponent(std::string&& _compName, class UiObject* _uiOwner);
+    UInteractComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UInteractComponent();
 
 public:

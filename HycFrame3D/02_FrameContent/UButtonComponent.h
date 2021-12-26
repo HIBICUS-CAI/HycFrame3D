@@ -8,8 +8,8 @@ constexpr auto NULL_BTN = "null-btn";
 class UButtonComponent :public UiComponent
 {
 public:
-    UButtonComponent(std::string&& _compName, class UiObject& _uiOwner);
-    UButtonComponent(std::string& _compName, class UiObject& _uiOwner);
+    UButtonComponent(std::string&& _compName, class UiObject* _uiOwner);
+    UButtonComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UButtonComponent();
 
 public:

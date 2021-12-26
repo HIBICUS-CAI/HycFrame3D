@@ -4,7 +4,7 @@
 using namespace DirectX;
 
 ATransformComponent::ATransformComponent(std::string&& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
     mPosition({ 0.f,0.f,0.f }), mProcessingPosition({ 0.f,0.f,0.f }),
     mRotation({ 0.f,0.f,0.f }), mProcessingRotation({ 0.f,0.f,0.f }),
@@ -15,7 +15,7 @@ ATransformComponent::ATransformComponent(std::string&& _compName,
 }
 
 ATransformComponent::ATransformComponent(std::string& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
     mPosition({ 0.f,0.f,0.f }), mProcessingPosition({ 0.f,0.f,0.f }),
     mRotation({ 0.f,0.f,0.f }), mProcessingRotation({ 0.f,0.f,0.f }),

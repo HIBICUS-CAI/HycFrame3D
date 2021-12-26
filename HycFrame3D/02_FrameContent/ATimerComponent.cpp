@@ -2,14 +2,14 @@
 #include "ActorObject.h"
 
 ATimerComponent::ATimerComponent(std::string&& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mTimerMap({})
 {
 
 }
 
 ATimerComponent::ATimerComponent(std::string& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mTimerMap({})
 {
 

@@ -2,14 +2,14 @@
 #include "UiObject.h"
 
 UAudioComponent::UAudioComponent(std::string&& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner), mAudioMap({})
 {
 
 }
 
 UAudioComponent::UAudioComponent(std::string& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner), mAudioMap({})
 {
 

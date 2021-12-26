@@ -7,8 +7,8 @@ using ActorInputProcessFuncType = void(*)(class AInputComponent*, Timer&);
 class AInputComponent :public ActorComponent
 {
 public:
-    AInputComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    AInputComponent(std::string& _compName, class ActorObject& _actorOwner);
+    AInputComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    AInputComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AInputComponent();
 
 public:

@@ -7,8 +7,8 @@
 class AAudioComponent :public ActorComponent
 {
 public:
-    AAudioComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    AAudioComponent(std::string& _compName, class ActorObject& _actorOwner);
+    AAudioComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    AAudioComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AAudioComponent();
 
 public:

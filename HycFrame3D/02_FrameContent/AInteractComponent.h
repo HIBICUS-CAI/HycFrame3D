@@ -9,8 +9,8 @@ using ActorInteractDestoryFuncType = void(*)(class AInteractComponent*);
 class AInteractComponent :public ActorComponent
 {
 public:
-    AInteractComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    AInteractComponent(std::string& _compName, class ActorObject& _actorOwner);
+    AInteractComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    AInteractComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AInteractComponent();
 
 public:

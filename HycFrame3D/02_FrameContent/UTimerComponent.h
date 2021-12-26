@@ -15,8 +15,8 @@ struct UI_TIMER
 class UTimerComponent :public UiComponent
 {
 public:
-    UTimerComponent(std::string&& _compName, class UiObject& _uiOwner);
-    UTimerComponent(std::string& _compName, class UiObject& _uiOwner);
+    UTimerComponent(std::string&& _compName, class UiObject* _uiOwner);
+    UTimerComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UTimerComponent();
 
 public:

@@ -4,7 +4,7 @@
 #include <RSCommon.h>
 
 UAnimateComponent::UAnimateComponent(std::string&& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mAnimateMap({}), mCurrentAnimateCut(0), mCurrentAnimate(nullptr),
     mAnimateChangedFlg(false), mTimeCounter(0.f)
@@ -13,7 +13,7 @@ UAnimateComponent::UAnimateComponent(std::string&& _compName,
 }
 
 UAnimateComponent::UAnimateComponent(std::string& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mAnimateMap({}), mCurrentAnimateCut(0), mCurrentAnimate(nullptr),
     mAnimateChangedFlg(false), mTimeCounter(0.f)

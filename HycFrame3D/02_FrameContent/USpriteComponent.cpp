@@ -2,14 +2,14 @@
 #include "UiObject.h"
 
 USpriteComponent::USpriteComponent(std::string&& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner), mMeshesName({}), mInstancesIndex({})
 {
 
 }
 
 USpriteComponent::USpriteComponent(std::string& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner), mMeshesName({}), mInstancesIndex({})
 {
 

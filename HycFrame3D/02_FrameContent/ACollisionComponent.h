@@ -14,8 +14,8 @@ enum class COLLISION_SHAPE
 class ACollisionComponent :public ActorComponent
 {
 public:
-    ACollisionComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    ACollisionComponent(std::string& _compName, class ActorObject& _actorOwner);
+    ACollisionComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    ACollisionComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ACollisionComponent();
 
 public:

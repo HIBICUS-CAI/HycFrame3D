@@ -2,14 +2,14 @@
 #include "ActorComponent.h"
 
 AMeshComponent::AMeshComponent(std::string&& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mMeshesName({}), mInstancesIndex({})
 {
 
 }
 
 AMeshComponent::AMeshComponent(std::string& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mMeshesName({}), mInstancesIndex({})
 {
 

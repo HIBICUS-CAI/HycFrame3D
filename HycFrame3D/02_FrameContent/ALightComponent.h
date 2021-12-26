@@ -6,8 +6,8 @@
 class ALightComponent :public ActorComponent
 {
 public:
-    ALightComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    ALightComponent(std::string& _compName, class ActorObject& _actorOwner);
+    ALightComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    ALightComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ALightComponent();
 
 public:

@@ -4,7 +4,7 @@
 using namespace DirectX;
 
 UTransformComponent::UTransformComponent(std::string&& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mPosition({ 0.f,0.f,0.f }), mProcessingPosition({ 0.f,0.f,0.f }),
     mRotation({ 0.f,0.f,0.f }), mProcessingRotation({ 0.f,0.f,0.f }),
@@ -15,7 +15,7 @@ UTransformComponent::UTransformComponent(std::string&& _compName,
 }
 
 UTransformComponent::UTransformComponent(std::string& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mPosition({ 0.f,0.f,0.f }), mProcessingPosition({ 0.f,0.f,0.f }),
     mRotation({ 0.f,0.f,0.f }), mProcessingRotation({ 0.f,0.f,0.f }),

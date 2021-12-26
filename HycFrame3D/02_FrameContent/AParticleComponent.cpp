@@ -4,14 +4,14 @@
 #include "RSParticleEmitter.h"
 
 AParticleComponent::AParticleComponent(std::string&& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mRSParticleEmitterPtr(nullptr)
 {
 
 }
 
 AParticleComponent::AParticleComponent(std::string& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mRSParticleEmitterPtr(nullptr)
 {
 

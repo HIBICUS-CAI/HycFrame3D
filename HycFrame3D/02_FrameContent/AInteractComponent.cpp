@@ -2,7 +2,7 @@
 #include "ActorObject.h"
 
 AInteractComponent::AInteractComponent(std::string&& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
     mInitProcessFunctionPtr(nullptr),
     mUpdateProcessFunctionPtr(nullptr),
@@ -12,7 +12,7 @@ AInteractComponent::AInteractComponent(std::string&& _compName,
 }
 
 AInteractComponent::AInteractComponent(std::string& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
     mInitProcessFunctionPtr(nullptr),
     mUpdateProcessFunctionPtr(nullptr),

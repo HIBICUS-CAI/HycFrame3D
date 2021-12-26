@@ -2,7 +2,7 @@
 #include "UiObject.h"
 
 UButtonComponent::UButtonComponent(std::string&& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mSurroundBtnCompNames({ NULL_BTN,NULL_BTN,NULL_BTN,NULL_BTN }),
     mIsSelected(false)
@@ -11,7 +11,7 @@ UButtonComponent::UButtonComponent(std::string&& _compName,
 }
 
 UButtonComponent::UButtonComponent(std::string& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mSurroundBtnCompNames({ NULL_BTN,NULL_BTN,NULL_BTN,NULL_BTN }),
     mIsSelected(false)

@@ -5,8 +5,8 @@
 class AParticleComponent :public ActorComponent
 {
 public:
-    AParticleComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    AParticleComponent(std::string& _compName, class ActorObject& _actorOwner);
+    AParticleComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    AParticleComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AParticleComponent();
 
 public:

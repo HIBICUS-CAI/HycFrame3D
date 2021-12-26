@@ -2,14 +2,14 @@
 #include "ActorObject.h"
 
 AInputComponent::AInputComponent(std::string&& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mInputPrecessFunctionPtr(nullptr)
 {
 
 }
 
 AInputComponent::AInputComponent(std::string& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mInputPrecessFunctionPtr(nullptr)
 {
 

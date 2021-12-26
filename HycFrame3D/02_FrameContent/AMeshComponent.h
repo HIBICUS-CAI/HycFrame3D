@@ -6,8 +6,8 @@
 class AMeshComponent :public ActorComponent
 {
 public:
-    AMeshComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    AMeshComponent(std::string& _compName, class ActorObject& _actorOwner);
+    AMeshComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    AMeshComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AMeshComponent();
 
 public:

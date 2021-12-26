@@ -6,8 +6,8 @@
 class ATransformComponent :public ActorComponent
 {
 public:
-    ATransformComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    ATransformComponent(std::string& _compName, class ActorObject& _actorOwner);
+    ATransformComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    ATransformComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ATransformComponent();
 
 public:

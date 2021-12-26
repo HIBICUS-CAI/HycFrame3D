@@ -7,8 +7,8 @@
 class UAudioComponent :public UiComponent
 {
 public:
-    UAudioComponent(std::string&& _compName, class UiObject& _uiOwner);
-    UAudioComponent(std::string& _compName, class UiObject& _uiOwner);
+    UAudioComponent(std::string&& _compName, class UiObject* _uiOwner);
+    UAudioComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UAudioComponent();
 
 public:

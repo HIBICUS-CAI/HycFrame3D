@@ -5,11 +5,12 @@
 class ActorComponent :public Component
 {
 public:
-    ActorComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    ActorComponent(std::string& _compName, class ActorObject& _actorOwner);
+    ActorComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    ActorComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ActorComponent();
 
-    class ActorObject& GetActorOwner() const;
+    class ActorObject* GetActorOwner() const;
+    void ResetActorOwner(class ActorObject* _owner);
 
 public:
     virtual bool Init() = 0;
@@ -17,5 +18,5 @@ public:
     virtual void Destory() = 0;
 
 private:
-    class ActorObject& mActorOwner;
+    class ActorObject* mActorOwner;
 };

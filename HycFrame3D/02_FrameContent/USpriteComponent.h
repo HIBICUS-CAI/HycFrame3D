@@ -6,8 +6,8 @@
 class USpriteComponent :public UiComponent
 {
 public:
-    USpriteComponent(std::string&& _compName, class UiObject& _uiOwner);
-    USpriteComponent(std::string& _compName, class UiObject& _uiOwner);
+    USpriteComponent(std::string&& _compName, class UiObject* _uiOwner);
+    USpriteComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~USpriteComponent();
 
 public:

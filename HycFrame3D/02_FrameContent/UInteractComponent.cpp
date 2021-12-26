@@ -2,7 +2,7 @@
 #include "UiObject.h"
 
 UInteractComponent::UInteractComponent(std::string&& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mInitProcessFunctionPtr(nullptr),
     mUpdateProcessFunctionPtr(nullptr),
@@ -12,7 +12,7 @@ UInteractComponent::UInteractComponent(std::string&& _compName,
 }
 
 UInteractComponent::UInteractComponent(std::string& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mInitProcessFunctionPtr(nullptr),
     mUpdateProcessFunctionPtr(nullptr),

@@ -2,14 +2,14 @@
 #include "UiObject.h"
 
 UTimerComponent::UTimerComponent(std::string&& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner), mTimerMap({})
 {
 
 }
 
 UTimerComponent::UTimerComponent(std::string& _compName,
-    UiObject& _uiOwner) :
+    UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner), mTimerMap({})
 {
 

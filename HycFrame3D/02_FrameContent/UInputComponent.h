@@ -7,8 +7,8 @@ using UiInputProcessFuncType = void(*)(class UInputComponent*, Timer&);
 class UInputComponent :public UiComponent
 {
 public:
-    UInputComponent(std::string&& _compName, class UiObject& _uiOwner);
-    UInputComponent(std::string& _compName, class UiObject& _uiOwner);
+    UInputComponent(std::string&& _compName, class UiObject* _uiOwner);
+    UInputComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UInputComponent();
 
 public:

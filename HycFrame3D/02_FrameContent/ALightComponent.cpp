@@ -4,14 +4,14 @@
 #include "RSLight.h"
 
 ALightComponent::ALightComponent(std::string&& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mRSLightPtr(nullptr)
 {
 
 }
 
 ALightComponent::ALightComponent(std::string& _compName,
-    ActorObject& _actorOwner) :
+    ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mRSLightPtr(nullptr)
 {
 

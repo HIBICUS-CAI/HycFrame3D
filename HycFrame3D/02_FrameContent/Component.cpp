@@ -29,5 +29,5 @@ STATUS Component::GetCompStatus() const
 
 void Component::SetCompStatus(STATUS _compStatus)
 {
-
+    mComponentStatus = _compStatus;
 }

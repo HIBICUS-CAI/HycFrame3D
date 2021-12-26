@@ -15,8 +15,8 @@ struct ACTOR_TIMER
 class ATimerComponent :public ActorComponent
 {
 public:
-    ATimerComponent(std::string&& _compName, class ActorObject& _actorOwner);
-    ATimerComponent(std::string& _compName, class ActorObject& _actorOwner);
+    ATimerComponent(std::string&& _compName, class ActorObject* _actorOwner);
+    ATimerComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ATimerComponent();
 
 public:
