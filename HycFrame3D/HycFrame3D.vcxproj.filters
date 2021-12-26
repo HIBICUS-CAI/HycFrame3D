@@ -169,6 +169,9 @@
     <ClCompile Include="03_ScriptFuncs\DevUsage.cpp">
       <Filter>03_ScriptFuncs</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\InstanceSystem.cpp">
+      <Filter>02_FrameContent\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -296,6 +299,9 @@
     </ClInclude>
     <ClInclude Include="03_ScriptFuncs\DevUsage.h">
       <Filter>03_ScriptFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\InstanceSystem.h">
+      <Filter>02_FrameContent\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

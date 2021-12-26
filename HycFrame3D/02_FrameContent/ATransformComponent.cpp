@@ -32,13 +32,13 @@ ATransformComponent::~ATransformComponent()
 
 bool ATransformComponent::Init()
 {
-    // TEMP-----------------
     return true;
-    // TEMP-----------------
 }
 
 void ATransformComponent::Update(Timer& _timer)
 {
+    P_LOG(LOG_DEBUG, "hello\n");
+
     ApplyProcessingData();
 }
 
@@ -56,6 +56,7 @@ void ATransformComponent::SetPosition(DirectX::XMFLOAT3 _pos)
 void ATransformComponent::ForcePosition(DirectX::XMFLOAT3 _pos)
 {
     mPosition = _pos;
+    mProcessingPosition = _pos;
 }
 
 void ATransformComponent::SetRotation(DirectX::XMFLOAT3 _angle)
@@ -67,6 +68,7 @@ void ATransformComponent::SetRotation(DirectX::XMFLOAT3 _angle)
 void ATransformComponent::ForceRotation(DirectX::XMFLOAT3 _angle)
 {
     mRotation = _angle;
+    mProcessingRotation = _angle;
 }
 
 void ATransformComponent::SetScaling(DirectX::XMFLOAT3 _factor)
@@ -78,6 +80,7 @@ void ATransformComponent::SetScaling(DirectX::XMFLOAT3 _factor)
 void ATransformComponent::ForceScaling(DirectX::XMFLOAT3 _factor)
 {
     mScaling = _factor;
+    mProcessingScaling = _factor;
 }
 
 void ATransformComponent::Translate(DirectX::XMFLOAT3 _deltaPos)
@@ -156,6 +159,24 @@ void ATransformComponent::ScaleZAsix(float _factorZ)
 {
     mProcessingScaling.z = _factorZ;
     mScalingDirtyFlg = true;
+}
+
+void ATransformComponent::RollBackPosition()
+{
+    mProcessingPosition = mPosition;
+    mPositionDirtyFlg = false;
+}
+
+void ATransformComponent::RollBackRotation()
+{
+    mProcessingRotation = mRotation;
+    mRotationDirtyFlg = false;
+}
+
+void ATransformComponent::RollBackScaling()
+{
+    mProcessingScaling = mScaling;
+    mScalingDirtyFlg = false;
 }
 
 const DirectX::XMFLOAT3& ATransformComponent::GetPosition() const

@@ -38,6 +38,10 @@ public:
     void ScaleYAsix(float _factorY);
     void ScaleZAsix(float _factorZ);
 
+    void RollBackPosition();
+    void RollBackRotation();
+    void RollBackScaling();
+
     const DirectX::XMFLOAT3& GetPosition() const;
     const DirectX::XMFLOAT3& GetRotation() const;
     const DirectX::XMFLOAT3& GetScaling() const;
