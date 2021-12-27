@@ -178,6 +178,9 @@
     <ClCompile Include="01_MiddleTools\ModelHelper.cpp">
       <Filter>01_MiddleTools</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\CollisionSystem.cpp">
+      <Filter>02_FrameContent\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -314,6 +317,9 @@
     </ClInclude>
     <ClInclude Include="01_MiddleTools\ModelHelper.h">
       <Filter>01_MiddleTools</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\CollisionSystem.h">
+      <Filter>02_FrameContent\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -24,13 +24,15 @@ public:
     virtual void Destory();
 
 public:
+    void CreateCollisionShape(COLLISION_SHAPE _type, DirectX::XMFLOAT3 _size);
+
     bool CheckCollisionWith(std::string&& _actorName);
     bool CheckCollisionWith(std::string& _actorName);
 
 private:
-    void CheckCollisionShape(COLLISION_SHAPE _type, DirectX::XMFLOAT3 _size);
     void AddCollisionObjectToWorld();
     void SyncDataFromTransform();
+    class btCollisionObject* GetCollisionObject() const;
 
 private:
     class btCollisionObject* mCollisionObject;

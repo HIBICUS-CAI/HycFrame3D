@@ -18,6 +18,7 @@
 #include "AMeshComponent.h"
 #include "ALightComponent.h"
 #include "AParticleComponent.h"
+#include "ACollisionComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -51,6 +52,7 @@ void DevUsage(SceneNode* _node)
     AInputComponent aic0("a0-input", nullptr);
     AInteractComponent aitc0("a0-interact", nullptr);
     AMeshComponent amc0("a0-mesh", nullptr);
+    ACollisionComponent acc0("a0-collision", nullptr);
 
     atc0.ForcePosition({ 0.f,0.f,150.f });
     atc0.ForceRotation({ 0.f,0.f,0.f });
@@ -70,10 +72,14 @@ void DevUsage(SceneNode* _node)
     amc0.AddMeshInfo("floor", { 0.f,-50.f,0.f });
     a0.AddAComponent(COMP_TYPE::A_MESH);
 
+    acc0.CreateCollisionShape(COLLISION_SHAPE::BOX, { 50.f,50.f,100.f });
+    a0.AddAComponent(COMP_TYPE::A_COLLISION);
+
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
+    _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc0);
 
     _node->AddActorObject(a0);
 
@@ -81,8 +87,9 @@ void DevUsage(SceneNode* _node)
     ATransformComponent atc1("a1-transform", nullptr);
     AInputComponent aic1("a1-input", nullptr);
     ALightComponent alc1("a1-light", nullptr);
+    ACollisionComponent acc1("a1-collision", nullptr);
 
-    atc1.ForcePosition({ 0.f,0.f,75.f });
+    atc1.ForcePosition({ 0.f,0.f,50.f });
     atc1.ForceRotation({ 0.f,0.f,0.f });
     atc1.ForceScaling({ 3.f,3.f,3.f });
     a1.AddAComponent(COMP_TYPE::A_TRANSFORM);
@@ -102,9 +109,13 @@ void DevUsage(SceneNode* _node)
     alc1.AddLight(li, true, false, {});
     a1.AddAComponent(COMP_TYPE::A_LIGHT);
 
+    acc1.CreateCollisionShape(COLLISION_SHAPE::BOX, { 3.f,3.f,3.f });
+    a1.AddAComponent(COMP_TYPE::A_COLLISION);
+
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc1);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic1);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_LIGHT, alc1);
+    _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc1);
 
     _node->AddActorObject(a1);
 
@@ -219,16 +230,13 @@ void TestAInput(AInputComponent* _aic, Timer& _timer)
     {
         atc->RotateYAsix(-0.005f * delta);
     }
-
-    P_LOG(LOG_DEBUG, "%f , %f , %f\n",
-        atc->GetProcessingPosition().x,
-        atc->GetProcessingPosition().y,
-        atc->GetProcessingPosition().z);
 }
 
 static int* g_IntArray = nullptr;
+static ACollisionComponent* g_DragonCC = nullptr;
+static ATransformComponent* g_LightTC = nullptr;
 
-bool TestAInit(AInteractComponent*)
+bool TestAInit(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "test a init!\n");
     g_IntArray = new int[5];
@@ -237,11 +245,22 @@ bool TestAInit(AInteractComponent*)
     return true;
 }
 
-void TestAUpdate(AInteractComponent*, Timer&)
+void TestAUpdate(AInteractComponent* _aitc, Timer&)
 {
-    std::string str = "";
-    for (int i = 0; i < 5; i++) { str += std::to_string(g_IntArray[i]); }
-    P_LOG(LOG_DEBUG, "%s\n", str.c_str());
+    if (!g_DragonCC || !g_LightTC)
+    {
+        g_DragonCC = _aitc->GetActorOwner()->
+            GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION);
+        g_LightTC = _aitc->GetActorOwner()->GetSceneNode().GetActorObject("a1")->
+            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+    }
+
+    bool coll = g_DragonCC->CheckCollisionWith("a1");
+    P_LOG(LOG_DEBUG, "collision result : %d\n", coll);
+    if (coll)
+    {
+        g_LightTC->RollBackPosition();
+    }
 }
 
 void TestADestory(AInteractComponent*)
