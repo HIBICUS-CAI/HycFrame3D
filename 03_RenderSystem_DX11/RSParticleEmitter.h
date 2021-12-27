@@ -24,6 +24,9 @@ public:
     void StartParticleEmitter();
     void PauseParticleEmitter();
 
+    void SetEmitterPosition(DirectX::XMFLOAT3& _position);
+    void SetEmitterPosition(DirectX::XMFLOAT3&& _position);
+
 private:
     RS_PARTICLE_EMITTER_INFO mRSParticleEmitterInfo;
     bool mActiveFlg;

@@ -15,10 +15,13 @@ public:
     virtual void Destory();
 
 public:
-    void CreateEmitter(struct PARTICLE_EMITTER_INFO* _lightInfo);
-    void ResetEmitter(struct PARTICLE_EMITTER_INFO* _lightInfo);
+    void CreateEmitter(struct PARTICLE_EMITTER_INFO* _emitterInfo);
+    void ResetEmitter(struct PARTICLE_EMITTER_INFO* _emitterInfo);
 
     const struct RS_PARTICLE_EMITTER_INFO& GetEmitterInfo();
+
+private:
+    void SyncDataFromTransform();
 
 private:
     class RSParticleEmitter* mRSParticleEmitterPtr;

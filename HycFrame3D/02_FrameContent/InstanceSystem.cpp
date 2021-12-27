@@ -7,11 +7,12 @@
 #include "UTransformComponent.h"
 #include "AMeshComponent.h"
 #include "ALightComponent.h"
+#include "AParticleComponent.h"
 
 InstanceSystem::InstanceSystem(SystemExecutive* _sysExecutive) :
     System("instance-system", _sysExecutive),
     mATransVecPtr(nullptr), mUTransVecPtr(nullptr), mAMeshVecPtr(nullptr),
-    mALightVecPtr(nullptr)
+    mALightVecPtr(nullptr), mAParitcleVecPtr(nullptr)
 {
 
 }
@@ -39,9 +40,12 @@ bool InstanceSystem::Init()
     mALightVecPtr = (std::vector<ALightComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
         GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_LIGHT);
+    mAParitcleVecPtr = (std::vector<AParticleComponent>*)GetSystemExecutive()->
+        GetSceneManager()->GetCurrentSceneNode()->
+        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_PARTICLE);
 
     if (!(mATransVecPtr && mUTransVecPtr && mAMeshVecPtr &&
-        mALightVecPtr))
+        mALightVecPtr && mAParitcleVecPtr))
     {
         return false;
     }
@@ -64,6 +68,11 @@ void InstanceSystem::Run(Timer& _timer)
     for (auto& alc : *mALightVecPtr)
     {
         alc.Update(_timer);
+    }
+
+    for (auto& apc : *mAParitcleVecPtr)
+    {
+        apc.Update(_timer);
     }
 }
 

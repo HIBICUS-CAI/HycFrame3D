@@ -17,6 +17,7 @@
 #include "AInteractComponent.h"
 #include "AMeshComponent.h"
 #include "ALightComponent.h"
+#include "AParticleComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -24,6 +25,10 @@ void TestA1Input(AInputComponent*, Timer&);
 bool TestAInit(AInteractComponent*);
 void TestAUpdate(AInteractComponent*, Timer&);
 void TestADestory(AInteractComponent*);
+
+bool TestA3Init(AInteractComponent*);
+void TestA3Update(AInteractComponent*, Timer&);
+void TestA3Destory(AInteractComponent*);
 
 void DevUsage(SceneNode* _node)
 {
@@ -142,6 +147,44 @@ void DevUsage(SceneNode* _node)
 
     _node->AddActorObject(a2);
 
+    ActorObject a3("a3", *_node);
+    ATransformComponent atc3("a3-transform", nullptr);
+    AParticleComponent apc3("a3-particle", nullptr);
+    AInteractComponent aitc3("a3-interact", nullptr);
+
+    atc3.ForcePosition({ 0.f,5.f,25.f });
+    atc3.ForceRotation({ 0.f,0.f,0.f });
+    atc3.ForceScaling({ 3.f,3.f,3.f });
+    a3.AddAComponent(COMP_TYPE::A_TRANSFORM);
+
+    PARTICLE_EMITTER_INFO pei = {};
+    pei.mAcceleration = { 0.f,-9.8f,0.f };
+    pei.mEmitNumPerSecond = 600.f;
+    pei.mEnableStreak = true;
+    pei.mLifeSpan = 100.f;
+    pei.mOffsetEndColor = { 0.f,0.f,0.f,0.f };
+    pei.mOffsetEndSize = 0.f;
+    pei.mOffsetStartColor = { 1.f,0.f,0.f,1.f };
+    pei.mOffsetStartSize = 0.5f;
+    pei.mParticleMass = 0.1f;
+    pei.mPosVariance = { 1.f,1.f,1.f };
+    pei.mTextureID = PARTICLE_TEXTURE::WHITE_CIRCLE;
+    pei.mVelocity = { 0.f,9.f,0.f };
+    pei.mVelVariance = 0.5f;
+    apc3.CreateEmitter(&pei);
+    a3.AddAComponent(COMP_TYPE::A_PARTICLE);
+
+    aitc3.SetInitFunction(TestA3Init);
+    aitc3.SetUpdateFunction(TestA3Update);
+    aitc3.SetDestoryFunction(TestA3Destory);
+    a3.AddAComponent(COMP_TYPE::A_INTERACT);
+
+    _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc3);
+    _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_PARTICLE, apc3);
+    _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc3);
+
+    _node->AddActorObject(a3);
+
     _node->SetCurrentAmbient({ 0.5f,0.5f,0.5f,0.5f });
 }
 
@@ -238,4 +281,33 @@ void TestA1Input(AInputComponent* _aic, Timer& _timer)
     {
         atc->TranslateYAsix(-0.2f * delta);
     }
+}
+
+static ATransformComponent* g_PointAtc = nullptr;
+static ATransformComponent* g_PartiAtc = nullptr;
+
+bool TestA3Init(AInteractComponent* _aitc)
+{
+    g_PointAtc = _aitc->GetActorOwner()->GetSceneNode().GetActorObject("a1")->
+        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+    if (!g_PointAtc) { return false; }
+
+    g_PartiAtc = _aitc->GetActorOwner()->
+        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+    if (!g_PartiAtc) { return false; }
+
+    return true;
+}
+
+void TestA3Update(AInteractComponent* _aitc, Timer& _timer)
+{
+    float x = g_PointAtc->GetProcessingPosition().x;
+    float z = g_PointAtc->GetProcessingPosition().z;
+    float y = g_PartiAtc->GetProcessingPosition().y;
+    g_PartiAtc->SetPosition({ x,y,z });
+}
+
+void TestA3Destory(AInteractComponent* _aitc)
+{
+
 }
