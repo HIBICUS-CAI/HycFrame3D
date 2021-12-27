@@ -165,10 +165,10 @@ void Main(uint3 id : SV_DispatchThreadID)
 			pa.mIsSleeping = 1;
 		}
 
-		if (vNewPosition.y < -10.f)
-		{
-			killParticle = true;
-		}
+		//if (vNewPosition.y < -10.f)
+		//{
+		//	killParticle = true;
+		//}
 
 		pb.mWorldPosition = vNewPosition;
 

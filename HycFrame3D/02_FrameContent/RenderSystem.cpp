@@ -149,6 +149,8 @@ void RenderSystem::Run(Timer& _timer)
         GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetCurrentAmbient());
 
+    SetPipeLineDeltaTime(_timer.FloatDeltaTime());
+
     mRenderSystemRoot->PipelinesManager()->ExecuateCurrentPipeline();
     mRenderSystemRoot->Devices()->PresentSwapChain();
     mRenderSystemRoot->DrawCallsPool()->ClearAllDrawCallsInPipes();

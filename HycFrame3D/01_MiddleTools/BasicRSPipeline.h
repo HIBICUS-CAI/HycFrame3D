@@ -737,3 +737,5 @@ private:
     ID3D11SamplerState* mLinearSampler;
     RS_CAM_INFO* mRSCameraInfo;
 };
+
+void SetPipeLineDeltaTime(float _deltaMilliSecond);

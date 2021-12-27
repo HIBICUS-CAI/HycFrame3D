@@ -159,17 +159,17 @@ void DevUsage(SceneNode* _node)
 
     PARTICLE_EMITTER_INFO pei = {};
     pei.mAcceleration = { 0.f,-9.8f,0.f };
-    pei.mEmitNumPerSecond = 600.f;
+    pei.mEmitNumPerSecond = 2400.f;
     pei.mEnableStreak = true;
     pei.mLifeSpan = 100.f;
     pei.mOffsetEndColor = { 0.f,0.f,0.f,0.f };
     pei.mOffsetEndSize = 0.f;
     pei.mOffsetStartColor = { 1.f,0.f,0.f,1.f };
     pei.mOffsetStartSize = 0.5f;
-    pei.mParticleMass = 0.1f;
+    pei.mParticleMass = 0.3f;
     pei.mPosVariance = { 1.f,1.f,1.f };
     pei.mTextureID = PARTICLE_TEXTURE::WHITE_CIRCLE;
-    pei.mVelocity = { 0.f,9.f,0.f };
+    pei.mVelocity = { 0.f,18.f,0.f };
     pei.mVelVariance = 0.5f;
     apc3.CreateEmitter(&pei);
     a3.AddAComponent(COMP_TYPE::A_PARTICLE);

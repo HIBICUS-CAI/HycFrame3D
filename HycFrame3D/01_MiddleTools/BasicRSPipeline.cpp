@@ -31,6 +31,13 @@ static RSPass_PriticleSetUp* g_ParticleSetUpPass = nullptr;
 static RSPipeline* g_BasicPipeline = nullptr;
 static D3D11_VIEWPORT g_ViewPort = {};
 
+static float g_DeltaTimeInSecond = 0.f;
+
+void SetPipeLineDeltaTime(float _deltaMilliSecond)
+{
+    g_DeltaTimeInSecond = _deltaMilliSecond / 1000.f;
+}
+
 bool CreateBasicPipeline()
 {
     g_Root = GetRSRoot_DX11_Singleton();
@@ -4084,15 +4091,15 @@ void RSPass_PriticleEmitSimulate::ExecuatePass()
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         PTC_TIME_CONSTANT* time = (PTC_TIME_CONSTANT*)msr.pData;
         static float timer = 0.f;
-        time->mDeltaTime = 0.016f;
-        timer += 0.016f;
+        time->mDeltaTime = g_DeltaTimeInSecond;
+        timer += g_DeltaTimeInSecond;
         time->mTotalTime = timer;
         STContext()->Unmap(mTimeConstantBuffer, 0);
         for (auto& emitter : *emitters)
         {
             auto& rsinfo = emitter.GetRSParticleEmitterInfo();
             rsinfo.mAccumulation += rsinfo.mEmitNumPerSecond *
-                0.016666667f;
+                g_DeltaTimeInSecond;
             if (rsinfo.mAccumulation > 1.f)
             {
                 float integerPart = 0.0f;
