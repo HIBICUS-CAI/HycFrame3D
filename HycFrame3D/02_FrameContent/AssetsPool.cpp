@@ -41,18 +41,34 @@ MESH_DATA* AssetsPool::GetMeshIfExisted(std::string& _meshName)
     }
 }
 
-SOUND_HANDLE* AssetsPool::GetSoundIfExisted(std::string&& _soundName)
+SOUND_HANDLE AssetsPool::GetSoundIfExisted(std::string&& _soundName)
 {
-    // TEMP---------------------------
-    return nullptr;
-    // TEMP---------------------------
+    auto found = mSoundPool.find(_soundName);
+    if (found != mSoundPool.end())
+    {
+        return found->second;
+    }
+    else
+    {
+        P_LOG(LOG_WARNING, "this sound doesnt exist : %s\n",
+            _soundName.c_str());
+        return nullptr;
+    }
 }
 
-SOUND_HANDLE* AssetsPool::GetSoundIfExisted(std::string& _soundName)
+SOUND_HANDLE AssetsPool::GetSoundIfExisted(std::string& _soundName)
 {
-    // TEMP---------------------------
-    return nullptr;
-    // TEMP---------------------------
+    auto found = mSoundPool.find(_soundName);
+    if (found != mSoundPool.end())
+    {
+        return found->second;
+    }
+    else
+    {
+        P_LOG(LOG_WARNING, "this sound doesnt exist : %s\n",
+            _soundName.c_str());
+        return nullptr;
+    }
 }
 
 void AssetsPool::InsertNewMesh(std::string&& _meshName,
@@ -75,14 +91,22 @@ void AssetsPool::InsertNewMesh(std::string& _meshName,
     mMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 }
 
-void AssetsPool::InsertNewSound(std::string&& _soundName, SOUND_HANDLE& _soundData)
+void AssetsPool::InsertNewSound(std::string&& _soundName)
 {
-
+    SOUND_HANDLE sound = GetSoundHandle(_soundName);
+#ifdef _DEBUG
+    assert(sound);
+#endif // _DEBUG
+    mSoundPool.insert({ _soundName,sound });
 }
 
-void AssetsPool::InsertNewSound(std::string& _soundName, SOUND_HANDLE& _soundData)
+void AssetsPool::InsertNewSound(std::string& _soundName)
 {
-
+    SOUND_HANDLE sound = GetSoundHandle(_soundName);
+#ifdef _DEBUG
+    assert(sound);
+#endif // _DEBUG
+    mSoundPool.insert({ _soundName,sound });
 }
 
 void AssetsPool::DeleteAllAssets()
@@ -93,4 +117,6 @@ void AssetsPool::DeleteAllAssets()
             ReleaseSubMesh(mesh_data.second.mMeshData);
     }
     mMeshPool.clear();
+
+    mSoundPool.clear();
 }

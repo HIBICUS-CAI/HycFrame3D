@@ -35,15 +35,15 @@ public:
 
     MESH_DATA* GetMeshIfExisted(std::string&& _meshName);
     MESH_DATA* GetMeshIfExisted(std::string& _meshName);
-    SOUND_HANDLE* GetSoundIfExisted(std::string&& _soundName);
-    SOUND_HANDLE* GetSoundIfExisted(std::string& _soundName);
+    SOUND_HANDLE GetSoundIfExisted(std::string&& _soundName);
+    SOUND_HANDLE GetSoundIfExisted(std::string& _soundName);
 
     void InsertNewMesh(std::string&& _meshName, RS_SUBMESH_DATA& _meshData,
         MESH_TYPE _meshType);
     void InsertNewMesh(std::string& _meshName, RS_SUBMESH_DATA& _meshData,
         MESH_TYPE _meshType);
-    void InsertNewSound(std::string&& _soundName, SOUND_HANDLE& _soundData);
-    void InsertNewSound(std::string& _soundName, SOUND_HANDLE& _soundData);
+    void InsertNewSound(std::string&& _soundName);
+    void InsertNewSound(std::string& _soundName);
 
     void DeleteAllAssets();
 

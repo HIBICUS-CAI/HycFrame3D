@@ -22,7 +22,10 @@ void StopBGM(std::string soundName);
 
 void StopBGM();
 
-void SetVolumeBGM(float volume, int delayFrame = 0);
+void SetVolume(std::string soundName, float volume);
 
 void PlaySE(std::string soundName);
 
+SOUND_HANDLE GetSoundHandle(std::string&& soundName);
+
+SOUND_HANDLE GetSoundHandle(std::string& soundName);

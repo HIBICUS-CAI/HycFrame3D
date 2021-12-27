@@ -218,29 +218,6 @@ void LoadSound(std::string name, LOAD_HANDLE path)
     memset(&wfx, 0, sizeof(WAVEFORMATEXTENSIBLE));
     memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
 
-    {
-        std::vector<std::string> v;
-        SplitByRomSymbolSound(path, v, ":/");
-        path = v[0] + "\\" + v[1];
-        v.clear();
-        SplitByRomSymbolSound(path, v, "/");
-        if (v.size() > 1)
-        {
-            path = "";
-            for (int i = 0; i < v.size(); i++)
-            {
-                if (i == (v.size() - 1))
-                {
-                    path += v[i];
-                }
-                else
-                {
-                    path += v[i] + "\\";
-                }
-            }
-        }
-    }
-
     hFile = CreateFile(path.c_str(), GENERIC_READ,
         FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
     if (hFile == INVALID_HANDLE_VALUE)
@@ -404,9 +381,17 @@ void StopBGM()
     }
 }
 
-void SetVolumeBGM(float volume, int delayFrame)
+void SetVolume(std::string soundName, float volume)
 {
-
+    if (g_SoundPool.find(soundName) == g_SoundPool.end())
+    {
+        P_LOG(LOG_ERROR,
+            "you haven't loaded this sound : [ %s ]\n",
+            soundName.c_str());
+        return;
+    }
+    auto sound = g_SoundPool[soundName];
+    sound->SetVolume(volume);
 }
 
 void PlaySE(std::string soundName)
@@ -440,4 +425,28 @@ void PlaySE(std::string soundName)
 
     sound->SubmitSourceBuffer(&buffer);
     sound->Start(0);
+}
+
+SOUND_HANDLE GetSoundHandle(std::string&& soundName)
+{
+    if (g_SoundPool.find(soundName) == g_SoundPool.end())
+    {
+        P_LOG(LOG_ERROR,
+            "you haven't loaded this sound : [ %s ]\n",
+            soundName.c_str());
+        return nullptr;
+    }
+    return g_SoundPool[soundName];
+}
+
+SOUND_HANDLE GetSoundHandle(std::string& soundName)
+{
+    if (g_SoundPool.find(soundName) == g_SoundPool.end())
+    {
+        P_LOG(LOG_ERROR,
+            "you haven't loaded this sound : [ %s ]\n",
+            soundName.c_str());
+        return nullptr;
+    }
+    return g_SoundPool[soundName];
 }

@@ -181,6 +181,9 @@
     <ClCompile Include="02_FrameContent\CollisionSystem.cpp">
       <Filter>02_FrameContent\System</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\AudioSystem.cpp">
+      <Filter>02_FrameContent\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -319,6 +322,9 @@
       <Filter>01_MiddleTools</Filter>
     </ClInclude>
     <ClInclude Include="02_FrameContent\CollisionSystem.h">
+      <Filter>02_FrameContent\System</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\AudioSystem.h">
       <Filter>02_FrameContent\System</Filter>
     </ClInclude>
   </ItemGroup>

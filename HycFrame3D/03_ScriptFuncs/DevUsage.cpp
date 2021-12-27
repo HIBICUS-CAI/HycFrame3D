@@ -19,6 +19,7 @@
 #include "ALightComponent.h"
 #include "AParticleComponent.h"
 #include "ACollisionComponent.h"
+#include "AAudioComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -53,12 +54,16 @@ void DevUsage(SceneNode* _node)
     AddBumpedTexTo(&sd, "tile_nmap.dds");
     _node->GetAssetsPool()->InsertNewMesh("floor", sd, MESH_TYPE::OPACITY);
 
+    LoadSound("test", ".\\Assets\\Sounds\\bgm-success.wav");
+    _node->GetAssetsPool()->InsertNewSound("test");
+
     ActorObject a0("a0", *_node);
     ATransformComponent atc0("a0-transform", nullptr);
     AInputComponent aic0("a0-input", nullptr);
     AInteractComponent aitc0("a0-interact", nullptr);
     AMeshComponent amc0("a0-mesh", nullptr);
     ACollisionComponent acc0("a0-collision", nullptr);
+    AAudioComponent aac0("a0-audio", nullptr);
 
     atc0.ForcePosition({ 0.f,0.f,150.f });
     atc0.ForceRotation({ 0.f,0.f,0.f });
@@ -81,11 +86,15 @@ void DevUsage(SceneNode* _node)
     acc0.CreateCollisionShape(COLLISION_SHAPE::BOX, { 20.f,20.f,40.f });
     a0.AddAComponent(COMP_TYPE::A_COLLISION);
 
+    aac0.AddAudio("test", *_node);
+    a0.AddAComponent(COMP_TYPE::A_AUDIO);
+
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc0);
+    _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_AUDIO, aac0);
 
     _node->AddActorObject(a0);
 
@@ -235,6 +244,25 @@ void TestAInput(AInputComponent* _aic, Timer& _timer)
     if (InputInterface::IsKeyDownInSingle(KB_E))
     {
         atc->RotateYAsix(-0.005f * delta);
+    }
+
+    auto aac = _aic->GetActorOwner()->
+        GetAComponent<AAudioComponent>(COMP_TYPE::A_AUDIO);
+    assert(aac);
+    if (InputInterface::IsKeyPushedInSingle(KB_Z))
+    {
+        aac->StopBgm();
+        aac->PlayBgm("test", 0.5f);
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_X))
+    {
+        aac->StopBgm();
+        aac->PlayBgm("test", 0.3f);
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_C))
+    {
+        aac->StopBgm();
+        aac->PlayBgm("test", 0.1f);
     }
 }
 

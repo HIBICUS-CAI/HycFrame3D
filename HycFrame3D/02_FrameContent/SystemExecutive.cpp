@@ -8,6 +8,7 @@
 #include "InstanceSystem.h"
 #include "InteractSystem.h"
 #include "CollisionSystem.h"
+#include "AudioSystem.h"
 
 SystemExecutive::SystemExecutive() :
     mSceneManagerPtr(nullptr), mSystemsVec({}), mCurrentSceneNode(nullptr) {}
@@ -34,6 +35,8 @@ bool SystemExecutive::StartUp(SceneManager* _sceneManager)
     sys = new InteractSystem(this); if (!sys) { return false; }
     mSystemsVec.push_back(sys);
     sys = new InstanceSystem(this); if (!sys) { return false; }
+    mSystemsVec.push_back(sys);
+    sys = new AudioSystem(this); if (!sys) { return false; }
     mSystemsVec.push_back(sys);
     sys = new RenderSystem(this); if (!sys) { return false; }
     mSystemsVec.push_back(sys);

@@ -161,6 +161,7 @@
     <ClCompile Include="02_FrameContent\AssetsPool.cpp" />
     <ClCompile Include="02_FrameContent\ATimerComponent.cpp" />
     <ClCompile Include="02_FrameContent\ATransformComponent.cpp" />
+    <ClCompile Include="02_FrameContent\AudioSystem.cpp" />
     <ClCompile Include="02_FrameContent\CollisionSystem.cpp" />
     <ClCompile Include="02_FrameContent\Component.cpp" />
     <ClCompile Include="02_FrameContent\ComponentContainer.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="02_FrameContent\AssetsPool.h" />
     <ClInclude Include="02_FrameContent\ATimerComponent.h" />
     <ClInclude Include="02_FrameContent\ATransformComponent.h" />
+    <ClInclude Include="02_FrameContent\AudioSystem.h" />
     <ClInclude Include="02_FrameContent\CollisionSystem.h" />
     <ClInclude Include="02_FrameContent\Component.h" />
     <ClInclude Include="02_FrameContent\ComponentContainer.h" />

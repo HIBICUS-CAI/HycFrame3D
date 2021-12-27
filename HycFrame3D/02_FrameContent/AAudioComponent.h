@@ -17,8 +17,8 @@ public:
     virtual void Destory();
 
 public:
-    void CheckAudioInAssetsPool(std::string&& _audioName);
-    void CheckAudioInAssetsPool(std::string& _audioName);
+    void AddAudio(std::string&& _audioName, class SceneNode& _scene);
+    void AddAudio(std::string& _audioName, class SceneNode& _scene);
 
     void PlayBgm(std::string&& _bgmName, float _volume);
     void PlayBgm(std::string& _bgmName, float _volume);
@@ -26,6 +26,8 @@ public:
     void PlaySe(std::string& _seName, float _volume);
 
     void StopBgm();
+    void StopBgm(std::string&& _bgmName);
+    void StopBgm(std::string& _bgmName);
 
 private:
     std::unordered_map<std::string, SOUND_HANDLE> mAudioMap;
