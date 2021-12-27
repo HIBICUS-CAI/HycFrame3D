@@ -142,8 +142,8 @@ void ACollisionComponent::SyncDataFromTransform()
 
     btTransform trans = {};
     trans.setIdentity();
-    trans.setOrigin({ world.x,world.y,world.z });
-    trans.setRotation({ angle.x,angle.y,angle.z });
+    trans.setOrigin(btVector3(world.x, world.y, -world.z));
+    trans.setRotation(btQuaternion(angle.y, angle.x, -angle.z));
     mCollisionObject->setWorldTransform(trans);
 }
 

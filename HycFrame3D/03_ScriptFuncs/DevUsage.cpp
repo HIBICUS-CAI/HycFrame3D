@@ -34,8 +34,14 @@ void TestA3Destory(AInteractComponent*);
 void DevUsage(SceneNode* _node)
 {
     RS_SUBMESH_DATA sd = {};
-    LoadModelFile(".\\Assets\\Models\\Dragon.FBX.json",
-        MODEL_FILE_TYPE::JSON, &sd);
+    /*LoadModelFile(".\\Assets\\Models\\Dragon.FBX.json",
+        MODEL_FILE_TYPE::JSON, &sd);*/
+    sd = GetRSRoot_DX11_Singleton()->MeshHelper()->GeoGenerate()->CreateBox(
+        20.f, 20.f, 40.f, 1, LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
+        "sand.jpg");
+    std::string nameM = "copper";
+    sd.mMaterial = *GetRSRoot_DX11_Singleton()->StaticResources()->
+        GetStaticMaterial(nameM);
     _node->GetAssetsPool()->InsertNewMesh("dragon", sd, MESH_TYPE::OPACITY);
 
     sd = GetRSRoot_DX11_Singleton()->MeshHelper()->GeoGenerate()->
@@ -72,7 +78,7 @@ void DevUsage(SceneNode* _node)
     amc0.AddMeshInfo("floor", { 0.f,-50.f,0.f });
     a0.AddAComponent(COMP_TYPE::A_MESH);
 
-    acc0.CreateCollisionShape(COLLISION_SHAPE::BOX, { 50.f,50.f,100.f });
+    acc0.CreateCollisionShape(COLLISION_SHAPE::BOX, { 20.f,20.f,40.f });
     a0.AddAComponent(COMP_TYPE::A_COLLISION);
 
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
