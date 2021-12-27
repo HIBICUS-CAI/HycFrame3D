@@ -61,6 +61,7 @@ void DevUsage(SceneNode* _node)
     a0.AddAComponent(COMP_TYPE::A_INTERACT);
 
     amc0.AddMeshInfo("dragon");
+    amc0.AddMeshInfo("floor", { 0.f,-20.f,0.f });
     amc0.AddMeshInfo("floor", { 0.f,-50.f,0.f });
     a0.AddAComponent(COMP_TYPE::A_MESH);
 

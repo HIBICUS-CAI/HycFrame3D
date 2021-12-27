@@ -4,6 +4,7 @@
 #include "SceneNode.h"
 #include "ActorObject.h"
 #include "ATransformComponent.h"
+#include <set>
 
 AMeshComponent::AMeshComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
@@ -67,16 +68,12 @@ bool AMeshComponent::BindInstanceToAssetsPool(std::string& _meshName)
         GetMeshIfExisted(_meshName);
     if (!mesh) { return false; }
 
-    mesh->mInstanceMap.insert({ GetCompName(),{} });
-    mesh->mInstanceMap[GetCompName()].mMaterialData = mesh->mMeshData.mMaterial;
-    if (mesh->mMeshData.mTextures.size() > 1)
-    {
-        mesh->mInstanceMap[GetCompName()].mCustomizedData1.x = 1.f;
-    }
-    else
-    {
-        mesh->mInstanceMap[GetCompName()].mCustomizedData1.x = -1.f;
-    }
+    RS_INSTANCE_DATA id = {};
+    id.mMaterialData = mesh->mMeshData.mMaterial;
+    if (mesh->mMeshData.mTextures.size() > 1) { id.mCustomizedData1.x = 1.f; }
+    else { id.mCustomizedData1.x = -1.f; }
+
+    mesh->mInstanceMap.insert({ GetCompName(),id });
 
     return true;
 }
@@ -89,26 +86,41 @@ void AMeshComponent::SyncTransformDataToInstance()
     assert(atc);
 #endif // _DEBUG
     size_t index = 0;
+    std::set<std::string> hasChecked = {};
 
     for (auto& meshName : mMeshesName)
     {
-        auto& ins_data = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetMeshIfExisted(meshName)->mInstanceMap[GetCompName()];
-        DirectX::XMFLOAT3 delta = mOffsetPosition[index];
-        DirectX::XMFLOAT3 world = atc->GetPosition();
-        DirectX::XMFLOAT3 angle = atc->GetRotation();
-        DirectX::XMFLOAT3 scale = atc->GetScaling();
+        if (hasChecked.find(meshName) != hasChecked.end()) { ++index; continue; }
 
-        DirectX::XMMATRIX mat = {};
-        mat = DirectX::XMMatrixMultiply(
-            DirectX::XMMatrixTranslation(delta.x, delta.y, delta.z),
-            DirectX::XMMatrixScaling(scale.x, scale.y, scale.z));
-        mat = DirectX::XMMatrixMultiply(mat,
-            DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
-        mat = DirectX::XMMatrixMultiply(mat,
-            DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-        DirectX::XMStoreFloat4x4(&(ins_data.mWorldMat), mat);
+        auto& ins_map = GetActorOwner()->GetSceneNode().GetAssetsPool()->
+            GetMeshIfExisted(meshName)->mInstanceMap;
+        std::pair<
+            std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator,
+            std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator>
+            myRange;
+        myRange = ins_map.equal_range(GetCompName());
 
-        ++index;
+        for (auto& it = myRange.first; it != myRange.second; ++it)
+        {
+            auto& ins_data = it->second;
+            DirectX::XMFLOAT3 delta = mOffsetPosition[index];
+            DirectX::XMFLOAT3 world = atc->GetPosition();
+            DirectX::XMFLOAT3 angle = atc->GetRotation();
+            DirectX::XMFLOAT3 scale = atc->GetScaling();
+
+            DirectX::XMMATRIX mat = {};
+            mat = DirectX::XMMatrixMultiply(
+                DirectX::XMMatrixTranslation(delta.x, delta.y, delta.z),
+                DirectX::XMMatrixScaling(scale.x, scale.y, scale.z));
+            mat = DirectX::XMMatrixMultiply(mat,
+                DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
+            mat = DirectX::XMMatrixMultiply(mat,
+                DirectX::XMMatrixTranslation(world.x, world.y, world.z));
+            DirectX::XMStoreFloat4x4(&(ins_data.mWorldMat), mat);
+
+            ++index;
+        }
+
+        hasChecked.insert(meshName);
     }
 }

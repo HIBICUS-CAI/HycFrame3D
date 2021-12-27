@@ -21,7 +21,7 @@ struct MESH_DATA
 {
     RS_SUBMESH_DATA mMeshData = {};
     MESH_TYPE mMeshType = MESH_TYPE::SIZE;
-    std::unordered_map<std::string, RS_INSTANCE_DATA> mInstanceMap = {};
+    std::unordered_multimap<std::string, RS_INSTANCE_DATA> mInstanceMap = {};
     std::vector<RS_INSTANCE_DATA> mInstanceVector = {};
 };
 
