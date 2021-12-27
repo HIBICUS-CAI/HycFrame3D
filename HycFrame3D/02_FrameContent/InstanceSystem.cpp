@@ -6,10 +6,12 @@
 #include "ATransformComponent.h"
 #include "UTransformComponent.h"
 #include "AMeshComponent.h"
+#include "ALightComponent.h"
 
 InstanceSystem::InstanceSystem(SystemExecutive* _sysExecutive) :
     System("instance-system", _sysExecutive),
-    mATransVecPtr(nullptr), mUTransVecPtr(nullptr), mAMeshVecPtr(nullptr)
+    mATransVecPtr(nullptr), mUTransVecPtr(nullptr), mAMeshVecPtr(nullptr),
+    mALightVecPtr(nullptr)
 {
 
 }
@@ -34,8 +36,15 @@ bool InstanceSystem::Init()
     mAMeshVecPtr = (std::vector<AMeshComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
         GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_MESH);
+    mALightVecPtr = (std::vector<ALightComponent>*)GetSystemExecutive()->
+        GetSceneManager()->GetCurrentSceneNode()->
+        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_LIGHT);
 
-    if (!(mATransVecPtr && mUTransVecPtr && mAMeshVecPtr)) { return false; }
+    if (!(mATransVecPtr && mUTransVecPtr && mAMeshVecPtr &&
+        mALightVecPtr))
+    {
+        return false;
+    }
 
     return true;
 }
@@ -50,6 +59,11 @@ void InstanceSystem::Run(Timer& _timer)
     for (auto& amc : *mAMeshVecPtr)
     {
         amc.Update(_timer);
+    }
+
+    for (auto& alc : *mALightVecPtr)
+    {
+        alc.Update(_timer);
     }
 }
 

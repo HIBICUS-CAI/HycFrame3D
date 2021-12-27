@@ -13,6 +13,7 @@
 #include "RSResourceManager.h"
 #include "RSDrawCallsPool.h"
 #include "RSMeshHelper.h"
+#include "RSCamera.h"
 
 RSLight::RSLight(LIGHT_INFO* _info) :
     mLightType(_info->mType),
@@ -75,6 +76,18 @@ void RSLight::SetRSLightPosition(DirectX::XMFLOAT3 _position)
 {
     mLightPosition = _position;
     mRSLightInfo.mPosition = _position;
+
+    if (mRSLightCamera)
+    {
+        mRSLightCamera->ChangeRSCameraPosition(_position);
+    }
+    if (mBloomLightFlg)
+    {
+        static DirectX::XMMATRIX mat = {};
+        mat = DirectX::XMMatrixTranslation(
+            mLightPosition.x, mLightPosition.y, mLightPosition.z);
+        DirectX::XMStoreFloat4x4(&(mLightInstanceData[0].mWorldMat), mat);
+    }
 }
 
 void RSLight::SetRSLightFallOff(float _start, float _end)
@@ -155,4 +168,10 @@ void RSLight::ReleaseLightBloom()
         GetRSRoot_DX11_Singleton()->MeshHelper()->ReleaseSubMesh(
             mLightMeshData);
     }
+}
+
+DirectX::XMFLOAT4X4* RSLight::GetLightWorldMat()
+{
+    if (!mLightInstanceData.size()) { return nullptr; }
+    return &(mLightInstanceData[0].mWorldMat);
 }

@@ -164,6 +164,20 @@ DirectX::XMFLOAT3 RSCamera::GetRSCameraPosition()
     return mCamPosition;
 }
 
+void RSCamera::ChangeRSCameraPosition(DirectX::XMFLOAT3& _position)
+{
+    mCamPosition = _position;
+
+    CalcRSViewMat();
+}
+
+void RSCamera::ChangeRSCameraPosition(DirectX::XMFLOAT3&& _position)
+{
+    mCamPosition = _position;
+
+    CalcRSViewMat();
+}
+
 void RSCamera::CalcRSViewMat()
 {
     XMMATRIX view = XMMatrixLookAtLH(

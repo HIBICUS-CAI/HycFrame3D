@@ -2,6 +2,7 @@
 
 #include "ActorComponent.h"
 #include <DirectXMath.h>
+#include "RSCommon.h"
 
 class ALightComponent :public ActorComponent
 {
@@ -16,14 +17,26 @@ public:
     virtual void Destory();
 
 public:
-    void CreateLight(struct LIGHT_INFO* _lightInfo);
-    void ResetLight(struct LIGHT_INFO* _lightInfo);
+    void AddLight(LIGHT_INFO& _lightInfo,
+        bool _setBloom, bool _setCamera, CAM_INFO& _camInfo);
+    void AddLight(LIGHT_INFO& _lightInfo,
+        bool _setBloom, bool _setCamera, CAM_INFO&& _camInfo);
 
-    const struct RS_LIGHT_INFO* GetLightInfo();
+    void ResetLight(LIGHT_INFO* _lightInfo);
+
+    class RSLight* GetLightInfo();
 
 private:
+    void CreateLight();
     void SyncDataFromTransform();
 
 private:
+    std::string mLightName;
     class RSLight* mRSLightPtr;
+
+    bool mCanCreateLight;
+    LIGHT_INFO mLightInfoForInit;
+    CAM_INFO mLightCamInfoForInit;
+    bool mIsBloom;
+    bool mIsCamera;
 };

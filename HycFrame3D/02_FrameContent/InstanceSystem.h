@@ -18,4 +18,5 @@ private:
     std::vector<class ATransformComponent>* mATransVecPtr;
     std::vector<class UTransformComponent>* mUTransVecPtr;
     std::vector<class AMeshComponent>* mAMeshVecPtr;
+    std::vector<class ALightComponent>* mALightVecPtr;
 };

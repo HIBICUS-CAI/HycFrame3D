@@ -12,6 +12,8 @@
 #include "WICTextureLoader11.h"
 #include "RSRoot_DX11.h"
 #include "RSMeshHelper.h"
+#include "RSDevices.h"
+#include "RSResourceManager.h"
 
 void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result);
 void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result);
@@ -151,4 +153,51 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)
         GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
             &si, LAYOUT_TYPE::NORMAL_TANGENT_TEX);
     }
+}
+
+void AddBumpedTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
+{
+    RSRoot_DX11* root = GetRSRoot_DX11_Singleton();
+
+    static std::wstring wstr = L"";
+    static std::string name = "";
+    static HRESULT hr = S_OK;
+    ID3D11ShaderResourceView* srv = nullptr;
+
+    wstr = std::wstring(_filePath.begin(), _filePath.end());
+    wstr = L".\\Assets\\Textures\\" + wstr;
+
+    if (_filePath.find(".dds") != std::string::npos ||
+        _filePath.find(".DDS") != std::string::npos)
+    {
+        hr = DirectX::CreateDDSTextureFromFile(root->Devices()->GetDevice(),
+            wstr.c_str(), nullptr, &srv);
+        if (SUCCEEDED(hr))
+        {
+            name = _filePath;
+            root->ResourceManager()->AddMeshSrv(name, srv);
+        }
+        else
+        {
+            bool texture_load_fail = false;
+            assert(texture_load_fail);
+        }
+    }
+    else
+    {
+        hr = DirectX::CreateWICTextureFromFile(root->Devices()->GetDevice(),
+            wstr.c_str(), nullptr, &srv);
+        if (SUCCEEDED(hr))
+        {
+            name = _filePath;
+            root->ResourceManager()->AddMeshSrv(name, srv);
+        }
+        else
+        {
+            bool texture_load_fail = false;
+            assert(texture_load_fail);
+        }
+    }
+
+    _result->mTextures.emplace_back(name);
 }
