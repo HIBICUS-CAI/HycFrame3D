@@ -37,7 +37,7 @@ void CollisionSystem::Run(Timer& _timer)
 {
     for (auto& acc : *mACollisionVecPtr)
     {
-        acc.Update(_timer);
+        if (acc.GetCompStatus() == STATUS::ACTIVE) { acc.Update(_timer); }
     }
 
     GetSystemExecutive()->GetSceneManager()->GetCurrentSceneNode()->

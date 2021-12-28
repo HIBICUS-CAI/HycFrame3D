@@ -40,7 +40,7 @@ void InteractSystem::Run(Timer& _timer)
 {
     for (auto& aitc : *mAInterVecPtr)
     {
-        aitc.Update(_timer);
+        if (aitc.GetCompStatus() == STATUS::ACTIVE) { aitc.Update(_timer); }
     }
 }
 

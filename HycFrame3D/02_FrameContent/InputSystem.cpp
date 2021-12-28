@@ -43,7 +43,7 @@ void InputSystem::Run(Timer& _timer)
 
     for (auto& aic : *mAInputVecPtr)
     {
-        aic.Update(_timer);
+        if (aic.GetCompStatus() == STATUS::ACTIVE) { aic.Update(_timer); }
     }
 
     // TEMP----------------------------------

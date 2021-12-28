@@ -33,6 +33,7 @@ STATUS Object::GetObjectStatus() const
 void Object::SetObjectStatus(STATUS _objStatus)
 {
     mObjectStatus = _objStatus;
+    SyncStatusToAllComps();
 }
 
 SceneNode& Object::GetSceneNode() const

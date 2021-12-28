@@ -78,3 +78,17 @@ void UiObject::Destory()
 
     mUiCompMap.clear();
 }
+
+void UiObject::SyncStatusToAllComps()
+{
+    auto compContainer = GetSceneNode().GetComponentContainer();
+
+    for (auto& compInfo : mUiCompMap)
+    {
+        auto comp = compContainer->GetComponent(compInfo.second);
+#ifdef _DEBUG
+        assert(comp);
+#endif // _DEBUG
+        comp->SetCompStatus(GetObjectStatus());
+    }
+}

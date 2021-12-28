@@ -21,6 +21,9 @@ public:
     virtual bool Init() = 0;
     virtual void Destory() = 0;
 
+protected:
+    virtual void SyncStatusToAllComps() = 0;
+
 private:
     const std::string mObjectName;
     STATUS mObjectStatus;

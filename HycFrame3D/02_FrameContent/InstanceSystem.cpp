@@ -57,22 +57,22 @@ void InstanceSystem::Run(Timer& _timer)
 {
     for (auto& atc : *mATransVecPtr)
     {
-        atc.Update(_timer);
+        if (atc.GetCompStatus() == STATUS::ACTIVE) { atc.Update(_timer); }
     }
 
     for (auto& amc : *mAMeshVecPtr)
     {
-        amc.Update(_timer);
+        if (amc.GetCompStatus() == STATUS::ACTIVE) { amc.Update(_timer); }
     }
 
     for (auto& alc : *mALightVecPtr)
     {
-        alc.Update(_timer);
+        if (alc.GetCompStatus() == STATUS::ACTIVE) { alc.Update(_timer); }
     }
 
     for (auto& apc : *mAParitcleVecPtr)
     {
-        apc.Update(_timer);
+        if (apc.GetCompStatus() == STATUS::ACTIVE) { apc.Update(_timer); }
     }
 }
 

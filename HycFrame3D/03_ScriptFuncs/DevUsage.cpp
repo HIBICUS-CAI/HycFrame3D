@@ -92,7 +92,6 @@ void DevUsage(SceneNode* _node)
     a0.AddAComponent(COMP_TYPE::A_AUDIO);
 
     atmc0.AddTimer("test0");
-    atmc0.AddTimer("test1");
     a0.AddAComponent(COMP_TYPE::A_TIMER);
 
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
@@ -304,22 +303,16 @@ void TestAUpdate(AInteractComponent* _aitc, Timer&)
 
     auto atmc = _aitc->GetActorOwner()->
         GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER);
-    if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
+    if (!atmc->GetTimer("test0")->mActive)
     {
         atmc->StartTimer("test0");
-        atmc->StartTimer("test1");
     }
-    if (atmc->GetTimer("test0")->mActive &&
-        !((int)(atmc->GetTimer("test0")->mTime) % 5))
+    if (atmc->GetTimer("test0")->mActive)
     {
-        P_LOG(LOG_DEBUG, "timer0 in 5 cycle is %f\n",
-            atmc->GetTimer("test0")->mTime);
-    }
-    if (atmc->GetTimer("test1")->mActive &&
-        !((int)(atmc->GetTimer("test1")->mTime) % 8))
-    {
-        P_LOG(LOG_DEBUG, "timer1 in 8 cycle is %f\n",
-            atmc->GetTimer("test1")->mTime);
+        _aitc->GetActorOwner()->GetSceneNode().GetActorObject("a3")->
+            GetAComponent<AParticleComponent>(COMP_TYPE::A_PARTICLE)->
+            GetEmitterInfo().mEmitNumPerSecond = powf(
+                sinf(atmc->GetTimer("test0")->mTime), 2.f) * 2400.f;
     }
 }
 
@@ -359,6 +352,17 @@ void TestA1Input(AInputComponent* _aic, Timer& _timer)
     if (InputInterface::IsKeyDownInSingle(KB_O))
     {
         atc->TranslateYAsix(-0.2f * delta);
+    }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_N))
+    {
+        _aic->GetActorOwner()->GetSceneNode().GetActorObject("a0")->
+            SetObjectStatus(STATUS::ACTIVE);
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_M))
+    {
+        _aic->GetActorOwner()->GetSceneNode().GetActorObject("a0")->
+            SetObjectStatus(STATUS::PAUSE);
     }
 }
 

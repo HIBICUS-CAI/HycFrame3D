@@ -41,6 +41,9 @@ public:
     virtual bool Init();
     virtual void Destory();
 
+protected:
+    virtual void SyncStatusToAllComps();
+
 private:
     std::unordered_map<COMP_TYPE, std::string> mActorCompMap;
 };

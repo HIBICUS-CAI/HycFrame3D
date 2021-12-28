@@ -79,3 +79,17 @@ void ActorObject::Destory()
 
     mActorCompMap.clear();
 }
+
+void ActorObject::SyncStatusToAllComps()
+{
+    auto compContainer = GetSceneNode().GetComponentContainer();
+
+    for (auto& compInfo : mActorCompMap)
+    {
+        auto comp = compContainer->GetComponent(compInfo.second);
+#ifdef _DEBUG
+        assert(comp);
+#endif // _DEBUG
+        comp->SetCompStatus(GetObjectStatus());
+    }
+}

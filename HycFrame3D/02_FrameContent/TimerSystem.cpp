@@ -36,7 +36,7 @@ void TimerSystem::Run(Timer& _timer)
 {
     for (auto& atmc : *mATimerVecPtr)
     {
-        atmc.Update(_timer);
+        if (atmc.GetCompStatus() == STATUS::ACTIVE) { atmc.Update(_timer); }
     }
 }
 

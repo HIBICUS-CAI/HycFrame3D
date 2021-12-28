@@ -55,7 +55,7 @@ void AParticleComponent::ResetEmitter(PARTICLE_EMITTER_INFO* _emitterInfo)
     mRSParticleEmitterPtr->ResetParticleEmitterInfo(_emitterInfo);
 }
 
-const RS_PARTICLE_EMITTER_INFO& AParticleComponent::GetEmitterInfo()
+RS_PARTICLE_EMITTER_INFO& AParticleComponent::GetEmitterInfo()
 {
 #ifdef _DEBUG
     assert(mRSParticleEmitterPtr);
