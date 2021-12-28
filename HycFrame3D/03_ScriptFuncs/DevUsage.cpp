@@ -25,6 +25,7 @@
 #include "UTransformComponent.h"
 #include "UInputComponent.h"
 #include "USpriteComponent.h"
+#include "UInteractComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -38,6 +39,10 @@ void TestA3Update(AInteractComponent*, Timer&);
 void TestA3Destory(AInteractComponent*);
 
 void TestU0Input(UInputComponent*, Timer&);
+
+bool TestU0Init(UInteractComponent*);
+void TestU0Update(UInteractComponent*, Timer&);
+void TestU0Destory(UInteractComponent*);
 
 void DevUsage(SceneNode* _node)
 {
@@ -423,6 +428,7 @@ SceneNode* CreateScene2(SceneManager* _manager)
     UInputComponent uic0("u0-input", nullptr);
     USpriteComponent usc0("u0-sprite", nullptr);
     UAnimateComponent uamc0("u0-animate", nullptr);
+    UInteractComponent uitc0("u0-interact", nullptr);
 
     utc0.ForcePosition({ -400.f,300.f,0.f });
     utc0.ForceRotation({ 0.f,0.f,0.f });
@@ -441,10 +447,16 @@ SceneNode* CreateScene2(SceneManager* _manager)
         10, true, 0.1f);
     u0.AddUComponent(COMP_TYPE::U_ANIMATE);
 
+    uitc0.SetInitFunction(TestU0Init);
+    uitc0.SetUpdateFunction(TestU0Update);
+    uitc0.SetDestoryFunction(TestU0Destory);
+    u0.AddUComponent(COMP_TYPE::U_INTERACT);
+
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_ANIMATE, uamc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INTERACT, uitc0);
 
     node->AddUiObject(u0);
 
@@ -641,8 +653,6 @@ void TestU0Input(UInputComponent* _uic, Timer& _timer)
     auto utc = _uic->GetUiOwner()->
         GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
 
-    P_LOG(LOG_DEBUG, "delta time : %f\n", delta);
-
     if (InputInterface::IsKeyDownInSingle(KB_W))
     {
         utc->TranslateYAsix(0.1f * delta);
@@ -684,4 +694,21 @@ void TestU0Input(UInputComponent* _uic, Timer& _timer)
             GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE)->
             ChangeAnimateTo("runman");
     }
+}
+
+bool TestU0Init(UInteractComponent* _uitc)
+{
+    P_LOG(LOG_DEBUG, "u0 interact init!!!\n");
+
+    return true;
+}
+
+void TestU0Update(UInteractComponent* _uitc, Timer& _timer)
+{
+    //P_LOG(LOG_DEBUG, "u0 interact update!!!\n");
+}
+
+void TestU0Destory(UInteractComponent* _uitc)
+{
+    P_LOG(LOG_DEBUG, "u0 interact destory!!!\n");
 }

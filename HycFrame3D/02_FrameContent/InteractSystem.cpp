@@ -42,6 +42,11 @@ void InteractSystem::Run(Timer& _timer)
     {
         if (aitc.GetCompStatus() == STATUS::ACTIVE) { aitc.Update(_timer); }
     }
+
+    for (auto& uitc : *mUInterVecPtr)
+    {
+        if (uitc.GetCompStatus() == STATUS::ACTIVE) { uitc.Update(_timer); }
+    }
 }
 
 void InteractSystem::Destory()
