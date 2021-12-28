@@ -54,6 +54,7 @@ void UTransformComponent::SetPosition(DirectX::XMFLOAT3 _pos)
 void UTransformComponent::ForcePosition(DirectX::XMFLOAT3 _pos)
 {
     mPosition = _pos;
+    mProcessingPosition = _pos;
 }
 
 void UTransformComponent::SetRotation(DirectX::XMFLOAT3 _angle)
@@ -65,6 +66,7 @@ void UTransformComponent::SetRotation(DirectX::XMFLOAT3 _angle)
 void UTransformComponent::ForceRotation(DirectX::XMFLOAT3 _angle)
 {
     mRotation = _angle;
+    mProcessingRotation = _angle;
 }
 
 void UTransformComponent::SetScaling(DirectX::XMFLOAT3 _factor)
@@ -76,6 +78,7 @@ void UTransformComponent::SetScaling(DirectX::XMFLOAT3 _factor)
 void UTransformComponent::ForceScaling(DirectX::XMFLOAT3 _factor)
 {
     mScaling = _factor;
+    mProcessingScaling = _factor;
 }
 
 void UTransformComponent::Translate(DirectX::XMFLOAT3 _deltaPos)

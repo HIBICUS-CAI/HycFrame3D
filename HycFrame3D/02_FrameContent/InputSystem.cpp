@@ -46,6 +46,11 @@ void InputSystem::Run(Timer& _timer)
         if (aic.GetCompStatus() == STATUS::ACTIVE) { aic.Update(_timer); }
     }
 
+    for (auto& uic : *mUInputVecPtr)
+    {
+        if (uic.GetCompStatus() == STATUS::ACTIVE) { uic.Update(_timer); }
+    }
+
     // TEMP----------------------------------
     if (InputInterface::IsKeyDownInSingle(KB_1) &&
         InputInterface::IsKeyDownInSingle(KB_2))

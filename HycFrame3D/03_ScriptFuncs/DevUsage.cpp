@@ -23,6 +23,7 @@
 #include "AAudioComponent.h"
 #include "ATimerComponent.h"
 #include "UTransformComponent.h"
+#include "UInputComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -34,6 +35,8 @@ void TestADestory(AInteractComponent*);
 bool TestA3Init(AInteractComponent*);
 void TestA3Update(AInteractComponent*, Timer&);
 void TestA3Destory(AInteractComponent*);
+
+void TestU0Input(UInputComponent*, Timer&);
 
 void DevUsage(SceneNode* _node)
 {
@@ -416,13 +419,18 @@ SceneNode* CreateScene2(SceneManager* _manager)
 
     UiObject u0("u0", *node);
     UTransformComponent utc0("u0-transform", nullptr);
+    UInputComponent uic0("u0-input", nullptr);
 
     utc0.ForcePosition({ -400.f,300.f,0.f });
     utc0.ForceRotation({ 0.f,0.f,0.f });
     utc0.ForceScaling({ 1.f,1.f,1.f });
     u0.AddUComponent(COMP_TYPE::U_TRANSFORM);
 
+    uic0.SetInputFunction(TestU0Input);
+    u0.AddUComponent(COMP_TYPE::U_INPUT);
+
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic0);
 
     node->AddUiObject(u0);
 
@@ -611,4 +619,39 @@ void TestA3Destory(AInteractComponent* _aitc)
 {
     g_PointAtc = nullptr;
     g_PartiAtc = nullptr;
+}
+
+void TestU0Input(UInputComponent* _uic, Timer& _timer)
+{
+    float delta = _timer.FloatDeltaTime();
+    auto utc = _uic->GetUiOwner()->
+        GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
+
+    P_LOG(LOG_DEBUG, "u0 pos : %f , %f , %f\n",
+        utc->GetPosition().x, utc->GetPosition().y, utc->GetPosition().z);
+
+    if (InputInterface::IsKeyDownInSingle(KB_W))
+    {
+        utc->TranslateZAsix(0.1f * delta);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_A))
+    {
+        utc->TranslateXAsix(-0.1f * delta);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_S))
+    {
+        utc->TranslateZAsix(-0.1f * delta);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_D))
+    {
+        utc->TranslateXAsix(0.1f * delta);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_Q))
+    {
+        utc->TranslateYAsix(0.1f * delta);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_E))
+    {
+        utc->TranslateYAsix(-0.1f * delta);
+    }
 }

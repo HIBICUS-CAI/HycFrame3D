@@ -87,9 +87,6 @@ bool RenderSystem::Init()
         if (!CreateBasicPipeline()) { return false; }
     }
 
-    static int a = 0;
-    P_LOG(LOG_DEBUG, "render system int %d time\n", ++a);
-
     mAssetsPool = nullptr;
     mAssetsPool = GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetAssetsPool();
