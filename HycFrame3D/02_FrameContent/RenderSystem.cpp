@@ -7,6 +7,7 @@
 #include "RSCamerasContainer.h"
 #include "RSResourceManager.h"
 #include "RSLightsContainer.h"
+#include "RSParticlesContainer.h"
 #include "WM_Interface.h"
 #include "BasicRSPipeline.h"
 #include "SystemExecutive.h"
@@ -86,9 +87,15 @@ bool RenderSystem::Init()
         if (!CreateBasicPipeline()) { return false; }
     }
 
+    static int a = 0;
+    P_LOG(LOG_DEBUG, "render system int %d time\n", ++a);
+
+    mAssetsPool = nullptr;
     mAssetsPool = GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetAssetsPool();
     if (!mAssetsPool) { return false; }
+
+    GetRSRoot_DX11_Singleton()->ParticlesContainer()->ResetRSParticleSystem();
 
     return true;
 }

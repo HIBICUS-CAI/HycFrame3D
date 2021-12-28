@@ -19,6 +19,8 @@ public:
     class ObjectFactory* GetObjectFactory() const;
     class SceneNode* GetCurrentSceneNode() const;
 
+    bool GetSceneSwitchFlg() const;
+
 private:
     bool LoadLoadingScene();
     void ReleaseLoadingScene();
@@ -34,4 +36,6 @@ private:
 
     bool mLoadSceneFlg;
     std::array<std::string, 2> mLoadSceneInfo;
+
+    bool mSceneSwitchFlg;
 };

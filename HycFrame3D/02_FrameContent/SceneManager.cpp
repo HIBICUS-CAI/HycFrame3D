@@ -8,7 +8,8 @@
 SceneManager::SceneManager() :
     mObjectFactoryPtr(nullptr), mLoadingScenePtr(nullptr),
     mCurrentScenePtr(nullptr), mNextScenePtr(nullptr),
-    mLoadSceneFlg(false), mLoadSceneInfo({ "","" }) {}
+    mLoadSceneFlg(false), mLoadSceneInfo({ "","" }),
+    mSceneSwitchFlg(false) {}
 
 SceneManager::~SceneManager() {}
 
@@ -44,6 +45,8 @@ void SceneManager::LoadSceneNode(std::string&& _name, std::string&& _path)
 
 void SceneManager::CheckLoadStatus()
 {
+    if (mSceneSwitchFlg) { mSceneSwitchFlg = false; }
+
     // TEMP-----------------------
     static bool firstTime = true;
     if (firstTime)
@@ -51,11 +54,24 @@ void SceneManager::CheckLoadStatus()
         mNextScenePtr = new SceneNode("dev-usage", this);
         DevUsage(mNextScenePtr);
         firstTime = false;
+        mSceneSwitchFlg = true;
     }
     // TEMP-----------------------
 
+    if (mLoadSceneFlg)
+    {
+        mLoadSceneFlg = false;
+        mSceneSwitchFlg = true;
+
+        mCurrentScenePtr->ReleaseScene();
+        delete mCurrentScenePtr;
+        mCurrentScenePtr = mLoadingScenePtr;
+        LoadNextScene();
+    }
+
     if (mCurrentScenePtr == mLoadingScenePtr && mNextScenePtr)
     {
+        mSceneSwitchFlg = true;
         mCurrentScenePtr = mNextScenePtr;
         mNextScenePtr = nullptr;
     }
@@ -87,5 +103,19 @@ void SceneManager::ReleaseLoadingScene()
 
 void SceneManager::LoadNextScene()
 {
+    // TEMP-------------------------------------------
+    if (mLoadSceneInfo[0] == "test1" && mLoadSceneInfo[1] == "test1")
+    {
+        mNextScenePtr = CreateScene1(this);
+        if (mNextScenePtr)
+        {
+            mLoadSceneInfo = { "","" };
+        }
+    }
+    // TEMP-------------------------------------------
+}
 
+bool SceneManager::GetSceneSwitchFlg() const
+{
+    return mSceneSwitchFlg;
 }

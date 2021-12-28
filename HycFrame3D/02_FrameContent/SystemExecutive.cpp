@@ -89,12 +89,9 @@ bool SystemExecutive::InitAllSystem()
 
 void SystemExecutive::CheckCurrentScene()
 {
-    SceneNode* nextNode = mSceneManagerPtr->GetCurrentSceneNode();
-    SceneNode* thisNode = mCurrentSceneNode;
-
-    if (nextNode != thisNode)
+    if (mSceneManagerPtr->GetSceneSwitchFlg())
     {
-        mCurrentSceneNode = nextNode;
+        mCurrentSceneNode = mSceneManagerPtr->GetCurrentSceneNode();
         bool next_scene_init = InitAllSystem();
 #ifdef _DEBUG
         assert(next_scene_init);
