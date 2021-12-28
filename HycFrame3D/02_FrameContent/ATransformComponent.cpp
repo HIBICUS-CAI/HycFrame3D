@@ -226,3 +226,48 @@ void ATransformComponent::ApplyProcessingData()
         mPositionDirtyFlg = false;
     }
 }
+
+void ATransformComponent::RollBackPositionX()
+{
+    mProcessingPosition.x = mPosition.x;
+}
+
+void ATransformComponent::RollBackPositionY()
+{
+    mProcessingPosition.y = mPosition.y;
+}
+
+void ATransformComponent::RollBackPositionZ()
+{
+    mProcessingPosition.z = mPosition.z;
+}
+
+void ATransformComponent::RollBackRotationX()
+{
+    mProcessingRotation.x = mRotation.x;
+}
+
+void ATransformComponent::RollBackRotationY()
+{
+    mProcessingRotation.y = mRotation.y;
+}
+
+void ATransformComponent::RollBackRotationZ()
+{
+    mProcessingRotation.z = mRotation.z;
+}
+
+void ATransformComponent::RollBackScalingX()
+{
+    mProcessingScaling.x = mScaling.x;
+}
+
+void ATransformComponent::RollBackScalingY()
+{
+    mProcessingScaling.y = mScaling.y;
+}
+
+void ATransformComponent::RollBackScalingZ()
+{
+    mProcessingScaling.z = mScaling.z;
+}
