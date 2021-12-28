@@ -26,11 +26,14 @@ public:
     void SetOffsetColor(DirectX::XMFLOAT4& _offsetColor);
     void SetOffsetColor(DirectX::XMFLOAT4&& _offsetColor);
 
+    void ResetTexture();
+
 private:
     void SyncTransformDataToInstance();
 
 private:
     std::string mMeshesName;
+    std::string mOriginTextureName;
 
     DirectX::XMFLOAT4 mOffsetColor;
 };

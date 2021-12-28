@@ -9,11 +9,13 @@
 #include "ALightComponent.h"
 #include "AParticleComponent.h"
 #include "USpriteComponent.h"
+#include "UAnimateComponent.h"
 
 InstanceSystem::InstanceSystem(SystemExecutive* _sysExecutive) :
     System("instance-system", _sysExecutive),
     mATransVecPtr(nullptr), mUTransVecPtr(nullptr), mAMeshVecPtr(nullptr),
-    mALightVecPtr(nullptr), mAParitcleVecPtr(nullptr), mUSpriteVecPtr(nullptr)
+    mALightVecPtr(nullptr), mAParitcleVecPtr(nullptr), mUSpriteVecPtr(nullptr),
+    mUAnimateVecPtr(nullptr)
 {
 
 }
@@ -47,9 +49,12 @@ bool InstanceSystem::Init()
     mUSpriteVecPtr = (std::vector<USpriteComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
         GetComponentContainer()->GetCompVecPtr(COMP_TYPE::U_SPRITE);
+    mUAnimateVecPtr = (std::vector<UAnimateComponent>*)GetSystemExecutive()->
+        GetSceneManager()->GetCurrentSceneNode()->
+        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::U_ANIMATE);
 
     if (!(mATransVecPtr && mUTransVecPtr && mAMeshVecPtr &&
-        mALightVecPtr && mAParitcleVecPtr && mUSpriteVecPtr))
+        mALightVecPtr && mAParitcleVecPtr && mUSpriteVecPtr && mUAnimateVecPtr))
     {
         return false;
     }
@@ -87,6 +92,11 @@ void InstanceSystem::Run(Timer& _timer)
     for (auto& usc : *mUSpriteVecPtr)
     {
         if (usc.GetCompStatus() == STATUS::ACTIVE) { usc.Update(_timer); }
+    }
+
+    for (auto& uamc : *mUAnimateVecPtr)
+    {
+        if (uamc.GetCompStatus() == STATUS::ACTIVE) { uamc.Update(_timer); }
     }
 }
 

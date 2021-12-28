@@ -6,8 +6,7 @@
 
 struct ANIMATE_INFO
 {
-    std::string mTexPath = "";
-    struct ID3D11ShaderResourceView* mTexture = nullptr;
+    std::string mTexName = "";
     DirectX::XMFLOAT2 mStride = { 0.f, 0.f };
     unsigned int mMaxCut = 0;
     bool mRepeatFlg = false;
@@ -34,6 +33,7 @@ public:
     void DeleteAnimate(std::string& _aniName);
 
     void ResetCurrentAnimate();
+    void ClearCurrentAnimate();
 
     void ChangeAnimateTo(std::string&& _aniName);
     void ChangeAnimateTo(std::string& _aniName);

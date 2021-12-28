@@ -3,13 +3,15 @@
 #include "AssetsPool.h"
 #include "SceneNode.h"
 #include "UTransformComponent.h"
+#include "UAnimateComponent.h"
 #include "RSMeshHelper.h"
 #include "RSRoot_DX11.h"
 
 USpriteComponent::USpriteComponent(std::string&& _compName,
     UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
-    mMeshesName(""), mOffsetColor({ 1.f,1.f,1.f,1.f })
+    mMeshesName(""), mOffsetColor({ 1.f,1.f,1.f,1.f }),
+    mOriginTextureName("")
 {
 
 }
@@ -17,7 +19,8 @@ USpriteComponent::USpriteComponent(std::string&& _compName,
 USpriteComponent::USpriteComponent(std::string& _compName,
     UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
-    mMeshesName(""), mOffsetColor({ 1.f,1.f,1.f,1.f })
+    mMeshesName(""), mOffsetColor({ 1.f,1.f,1.f,1.f }),
+    mOriginTextureName("")
 {
 
 }
@@ -72,6 +75,9 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
     id.mCustomizedData2 = { 0.f,0.f,1.f,1.f };
     spriteRect->mInstanceMap.insert({ mMeshesName,id });
 
+    mOffsetColor = _offsetColor;
+    mOriginTextureName = _texName;
+
     return true;
 }
 
@@ -95,6 +101,9 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
     RS_INSTANCE_DATA id = {};
     id.mCustomizedData2 = { 0.f,0.f,1.f,1.f };
     spriteRect->mInstanceMap.insert({ mMeshesName,id });
+
+    mOffsetColor = _offsetColor;
+    mOriginTextureName = _texName;
 
     return true;
 }
@@ -145,4 +154,23 @@ void USpriteComponent::SyncTransformDataToInstance()
 
         break;
     }
+}
+
+void USpriteComponent::ResetTexture()
+{
+    std::string compName = GetCompName();
+    auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
+        GetMeshIfExisted(compName);
+
+    mesh->mMeshData.mTextures[0] = mOriginTextureName;
+
+    for (auto& ins : mesh->mInstanceMap)
+    {
+        ins.second.mCustomizedData2 = { 0.f,0.f,1.f,1.f };
+        break;
+    }
+
+    auto uamc = GetUiOwner()->
+        GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE);
+    if (uamc) { uamc->ClearCurrentAnimate(); }
 }

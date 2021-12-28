@@ -422,6 +422,7 @@ SceneNode* CreateScene2(SceneManager* _manager)
     UTransformComponent utc0("u0-transform", nullptr);
     UInputComponent uic0("u0-input", nullptr);
     USpriteComponent usc0("u0-sprite", nullptr);
+    UAnimateComponent uamc0("u0-animate", nullptr);
 
     utc0.ForcePosition({ -400.f,300.f,0.f });
     utc0.ForceRotation({ 0.f,0.f,0.f });
@@ -431,13 +432,19 @@ SceneNode* CreateScene2(SceneManager* _manager)
     uic0.SetInputFunction(TestU0Input);
     u0.AddUComponent(COMP_TYPE::U_INPUT);
 
-    usc0.CreateSpriteMesh(node, { 1.f,1.f,1.f,1.f },
-        ".\\Assets\\Textures\\cloud.png");
+    usc0.CreateSpriteMesh(node, { 1.f,1.f,1.f,1.f }, "cloud.png");
     u0.AddUComponent(COMP_TYPE::U_SPRITE);
+
+    uamc0.LoadAnimate("number", "number.png", { 0.2f,0.2f },
+        13, false, 0.5f);
+    uamc0.LoadAnimate("runman", "runman.png", { 0.2f,0.5f },
+        10, true, 0.1f);
+    u0.AddUComponent(COMP_TYPE::U_ANIMATE);
 
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_ANIMATE, uamc0);
 
     node->AddUiObject(u0);
 
@@ -657,5 +664,24 @@ void TestU0Input(UInputComponent* _uic, Timer& _timer)
     {
         _uic->GetUiOwner()->GetSceneNode().GetSceneManager()->
             LoadSceneNode("test1", "test1");
+    }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_Z))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<USpriteComponent>(COMP_TYPE::U_SPRITE)->
+            ResetTexture();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_X))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE)->
+            ChangeAnimateTo("number");
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_C))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE)->
+            ChangeAnimateTo("runman");
     }
 }

@@ -1668,6 +1668,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
     static HRESULT hr = S_OK;
     ID3D11ShaderResourceView* srv = nullptr;
     wstr = std::wstring(_texPath.begin(), _texPath.end());
+    wstr = L".\\Assets\\Textures\\" + wstr;
     if (_texPath.find(".dds") != std::string::npos ||
         _texPath.find(".DDS") != std::string::npos)
     {
@@ -1781,6 +1782,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
     static HRESULT hr = S_OK;
     ID3D11ShaderResourceView* srv = nullptr;
     wstr = std::wstring(_texPath.begin(), _texPath.end());
+    wstr = L".\\Assets\\Textures\\" + wstr;
     if (_texPath.find(".dds") != std::string::npos ||
         _texPath.find(".DDS") != std::string::npos)
     {
