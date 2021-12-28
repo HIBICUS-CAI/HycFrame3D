@@ -69,7 +69,7 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
-
+    id.mCustomizedData2 = { 0.f,0.f,1.f,1.f };
     spriteRect->mInstanceMap.insert({ mMeshesName,id });
 
     return true;
@@ -93,7 +93,7 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
-
+    id.mCustomizedData2 = { 0.f,0.f,1.f,1.f };
     spriteRect->mInstanceMap.insert({ mMeshesName,id });
 
     return true;
