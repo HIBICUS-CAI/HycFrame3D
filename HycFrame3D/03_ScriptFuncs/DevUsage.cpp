@@ -20,6 +20,7 @@
 #include "AParticleComponent.h"
 #include "ACollisionComponent.h"
 #include "AAudioComponent.h"
+#include "ATimerComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -64,6 +65,7 @@ void DevUsage(SceneNode* _node)
     AMeshComponent amc0("a0-mesh", nullptr);
     ACollisionComponent acc0("a0-collision", nullptr);
     AAudioComponent aac0("a0-audio", nullptr);
+    ATimerComponent atmc0("a0-timer", nullptr);
 
     atc0.ForcePosition({ 0.f,0.f,150.f });
     atc0.ForceRotation({ 0.f,0.f,0.f });
@@ -89,12 +91,17 @@ void DevUsage(SceneNode* _node)
     aac0.AddAudio("test", *_node);
     a0.AddAComponent(COMP_TYPE::A_AUDIO);
 
+    atmc0.AddTimer("test0");
+    atmc0.AddTimer("test1");
+    a0.AddAComponent(COMP_TYPE::A_TIMER);
+
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc0);
     _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_AUDIO, aac0);
+    _node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TIMER, atmc0);
 
     _node->AddActorObject(a0);
 
@@ -290,10 +297,29 @@ void TestAUpdate(AInteractComponent* _aitc, Timer&)
     }
 
     bool coll = g_DragonCC->CheckCollisionWith("a1");
-    P_LOG(LOG_DEBUG, "collision result : %d\n", coll);
     if (coll)
     {
         g_LightTC->RollBackPosition();
+    }
+
+    auto atmc = _aitc->GetActorOwner()->
+        GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER);
+    if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
+    {
+        atmc->StartTimer("test0");
+        atmc->StartTimer("test1");
+    }
+    if (atmc->GetTimer("test0")->mActive &&
+        !((int)(atmc->GetTimer("test0")->mTime) % 5))
+    {
+        P_LOG(LOG_DEBUG, "timer0 in 5 cycle is %f\n",
+            atmc->GetTimer("test0")->mTime);
+    }
+    if (atmc->GetTimer("test1")->mActive &&
+        !((int)(atmc->GetTimer("test1")->mTime) % 8))
+    {
+        P_LOG(LOG_DEBUG, "timer1 in 8 cycle is %f\n",
+            atmc->GetTimer("test1")->mTime);
     }
 }
 

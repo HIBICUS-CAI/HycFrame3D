@@ -9,6 +9,7 @@
 #include "InteractSystem.h"
 #include "CollisionSystem.h"
 #include "AudioSystem.h"
+#include "TimerSystem.h"
 
 SystemExecutive::SystemExecutive() :
     mSceneManagerPtr(nullptr), mSystemsVec({}), mCurrentSceneNode(nullptr) {}
@@ -35,6 +36,8 @@ bool SystemExecutive::StartUp(SceneManager* _sceneManager)
     sys = new InteractSystem(this); if (!sys) { return false; }
     mSystemsVec.push_back(sys);
     sys = new InstanceSystem(this); if (!sys) { return false; }
+    mSystemsVec.push_back(sys);
+    sys = new TimerSystem(this); if (!sys) { return false; }
     mSystemsVec.push_back(sys);
     sys = new AudioSystem(this); if (!sys) { return false; }
     mSystemsVec.push_back(sys);

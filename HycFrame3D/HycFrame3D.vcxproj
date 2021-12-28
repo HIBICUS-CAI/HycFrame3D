@@ -177,6 +177,7 @@
     <ClCompile Include="02_FrameContent\SceneManager.cpp" />
     <ClCompile Include="02_FrameContent\SceneNode.cpp" />
     <ClCompile Include="02_FrameContent\System.cpp" />
+    <ClCompile Include="02_FrameContent\TimerSystem.cpp" />
     <ClCompile Include="02_FrameContent\UAnimateComponent.cpp" />
     <ClCompile Include="02_FrameContent\UAudioComponent.cpp" />
     <ClCompile Include="02_FrameContent\UButtonComponent.cpp" />
@@ -228,6 +229,7 @@
     <ClInclude Include="02_FrameContent\SceneNode.h" />
     <ClInclude Include="02_FrameContent\System.h" />
     <ClInclude Include="02_FrameContent\SystemExecutive.h" />
+    <ClInclude Include="02_FrameContent\TimerSystem.h" />
     <ClInclude Include="02_FrameContent\UAnimateComponent.h" />
     <ClInclude Include="02_FrameContent\UAudioComponent.h" />
     <ClInclude Include="02_FrameContent\UButtonComponent.h" />
