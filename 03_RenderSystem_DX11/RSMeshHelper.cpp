@@ -238,6 +238,10 @@ void RSMeshHelper::CreateTexSrv(
 
     for (auto& tex : *_textures)
     {
+        name = tex;
+        auto existSrv = mTexManagerPtr->GetMeshSrv(name);
+        if (existSrv) { texVec->emplace_back(name); continue; }
+
         wstr = std::wstring(tex.begin(), tex.end());
         wstr = L".\\Assets\\Textures\\" + wstr;
         if (tex.find(".dds") != std::string::npos ||
