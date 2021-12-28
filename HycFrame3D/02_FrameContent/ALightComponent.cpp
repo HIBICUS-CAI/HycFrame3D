@@ -9,8 +9,6 @@
 #include "RSLightsContainer.h"
 #include "RSMeshHelper.h"
 
-constexpr auto BOX_BLOOM_MESH_NAME = "box-bloom-mesh";
-
 ALightComponent::ALightComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mRSLightPtr(nullptr),

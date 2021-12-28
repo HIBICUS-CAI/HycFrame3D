@@ -4,6 +4,8 @@
 #include <DirectXMath.h>
 #include "RSCommon.h"
 
+constexpr auto BOX_BLOOM_MESH_NAME = "box-bloom-mesh";
+
 class ALightComponent :public ActorComponent
 {
 public:

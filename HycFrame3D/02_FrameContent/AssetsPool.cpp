@@ -1,6 +1,7 @@
 #include "AssetsPool.h"
 #include "RSMeshHelper.h"
 #include "RSRoot_DX11.h"
+#include "ALightComponent.h"
 
 AssetsPool::AssetsPool(SceneNode& _sceneNode) :
     mSceneNodeOwner(_sceneNode), mMeshPool({}), mSoundPool({})
@@ -113,6 +114,15 @@ void AssetsPool::DeleteAllAssets()
 {
     for (auto& mesh_data : mMeshPool)
     {
+        if (mesh_data.first.find("-sprite") != std::string::npos)
+        {
+            continue;
+        }
+        else if (mesh_data.first == BOX_BLOOM_MESH_NAME)
+        {
+            continue;
+        }
+
         GetRSRoot_DX11_Singleton()->MeshHelper()->
             ReleaseSubMesh(mesh_data.second.mMeshData);
     }

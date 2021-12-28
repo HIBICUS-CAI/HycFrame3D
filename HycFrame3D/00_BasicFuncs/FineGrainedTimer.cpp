@@ -28,6 +28,11 @@ void Timer::TimeOut()
     mDfm = 1000. * (double)(mQt2 - mQt1);
     mDft = mDfm / mDff;
 
+    if (mDft > 16.6666666667f)
+    {
+        mDft = 16.6666666667f;
+    }
+
 #ifdef _DEBUG
     assert(mActiveFlg);
     mActiveFlg = false;

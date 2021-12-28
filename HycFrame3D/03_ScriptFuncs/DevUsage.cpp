@@ -24,6 +24,7 @@
 #include "ATimerComponent.h"
 #include "UTransformComponent.h"
 #include "UInputComponent.h"
+#include "USpriteComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -420,17 +421,23 @@ SceneNode* CreateScene2(SceneManager* _manager)
     UiObject u0("u0", *node);
     UTransformComponent utc0("u0-transform", nullptr);
     UInputComponent uic0("u0-input", nullptr);
+    USpriteComponent usc0("u0-sprite", nullptr);
 
     utc0.ForcePosition({ -400.f,300.f,0.f });
     utc0.ForceRotation({ 0.f,0.f,0.f });
-    utc0.ForceScaling({ 1.f,1.f,1.f });
+    utc0.ForceScaling({ 200.f,100.f,1.f });
     u0.AddUComponent(COMP_TYPE::U_TRANSFORM);
 
     uic0.SetInputFunction(TestU0Input);
     u0.AddUComponent(COMP_TYPE::U_INPUT);
 
+    usc0.CreateSpriteMesh(node, { 1.f,1.f,1.f,1.f },
+        ".\\Assets\\Textures\\cloud.png");
+    u0.AddUComponent(COMP_TYPE::U_SPRITE);
+
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc0);
 
     node->AddUiObject(u0);
 
@@ -627,12 +634,11 @@ void TestU0Input(UInputComponent* _uic, Timer& _timer)
     auto utc = _uic->GetUiOwner()->
         GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
 
-    P_LOG(LOG_DEBUG, "u0 pos : %f , %f , %f\n",
-        utc->GetPosition().x, utc->GetPosition().y, utc->GetPosition().z);
+    P_LOG(LOG_DEBUG, "delta time : %f\n", delta);
 
     if (InputInterface::IsKeyDownInSingle(KB_W))
     {
-        utc->TranslateZAsix(0.1f * delta);
+        utc->TranslateYAsix(0.1f * delta);
     }
     if (InputInterface::IsKeyDownInSingle(KB_A))
     {
@@ -640,18 +646,16 @@ void TestU0Input(UInputComponent* _uic, Timer& _timer)
     }
     if (InputInterface::IsKeyDownInSingle(KB_S))
     {
-        utc->TranslateZAsix(-0.1f * delta);
+        utc->TranslateYAsix(-0.1f * delta);
     }
     if (InputInterface::IsKeyDownInSingle(KB_D))
     {
         utc->TranslateXAsix(0.1f * delta);
     }
-    if (InputInterface::IsKeyDownInSingle(KB_Q))
+
+    if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
     {
-        utc->TranslateYAsix(0.1f * delta);
-    }
-    if (InputInterface::IsKeyDownInSingle(KB_E))
-    {
-        utc->TranslateYAsix(-0.1f * delta);
+        _uic->GetUiOwner()->GetSceneNode().GetSceneManager()->
+            LoadSceneNode("test1", "test1");
     }
 }
