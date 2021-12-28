@@ -112,6 +112,14 @@ void SceneManager::LoadNextScene()
             mLoadSceneInfo = { "","" };
         }
     }
+    else if (mLoadSceneInfo[0] == "test2" && mLoadSceneInfo[1] == "test2")
+    {
+        mNextScenePtr = CreateScene2(this);
+        if (mNextScenePtr)
+        {
+            mLoadSceneInfo = { "","" };
+        }
+    }
     // TEMP-------------------------------------------
 }
 

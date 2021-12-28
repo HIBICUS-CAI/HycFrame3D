@@ -32,9 +32,7 @@ UTransformComponent::~UTransformComponent()
 
 bool UTransformComponent::Init()
 {
-    // TEMP-----------------
     return true;
-    // TEMP-----------------
 }
 
 void UTransformComponent::Update(Timer& _timer)

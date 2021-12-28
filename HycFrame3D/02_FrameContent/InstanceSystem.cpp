@@ -60,6 +60,11 @@ void InstanceSystem::Run(Timer& _timer)
         if (atc.GetCompStatus() == STATUS::ACTIVE) { atc.Update(_timer); }
     }
 
+    for (auto& utc : *mUTransVecPtr)
+    {
+        if (utc.GetCompStatus() == STATUS::ACTIVE) { utc.Update(_timer); }
+    }
+
     for (auto& amc : *mAMeshVecPtr)
     {
         if (amc.GetCompStatus() == STATUS::ACTIVE) { amc.Update(_timer); }

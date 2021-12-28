@@ -22,6 +22,7 @@
 #include "ACollisionComponent.h"
 #include "AAudioComponent.h"
 #include "ATimerComponent.h"
+#include "UTransformComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -409,6 +410,25 @@ SceneNode* CreateScene1(SceneManager* _manager)
     return node;
 }
 
+SceneNode* CreateScene2(SceneManager* _manager)
+{
+    SceneNode* node = new SceneNode("test2", _manager);
+
+    UiObject u0("u0", *node);
+    UTransformComponent utc0("u0-transform", nullptr);
+
+    utc0.ForcePosition({ -400.f,300.f,0.f });
+    utc0.ForceRotation({ 0.f,0.f,0.f });
+    utc0.ForceScaling({ 1.f,1.f,1.f });
+    u0.AddUComponent(COMP_TYPE::U_TRANSFORM);
+
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc0);
+
+    node->AddUiObject(u0);
+
+    return node;
+}
+
 void TestAInput(AInputComponent* _aic, Timer& _timer)
 {
     auto atc = _aic->GetActorOwner()->
@@ -463,7 +483,7 @@ void TestAInput(AInputComponent* _aic, Timer& _timer)
     if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
     {
         _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
-            LoadSceneNode("test1", "test1");
+            LoadSceneNode("test2", "test2");
     }
 }
 

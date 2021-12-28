@@ -4435,6 +4435,11 @@ void RSPass_PriticleTileRender::ReleasePass()
 
 void RSPass_PriticleTileRender::ExecuatePass()
 {
+    if (!g_Root->ParticlesContainer()->GetAllParticleEmitters()->size())
+    {
+        return;
+    }
+
     {
         D3D11_MAPPED_SUBRESOURCE msr = {};
         DirectX::XMMATRIX mat = {};

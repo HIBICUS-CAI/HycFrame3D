@@ -56,9 +56,9 @@ void ALightComponent::Destory()
 
 void ALightComponent::CreateLight()
 {
-    std::string name = GetCompName();
+    mLightName = GetCompName();
     mRSLightPtr = GetRSRoot_DX11_Singleton()->LightsContainer()->
-        CreateRSLight(name, &mLightInfoForInit);
+        CreateRSLight(mLightName, &mLightInfoForInit);
 #ifdef _DEBUG
     assert(mRSLightPtr);
 #endif // _DEBUG
@@ -83,7 +83,7 @@ void ALightComponent::CreateLight()
     if (mIsCamera)
     {
         bool cam_create = GetRSRoot_DX11_Singleton()->LightsContainer()->
-            CreateLightCameraFor(name, &mLightCamInfoForInit);
+            CreateLightCameraFor(mLightName, &mLightCamInfoForInit);
 #ifdef _DEBUG
         assert(cam_create);
 #endif // _DEBUG

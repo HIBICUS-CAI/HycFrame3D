@@ -123,6 +123,7 @@ void RSLightsContainer::DeleteRSLight(std::string& _name)
             if ((*i) == found->second)
             {
                 mShadowLights.erase(i);
+                break;
             }
         }
         found->second->ReleaseLightBloom();
