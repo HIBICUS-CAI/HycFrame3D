@@ -16,4 +16,5 @@ public:
 
 private:
     std::vector<class ATimerComponent>* mATimerVecPtr;
+    std::vector<class UTimerComponent>* mUTimerVecPtr;
 };

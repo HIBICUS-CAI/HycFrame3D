@@ -22,16 +22,19 @@ UTimerComponent::~UTimerComponent()
 
 bool UTimerComponent::Init()
 {
-    // TEMP-----------------
+    for (auto& t : mTimerMap) { t.second.mTime = 0.f; }
+
     return true;
-    // TEMP-----------------
 }
 
 void UTimerComponent::Update(Timer& _timer)
 {
     for (auto& t : mTimerMap)
     {
-        if (t.second.mActive) { t.second.mTime += _timer.FloatDeltaTime(); }
+        if (t.second.mActive)
+        {
+            t.second.mTime += _timer.FloatDeltaTime() / 1000.f;
+        }
     }
 }
 
@@ -112,6 +115,8 @@ UI_TIMER* UTimerComponent::GetTimer(std::string&& _timerName)
     }
     else
     {
+        P_LOG(LOG_WARNING, "this timer doesnt exist : %s\n",
+            _timerName.c_str());
         return nullptr;
     }
 }
@@ -124,6 +129,8 @@ UI_TIMER* UTimerComponent::GetTimer(std::string& _timerName)
     }
     else
     {
+        P_LOG(LOG_WARNING, "this timer doesnt exist : %s\n",
+            _timerName.c_str());
         return nullptr;
     }
 }

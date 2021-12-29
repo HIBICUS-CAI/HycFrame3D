@@ -28,6 +28,7 @@
 #include "UInteractComponent.h"
 #include "UButtonComponent.h"
 #include "UAudioComponent.h"
+#include "UTimerComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -437,6 +438,7 @@ SceneNode* CreateScene2(SceneManager* _manager)
     UAnimateComponent uamc0("u0-animate", nullptr);
     UInteractComponent uitc0("u0-interact", nullptr);
     UAudioComponent uac0("u0-audio", nullptr);
+    UTimerComponent utmc0("u0-timer", nullptr);
 
     utc0.ForcePosition({ -400.f,300.f,0.f });
     utc0.ForceRotation({ 0.f,0.f,0.f });
@@ -463,12 +465,16 @@ SceneNode* CreateScene2(SceneManager* _manager)
     uac0.AddAudio("test", *node);
     u0.AddUComponent(COMP_TYPE::U_AUDIO);
 
+    utmc0.AddTimer("u0-test");
+    u0.AddUComponent(COMP_TYPE::U_TIMER);
+
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_ANIMATE, uamc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INTERACT, uitc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_AUDIO, uac0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TIMER, utmc0);
 
     node->AddUiObject(u0);
 
@@ -869,7 +875,20 @@ bool TestU0Init(UInteractComponent* _uitc)
 
 void TestU0Update(UInteractComponent* _uitc, Timer& _timer)
 {
-    //P_LOG(LOG_DEBUG, "u0 interact update!!!\n");
+    auto timer = _uitc->GetUiOwner()->
+        GetUComponent<UTimerComponent>(COMP_TYPE::U_TIMER)->GetTimer("u0-test");
+    if (!timer->mActive)
+    {
+        _uitc->GetUiOwner()->
+            GetUComponent<UTimerComponent>(COMP_TYPE::U_TIMER)->
+            StartTimer("u0-test");
+    }
+
+    if (timer->IsGreaterThan(10.f))
+    {
+        _uitc->GetUiOwner()->GetSceneNode().GetSceneManager()->
+            LoadSceneNode("test1", "test1");
+    }
 }
 
 void TestU0Destory(UInteractComponent* _uitc)
