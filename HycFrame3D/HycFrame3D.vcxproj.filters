@@ -187,6 +187,9 @@
     <ClCompile Include="02_FrameContent\TimerSystem.cpp">
       <Filter>02_FrameContent\System</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\ButtonSystem.cpp">
+      <Filter>02_FrameContent\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -331,6 +334,9 @@
       <Filter>02_FrameContent\System</Filter>
     </ClInclude>
     <ClInclude Include="02_FrameContent\TimerSystem.h">
+      <Filter>02_FrameContent\System</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ButtonSystem.h">
       <Filter>02_FrameContent\System</Filter>
     </ClInclude>
   </ItemGroup>

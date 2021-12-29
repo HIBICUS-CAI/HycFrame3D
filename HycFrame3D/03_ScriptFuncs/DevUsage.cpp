@@ -26,6 +26,7 @@
 #include "UInputComponent.h"
 #include "USpriteComponent.h"
 #include "UInteractComponent.h"
+#include "UButtonComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -43,6 +44,8 @@ void TestU0Input(UInputComponent*, Timer&);
 bool TestU0Init(UInteractComponent*);
 void TestU0Update(UInteractComponent*, Timer&);
 void TestU0Destory(UInteractComponent*);
+
+void TestUBtnInput(UInputComponent*, Timer&);
 
 void DevUsage(SceneNode* _node)
 {
@@ -460,6 +463,145 @@ SceneNode* CreateScene2(SceneManager* _manager)
 
     node->AddUiObject(u0);
 
+    UiObject u1("u1", *node);
+    UTransformComponent utc1("u1-transform", nullptr);
+    UInputComponent uic1("u1-input", nullptr);
+    USpriteComponent usc1("u1-sprite", nullptr);
+    UButtonComponent ubc1("u1-button", nullptr);
+
+    utc1.ForcePosition({ -200.f,200.f,0.f });
+    utc1.ForceRotation({ 0.f,0.f,0.f });
+    utc1.ForceScaling({ 100.f,50.f,1.f });
+    u1.AddUComponent(COMP_TYPE::U_TRANSFORM);
+
+    uic1.SetInputFunction(TestUBtnInput);
+    u1.AddUComponent(COMP_TYPE::U_INPUT);
+
+    usc1.CreateSpriteMesh(node, { 1.f,1.f,1.f,1.f }, "basic_btn.png");
+    u1.AddUComponent(COMP_TYPE::U_SPRITE);
+
+    ubc1.SetIsBeingSelected(true);
+    ubc1.SetRightBtnObjName("u2");
+    u1.AddUComponent(COMP_TYPE::U_BUTTON);
+
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc1);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic1);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc1);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_BUTTON, ubc1);
+
+    node->AddUiObject(u1);
+
+    UiObject u2("u2", *node);
+    UTransformComponent utc2("u2-transform", nullptr);
+    UInputComponent uic2("u2-input", nullptr);
+    USpriteComponent usc2("u2-sprite", nullptr);
+    UButtonComponent ubc2("u2-button", nullptr);
+
+    utc2.ForcePosition({ 0.f,200.f,0.f });
+    utc2.ForceRotation({ 0.f,0.f,0.f });
+    utc2.ForceScaling({ 100.f,50.f,1.f });
+    u2.AddUComponent(COMP_TYPE::U_TRANSFORM);
+
+    uic2.SetInputFunction(TestUBtnInput);
+    u2.AddUComponent(COMP_TYPE::U_INPUT);
+
+    usc2.CreateSpriteMesh(node, { 1.f,1.f,1.f,1.f }, "basic_btn.png");
+    u2.AddUComponent(COMP_TYPE::U_SPRITE);
+
+    ubc2.SetLeftBtnObjName("u1");
+    ubc2.SetRightBtnObjName("u3");
+    ubc2.SetDownBtnObjName("u4");
+    u2.AddUComponent(COMP_TYPE::U_BUTTON);
+
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc2);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic2);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc2);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_BUTTON, ubc2);
+
+    node->AddUiObject(u2);
+
+    UiObject u3("u3", *node);
+    UTransformComponent utc3("u3-transform", nullptr);
+    UInputComponent uic3("u3-input", nullptr);
+    USpriteComponent usc3("u3-sprite", nullptr);
+    UButtonComponent ubc3("u3-button", nullptr);
+
+    utc3.ForcePosition({ 200.f,200.f,0.f });
+    utc3.ForceRotation({ 0.f,0.f,0.f });
+    utc3.ForceScaling({ 100.f,50.f,1.f });
+    u3.AddUComponent(COMP_TYPE::U_TRANSFORM);
+
+    uic3.SetInputFunction(TestUBtnInput);
+    u3.AddUComponent(COMP_TYPE::U_INPUT);
+
+    usc3.CreateSpriteMesh(node, { 1.f,1.f,1.f,1.f }, "basic_btn.png");
+    u3.AddUComponent(COMP_TYPE::U_SPRITE);
+
+    ubc3.SetLeftBtnObjName("u2");
+    u3.AddUComponent(COMP_TYPE::U_BUTTON);
+
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc3);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic3);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc3);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_BUTTON, ubc3);
+
+    node->AddUiObject(u3);
+
+    UiObject u4("u4", *node);
+    UTransformComponent utc4("u4-transform", nullptr);
+    UInputComponent uic4("u4-input", nullptr);
+    USpriteComponent usc4("u4-sprite", nullptr);
+    UButtonComponent ubc4("u4-button", nullptr);
+
+    utc4.ForcePosition({ 0.f,0.f,0.f });
+    utc4.ForceRotation({ 0.f,0.f,0.f });
+    utc4.ForceScaling({ 100.f,50.f,1.f });
+    u4.AddUComponent(COMP_TYPE::U_TRANSFORM);
+
+    uic4.SetInputFunction(TestUBtnInput);
+    u4.AddUComponent(COMP_TYPE::U_INPUT);
+
+    usc4.CreateSpriteMesh(node, { 1.f,1.f,1.f,1.f }, "basic_btn.png");
+    u4.AddUComponent(COMP_TYPE::U_SPRITE);
+
+    ubc4.SetUpBtnObjName("u2");
+    ubc4.SetDownBtnObjName("u5");
+    u4.AddUComponent(COMP_TYPE::U_BUTTON);
+
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc4);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic4);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc4);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_BUTTON, ubc4);
+
+    node->AddUiObject(u4);
+
+    UiObject u5("u5", *node);
+    UTransformComponent utc5("u5-transform", nullptr);
+    UInputComponent uic5("u5-input", nullptr);
+    USpriteComponent usc5("u5-sprite", nullptr);
+    UButtonComponent ubc5("u5-button", nullptr);
+
+    utc5.ForcePosition({ 0.f,-200.f,0.f });
+    utc5.ForceRotation({ 0.f,0.f,0.f });
+    utc5.ForceScaling({ 100.f,50.f,1.f });
+    u5.AddUComponent(COMP_TYPE::U_TRANSFORM);
+
+    uic5.SetInputFunction(TestUBtnInput);
+    u5.AddUComponent(COMP_TYPE::U_INPUT);
+
+    usc5.CreateSpriteMesh(node, { 1.f,1.f,1.f,1.f }, "basic_btn.png");
+    u5.AddUComponent(COMP_TYPE::U_SPRITE);
+
+    ubc5.SetUpBtnObjName("u4");
+    u5.AddUComponent(COMP_TYPE::U_BUTTON);
+
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc5);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic5);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc5);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_BUTTON, ubc5);
+
+    node->AddUiObject(u5);
+
     return node;
 }
 
@@ -711,4 +853,28 @@ void TestU0Update(UInteractComponent* _uitc, Timer& _timer)
 void TestU0Destory(UInteractComponent* _uitc)
 {
     P_LOG(LOG_DEBUG, "u0 interact destory!!!\n");
+}
+
+void TestUBtnInput(UInputComponent* _uic, Timer& _timer)
+{
+    auto ubc = _uic->GetUiOwner()->
+        GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+    if (!ubc) { return; }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_I))
+    {
+        ubc->SelectUpBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_J))
+    {
+        ubc->SelectLeftBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_K))
+    {
+        ubc->SelectDownBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_L))
+    {
+        ubc->SelectRightBtn();
+    }
 }

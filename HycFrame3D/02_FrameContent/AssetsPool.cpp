@@ -2,6 +2,7 @@
 #include "RSMeshHelper.h"
 #include "RSRoot_DX11.h"
 #include "ALightComponent.h"
+#include "UButtonComponent.h"
 
 AssetsPool::AssetsPool(SceneNode& _sceneNode) :
     mSceneNodeOwner(_sceneNode), mMeshPool({}), mSoundPool({})
@@ -119,6 +120,10 @@ void AssetsPool::DeleteAllAssets()
             continue;
         }
         else if (mesh_data.first == BOX_BLOOM_MESH_NAME)
+        {
+            continue;
+        }
+        else if (mesh_data.first == SELECTED_BTN_SPRITE_NAME)
         {
             continue;
         }
