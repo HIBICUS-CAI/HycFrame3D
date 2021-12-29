@@ -391,68 +391,138 @@ void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string&& _compNam
     }
 
     Component* dele = found->second;
-    Component* start = nullptr;
+    UINT offset = 0;
 
     switch (_type)
     {
     case COMP_TYPE::A_TRANSFORM:
-        start = (Component*)&mATransformCompVector[0];
+    {
+        std::vector<ATransformComponent>::size_type voffset =
+            (ATransformComponent*)dele - &mATransformCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_INPUT:
-        start = (Component*)&mAInputCompVector[0];
+    {
+        std::vector<AInputComponent>::size_type voffset =
+            (AInputComponent*)dele - &mAInputCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_INTERACT:
-        start = (Component*)&mAInteractCompVector[0];
+    {
+        std::vector<AInteractComponent>::size_type voffset =
+            (AInteractComponent*)dele - &mAInteractCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_TIMER:
-        start = (Component*)&mATimerCompVector[0];
+    {
+        std::vector<ATimerComponent>::size_type voffset =
+            (ATimerComponent*)dele - &mATimerCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_COLLISION:
-        start = (Component*)&mACollisionCompVector[0];
+    {
+        std::vector<ACollisionComponent>::size_type voffset =
+            (ACollisionComponent*)dele - &mACollisionCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_MESH:
-        start = (Component*)&mAMeshCompVector[0];
+    {
+        std::vector<AMeshComponent>::size_type voffset =
+            (AMeshComponent*)dele - &mAMeshCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_LIGHT:
-        start = (Component*)&mALightCompVector[0];
+    {
+        std::vector<ALightComponent>::size_type voffset =
+            (ALightComponent*)dele - &mALightCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_AUDIO:
-        start = (Component*)&mAAudioCompVector[0];
+    {
+        std::vector<AAudioComponent>::size_type voffset =
+            (AAudioComponent*)dele - &mAAudioCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_PARTICLE:
-        start = (Component*)&mAParticleCompVector[0];
+    {
+        std::vector<AParticleComponent>::size_type voffset =
+            (AParticleComponent*)dele - &mAParticleCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_TRANSFORM:
-        start = (Component*)&mUTransformCompVector[0];
+    {
+        std::vector<UTransformComponent>::size_type voffset =
+            (UTransformComponent*)dele - &mUTransformCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_SPRITE:
-        start = (Component*)&mUSpriteCompVector[0];
+    {
+        std::vector<USpriteComponent>::size_type voffset =
+            (USpriteComponent*)dele - &mUSpriteCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_ANIMATE:
-        start = (Component*)&mUAnimateCompVector[0];
+    {
+        std::vector<UAnimateComponent>::size_type voffset =
+            (UAnimateComponent*)dele - &mUAnimateCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_TIMER:
-        start = (Component*)&mUTimerCompVector[0];
+    {
+        std::vector<UTimerComponent>::size_type voffset =
+            (UTimerComponent*)dele - &mUTimerCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_INPUT:
-        start = (Component*)&mUInputCompVector[0];
+    {
+        std::vector<UInputComponent>::size_type voffset =
+            (UInputComponent*)dele - &mUInputCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_INTERACT:
-        start = (Component*)&mUInteractCompVector[0];
+    {
+        std::vector<UInteractComponent>::size_type voffset =
+            (UInteractComponent*)dele - &mUInteractCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_BUTTON:
-        start = (Component*)&mUButtonCompVector[0];
+    {
+        std::vector<UButtonComponent>::size_type voffset =
+            (UButtonComponent*)dele - &mUButtonCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_AUDIO:
-        start = (Component*)&mUAudioCompVector[0];
+    {
+        std::vector<UAudioComponent>::size_type voffset =
+            (UAudioComponent*)dele - &mUAudioCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     default:
-        assert(start);
+    {
+        bool invalid_comp_to_delete = false;
+        assert(invalid_comp_to_delete);
         break;
+    }
     }
 
     mCompMap.erase(found);
-    UINT offset = (UINT)(dele - start);
     mInsertFlag[(size_t)_type].push(offset);
 }
 
@@ -468,68 +538,138 @@ void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string& _compName
     }
 
     Component* dele = found->second;
-    Component* start = nullptr;
+    UINT offset = 0;
 
     switch (_type)
     {
     case COMP_TYPE::A_TRANSFORM:
-        start = (Component*)&mATransformCompVector[0];
+    {
+        std::vector<ATransformComponent>::size_type voffset =
+            (ATransformComponent*)dele - &mATransformCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_INPUT:
-        start = (Component*)&mAInputCompVector[0];
+    {
+        std::vector<AInputComponent>::size_type voffset =
+            (AInputComponent*)dele - &mAInputCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_INTERACT:
-        start = (Component*)&mAInteractCompVector[0];
+    {
+        std::vector<AInteractComponent>::size_type voffset =
+            (AInteractComponent*)dele - &mAInteractCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_TIMER:
-        start = (Component*)&mATimerCompVector[0];
+    {
+        std::vector<ATimerComponent>::size_type voffset =
+            (ATimerComponent*)dele - &mATimerCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_COLLISION:
-        start = (Component*)&mACollisionCompVector[0];
+    {
+        std::vector<ACollisionComponent>::size_type voffset =
+            (ACollisionComponent*)dele - &mACollisionCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_MESH:
-        start = (Component*)&mAMeshCompVector[0];
+    {
+        std::vector<AMeshComponent>::size_type voffset =
+            (AMeshComponent*)dele - &mAMeshCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_LIGHT:
-        start = (Component*)&mALightCompVector[0];
+    {
+        std::vector<ALightComponent>::size_type voffset =
+            (ALightComponent*)dele - &mALightCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_AUDIO:
-        start = (Component*)&mAAudioCompVector[0];
+    {
+        std::vector<AAudioComponent>::size_type voffset =
+            (AAudioComponent*)dele - &mAAudioCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::A_PARTICLE:
-        start = (Component*)&mAParticleCompVector[0];
+    {
+        std::vector<AParticleComponent>::size_type voffset =
+            (AParticleComponent*)dele - &mAParticleCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_TRANSFORM:
-        start = (Component*)&mUTransformCompVector[0];
+    {
+        std::vector<UTransformComponent>::size_type voffset =
+            (UTransformComponent*)dele - &mUTransformCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_SPRITE:
-        start = (Component*)&mUSpriteCompVector[0];
+    {
+        std::vector<USpriteComponent>::size_type voffset =
+            (USpriteComponent*)dele - &mUSpriteCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_ANIMATE:
-        start = (Component*)&mUAnimateCompVector[0];
+    {
+        std::vector<UAnimateComponent>::size_type voffset =
+            (UAnimateComponent*)dele - &mUAnimateCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_TIMER:
-        start = (Component*)&mUTimerCompVector[0];
+    {
+        std::vector<UTimerComponent>::size_type voffset =
+            (UTimerComponent*)dele - &mUTimerCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_INPUT:
-        start = (Component*)&mUInputCompVector[0];
+    {
+        std::vector<UInputComponent>::size_type voffset =
+            (UInputComponent*)dele - &mUInputCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_INTERACT:
-        start = (Component*)&mUInteractCompVector[0];
+    {
+        std::vector<UInteractComponent>::size_type voffset =
+            (UInteractComponent*)dele - &mUInteractCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_BUTTON:
-        start = (Component*)&mUButtonCompVector[0];
+    {
+        std::vector<UButtonComponent>::size_type voffset =
+            (UButtonComponent*)dele - &mUButtonCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     case COMP_TYPE::U_AUDIO:
-        start = (Component*)&mUAudioCompVector[0];
+    {
+        std::vector<UAudioComponent>::size_type voffset =
+            (UAudioComponent*)dele - &mUAudioCompVector[0];
+        offset = (UINT)voffset;
         break;
+    }
     default:
-        assert(start);
+    {
+        bool invalid_comp_to_delete = false;
+        assert(invalid_comp_to_delete);
         break;
+    }
     }
 
     mCompMap.erase(found);
-    UINT offset = (UINT)(dele - start);
     mInsertFlag[(size_t)_type].push(offset);
 }
 
