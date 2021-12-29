@@ -167,6 +167,12 @@ void AddBumpedTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
     wstr = std::wstring(_filePath.begin(), _filePath.end());
     wstr = L".\\Assets\\Textures\\" + wstr;
 
+    if (root->ResourceManager()->GetMeshSrv(_filePath))
+    {
+        _result->mTextures.emplace_back(name);
+        return;
+    }
+
     if (_filePath.find(".dds") != std::string::npos ||
         _filePath.find(".DDS") != std::string::npos)
     {

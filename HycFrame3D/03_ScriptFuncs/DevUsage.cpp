@@ -277,19 +277,19 @@ SceneNode* CreateScene1(SceneManager* _manager)
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aicsp);
     node->AddActorObject(asp);
 
-    //ActorObject a0("a0", *node);
-    //ATransformComponent atc0("a0-transform", nullptr);
+    ActorObject a0("a0", *node);
+    ATransformComponent atc0("a0-transform", nullptr);
     //AInputComponent aic0("a0-input", nullptr);
     //AInteractComponent aitc0("a0-interact", nullptr);
-    //AMeshComponent amc0("a0-mesh", nullptr);
+    AMeshComponent amc0("a0-mesh", nullptr);
     //ACollisionComponent acc0("a0-collision", nullptr);
-    //AAudioComponent aac0("a0-audio", nullptr);
-    //ATimerComponent atmc0("a0-timer", nullptr);
+    AAudioComponent aac0("a0-audio", nullptr);
+    ATimerComponent atmc0("a0-timer", nullptr);
 
-    //atc0.ForcePosition({ 0.f,0.f,150.f });
-    //atc0.ForceRotation({ 0.f,0.f,0.f });
-    //atc0.ForceScaling({ 1.f,1.f,1.f });
-    //a0.AddAComponent(COMP_TYPE::A_TRANSFORM);
+    atc0.ForcePosition({ 0.f,0.f,150.f });
+    atc0.ForceRotation({ 0.f,0.f,0.f });
+    atc0.ForceScaling({ 1.f,1.f,1.f });
+    a0.AddAComponent(COMP_TYPE::A_TRANSFORM);
 
     //aic0.SetInputFunction(TestAInput);
     //a0.AddAComponent(COMP_TYPE::A_INPUT);
@@ -299,29 +299,29 @@ SceneNode* CreateScene1(SceneManager* _manager)
     //aitc0.SetDestoryFunction(TestADestory);
     //a0.AddAComponent(COMP_TYPE::A_INTERACT);
 
-    //amc0.AddMeshInfo("dragon");
-    //amc0.AddMeshInfo("floor", { 0.f,-20.f,0.f });
-    //amc0.AddMeshInfo("floor", { 0.f,-50.f,0.f });
-    //a0.AddAComponent(COMP_TYPE::A_MESH);
+    amc0.AddMeshInfo("dragon");
+    amc0.AddMeshInfo("floor", { 0.f,-20.f,0.f });
+    amc0.AddMeshInfo("floor", { 0.f,-50.f,0.f });
+    a0.AddAComponent(COMP_TYPE::A_MESH);
 
     //acc0.CreateCollisionShape(COLLISION_SHAPE::BOX, { 20.f,20.f,40.f });
     //a0.AddAComponent(COMP_TYPE::A_COLLISION);
 
-    //aac0.AddAudio("test", *node);
-    //a0.AddAComponent(COMP_TYPE::A_AUDIO);
+    aac0.AddAudio("test", *node);
+    a0.AddAComponent(COMP_TYPE::A_AUDIO);
 
-    //atmc0.AddTimer("test0");
-    //a0.AddAComponent(COMP_TYPE::A_TIMER);
+    atmc0.AddTimer("test0");
+    a0.AddAComponent(COMP_TYPE::A_TIMER);
 
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
     //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic0);
     //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc0);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
     //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc0);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_AUDIO, aac0);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TIMER, atmc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_AUDIO, aac0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TIMER, atmc0);
 
-    //node->AddActorObject(a0);
+    node->AddActorObject(a0);
 
     //ActorObject a1("a1", *node);
     //ATransformComponent atc1("a1-transform", nullptr);
