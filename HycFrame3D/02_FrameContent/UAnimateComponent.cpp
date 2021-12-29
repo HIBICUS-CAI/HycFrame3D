@@ -82,7 +82,12 @@ bool UAnimateComponent::LoadAnimate(std::string _aniName, std::string _aniPath,
     ID3D11ShaderResourceView* srv = nullptr;
     texPathWStr = std::wstring(_aniPath.begin(), _aniPath.end());
     texPathWStr = L".\\Assets\\Textures\\" + texPathWStr;
-    if (_aniPath.find(".dds") != std::string::npos ||
+
+    auto resourceManager = GetRSRoot_DX11_Singleton()->ResourceManager();
+    auto ifExist = resourceManager->GetMeshSrv(_aniPath);
+
+    if (ifExist) {}
+    else if (_aniPath.find(".dds") != std::string::npos ||
         _aniPath.find(".DDS") != std::string::npos)
     {
         hr = DirectX::CreateDDSTextureFromFile(
