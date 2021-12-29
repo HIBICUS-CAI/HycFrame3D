@@ -281,7 +281,7 @@ SceneNode* CreateScene1(SceneManager* _manager)
     ATransformComponent atc0("a0-transform", nullptr);
     AInputComponent aic0("a0-input", nullptr);
     AInteractComponent aitc0("a0-interact", nullptr);
-    //AMeshComponent amc0("a0-mesh", nullptr);
+    AMeshComponent amc0("a0-mesh", nullptr);
     ACollisionComponent acc0("a0-collision", nullptr);
     AAudioComponent aac0("a0-audio", nullptr);
     ATimerComponent atmc0("a0-timer", nullptr);
@@ -299,10 +299,10 @@ SceneNode* CreateScene1(SceneManager* _manager)
     aitc0.SetDestoryFunction(TestADestory);
     a0.AddAComponent(COMP_TYPE::A_INTERACT);
 
-    //amc0.AddMeshInfo("dragon");
-    //amc0.AddMeshInfo("floor", { 0.f,-20.f,0.f });
-    //amc0.AddMeshInfo("floor", { 0.f,-50.f,0.f });
-    //a0.AddAComponent(COMP_TYPE::A_MESH);
+    amc0.AddMeshInfo("dragon");
+    amc0.AddMeshInfo("floor", { 0.f,-20.f,0.f });
+    amc0.AddMeshInfo("floor", { 0.f,-50.f,0.f });
+    a0.AddAComponent(COMP_TYPE::A_MESH);
 
     acc0.CreateCollisionShape(COLLISION_SHAPE::BOX, { 20.f,20.f,40.f });
     a0.AddAComponent(COMP_TYPE::A_COLLISION);
@@ -316,7 +316,7 @@ SceneNode* CreateScene1(SceneManager* _manager)
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc0);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_AUDIO, aac0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TIMER, atmc0);
@@ -737,13 +737,13 @@ void TestAUpdate(AInteractComponent* _aitc, Timer&)
     {
         atmc->StartTimer("test0");
     }
-    /*if (atmc->GetTimer("test0")->mActive)
+    if (atmc->GetTimer("test0")->mActive)
     {
         _aitc->GetActorOwner()->GetSceneNode().GetActorObject("a3")->
             GetAComponent<AParticleComponent>(COMP_TYPE::A_PARTICLE)->
             GetEmitterInfo().mEmitNumPerSecond = powf(
                 sinf(atmc->GetTimer("test0")->mTime), 2.f) * 2400.f;
-    }*/
+    }
 }
 
 void TestADestory(AInteractComponent*)
