@@ -27,6 +27,7 @@
 #include "USpriteComponent.h"
 #include "UInteractComponent.h"
 #include "UButtonComponent.h"
+#include "UAudioComponent.h"
 
 void TestAInput(AInputComponent*, Timer&);
 void TestA1Input(AInputComponent*, Timer&);
@@ -426,12 +427,16 @@ SceneNode* CreateScene2(SceneManager* _manager)
 {
     SceneNode* node = new SceneNode("test2", _manager);
 
+    LoadSound("test", ".\\Assets\\Sounds\\bgm-success.wav");
+    node->GetAssetsPool()->InsertNewSound("test");
+
     UiObject u0("u0", *node);
     UTransformComponent utc0("u0-transform", nullptr);
     UInputComponent uic0("u0-input", nullptr);
     USpriteComponent usc0("u0-sprite", nullptr);
     UAnimateComponent uamc0("u0-animate", nullptr);
     UInteractComponent uitc0("u0-interact", nullptr);
+    UAudioComponent uac0("u0-audio", nullptr);
 
     utc0.ForcePosition({ -400.f,300.f,0.f });
     utc0.ForceRotation({ 0.f,0.f,0.f });
@@ -455,11 +460,15 @@ SceneNode* CreateScene2(SceneManager* _manager)
     uitc0.SetDestoryFunction(TestU0Destory);
     u0.AddUComponent(COMP_TYPE::U_INTERACT);
 
+    uac0.AddAudio("test", *node);
+    u0.AddUComponent(COMP_TYPE::U_AUDIO);
+
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_TRANSFORM, utc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INPUT, uic0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_SPRITE, usc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_ANIMATE, uamc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::U_INTERACT, uitc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::U_AUDIO, uac0);
 
     node->AddUiObject(u0);
 
@@ -835,6 +844,19 @@ void TestU0Input(UInputComponent* _uic, Timer& _timer)
         _uic->GetUiOwner()->
             GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE)->
             ChangeAnimateTo("runman");
+    }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_N))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlayBgm("test", 0.8f);
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_M))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlayBgm("test", 0.4f);
     }
 }
 

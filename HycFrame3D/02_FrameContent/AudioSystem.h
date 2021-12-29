@@ -16,4 +16,5 @@ public:
 
 private:
     std::vector<class AAudioComponent>* mAAudioVecPtr;
+    std::vector<class UAudioComponent>* mUAudioVecPtr;
 };
