@@ -116,13 +116,25 @@ void RSLightsContainer::DeleteRSLight(std::string& _name)
                 break;
             }
         }
-        // TODO delete shadow and shadow index
+        int index = 0;
         for (auto i = mShadowLights.begin();
             i != mShadowLights.end(); i++)
         {
             if ((*i) == found->second)
             {
                 mShadowLights.erase(i);
+                break;
+            }
+            ++index;
+        }
+        for (auto i = mShadowLightIndeices.begin();
+            i != mShadowLightIndeices.end(); i++)
+        {
+            if ((*i) == index)
+            {
+                mShadowLightIndeices.erase(i);
+                std::string camName = _name + "-light-cam";
+                mRootPtr->CamerasContainer()->DeleteRSCamera(camName);
                 break;
             }
         }

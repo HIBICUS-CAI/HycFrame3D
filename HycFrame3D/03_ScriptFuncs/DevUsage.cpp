@@ -326,7 +326,7 @@ SceneNode* CreateScene1(SceneManager* _manager)
     ActorObject a1("a1", *node);
     ATransformComponent atc1("a1-transform", nullptr);
     AInputComponent aic1("a1-input", nullptr);
-    //ALightComponent alc1("a1-light", nullptr);
+    ALightComponent alc1("a1-light", nullptr);
     ACollisionComponent acc1("a1-collision", nullptr);
 
     atc1.ForcePosition({ 0.f,0.f,50.f });
@@ -337,66 +337,66 @@ SceneNode* CreateScene1(SceneManager* _manager)
     aic1.SetInputFunction(TestA1Input);
     a1.AddAComponent(COMP_TYPE::A_INPUT);
 
-    //LIGHT_INFO li = {};
-    //li.mType = LIGHT_TYPE::POINT;
-    //li.mWithShadow = false;
-    //li.mPosition = { 0.f,0.f,0.f };
-    //li.mDirection = { 0.f,-0.f,0.f };
-    //li.mStrength = { 0.9f,0.f,0.9f };
-    //li.mSpotPower = 2.f;
-    //li.mFalloffStart = 30.f;
-    //li.mFalloffEnd = 80.f;
-    //alc1.AddLight(li, true, false, {});
-    //a1.AddAComponent(COMP_TYPE::A_LIGHT);
+    LIGHT_INFO li = {};
+    li.mType = LIGHT_TYPE::POINT;
+    li.mWithShadow = false;
+    li.mPosition = { 0.f,0.f,0.f };
+    li.mDirection = { 0.f,-0.f,0.f };
+    li.mStrength = { 0.9f,0.f,0.9f };
+    li.mSpotPower = 2.f;
+    li.mFalloffStart = 30.f;
+    li.mFalloffEnd = 80.f;
+    alc1.AddLight(li, true, false, {});
+    a1.AddAComponent(COMP_TYPE::A_LIGHT);
 
     acc1.CreateCollisionShape(COLLISION_SHAPE::BOX, { 3.f,3.f,3.f });
     a1.AddAComponent(COMP_TYPE::A_COLLISION);
 
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc1);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic1);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_LIGHT, alc1);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_LIGHT, alc1);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc1);
 
     node->AddActorObject(a1);
 
-    //ActorObject a2("a2", *node);
-    //ATransformComponent atc2("a2-transform", nullptr);
-    //ALightComponent alc2("a2-light", nullptr);
-    ////AInputComponent aic2("a2-input", nullptr);
+    ActorObject a2("a2", *node);
+    ATransformComponent atc2("a2-transform", nullptr);
+    ALightComponent alc2("a2-light", nullptr);
+    //AInputComponent aic2("a2-input", nullptr);
 
-    //atc2.ForcePosition({ 0.f,30.f,-30.f });
-    //atc2.ForceRotation({ 0.f,0.f,0.f });
-    //atc2.ForceScaling({ 1.f,1.f,1.f });
-    //a2.AddAComponent(COMP_TYPE::A_TRANSFORM);
+    atc2.ForcePosition({ 0.f,30.f,-30.f });
+    atc2.ForceRotation({ 0.f,0.f,0.f });
+    atc2.ForceScaling({ 1.f,1.f,1.f });
+    a2.AddAComponent(COMP_TYPE::A_TRANSFORM);
 
     ////aic2.SetInputFunction(TestA1Input);
     ////a2.AddAComponent(COMP_TYPE::A_INPUT);
 
-    //li = {};
-    //li.mType = LIGHT_TYPE::DIRECT;
-    //li.mWithShadow = true;
-    //li.mPosition = { 0.f,30.f,-30.f };
-    //li.mDirection = { 0.f,-1.f,1.f };
-    //li.mStrength = { 0.8f,0.8f,0.8f };
-    //li.mSpotPower = 2.f;
-    //li.mFalloffStart = 5.f;
-    //li.mFalloffEnd = 15.f;
-    //CAM_INFO ci = {};
-    //ci.mType = LENS_TYPE::ORTHOGRAPHIC;
-    //ci.mPosition = li.mPosition;
-    //ci.mLookAt = li.mDirection;
-    //ci.mUpVec = { 0.f,1.f,1.f };
-    //ci.mNearFarZ = { 1.f,1000.f };
-    //ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
-    //ci.mOWidthAndHeight = { 128.f * 9.5f,72.f * 9.5f };
-    //alc2.AddLight(li, false, true, ci);
-    //a2.AddAComponent(COMP_TYPE::A_LIGHT);
+    li = {};
+    li.mType = LIGHT_TYPE::DIRECT;
+    li.mWithShadow = true;
+    li.mPosition = { 0.f,30.f,-30.f };
+    li.mDirection = { 0.f,-1.f,1.f };
+    li.mStrength = { 0.8f,0.8f,0.8f };
+    li.mSpotPower = 2.f;
+    li.mFalloffStart = 5.f;
+    li.mFalloffEnd = 15.f;
+    CAM_INFO ci = {};
+    ci.mType = LENS_TYPE::ORTHOGRAPHIC;
+    ci.mPosition = li.mPosition;
+    ci.mLookAt = li.mDirection;
+    ci.mUpVec = { 0.f,1.f,1.f };
+    ci.mNearFarZ = { 1.f,1000.f };
+    ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
+    ci.mOWidthAndHeight = { 128.f * 9.5f,72.f * 9.5f };
+    alc2.AddLight(li, false, true, ci);
+    a2.AddAComponent(COMP_TYPE::A_LIGHT);
 
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc2);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_LIGHT, alc2);
-    ////_node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic2);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc2);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_LIGHT, alc2);
+    //_node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic2);
 
-    //node->AddActorObject(a2);
+    node->AddActorObject(a2);
 
     ActorObject a3("a3", *node);
     ATransformComponent atc3("a3-transform", nullptr);
