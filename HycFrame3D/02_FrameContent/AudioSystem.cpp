@@ -40,7 +40,7 @@ void AudioSystem::Run(Timer& _timer)
 {
     for (auto& aac : *mAAudioVecPtr)
     {
-        aac.Update(_timer);
+        if (aac.GetCompStatus() == STATUS::ACTIVE) { aac.Update(_timer); }
     }
 }
 

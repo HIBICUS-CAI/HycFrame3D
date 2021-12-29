@@ -6,6 +6,7 @@
 #include "ComponentContainer.h"
 #include "AInputComponent.h"
 #include "UInputComponent.h"
+#include "UButtonComponent.h"
 
 InputSystem::InputSystem(SystemExecutive* _sysExecutive) :
     System("input-system", _sysExecutive),
@@ -40,6 +41,15 @@ bool InputSystem::Init()
 void InputSystem::Run(Timer& _timer)
 {
     InputInterface::PollDevices();
+
+    bool up = InputInterface::IsKeyPushedInSingle(KB_UP);
+    bool down = InputInterface::IsKeyPushedInSingle(KB_DOWN);
+    bool left = InputInterface::IsKeyPushedInSingle(KB_LEFT);
+    bool right = InputInterface::IsKeyPushedInSingle(KB_RIGHT);
+    if (up || down || left || right)
+    {
+        UButtonComponent::SetShouldUseMouse(false);
+    }
 
     for (auto& aic : *mAInputVecPtr)
     {

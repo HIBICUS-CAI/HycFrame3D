@@ -861,20 +861,25 @@ void TestUBtnInput(UInputComponent* _uic, Timer& _timer)
         GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
     if (!ubc) { return; }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_I))
+    if (InputInterface::IsKeyPushedInSingle(KB_UP))
     {
         ubc->SelectUpBtn();
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_J))
+    if (InputInterface::IsKeyPushedInSingle(KB_LEFT))
     {
         ubc->SelectLeftBtn();
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_K))
+    if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
     {
         ubc->SelectDownBtn();
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_L))
+    if (InputInterface::IsKeyPushedInSingle(KB_RIGHT))
     {
         ubc->SelectRightBtn();
+    }
+
+    if (ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN))
+    {
+        P_LOG(LOG_DEBUG, "this btn has been click : %s\n", ubc->GetCompName().c_str());
     }
 }

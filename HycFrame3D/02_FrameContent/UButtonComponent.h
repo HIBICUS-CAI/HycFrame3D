@@ -33,6 +33,8 @@ public:
     void SetIsBeingSelected(bool _beingSelected);
     bool IsBeingSelected() const;
 
+    bool IsCursorOnBtn();
+
     void SelectUpBtn();
     void SelectDownBtn();
     void SelectLeftBtn();
@@ -43,16 +45,13 @@ public:
     UButtonComponent* GetLeftBtn();
     UButtonComponent* GetRightBtn();
 
+    static void SetScreenSpaceCursorPos(float _inputX, float _inputY);
+    static void SetShouldUseMouse(bool _shouldMouse);
+
 private:
     void SyncDataFromTransform();
 
 private:
     std::array<std::string, 4> mSurroundBtnObjectNames;
     bool mIsSelected;
-
-    bool mUseMouseSelectFlg;
-    float mWndWidth;
-    float mWndHeight;
-    const float mScreenWidth = 1280.f;
-    const float mScreenHeight = 720.f;
 };

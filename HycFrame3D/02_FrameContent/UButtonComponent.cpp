@@ -10,15 +10,17 @@
 static UButtonComponent* g_SelectedBtnCompPtr = nullptr;
 
 static bool g_CanThisFrameProcessSelect = true;
+static bool g_ShouleUseMouseSelect = false;
 
 static MESH_DATA* g_SelectTexMeshPtr = nullptr;
+
+static DirectX::XMFLOAT2 g_ScreenSpaceCursorPosition = { 0.f,0.f };
 
 UButtonComponent::UButtonComponent(std::string&& _compName,
     UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mSurroundBtnObjectNames({ NULL_BTN,NULL_BTN,NULL_BTN,NULL_BTN }),
-    mIsSelected(false), mUseMouseSelectFlg(false),
-    mWndWidth(0.f), mWndHeight(0.f)
+    mIsSelected(false)
 {
 
 }
@@ -27,8 +29,7 @@ UButtonComponent::UButtonComponent(std::string& _compName,
     UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
     mSurroundBtnObjectNames({ NULL_BTN,NULL_BTN,NULL_BTN,NULL_BTN }),
-    mIsSelected(false), mUseMouseSelectFlg(false),
-    mWndWidth(0.f), mWndHeight(0.f)
+    mIsSelected(false)
 {
 
 }
@@ -43,11 +44,7 @@ bool UButtonComponent::Init()
     if (g_SelectedBtnCompPtr) { g_SelectedBtnCompPtr = nullptr; }
     if (g_SelectTexMeshPtr) { g_SelectTexMeshPtr = nullptr; }
     g_CanThisFrameProcessSelect = true;
-
-    RECT wndRect = {};
-    GetClientRect(WindowInterface::GetWindowPtr()->GetWndHandle(), &wndRect);
-    mWndWidth = (float)(wndRect.right - wndRect.left);
-    mWndHeight = (float)(wndRect.bottom - wndRect.top);
+    g_ShouleUseMouseSelect = false;
 
     if (mIsSelected) { g_SelectedBtnCompPtr = this; }
 
@@ -76,9 +73,34 @@ bool UButtonComponent::Init()
 
 void UButtonComponent::Update(Timer& _timer)
 {
-    if (!g_CanThisFrameProcessSelect && !mUseMouseSelectFlg)
+    if (!g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect)
     {
         g_CanThisFrameProcessSelect = true;
+    }
+
+    if (g_ShouleUseMouseSelect)
+    {
+        auto utc = GetUiOwner()->
+            GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
+#ifdef _DEBUG
+        assert(utc);
+#endif // _DEBUG
+        static DirectX::XMFLOAT2 cur = {};
+        static DirectX::XMFLOAT3 pos = {};
+        static DirectX::XMFLOAT3 size = {};
+        cur = g_ScreenSpaceCursorPosition;
+        pos = utc->GetPosition();
+        size = utc->GetScaling();
+        if (fabsf(cur.x - pos.x) < size.x / 2.f &&
+            fabsf(cur.y - pos.y) < size.y / 2.f)
+        {
+            if (g_SelectedBtnCompPtr)
+            {
+                g_SelectedBtnCompPtr->SetIsBeingSelected(false);
+            }
+            SetIsBeingSelected(true);
+            g_SelectedBtnCompPtr = this;
+        }
     }
 
     if (mIsSelected)
@@ -93,6 +115,7 @@ void UButtonComponent::Destory()
     if (g_SelectedBtnCompPtr) { g_SelectedBtnCompPtr = nullptr; }
     if (g_SelectTexMeshPtr) { g_SelectTexMeshPtr = nullptr; }
     g_CanThisFrameProcessSelect = true;
+    g_ShouleUseMouseSelect = false;
 }
 
 void UButtonComponent::SetIsBeingSelected(bool _beingSelected)
@@ -105,9 +128,40 @@ bool UButtonComponent::IsBeingSelected() const
     return mIsSelected;
 }
 
+bool UButtonComponent::IsCursorOnBtn()
+{
+    if (g_ShouleUseMouseSelect && mIsSelected)
+    {
+        auto utc = GetUiOwner()->
+            GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
+#ifdef _DEBUG
+        assert(utc);
+#endif // _DEBUG
+        static DirectX::XMFLOAT2 cur = {};
+        static DirectX::XMFLOAT3 pos = {};
+        static DirectX::XMFLOAT3 size = {};
+        cur = g_ScreenSpaceCursorPosition;
+        pos = utc->GetPosition();
+        size = utc->GetScaling();
+        if (fabsf(cur.x - pos.x) < size.x / 2.f &&
+            fabsf(cur.y - pos.y) < size.y / 2.f)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void UButtonComponent::SelectUpBtn()
 {
-    if (mIsSelected && g_CanThisFrameProcessSelect && !mUseMouseSelectFlg &&
+    if (mIsSelected && g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect &&
         mSurroundBtnObjectNames[BTN_UP] != NULL_BTN)
     {
         auto upUi = GetUiOwner()->GetSceneNode().
@@ -126,7 +180,7 @@ void UButtonComponent::SelectUpBtn()
 
 void UButtonComponent::SelectDownBtn()
 {
-    if (mIsSelected && g_CanThisFrameProcessSelect && !mUseMouseSelectFlg &&
+    if (mIsSelected && g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect &&
         mSurroundBtnObjectNames[BTN_DOWN] != NULL_BTN)
     {
         auto downUi = GetUiOwner()->GetSceneNode().
@@ -145,7 +199,7 @@ void UButtonComponent::SelectDownBtn()
 
 void UButtonComponent::SelectLeftBtn()
 {
-    if (mIsSelected && g_CanThisFrameProcessSelect && !mUseMouseSelectFlg &&
+    if (mIsSelected && g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect &&
         mSurroundBtnObjectNames[BTN_LEFT] != NULL_BTN)
     {
         auto leftUi = GetUiOwner()->GetSceneNode().
@@ -164,7 +218,7 @@ void UButtonComponent::SelectLeftBtn()
 
 void UButtonComponent::SelectRightBtn()
 {
-    if (mIsSelected && g_CanThisFrameProcessSelect && !mUseMouseSelectFlg &&
+    if (mIsSelected && g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect &&
         mSurroundBtnObjectNames[BTN_RIGHT] != NULL_BTN)
     {
         auto rightUi = GetUiOwner()->GetSceneNode().
@@ -330,4 +384,14 @@ void UButtonComponent::SyncDataFromTransform()
 
         break;
     }
+}
+
+void UButtonComponent::SetScreenSpaceCursorPos(float _inputX, float _inputY)
+{
+    g_ScreenSpaceCursorPosition = { _inputX,_inputY };
+}
+
+void UButtonComponent::SetShouldUseMouse(bool _shouldMouse)
+{
+    g_ShouleUseMouseSelect = _shouldMouse;
 }
