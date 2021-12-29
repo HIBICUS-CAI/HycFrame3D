@@ -279,10 +279,10 @@ SceneNode* CreateScene1(SceneManager* _manager)
 
     ActorObject a0("a0", *node);
     ATransformComponent atc0("a0-transform", nullptr);
-    //AInputComponent aic0("a0-input", nullptr);
-    //AInteractComponent aitc0("a0-interact", nullptr);
-    AMeshComponent amc0("a0-mesh", nullptr);
-    //ACollisionComponent acc0("a0-collision", nullptr);
+    AInputComponent aic0("a0-input", nullptr);
+    AInteractComponent aitc0("a0-interact", nullptr);
+    //AMeshComponent amc0("a0-mesh", nullptr);
+    ACollisionComponent acc0("a0-collision", nullptr);
     AAudioComponent aac0("a0-audio", nullptr);
     ATimerComponent atmc0("a0-timer", nullptr);
 
@@ -291,21 +291,21 @@ SceneNode* CreateScene1(SceneManager* _manager)
     atc0.ForceScaling({ 1.f,1.f,1.f });
     a0.AddAComponent(COMP_TYPE::A_TRANSFORM);
 
-    //aic0.SetInputFunction(TestAInput);
-    //a0.AddAComponent(COMP_TYPE::A_INPUT);
+    aic0.SetInputFunction(TestAInput);
+    a0.AddAComponent(COMP_TYPE::A_INPUT);
 
-    //aitc0.SetInitFunction(TestAInit);
-    //aitc0.SetUpdateFunction(TestAUpdate);
-    //aitc0.SetDestoryFunction(TestADestory);
-    //a0.AddAComponent(COMP_TYPE::A_INTERACT);
+    aitc0.SetInitFunction(TestAInit);
+    aitc0.SetUpdateFunction(TestAUpdate);
+    aitc0.SetDestoryFunction(TestADestory);
+    a0.AddAComponent(COMP_TYPE::A_INTERACT);
 
-    amc0.AddMeshInfo("dragon");
-    amc0.AddMeshInfo("floor", { 0.f,-20.f,0.f });
-    amc0.AddMeshInfo("floor", { 0.f,-50.f,0.f });
-    a0.AddAComponent(COMP_TYPE::A_MESH);
+    //amc0.AddMeshInfo("dragon");
+    //amc0.AddMeshInfo("floor", { 0.f,-20.f,0.f });
+    //amc0.AddMeshInfo("floor", { 0.f,-50.f,0.f });
+    //a0.AddAComponent(COMP_TYPE::A_MESH);
 
-    //acc0.CreateCollisionShape(COLLISION_SHAPE::BOX, { 20.f,20.f,40.f });
-    //a0.AddAComponent(COMP_TYPE::A_COLLISION);
+    acc0.CreateCollisionShape(COLLISION_SHAPE::BOX, { 20.f,20.f,40.f });
+    a0.AddAComponent(COMP_TYPE::A_COLLISION);
 
     aac0.AddAudio("test", *node);
     a0.AddAComponent(COMP_TYPE::A_AUDIO);
@@ -314,28 +314,28 @@ SceneNode* CreateScene1(SceneManager* _manager)
     a0.AddAComponent(COMP_TYPE::A_TIMER);
 
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc0);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic0);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc0);
-    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc0);
+    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_MESH, amc0);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_AUDIO, aac0);
     node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TIMER, atmc0);
 
     node->AddActorObject(a0);
 
-    //ActorObject a1("a1", *node);
-    //ATransformComponent atc1("a1-transform", nullptr);
-    //AInputComponent aic1("a1-input", nullptr);
+    ActorObject a1("a1", *node);
+    ATransformComponent atc1("a1-transform", nullptr);
+    AInputComponent aic1("a1-input", nullptr);
     //ALightComponent alc1("a1-light", nullptr);
-    //ACollisionComponent acc1("a1-collision", nullptr);
+    ACollisionComponent acc1("a1-collision", nullptr);
 
-    //atc1.ForcePosition({ 0.f,0.f,50.f });
-    //atc1.ForceRotation({ 0.f,0.f,0.f });
-    //atc1.ForceScaling({ 3.f,3.f,3.f });
-    //a1.AddAComponent(COMP_TYPE::A_TRANSFORM);
+    atc1.ForcePosition({ 0.f,0.f,50.f });
+    atc1.ForceRotation({ 0.f,0.f,0.f });
+    atc1.ForceScaling({ 3.f,3.f,3.f });
+    a1.AddAComponent(COMP_TYPE::A_TRANSFORM);
 
-    //aic1.SetInputFunction(TestA1Input);
-    //a1.AddAComponent(COMP_TYPE::A_INPUT);
+    aic1.SetInputFunction(TestA1Input);
+    a1.AddAComponent(COMP_TYPE::A_INPUT);
 
     //LIGHT_INFO li = {};
     //li.mType = LIGHT_TYPE::POINT;
@@ -349,15 +349,15 @@ SceneNode* CreateScene1(SceneManager* _manager)
     //alc1.AddLight(li, true, false, {});
     //a1.AddAComponent(COMP_TYPE::A_LIGHT);
 
-    //acc1.CreateCollisionShape(COLLISION_SHAPE::BOX, { 3.f,3.f,3.f });
-    //a1.AddAComponent(COMP_TYPE::A_COLLISION);
+    acc1.CreateCollisionShape(COLLISION_SHAPE::BOX, { 3.f,3.f,3.f });
+    a1.AddAComponent(COMP_TYPE::A_COLLISION);
 
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc1);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic1);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc1);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INPUT, aic1);
     //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_LIGHT, alc1);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc1);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_COLLISION, acc1);
 
-    //node->AddActorObject(a1);
+    node->AddActorObject(a1);
 
     //ActorObject a2("a2", *node);
     //ATransformComponent atc2("a2-transform", nullptr);
@@ -398,43 +398,43 @@ SceneNode* CreateScene1(SceneManager* _manager)
 
     //node->AddActorObject(a2);
 
-    //ActorObject a3("a3", *node);
-    //ATransformComponent atc3("a3-transform", nullptr);
-    //AParticleComponent apc3("a3-particle", nullptr);
-    //AInteractComponent aitc3("a3-interact", nullptr);
+    ActorObject a3("a3", *node);
+    ATransformComponent atc3("a3-transform", nullptr);
+    AParticleComponent apc3("a3-particle", nullptr);
+    AInteractComponent aitc3("a3-interact", nullptr);
 
-    //atc3.ForcePosition({ 0.f,5.f,25.f });
-    //atc3.ForceRotation({ 0.f,0.f,0.f });
-    //atc3.ForceScaling({ 3.f,3.f,3.f });
-    //a3.AddAComponent(COMP_TYPE::A_TRANSFORM);
+    atc3.ForcePosition({ 0.f,5.f,25.f });
+    atc3.ForceRotation({ 0.f,0.f,0.f });
+    atc3.ForceScaling({ 3.f,3.f,3.f });
+    a3.AddAComponent(COMP_TYPE::A_TRANSFORM);
 
-    //PARTICLE_EMITTER_INFO pei = {};
-    //pei.mAcceleration = { 0.f,-9.8f,0.f };
-    //pei.mEmitNumPerSecond = 2400.f;
-    //pei.mEnableStreak = true;
-    //pei.mLifeSpan = 100.f;
-    //pei.mOffsetEndColor = { 0.f,0.f,0.f,0.f };
-    //pei.mOffsetEndSize = 0.f;
-    //pei.mOffsetStartColor = { 1.f,0.f,0.f,1.f };
-    //pei.mOffsetStartSize = 0.5f;
-    //pei.mParticleMass = 0.3f;
-    //pei.mPosVariance = { 1.f,1.f,1.f };
-    //pei.mTextureID = PARTICLE_TEXTURE::WHITE_CIRCLE;
-    //pei.mVelocity = { 0.f,18.f,0.f };
-    //pei.mVelVariance = 0.5f;
-    //apc3.CreateEmitter(&pei);
-    //a3.AddAComponent(COMP_TYPE::A_PARTICLE);
+    PARTICLE_EMITTER_INFO pei = {};
+    pei.mAcceleration = { 0.f,-9.8f,0.f };
+    pei.mEmitNumPerSecond = 2400.f;
+    pei.mEnableStreak = true;
+    pei.mLifeSpan = 100.f;
+    pei.mOffsetEndColor = { 0.f,0.f,0.f,0.f };
+    pei.mOffsetEndSize = 0.f;
+    pei.mOffsetStartColor = { 1.f,0.f,0.f,1.f };
+    pei.mOffsetStartSize = 0.5f;
+    pei.mParticleMass = 0.3f;
+    pei.mPosVariance = { 1.f,1.f,1.f };
+    pei.mTextureID = PARTICLE_TEXTURE::WHITE_CIRCLE;
+    pei.mVelocity = { 0.f,18.f,0.f };
+    pei.mVelVariance = 0.5f;
+    apc3.CreateEmitter(&pei);
+    a3.AddAComponent(COMP_TYPE::A_PARTICLE);
 
-    //aitc3.SetInitFunction(TestA3Init);
-    //aitc3.SetUpdateFunction(TestA3Update);
-    //aitc3.SetDestoryFunction(TestA3Destory);
-    //a3.AddAComponent(COMP_TYPE::A_INTERACT);
+    aitc3.SetInitFunction(TestA3Init);
+    aitc3.SetUpdateFunction(TestA3Update);
+    aitc3.SetDestoryFunction(TestA3Destory);
+    a3.AddAComponent(COMP_TYPE::A_INTERACT);
 
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc3);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_PARTICLE, apc3);
-    //node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc3);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_TRANSFORM, atc3);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_PARTICLE, apc3);
+    node->GetComponentContainer()->AddComponent(COMP_TYPE::A_INTERACT, aitc3);
 
-    //node->AddActorObject(a3);
+    node->AddActorObject(a3);
 
     node->SetCurrentAmbient({ 0.5f,0.5f,0.5f,0.5f });
 
@@ -737,13 +737,13 @@ void TestAUpdate(AInteractComponent* _aitc, Timer&)
     {
         atmc->StartTimer("test0");
     }
-    if (atmc->GetTimer("test0")->mActive)
+    /*if (atmc->GetTimer("test0")->mActive)
     {
         _aitc->GetActorOwner()->GetSceneNode().GetActorObject("a3")->
             GetAComponent<AParticleComponent>(COMP_TYPE::A_PARTICLE)->
             GetEmitterInfo().mEmitNumPerSecond = powf(
                 sinf(atmc->GetTimer("test0")->mTime), 2.f) * 2400.f;
-    }
+    }*/
 }
 
 void TestADestory(AInteractComponent*)
