@@ -1,6 +1,59 @@
 {
     "scene-name": "first-scene",
-    "model-assets": [],
+    "ambient-light": [
+        0.5,
+        0.5,
+        0.5,
+        1.0
+    ],
+    "model-assets": [
+        {
+            "mesh-name": "yel-box",
+            "static-material": null,
+            "material-info": {
+                "albedo": [
+                    0.8,
+                    0.8,
+                    0.8,
+                    0.8
+                ],
+                "fresnel": [
+                    0.1,
+                    0.3,
+                    0.1
+                ],
+                "shininess": 0.5
+            },
+            "force-diffuse": "tile.dds",
+            "force-normal": "tile_nmap.dds",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    15.0,
+                    15.0,
+                    15.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "sand-grid",
+            "static-material": null,
+            "load-mode": "program-grid",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "grid-size": [
+                    150.0,
+                    150.0
+                ],
+                "row-col-count": [
+                    2,
+                    2
+                ]
+            }
+        }
+    ],
     "audio-assets": [
         {
             "audio-name": "test",
@@ -51,6 +104,23 @@
                     "collision-shape": "sphere",
                     "collision-size": [
                         10.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "yel-box",
+                            "mesh-offset": null
+                        },
+                        {
+                            "mesh-name": "sand-grid",
+                            "mesh-offset": [
+                                0.0,
+                                -20.0,
+                                0.0
+                            ]
+                        }
                     ]
                 }
             ]

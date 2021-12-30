@@ -338,7 +338,14 @@ void AddDiffuseTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
         }
     }
 
-    _result->mTextures.emplace_back(name);
+    if (_result->mTextures.size())
+    {
+        _result->mTextures[0] = _filePath;
+    }
+    else
+    {
+        _result->mTextures.emplace_back(_filePath);
+    }
 }
 
 void AddBumpedTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)

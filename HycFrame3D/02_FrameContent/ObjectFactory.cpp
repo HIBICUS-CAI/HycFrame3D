@@ -3,6 +3,10 @@
 #include "ActorAll.h"
 #include "UiAll.h"
 #include "SoundHelper.h"
+#include "ModelHelper.h"
+#include "RSRoot_DX11.h"
+#include "RSMeshHelper.h"
+#include "RSStaticResources.h"
 
 ObjectFactory::ObjectFactory() :mSceneManagerPtr(nullptr),
 mActorInputFuncPtrMap({}), mActorInteractInitFuncPtrMap({}),
@@ -68,6 +72,25 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
         }
     }
 
+    if (sceneConfig["ambient-light"].IsNull() ||
+        sceneConfig["ambient-light"].Size() != 4)
+    {
+        P_LOG(LOG_ERROR,
+            "the scene's name in json file %s \
+                doesn't has an ambient light data\n",
+            _path.c_str());
+        delete newNode;
+        return nullptr;
+    }
+    DirectX::XMFLOAT4 ambient =
+    {
+        sceneConfig["ambient-light"][0].GetFloat(),
+        sceneConfig["ambient-light"][1].GetFloat(),
+        sceneConfig["ambient-light"][2].GetFloat(),
+        sceneConfig["ambient-light"][3].GetFloat()
+    };
+    newNode->SetCurrentAmbient(ambient);
+
     CreateSceneAssets(newNode, &sceneConfig);
 
     if (sceneConfig.HasMember("actor") && !sceneConfig["actor"].IsNull())
@@ -93,6 +116,180 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
 void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
 {
     JsonNode modelRoot = GetJsonNode(_json, "/model-assets");
+    UINT modelSize = modelRoot->Size();
+    std::string jsonPath = "";
+    if (modelSize)
+    {
+        std::string meshName = "";
+        std::string staticMatName = "copper";
+        bool forceMat = false;
+        RS_MATERIAL_INFO matInfo = {};
+        std::string forceDiffuse = "";
+        std::string forceNormal = "";
+        std::string loadMode = "";
+        RS_SUBMESH_DATA meshData = {};
+        for (UINT i = 0; i < modelSize; i++)
+        {
+            meshName = "";
+            staticMatName = "copper";
+            forceMat = false;
+            matInfo = {};
+            forceDiffuse = "";
+            forceNormal = "";
+            loadMode = "";
+            meshData = {};
+
+            jsonPath = "/model-assets/" + std::to_string(i);
+
+            meshName = GetJsonNode(_json,
+                jsonPath + "/mesh-name")->GetString();
+
+            JsonNode staMatNode = GetJsonNode(_json,
+                jsonPath + "/static-material");
+            if (staMatNode && !staMatNode->IsNull())
+            {
+                staticMatName = staMatNode->GetString();
+            }
+
+            JsonNode matInfoNode = GetJsonNode(_json,
+                jsonPath + "/material-info");
+            if (matInfoNode && !matInfoNode->IsNull())
+            {
+                JsonNode albedoNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/albedo");
+                JsonNode fresnelNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/fresnel");
+                JsonNode shininessNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/shininess");
+                if (!(albedoNode && fresnelNode && shininessNode))
+                {
+                    P_LOG(LOG_ERROR,
+                        "invalid material info in %s\n",
+                        jsonPath.c_str());
+                    return;
+                }
+                DirectX::XMFLOAT4 albedo =
+                {
+                    GetJsonNode(_json,
+                    jsonPath + "/material-info/albedo/0")->GetFloat(),
+                    GetJsonNode(_json,
+                    jsonPath + "/material-info/albedo/1")->GetFloat(),
+                    GetJsonNode(_json,
+                    jsonPath + "/material-info/albedo/2")->GetFloat(),
+                    GetJsonNode(_json,
+                    jsonPath + "/material-info/albedo/3")->GetFloat()
+                };
+                DirectX::XMFLOAT3 fresnel =
+                {
+                    GetJsonNode(_json,
+                    jsonPath + "/material-info/fresnel/0")->GetFloat(),
+                    GetJsonNode(_json,
+                    jsonPath + "/material-info/fresnel/1")->GetFloat(),
+                    GetJsonNode(_json,
+                    jsonPath + "/material-info/fresnel/2")->GetFloat()
+                };
+                float shininess = GetJsonNode(_json,
+                    jsonPath + "/material-info/shininess")->GetFloat();
+                matInfo.mDiffuseAlbedo = albedo;
+                matInfo.mFresnelR0 = fresnel;
+                matInfo.mShininess = shininess;
+                forceMat = true;
+            }
+
+            JsonNode diffuseNode = GetJsonNode(_json,
+                jsonPath + "/force-diffuse");
+            if (diffuseNode && !diffuseNode->IsNull())
+            {
+                forceDiffuse = diffuseNode->GetString();
+            }
+
+            JsonNode normalNode = GetJsonNode(_json,
+                jsonPath + "/force-normal");
+            if (normalNode && !normalNode->IsNull())
+            {
+                forceNormal = normalNode->GetString();
+            }
+
+            loadMode = GetJsonNode(_json,
+                jsonPath + "/load-mode")->GetString();
+
+            if (loadMode == "model-file")
+            {
+
+            }
+            else if (loadMode == "program-box")
+            {
+                float width = GetJsonNode(_json,
+                    jsonPath + "/load-info/box-size/0")->GetFloat();
+                float height = GetJsonNode(_json,
+                    jsonPath + "/load-info/box-size/1")->GetFloat();
+                float depth = GetJsonNode(_json,
+                    jsonPath + "/load-info/box-size/2")->GetFloat();
+                UINT divide = GetJsonNode(_json,
+                    jsonPath + "/load-info/divide")->GetUint();
+                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                    GeoGenerate()->CreateBox(width, height, depth, divide,
+                        LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
+                        GetJsonNode(_json,
+                            jsonPath + "/load-info/tex-file")->GetString());
+            }
+            else if (loadMode == "program-sphere")
+            {
+
+            }
+            else if (loadMode == "program-geo-sphere")
+            {
+
+            }
+            else if (loadMode == "program-cylinder")
+            {
+
+            }
+            else if (loadMode == "program-grid")
+            {
+                float width = GetJsonNode(_json,
+                    jsonPath + "/load-info/grid-size/0")->GetFloat();
+                float depth = GetJsonNode(_json,
+                    jsonPath + "/load-info/grid-size/1")->GetFloat();
+                UINT row = GetJsonNode(_json,
+                    jsonPath + "/load-info/row-col-count/0")->GetUint();
+                UINT col = GetJsonNode(_json,
+                    jsonPath + "/load-info/row-col-count/1")->GetUint();
+                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                    GeoGenerate()->CreateGrid(width, depth, row, col,
+                        LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
+                        GetJsonNode(_json,
+                            jsonPath + "/load-info/tex-file")->GetString());
+            }
+            else
+            {
+                P_LOG(LOG_ERROR, "invlaid model load mode : %s\n",
+                    loadMode.c_str());
+                return;
+            }
+
+            if (!forceMat)
+            {
+                meshData.mMaterial = *(GetRSRoot_DX11_Singleton()->
+                    StaticResources()->GetStaticMaterial(staticMatName));
+            }
+            else
+            {
+                meshData.mMaterial = matInfo;
+            }
+
+            if (forceDiffuse != "")
+            {
+                AddDiffuseTexTo(&meshData, forceDiffuse);
+            }
+            if (forceNormal != "")
+            {
+                AddBumpedTexTo(&meshData, forceNormal);
+            }
+            _node->GetAssetsPool()->
+                InsertNewMesh(meshName, meshData, MESH_TYPE::OPACITY);
+        }
+    }
 
     JsonNode audioRoot = GetJsonNode(_json, "/audio-assets");
     if (audioRoot && audioRoot->Size())
@@ -290,6 +487,42 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         COMP_TYPE type = COMP_TYPE::A_COLLISION;
         _actor->AddAComponent(type);
         _node->GetComponentContainer()->AddComponent(type, acc);
+    }
+    else if (compType == "mesh")
+    {
+        AMeshComponent amc(compName, nullptr);
+
+        UINT meshSize = GetJsonNode(_json,
+            _jsonPath + "/meshes")->Size();
+        for (UINT i = 0; i < meshSize; i++)
+        {
+            std::string meshName = GetJsonNode(_json,
+                _jsonPath + "/meshes/" + std::to_string(i) + "/mesh-name")->
+                GetString();
+            JsonNode offsetNode = GetJsonNode(_json,
+                _jsonPath + "/meshes/" + std::to_string(i) + "/mesh-offset");
+            DirectX::XMFLOAT3 offset = { 0.f,0.f,0.f };
+            if (offsetNode && !offsetNode->IsNull())
+            {
+                offset =
+                {
+                    GetJsonNode(_json,
+                _jsonPath + "/meshes/" + std::to_string(i) +
+                "/mesh-offset/0")->GetFloat(),
+                    GetJsonNode(_json,
+                _jsonPath + "/meshes/" + std::to_string(i) +
+                "/mesh-offset/1")->GetFloat(),
+                    GetJsonNode(_json,
+                _jsonPath + "/meshes/" + std::to_string(i) +
+                "/mesh-offset/2")->GetFloat()
+                };
+            }
+            amc.AddMeshInfo(meshName, offset);
+        }
+
+        COMP_TYPE type = COMP_TYPE::A_MESH;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, amc);
     }
 }
 
