@@ -251,15 +251,16 @@ SceneNode* CreateScene1(SceneManager* _manager)
     SceneNode* node = new SceneNode("test1", _manager);
 
     RS_SUBMESH_DATA sd = {};
-    LoadModelFile("Dragon.FBX.json", MODEL_FILE_TYPE::JSON, &sd);
-    AddDiffuseTexTo(&sd, "sand.jpg");
+    LoadModelFile("hill.obj.meshdata", MODEL_FILE_TYPE::BIN, &sd);
+    AddDiffuseTexTo(&sd, "hill_diffuse.png");
+    AddBumpedTexTo(&sd, "hill_normal.png");
     std::string nameM = "copper";
     sd.mMaterial = *GetRSRoot_DX11_Singleton()->StaticResources()->
         GetStaticMaterial(nameM);
     node->GetAssetsPool()->InsertNewMesh("dragon", sd, MESH_TYPE::OPACITY);
 
     sd = GetRSRoot_DX11_Singleton()->MeshHelper()->GeoGenerate()->
-        CreateGrid(500.f, 500.f, 10, 10, LAYOUT_TYPE::NORMAL_TANGENT_TEX,
+        CreateGrid(10.f, 10.f, 10, 10, LAYOUT_TYPE::NORMAL_TANGENT_TEX,
             false, {}, "tile.dds");
     std::string name = "copper";
     sd.mMaterial = *(GetRSRoot_DX11_Singleton()->StaticResources()->
@@ -288,7 +289,7 @@ SceneNode* CreateScene1(SceneManager* _manager)
 
     atc0.ForcePosition({ 0.f,0.f,150.f });
     atc0.ForceRotation({ 0.f,0.f,0.f });
-    atc0.ForceScaling({ 1.f,1.f,1.f });
+    atc0.ForceScaling({ 100.f,100.f,100.f });
     a0.AddAComponent(COMP_TYPE::A_TRANSFORM);
 
     aic0.SetInputFunction(TestAInput);

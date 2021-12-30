@@ -37,7 +37,130 @@ void LoadModelFile(const std::string _filePath, MODEL_FILE_TYPE _type,
 
 void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result)
 {
+    std::ifstream inFile(_filePath, std::ios::in | std::ios::binary);
 
+#ifdef _DEBUG
+    assert(inFile.is_open());
+#endif // _DEBUG
+
+    std::string directory = "";
+    std::string texType = "";
+
+    // directory
+    {
+        int size = 0;
+        char str[128] = "";
+        inFile.read((char*)&size, sizeof(size));
+        inFile.read(str, size);
+        directory = str;
+    }
+
+    // texture-type
+    {
+        int size = 0;
+        char str[128] = "";
+        inFile.read((char*)&size, sizeof(size));
+        inFile.read(str, size);
+        texType = str;
+    }
+
+    // sub-model-size
+    int subSize = 0;
+    inFile.read((char*)&subSize, sizeof(subSize));
+#ifdef _DEBUG
+    assert(subSize == 1);
+#endif // _DEBUG
+
+    std::vector<UINT> index = {};
+    std::vector<VertexType::TangentVertex> vertex = {};
+    std::vector<MODEL_TEXTURE_INFO> texture = {};
+    int indexSize = 0;
+    int vertexSize = 0;
+    int textureSize = 0;
+    for (int i = 0; i < subSize; i++)
+    {
+        index.clear();
+        vertex.clear();
+        texture.clear();
+
+        // each-sub-sizes
+        inFile.read((char*)&indexSize, sizeof(indexSize));
+        inFile.read((char*)&vertexSize, sizeof(vertexSize));
+        inFile.read((char*)&textureSize, sizeof(textureSize));
+
+        // each-sub-index
+        UINT ind = 0;
+        VertexType::TangentVertex ver = {};
+        MODEL_TEXTURE_INFO tex = {};
+        for (int j = 0; j < indexSize; j++)
+        {
+            inFile.read((char*)&ind, sizeof(ind));
+            index.push_back(ind);
+        }
+
+        // each-sub-vertex
+        {
+            double temp = 0.0;
+            for (int j = 0; j < vertexSize; j++)
+            {
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Position.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Position.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Position.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Normal.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Normal.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Normal.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Tangent.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Tangent.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Tangent.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.TexCoord.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.TexCoord.y = (float)temp;
+
+                vertex.push_back(ver);
+            }
+        }
+
+        // each-sub-texture
+        for (int j = 0; j < textureSize; j++)
+        {
+            int len = 0;
+            char str[1024] = "";
+            inFile.read((char*)(&len), sizeof(len));
+            inFile.read(str, len);
+            tex.mType = str;
+            std::strcpy(str, "");
+            inFile.read((char*)(&len), sizeof(len));
+            inFile.read(str, len);
+            tex.mPath = str;
+            texture.push_back(tex);
+        }
+
+        SUBMESH_INFO si = {};
+        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.mIndeices = &index;
+        si.mVerteices = &vertex;
+        std::vector<std::string> t = {};
+        for (auto& tex : texture) { t.emplace_back(tex.mPath); }
+        si.mTextures = &t;
+        si.mStaticMaterial = "copper";
+        GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
+            &si, LAYOUT_TYPE::NORMAL_TANGENT_TEX);
+    }
+
+    inFile.close();
 }
 
 void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)

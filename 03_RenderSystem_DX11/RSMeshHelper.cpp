@@ -258,8 +258,11 @@ void RSMeshHelper::CreateTexSrv(
             }
             else
             {
-                bool texture_load_fail = false;
-                assert(texture_load_fail);
+                char errorLog[128] = "";
+                sprintf_s(errorLog, 128,
+                    "[[[WARNING]]] : cannot load this texture %s\n",
+                    name.c_str());
+                OutputDebugString(errorLog);
             }
         }
         else
@@ -275,8 +278,11 @@ void RSMeshHelper::CreateTexSrv(
             }
             else
             {
-                bool texture_load_fail = false;
-                assert(texture_load_fail);
+                char errorLog[128] = "";
+                sprintf_s(errorLog, 128,
+                    "[[[WARNING]]] : cannot load this texture %s\n",
+                    name.c_str());
+                OutputDebugString(errorLog);
             }
         }
     }
