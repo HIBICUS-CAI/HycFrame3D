@@ -74,7 +74,7 @@ void DevUsage(SceneNode* _node)
     AddBumpedTexTo(&sd, "tile_nmap.dds");
     _node->GetAssetsPool()->InsertNewMesh("floor", sd, MESH_TYPE::OPACITY);
 
-    LoadSound("test", ".\\Assets\\Sounds\\bgm-success.wav");
+    LoadSound("test", "bgm-success.wav");
     _node->GetAssetsPool()->InsertNewSound("test");
 
     ActorObject asp("asp", *_node);
@@ -271,7 +271,7 @@ SceneNode* CreateScene1(SceneManager* _manager)
     AddBumpedTexTo(&sd, "tile_nmap.dds");
     node->GetAssetsPool()->InsertNewMesh("floor", sd, MESH_TYPE::OPACITY);
 
-    LoadSound("test", ".\\Assets\\Sounds\\bgm-success.wav");
+    LoadSound("test", "bgm-success.wav");
     node->GetAssetsPool()->InsertNewSound("test");
 
     ActorObject asp("asp", *node);
@@ -449,7 +449,7 @@ SceneNode* CreateScene2(SceneManager* _manager)
 {
     SceneNode* node = new SceneNode("test2", _manager);
 
-    LoadSound("test", ".\\Assets\\Sounds\\bgm-success.wav");
+    LoadSound("test", "bgm-success.wav");
     node->GetAssetsPool()->InsertNewSound("test");
 
     UiObject usp("usp", *node);

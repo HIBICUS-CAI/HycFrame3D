@@ -215,6 +215,8 @@ void LoadSound(std::string name, LOAD_HANDLE path)
         return;
     }
 
+    path = ".\\Assets\\Sounds\\" + path;
+
     memset(&wfx, 0, sizeof(WAVEFORMATEXTENSIBLE));
     memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
 

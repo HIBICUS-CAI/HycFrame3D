@@ -38,6 +38,8 @@ public:
         GetUDestoryMapPtr() { return &mUiInteractDestoryFuncPtrMap; }
 
 private:
+    void CreateSceneAssets(class SceneNode* _node, JsonFile* _json);
+
     void CreateActorObject(class SceneNode* _node, JsonFile* _json,
         std::string _jsonPath);
     void CreateUiObject(class SceneNode* _node, JsonFile* _json,

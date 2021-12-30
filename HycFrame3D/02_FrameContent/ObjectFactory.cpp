@@ -2,6 +2,7 @@
 #include "00_FunctionRegister.h"
 #include "ActorAll.h"
 #include "UiAll.h"
+#include "SoundHelper.h"
 
 ObjectFactory::ObjectFactory() :mSceneManagerPtr(nullptr),
 mActorInputFuncPtrMap({}), mActorInteractInitFuncPtrMap({}),
@@ -67,6 +68,8 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
         }
     }
 
+    CreateSceneAssets(newNode, &sceneConfig);
+
     if (sceneConfig.HasMember("actor") && !sceneConfig["actor"].IsNull())
     {
         for (unsigned int i = 0; i < sceneConfig["actor"].Size(); i++)
@@ -85,6 +88,26 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
     }
 
     return newNode;
+}
+
+void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
+{
+    JsonNode modelRoot = GetJsonNode(_json, "/model-assets");
+
+    JsonNode audioRoot = GetJsonNode(_json, "/audio-assets");
+    if (audioRoot && audioRoot->Size())
+    {
+        for (UINT i = 0; i < audioRoot->Size(); i++)
+        {
+            JsonNode audio = GetJsonNode(_json,
+                "/audio-assets/" + std::to_string(i) + "/audio-name");
+            std::string name = audio->GetString();
+            audio = GetJsonNode(_json,
+                "/audio-assets/" + std::to_string(i) + "/audio-file");
+            std::string file = audio->GetString();
+            LoadSound(name, file);
+        }
+    }
 }
 
 void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile* _json,
@@ -143,7 +166,27 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
 
     if (compType == "transform")
     {
+        ATransformComponent atc(compName, nullptr);
 
+        float pos[3] = { 0.f };
+        float ang[3] = { 0.f };
+        float sca[3] = { 0.f };
+        for (UINT i = 0; i < ARRAYSIZE(pos); i++)
+        {
+            pos[i] = GetJsonNode(_json,
+                _jsonPath + "/init-position/" + std::to_string(i))->GetFloat();
+            ang[i] = GetJsonNode(_json,
+                _jsonPath + "/init-angle/" + std::to_string(i))->GetFloat();
+            sca[i] = GetJsonNode(_json,
+                _jsonPath + "/init-scale/" + std::to_string(i))->GetFloat();
+        }
+        atc.ForcePosition({ pos[0],pos[1],pos[2] });
+        atc.ForceRotation({ ang[0],ang[1],ang[2] });
+        atc.ForceScaling({ sca[0],sca[1],sca[2] });
+
+        COMP_TYPE type = COMP_TYPE::A_TRANSFORM;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, atc);
     }
     else if (compType == "input")
     {
@@ -163,6 +206,90 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         COMP_TYPE type = COMP_TYPE::A_INPUT;
         _actor->AddAComponent(type);
         _node->GetComponentContainer()->AddComponent(type, aic);
+    }
+    else if (compType == "interact")
+    {
+        AInteractComponent aitc(compName, nullptr);
+
+        std::string initFuncName = GetJsonNode(_json,
+            _jsonPath + "/init-func-name")->GetString();
+        std::string updateFuncName = GetJsonNode(_json,
+            _jsonPath + "/update-func-name")->GetString();
+        std::string destoryFuncName = GetJsonNode(_json,
+            _jsonPath + "/destory-func-name")->GetString();
+        auto foundInit = mActorInteractInitFuncPtrMap.find(initFuncName);
+        if (foundInit == mActorInteractInitFuncPtrMap.end())
+        {
+            P_LOG(LOG_ERROR, "invlaid init func name : %s\n",
+                initFuncName.c_str());
+            return;
+        }
+        aitc.SetInitFunction(foundInit->second);
+        auto foundUpdate = mActorInteractUpdateFuncPtrMap.find(updateFuncName);
+        if (foundUpdate == mActorInteractUpdateFuncPtrMap.end())
+        {
+            P_LOG(LOG_ERROR, "invlaid update func name : %s\n",
+                updateFuncName.c_str());
+            return;
+        }
+        aitc.SetUpdateFunction(foundUpdate->second);
+        auto foundDestory = mActorInteractDestoryFuncPtrMap.find(destoryFuncName);
+        if (foundDestory == mActorInteractDestoryFuncPtrMap.end())
+        {
+            P_LOG(LOG_ERROR, "invlaid destory func name : %s\n",
+                destoryFuncName.c_str());
+            return;
+        }
+        aitc.SetDestoryFunction(foundDestory->second);
+
+        COMP_TYPE type = COMP_TYPE::A_INTERACT;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, aitc);
+    }
+    else if (compType == "timer")
+    {
+        ATimerComponent atmc(compName, nullptr);
+
+        UINT timerSize = GetJsonNode(_json, _jsonPath + "/timers")->Size();
+        for (UINT i = 0; i < timerSize; i++)
+        {
+            std::string timerName = GetJsonNode(_json,
+                _jsonPath + "/timers/" + std::to_string(i))->GetString();
+            atmc.AddTimer(timerName);
+        }
+
+        COMP_TYPE type = COMP_TYPE::A_TIMER;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, atmc);
+    }
+    else if (compType == "collision")
+    {
+        ACollisionComponent acc(compName, nullptr);
+
+        std::string shapeType = GetJsonNode(_json,
+            _jsonPath + "/collision-shape")->GetString();
+        UINT valueSize = GetJsonNode(_json,
+            _jsonPath + "/collision-size")->Size();
+        float value[3] = { 0.f };
+        for (UINT i = 0; i < valueSize; i++)
+        {
+            value[i] = GetJsonNode(_json,
+                _jsonPath + "/collision-size/" + std::to_string(i))->GetFloat();
+        }
+        COLLISION_SHAPE shape = COLLISION_SHAPE::SIZE;
+        if (shapeType == "sphere") { shape = COLLISION_SHAPE::SPHERE; }
+        else if (shapeType == "box") { shape = COLLISION_SHAPE::BOX; }
+        else
+        {
+            P_LOG(LOG_ERROR, "invlaid collision shape name : %s\n",
+                shapeType.c_str());
+            return;
+        }
+        acc.CreateCollisionShape(shape, { value[0],value[1],value[2] });
+
+        COMP_TYPE type = COMP_TYPE::A_COLLISION;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, acc);
     }
 }
 

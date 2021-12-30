@@ -1,12 +1,57 @@
 {
     "scene-name": "first-scene",
+    "model-assets": [],
+    "audio-assets": [
+        {
+            "audio-name": "test",
+            "audio-file": "bgm-success.wav"
+        }
+    ],
     "actor": [
         {
             "actor-name": "sp-actor",
             "components": [
                 {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        150.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
                     "type": "input",
                     "func-name": "TestASpInput"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "TestASpInit",
+                    "update-func-name": "TestASpUpdate",
+                    "destory-func-name": "TestASpDestory"
+                },
+                {
+                    "type": "timer",
+                    "timers": [
+                        "timer0",
+                        "timer1"
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        10.0
+                    ]
                 }
             ]
         }
