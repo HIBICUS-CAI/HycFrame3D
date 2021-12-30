@@ -251,8 +251,8 @@ SceneNode* CreateScene1(SceneManager* _manager)
     SceneNode* node = new SceneNode("test1", _manager);
 
     RS_SUBMESH_DATA sd = {};
-    LoadModelFile(".\\Assets\\Models\\Dragon.FBX.json",
-        MODEL_FILE_TYPE::JSON, &sd);
+    LoadModelFile("Dragon.FBX.json", MODEL_FILE_TYPE::JSON, &sd);
+    AddDiffuseTexTo(&sd, "sand.jpg");
     std::string nameM = "copper";
     sd.mMaterial = *GetRSRoot_DX11_Singleton()->StaticResources()->
         GetStaticMaterial(nameM);
