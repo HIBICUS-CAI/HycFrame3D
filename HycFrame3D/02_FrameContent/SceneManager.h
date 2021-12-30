@@ -11,9 +11,10 @@ public:
     ~SceneManager();
 
     bool StartUp(class ObjectFactory* _objectFactory);
+    bool DeferedStartUp();
     void CleanAndStop();
 
-    void LoadSceneNode(std::string&& _name, std::string&& _path);
+    void LoadSceneNode(std::string&& _name, std::string&& _file);
     void CheckLoadStatus();
 
     class ObjectFactory* GetObjectFactory() const;

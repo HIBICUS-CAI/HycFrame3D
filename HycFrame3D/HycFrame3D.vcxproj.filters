@@ -190,6 +190,9 @@
     <ClCompile Include="02_FrameContent\ButtonSystem.cpp">
       <Filter>02_FrameContent\System</Filter>
     </ClCompile>
+    <ClCompile Include="03_ScriptFuncs\SPInput.cpp">
+      <Filter>03_ScriptFuncs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -338,6 +341,21 @@
     </ClInclude>
     <ClInclude Include="02_FrameContent\ButtonSystem.h">
       <Filter>02_FrameContent\System</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ActorAll.h">
+      <Filter>02_FrameContent\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\UiAll.h">
+      <Filter>02_FrameContent\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\FuncPtrAdapter.h">
+      <Filter>02_FrameContent\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="03_ScriptFuncs\00_FunctionRegister.h">
+      <Filter>03_ScriptFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="03_ScriptFuncs\SPInput.h">
+      <Filter>03_ScriptFuncs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

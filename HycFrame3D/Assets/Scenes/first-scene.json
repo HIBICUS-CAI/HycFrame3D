@@ -1,0 +1,15 @@
+{
+    "scene-name": "first-scene",
+    "actor": [
+        {
+            "actor-name": "sp-actor",
+            "components": [
+                {
+                    "type": "input",
+                    "func-name": "TestASpInput"
+                }
+            ]
+        }
+    ],
+    "ui": []
+}

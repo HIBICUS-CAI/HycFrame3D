@@ -193,6 +193,7 @@
     <ClCompile Include="02_FrameContent\UTimerComponent.cpp" />
     <ClCompile Include="02_FrameContent\UTransformComponent.cpp" />
     <ClCompile Include="03_ScriptFuncs\DevUsage.cpp" />
+    <ClCompile Include="03_ScriptFuncs\SPInput.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -204,6 +205,7 @@
     <ClInclude Include="01_MiddleTools\SoundHelper.h" />
     <ClInclude Include="02_FrameContent\AAudioComponent.h" />
     <ClInclude Include="02_FrameContent\ACollisionComponent.h" />
+    <ClInclude Include="02_FrameContent\ActorAll.h" />
     <ClInclude Include="02_FrameContent\ActorComponent.h" />
     <ClInclude Include="02_FrameContent\ActorObject.h" />
     <ClInclude Include="02_FrameContent\AInputComponent.h" />
@@ -219,6 +221,7 @@
     <ClInclude Include="02_FrameContent\CollisionSystem.h" />
     <ClInclude Include="02_FrameContent\Component.h" />
     <ClInclude Include="02_FrameContent\ComponentContainer.h" />
+    <ClInclude Include="02_FrameContent\FuncPtrAdapter.h" />
     <ClInclude Include="02_FrameContent\Hyc3DCommon.h" />
     <ClInclude Include="02_FrameContent\InputSystem.h" />
     <ClInclude Include="02_FrameContent\InstanceSystem.h" />
@@ -237,6 +240,7 @@
     <ClInclude Include="02_FrameContent\UAnimateComponent.h" />
     <ClInclude Include="02_FrameContent\UAudioComponent.h" />
     <ClInclude Include="02_FrameContent\UButtonComponent.h" />
+    <ClInclude Include="02_FrameContent\UiAll.h" />
     <ClInclude Include="02_FrameContent\UiComponent.h" />
     <ClInclude Include="02_FrameContent\UInputComponent.h" />
     <ClInclude Include="02_FrameContent\UInteractComponent.h" />
@@ -244,7 +248,9 @@
     <ClInclude Include="02_FrameContent\USpriteComponent.h" />
     <ClInclude Include="02_FrameContent\UTimerComponent.h" />
     <ClInclude Include="02_FrameContent\UTransformComponent.h" />
+    <ClInclude Include="03_ScriptFuncs\00_FunctionRegister.h" />
     <ClInclude Include="03_ScriptFuncs\DevUsage.h" />
+    <ClInclude Include="03_ScriptFuncs\SPInput.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\03_InputDevice\03_InputDevice.vcxproj">

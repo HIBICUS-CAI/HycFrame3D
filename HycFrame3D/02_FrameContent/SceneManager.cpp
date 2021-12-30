@@ -2,6 +2,7 @@
 #include "ObjectFactory.h"
 #include "SceneNode.h"
 #include "ObjectContainer.h"
+#include "JsonHelper.h"
 
 #include "DevUsage.h"
 
@@ -26,6 +27,23 @@ bool SceneManager::StartUp(ObjectFactory* _objectFactory)
     return LoadLoadingScene();
 }
 
+bool SceneManager::DeferedStartUp()
+{
+    JsonFile entryInfo = {};
+    LoadJsonFile(&entryInfo, ".\\Assets\\Configs\\scene-entry-config.json");
+    if (entryInfo.HasParseError())
+    {
+        P_LOG(LOG_ERROR, "entry scene config json error code : %d\n",
+            entryInfo.GetParseError());
+        return false;
+    }
+
+    LoadSceneNode(entryInfo["entry-scene-name"].GetString(),
+        entryInfo["entry-scene-file"].GetString());
+
+    return true;
+}
+
 void SceneManager::CleanAndStop()
 {
     if (mCurrentScenePtr != mLoadingScenePtr)
@@ -36,36 +54,28 @@ void SceneManager::CleanAndStop()
     ReleaseLoadingScene();
 }
 
-void SceneManager::LoadSceneNode(std::string&& _name, std::string&& _path)
+void SceneManager::LoadSceneNode(std::string&& _name, std::string&& _file)
 {
     mLoadSceneFlg = true;
     mLoadSceneInfo[0] = _name;
-    mLoadSceneInfo[1] = _path;
+    mLoadSceneInfo[1] = ".\\Assets\\Scenes\\" + _file;
 }
 
 void SceneManager::CheckLoadStatus()
 {
     if (mSceneSwitchFlg) { mSceneSwitchFlg = false; }
 
-    // TEMP-----------------------
-    static bool firstTime = true;
-    if (firstTime)
-    {
-        mNextScenePtr = new SceneNode("dev-usage", this);
-        DevUsage(mNextScenePtr);
-        firstTime = false;
-        mSceneSwitchFlg = true;
-    }
-    // TEMP-----------------------
-
     if (mLoadSceneFlg)
     {
         mLoadSceneFlg = false;
         mSceneSwitchFlg = true;
+        if (mCurrentScenePtr != mLoadingScenePtr)
+        {
+            mCurrentScenePtr->ReleaseScene();
+            delete mCurrentScenePtr;
+            mCurrentScenePtr = mLoadingScenePtr;
+        }
 
-        mCurrentScenePtr->ReleaseScene();
-        delete mCurrentScenePtr;
-        mCurrentScenePtr = mLoadingScenePtr;
         LoadNextScene();
     }
 
@@ -104,23 +114,30 @@ void SceneManager::ReleaseLoadingScene()
 void SceneManager::LoadNextScene()
 {
     // TEMP-------------------------------------------
-    if (mLoadSceneInfo[0] == "test1" && mLoadSceneInfo[1] == "test1")
+    if (mLoadSceneInfo[0] == "test1" &&
+        mLoadSceneInfo[1] == ".\\Assets\\Scenes\\test1")
     {
         mNextScenePtr = CreateScene1(this);
         if (mNextScenePtr)
         {
             mLoadSceneInfo = { "","" };
         }
+        return;
     }
-    else if (mLoadSceneInfo[0] == "test2" && mLoadSceneInfo[1] == "test2")
+    else if (mLoadSceneInfo[0] == "test2" &&
+        mLoadSceneInfo[1] == ".\\Assets\\Scenes\\test2")
     {
         mNextScenePtr = CreateScene2(this);
         if (mNextScenePtr)
         {
             mLoadSceneInfo = { "","" };
         }
+        return;
     }
     // TEMP-------------------------------------------
+
+    mNextScenePtr = mObjectFactoryPtr->CreateSceneNode(
+        mLoadSceneInfo[0], mLoadSceneInfo[1]);
 }
 
 bool SceneManager::GetSceneSwitchFlg() const

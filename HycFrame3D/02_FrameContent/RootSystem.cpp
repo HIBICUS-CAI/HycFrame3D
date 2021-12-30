@@ -58,6 +58,11 @@ bool RootSystem::StartUp(HINSTANCE _hInstance, int _iCmdShow)
         P_LOG(LOG_ERROR, "cannot init object factory correctly\n");
         return false;
     }
+    if (!mSceneManagerPtr->DeferedStartUp())
+    {
+        P_LOG(LOG_ERROR, "cannot parse entry scene correctly\n");
+        return false;
+    }
 
     return true;
 }
