@@ -294,6 +294,69 @@
                     "spot-power": 2.0
                 }
             ]
+        },
+        {
+            "actor-name": "sp-particle-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        5.0,
+                        50.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "emit-per-second": 2400.0,
+                    "velocity": [
+                        0.0,
+                        18.0,
+                        0.0
+                    ],
+                    "pos-variance": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "vel-variance": 0.5,
+                    "acceleration": [
+                        0.0,
+                        -9.8,
+                        0.0
+                    ],
+                    "particle-mass": 0.3,
+                    "life-span": 100.0,
+                    "start-end-size": [
+                        0.5,
+                        0.0
+                    ],
+                    "start-color": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "end-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "streak-flag": true,
+                    "texture-name": "circle"
+                }
+            ]
         }
     ],
     "ui": []

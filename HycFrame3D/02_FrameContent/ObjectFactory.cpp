@@ -665,6 +665,113 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         _actor->AddAComponent(type);
         _node->GetComponentContainer()->AddComponent(type, alc);
     }
+    else if (compType == "particle")
+    {
+        AParticleComponent apc(compName, nullptr);
+
+        std::string ptcTexName = GetJsonNode(_json,
+            _jsonPath + "/texture-name")->GetString();
+        PARTICLE_TEXTURE ptcTex = PARTICLE_TEXTURE::PARTICLE_TEXTURE_SIZE;
+        if (ptcTexName == "circle")
+        {
+            ptcTex = PARTICLE_TEXTURE::WHITE_CIRCLE;
+        }
+        else if (ptcTexName == "smoke")
+        {
+            ptcTex = PARTICLE_TEXTURE::WHITE_SMOKE;
+        }
+        else
+        {
+            P_LOG(LOG_ERROR, "invlaid particle texture type : %s\n",
+                ptcTexName.c_str());
+            return;
+        }
+
+        float emitPreSec = GetJsonNode(_json,
+            _jsonPath + "/emit-per-second")->GetFloat();
+        DirectX::XMFLOAT3 velocity =
+        {
+            GetJsonNode(_json,
+            _jsonPath + "/velocity/0")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/velocity/1")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/velocity/2")->GetFloat()
+        };
+        DirectX::XMFLOAT3 posVariance =
+        {
+            GetJsonNode(_json,
+            _jsonPath + "/pos-variance/0")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/pos-variance/1")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/pos-variance/2")->GetFloat()
+        };
+        float velVariance = GetJsonNode(_json,
+            _jsonPath + "/vel-variance")->GetFloat();
+        DirectX::XMFLOAT3 acceleration =
+        {
+            GetJsonNode(_json,
+            _jsonPath + "/acceleration/0")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/acceleration/1")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/acceleration/2")->GetFloat()
+        };
+        float mass = GetJsonNode(_json,
+            _jsonPath + "/particle-mass")->GetFloat();
+        float lifeSpan = GetJsonNode(_json,
+            _jsonPath + "/life-span")->GetFloat();
+        float startSize = GetJsonNode(_json,
+            _jsonPath + "/start-end-size/0")->GetFloat();
+        float endSize = GetJsonNode(_json,
+            _jsonPath + "/start-end-size/1")->GetFloat();
+        DirectX::XMFLOAT4 startColor =
+        {
+            GetJsonNode(_json,
+            _jsonPath + "/start-color/0")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/start-color/1")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/start-color/2")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/start-color/3")->GetFloat()
+        };
+        DirectX::XMFLOAT4 endColor =
+        {
+            GetJsonNode(_json,
+            _jsonPath + "/end-color/0")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/end-color/1")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/end-color/2")->GetFloat(),
+            GetJsonNode(_json,
+            _jsonPath + "/end-color/3")->GetFloat()
+        };
+        bool streakFlg = GetJsonNode(_json,
+            _jsonPath + "/streak-flag")->GetBool();
+
+        PARTICLE_EMITTER_INFO pei = {};
+        pei.mEmitNumPerSecond = emitPreSec;
+        pei.mVelocity = velocity;
+        pei.mPosVariance = posVariance;
+        pei.mVelVariance = velVariance;
+        pei.mAcceleration = acceleration;
+        pei.mParticleMass = mass;
+        pei.mLifeSpan = lifeSpan;
+        pei.mOffsetStartSize = startSize;
+        pei.mOffsetEndSize = endSize;
+        pei.mOffsetStartColor = startColor;
+        pei.mOffsetEndColor = endColor;
+        pei.mEnableStreak = streakFlg;
+        pei.mTextureID = ptcTex;
+
+        apc.CreateEmitter(&pei);
+
+        COMP_TYPE type = COMP_TYPE::A_PARTICLE;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, apc);
+    }
     else
     {
         P_LOG(LOG_ERROR, "invlaid comp type : %s\n", compType.c_str());
