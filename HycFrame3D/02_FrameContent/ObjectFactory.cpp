@@ -586,6 +586,90 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         _actor->AddAComponent(type);
         _node->GetComponentContainer()->AddComponent(type, amc);
     }
+    else if (compType == "light")
+    {
+        ALightComponent alc(compName, nullptr);
+
+        std::string lightTypeStr = GetJsonNode(_json,
+            _jsonPath + "/light-type")->GetString();
+        LIGHT_TYPE lightType = LIGHT_TYPE::POINT;
+        if (lightTypeStr == "direct")
+        {
+            lightType = LIGHT_TYPE::DIRECT;
+        }
+        else if (lightTypeStr == "point")
+        {
+            lightType = LIGHT_TYPE::POINT;
+        }
+        else if (lightTypeStr == "spot")
+        {
+            lightType = LIGHT_TYPE::SPOT;
+        }
+        else
+        {
+            P_LOG(LOG_ERROR, "invlaid light type : %s\n", lightTypeStr.c_str());
+            return;
+        }
+
+        bool bloomFlag = GetJsonNode(_json,
+            _jsonPath + "/with-bloom")->GetBool();
+        bool shadowFlag = false;
+        if (lightType == LIGHT_TYPE::DIRECT)
+        {
+            shadowFlag = GetJsonNode(_json,
+                _jsonPath + "/with-shadow")->GetBool();
+        }
+
+        LIGHT_INFO li = {};
+        CAM_INFO ci = {};
+        li.mType = lightType;
+        li.mPosition = { 0.f,0.f,0.f };
+        li.mWithShadow = shadowFlag;
+        li.mDirection.x = GetJsonNode(_json,
+            _jsonPath + "/direction/0")->GetFloat();
+        li.mDirection.y = GetJsonNode(_json,
+            _jsonPath + "/direction/1")->GetFloat();
+        li.mDirection.z = GetJsonNode(_json,
+            _jsonPath + "/direction/2")->GetFloat();
+        li.mStrength.x = GetJsonNode(_json,
+            _jsonPath + "/strength/0")->GetFloat();
+        li.mStrength.y = GetJsonNode(_json,
+            _jsonPath + "/strength/1")->GetFloat();
+        li.mStrength.z = GetJsonNode(_json,
+            _jsonPath + "/strength/2")->GetFloat();
+        li.mFalloffStart = GetJsonNode(_json,
+            _jsonPath + "/fall-off-start-end/0")->GetFloat();
+        li.mFalloffEnd = GetJsonNode(_json,
+            _jsonPath + "/fall-off-start-end/1")->GetFloat();
+        li.mSpotPower = GetJsonNode(_json,
+            _jsonPath + "/spot-power")->GetFloat();
+        if (GetJsonNode(_json, _jsonPath + "/cam-up-vec"))
+        {
+            ci.mType = LENS_TYPE::ORTHOGRAPHIC;
+            ci.mPosition = li.mPosition;
+            ci.mLookAt = li.mDirection;
+            ci.mNearFarZ = { 1.f,1000.f };
+            ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
+            ci.mOWidthAndHeight = { 128.f * 9.5f,72.f * 9.5f };
+            ci.mUpVec.x = GetJsonNode(_json,
+                _jsonPath + "/cam-up-vec/0")->GetFloat();
+            ci.mUpVec.y = GetJsonNode(_json,
+                _jsonPath + "/cam-up-vec/1")->GetFloat();
+            ci.mUpVec.z = GetJsonNode(_json,
+                _jsonPath + "/cam-up-vec/2")->GetFloat();
+        }
+
+        alc.AddLight(li, bloomFlag, shadowFlag, ci);
+
+        COMP_TYPE type = COMP_TYPE::A_LIGHT;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, alc);
+    }
+    else
+    {
+        P_LOG(LOG_ERROR, "invlaid comp type : %s\n", compType.c_str());
+        return;
+    }
 }
 
 void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
