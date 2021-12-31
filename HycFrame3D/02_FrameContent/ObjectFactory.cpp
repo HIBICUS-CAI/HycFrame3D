@@ -365,6 +365,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
                 "/audio-assets/" + std::to_string(i) + "/audio-file");
             std::string file = audio->GetString();
             LoadSound(name, file);
+            _node->GetAssetsPool()->InsertNewSound(name);
         }
     }
 }
@@ -664,6 +665,22 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         COMP_TYPE type = COMP_TYPE::A_LIGHT;
         _actor->AddAComponent(type);
         _node->GetComponentContainer()->AddComponent(type, alc);
+    }
+    else if (compType == "audio")
+    {
+        AAudioComponent aac(compName, nullptr);
+
+        UINT audioSize = GetJsonNode(_json, _jsonPath + "/sounds")->Size();
+        for (UINT i = 0; i < audioSize; i++)
+        {
+            std::string soundName = GetJsonNode(_json,
+                _jsonPath + "/sounds/" + std::to_string(i))->GetString();
+            aac.AddAudio(soundName, *_node);
+        }
+
+        COMP_TYPE type = COMP_TYPE::A_AUDIO;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, aac);
     }
     else if (compType == "particle")
     {

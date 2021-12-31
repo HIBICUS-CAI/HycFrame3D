@@ -23,6 +23,35 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
         _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
             LoadSceneNode("test2", "test2");
     }
+
+    if (InputInterface::IsKeyDownInSingle(KB_W))
+    {
+        _aic->GetActorOwner()->GetSceneNode().
+            GetActorObject("sp-point-light-actor")->
+            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            TranslateZAsix(0.1f * _timer.FloatDeltaTime());
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_A))
+    {
+        _aic->GetActorOwner()->GetSceneNode().
+            GetActorObject("sp-point-light-actor")->
+            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            TranslateXAsix(-0.1f * _timer.FloatDeltaTime());
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_S))
+    {
+        _aic->GetActorOwner()->GetSceneNode().
+            GetActorObject("sp-point-light-actor")->
+            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            TranslateZAsix(-0.1f * _timer.FloatDeltaTime());
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_D))
+    {
+        _aic->GetActorOwner()->GetSceneNode().
+            GetActorObject("sp-point-light-actor")->
+            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            TranslateXAsix(0.1f * _timer.FloatDeltaTime());
+    }
 }
 
 bool TestASpInit(AInteractComponent* _aitc)
@@ -45,6 +74,29 @@ void TestASpUpdate(AInteractComponent* _aitc, Timer&)
         GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
         GetTimer("timer1")->mTime;
     P_LOG(LOG_DEBUG, "timer0 : %f , timer1 : %f\n", time0, time1);*/
+
+    if (_aitc->GetActorOwner()->GetSceneNode().
+        GetActorObject("sp-point-light-actor")->
+        GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION)->
+        CheckCollisionWith("sp-actor"))
+    {
+        _aitc->GetActorOwner()->GetSceneNode().
+            GetActorObject("sp-point-light-actor")->
+            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            RollBackPosition();
+    }
+
+    _aitc->GetActorOwner()->GetSceneNode().
+        GetActorObject("sp-particle-actor")->
+        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+        SetPosition(_aitc->GetActorOwner()->GetSceneNode().
+            GetActorObject("sp-point-light-actor")->
+            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            GetProcessingPosition());
+    _aitc->GetActorOwner()->GetSceneNode().
+        GetActorObject("sp-particle-actor")->
+        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+        TranslateYAsix(5.f);
 }
 
 void TestASpDestory(AInteractComponent*)

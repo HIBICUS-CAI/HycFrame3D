@@ -145,10 +145,18 @@
                     ]
                 },
                 {
+                    "type": "audio",
+                    "sounds": [
+                        "test"
+                    ]
+                },
+                {
                     "type": "collision",
-                    "collision-shape": "sphere",
+                    "collision-shape": "box",
                     "collision-size": [
-                        10.0
+                        15.0,
+                        15.0,
+                        15.0
                     ]
                 },
                 {
@@ -292,6 +300,15 @@
                         80.0
                     ],
                     "spot-power": 2.0
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        1.5,
+                        1.5,
+                        1.5
+                    ]
                 }
             ]
         },
