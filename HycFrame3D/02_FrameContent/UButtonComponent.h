@@ -4,7 +4,6 @@
 #include <array>
 
 constexpr auto SELECTED_BTN_SPRITE_NAME = "selected-button-falg";
-constexpr auto SELECTED_BTN_TEX_NAME = "runman.png";
 constexpr auto NULL_BTN = "null-btn";
 
 constexpr UINT BTN_UP = 0;

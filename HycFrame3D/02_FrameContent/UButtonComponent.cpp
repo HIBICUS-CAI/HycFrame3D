@@ -6,6 +6,7 @@
 #include "WM_Interface.h"
 #include "RSRoot_DX11.h"
 #include "RSMeshHelper.h"
+#include "JsonHelper.h"
 
 static UButtonComponent* g_SelectedBtnCompPtr = nullptr;
 
@@ -15,6 +16,8 @@ static bool g_ShouleUseMouseSelect = false;
 static MESH_DATA* g_SelectTexMeshPtr = nullptr;
 
 static DirectX::XMFLOAT2 g_ScreenSpaceCursorPosition = { 0.f,0.f };
+
+static std::string g_SelectFlagTexture = "";
 
 UButtonComponent::UButtonComponent(std::string&& _compName,
     UiObject* _uiOwner) :
@@ -52,9 +55,21 @@ bool UButtonComponent::Init()
         GetMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
     if (!mesh)
     {
+        JsonFile btnFlgConfig = {};
+        LoadJsonFile(&btnFlgConfig,
+            ".\\Assets\\Configs\\selected-flag-config.json");
+        if (btnFlgConfig.HasParseError())
+        {
+            P_LOG(LOG_ERROR,
+                "failed to parse btn flag config with error code : %d\n",
+                btnFlgConfig.GetParseError());
+            return false;
+        }
+
         RS_SUBMESH_DATA btnSelect = GetRSRoot_DX11_Singleton()->
             MeshHelper()->GeoGenerate()->CreateSpriteRect(
-                LAYOUT_TYPE::NORMAL_TANGENT_TEX, SELECTED_BTN_TEX_NAME);
+                LAYOUT_TYPE::NORMAL_TANGENT_TEX,
+                btnFlgConfig["flag-tex-file"].GetString());
         GetUiOwner()->GetSceneNode().GetAssetsPool()->InsertNewMesh(
             SELECTED_BTN_SPRITE_NAME, btnSelect, MESH_TYPE::UI_SPRITE);
         mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
