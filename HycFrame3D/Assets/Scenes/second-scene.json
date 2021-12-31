@@ -1,0 +1,314 @@
+{
+    "scene-name": "second-scene",
+    "ambient-light": [
+        0.5,
+        0.5,
+        0.5,
+        1.0
+    ],
+    "model-assets": [],
+    "audio-assets": [
+        {
+            "audio-name": "test",
+            "audio-file": "bgm-success.wav"
+        }
+    ],
+    "ui": [
+        {
+            "ui-name": "move-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -400.0,
+                        300.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        100.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        0.5,
+                        1.0
+                    ],
+                    "tex-file": "cloud.png"
+                },
+                {
+                    "type": "animate",
+                    "animates": [
+                        {
+                            "name": "number",
+                            "tex-file": "number.png",
+                            "u-v-stride": [
+                                0.2,
+                                0.2
+                            ],
+                            "max-count": 13,
+                            "switch-time": 0.5,
+                            "repeat-flag": false
+                        },
+                        {
+                            "name": "runman",
+                            "tex-file": "runman.png",
+                            "u-v-stride": [
+                                0.2,
+                                0.5
+                            ],
+                            "max-count": 10,
+                            "switch-time": 0.1,
+                            "repeat-flag": true
+                        }
+                    ]
+                },
+                {
+                    "type": "input",
+                    "func-name": "TestUSpInput"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "TestUSpInit",
+                    "update-func-name": "TestUSpUpdate",
+                    "destory-func-name": "TestUSpDestory"
+                },
+                {
+                    "type": "timer",
+                    "timers": [
+                        "timer0",
+                        "timer1"
+                    ]
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "test"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "btn1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -200.0,
+                        200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": true,
+                    "right-btn": "btn2-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "TestUSpBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "btn2-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "down-btn": "btn4-ui",
+                    "left-btn": "btn1-ui",
+                    "right-btn": "btn3-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "TestUSpBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "btn3-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        200.0,
+                        200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "left-btn": "btn2-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "TestUSpBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "btn4-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "up-btn": "btn2-ui",
+                    "down-btn": "btn5-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "TestUSpBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "btn5-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "up-btn": "btn4-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "TestUSpBtnInput"
+                }
+            ]
+        }
+    ]
+}

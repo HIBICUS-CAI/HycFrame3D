@@ -414,7 +414,42 @@ void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile* _json,
 void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile* _json,
     std::string _jsonPath)
 {
+    JsonNode uiRoot = GetJsonNode(_json, _jsonPath);
+    if (!uiRoot)
+    {
+        P_LOG(LOG_ERROR, "failed to get ui root node : %s\n",
+            _jsonPath.c_str());
+        return;
+    }
 
+    std::string uiName = "";
+    {
+        JsonNode uiNameNode = GetJsonNode(_json, _jsonPath + "/ui-name");
+        if (uiNameNode && uiNameNode->IsString())
+        {
+            uiName = uiNameNode->GetString();
+        }
+        else
+        {
+            P_LOG(LOG_ERROR, "invalid ui name in : %s\n", _jsonPath);
+            return;
+        }
+    }
+
+    UiObject ui(uiName, *_node);
+
+    JsonNode compsRoot = GetJsonNode(_json, _jsonPath + "/components");
+    if (compsRoot)
+    {
+        for (UINT i = 0; i < compsRoot->Size(); i++)
+        {
+            std::string compPath = _jsonPath + "/components/" +
+                std::to_string(i);
+            CreateUiComp(_node, &ui, _json, compPath);
+        }
+    }
+
+    _node->AddUiObject(ui);
 }
 
 void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
@@ -799,5 +834,213 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
 void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
     JsonFile* _json, std::string _jsonPath)
 {
+    JsonNode compRoot = GetJsonNode(_json, _jsonPath);
+    std::string compType = GetJsonNode(_json, _jsonPath + "/type")->GetString();
+    std::string compName = _ui->GetObjectName() + "-" + compType;
 
+    if (compType == "transform")
+    {
+        UTransformComponent utc(compName, nullptr);
+
+        float pos[3] = { 0.f };
+        float ang[3] = { 0.f };
+        float sca[3] = { 0.f };
+        for (UINT i = 0; i < ARRAYSIZE(pos); i++)
+        {
+            pos[i] = GetJsonNode(_json,
+                _jsonPath + "/init-position/" + std::to_string(i))->GetFloat();
+            ang[i] = GetJsonNode(_json,
+                _jsonPath + "/init-angle/" + std::to_string(i))->GetFloat();
+            sca[i] = GetJsonNode(_json,
+                _jsonPath + "/init-scale/" + std::to_string(i))->GetFloat();
+        }
+        utc.ForcePosition({ pos[0],pos[1],pos[2] });
+        utc.ForceRotation({ ang[0],ang[1],ang[2] });
+        utc.ForceScaling({ sca[0],sca[1],sca[2] });
+
+        COMP_TYPE type = COMP_TYPE::U_TRANSFORM;
+        _ui->AddUComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, utc);
+    }
+    else if (compType == "input")
+    {
+        UInputComponent uic(compName, nullptr);
+
+        std::string inputFuncName = GetJsonNode(_json,
+            _jsonPath + "/func-name")->GetString();
+        auto found = mUiInputFuncPtrMap.find(inputFuncName);
+        if (found == mUiInputFuncPtrMap.end())
+        {
+            P_LOG(LOG_ERROR, "invlaid input func name : %s\n",
+                inputFuncName.c_str());
+            return;
+        }
+        uic.SetInputFunction(found->second);
+
+        COMP_TYPE type = COMP_TYPE::U_INPUT;
+        _ui->AddUComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, uic);
+    }
+    else if (compType == "interact")
+    {
+        UInteractComponent uitc(compName, nullptr);
+
+        std::string initFuncName = GetJsonNode(_json,
+            _jsonPath + "/init-func-name")->GetString();
+        std::string updateFuncName = GetJsonNode(_json,
+            _jsonPath + "/update-func-name")->GetString();
+        std::string destoryFuncName = GetJsonNode(_json,
+            _jsonPath + "/destory-func-name")->GetString();
+        auto foundInit = mUiInteractInitFuncPtrMap.find(initFuncName);
+        if (foundInit == mUiInteractInitFuncPtrMap.end())
+        {
+            P_LOG(LOG_ERROR, "invlaid init func name : %s\n",
+                initFuncName.c_str());
+            return;
+        }
+        uitc.SetInitFunction(foundInit->second);
+        auto foundUpdate = mUiInteractUpdateFuncPtrMap.find(updateFuncName);
+        if (foundUpdate == mUiInteractUpdateFuncPtrMap.end())
+        {
+            P_LOG(LOG_ERROR, "invlaid update func name : %s\n",
+                updateFuncName.c_str());
+            return;
+        }
+        uitc.SetUpdateFunction(foundUpdate->second);
+        auto foundDestory = mUiInteractDestoryFuncPtrMap.find(destoryFuncName);
+        if (foundDestory == mUiInteractDestoryFuncPtrMap.end())
+        {
+            P_LOG(LOG_ERROR, "invlaid destory func name : %s\n",
+                destoryFuncName.c_str());
+            return;
+        }
+        uitc.SetDestoryFunction(foundDestory->second);
+
+        COMP_TYPE type = COMP_TYPE::U_INTERACT;
+        _ui->AddUComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, uitc);
+    }
+    else if (compType == "timer")
+    {
+        UTimerComponent utmc(compName, nullptr);
+
+        UINT timerSize = GetJsonNode(_json, _jsonPath + "/timers")->Size();
+        for (UINT i = 0; i < timerSize; i++)
+        {
+            std::string timerName = GetJsonNode(_json,
+                _jsonPath + "/timers/" + std::to_string(i))->GetString();
+            utmc.AddTimer(timerName);
+        }
+
+        COMP_TYPE type = COMP_TYPE::U_TIMER;
+        _ui->AddUComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, utmc);
+    }
+    else if (compType == "audio")
+    {
+        UAudioComponent uac(compName, nullptr);
+
+        UINT audioSize = GetJsonNode(_json, _jsonPath + "/sounds")->Size();
+        for (UINT i = 0; i < audioSize; i++)
+        {
+            std::string soundName = GetJsonNode(_json,
+                _jsonPath + "/sounds/" + std::to_string(i))->GetString();
+            uac.AddAudio(soundName, *_node);
+        }
+
+        COMP_TYPE type = COMP_TYPE::U_AUDIO;
+        _ui->AddUComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, uac);
+    }
+    else if (compType == "sprite")
+    {
+        USpriteComponent usc(compName, nullptr);
+
+        DirectX::XMFLOAT4 offsetColor =
+        {
+            GetJsonNode(_json, _jsonPath + "/offset-color/0")->GetFloat(),
+            GetJsonNode(_json, _jsonPath + "/offset-color/1")->GetFloat(),
+            GetJsonNode(_json, _jsonPath + "/offset-color/2")->GetFloat(),
+            GetJsonNode(_json, _jsonPath + "/offset-color/3")->GetFloat()
+        };
+        std::string texFile = GetJsonNode(_json,
+            _jsonPath + "/tex-file")->GetString();
+
+        usc.CreateSpriteMesh(_node, offsetColor, texFile);
+
+        COMP_TYPE type = COMP_TYPE::U_SPRITE;
+        _ui->AddUComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, usc);
+    }
+    else if (compType == "animate")
+    {
+        UAnimateComponent uamc(compName, nullptr);
+
+        UINT aniSize = GetJsonNode(_json, _jsonPath + "/animates")->Size();
+        std::string aniArrayPath = _jsonPath + "/animates/";
+        for (UINT i = 0; i < aniSize; i++)
+        {
+            aniArrayPath = _jsonPath + "/animates/" + std::to_string(i);
+
+            std::string aniName = GetJsonNode(_json,
+                aniArrayPath + "/name")->GetString();
+            std::string aniFile = GetJsonNode(_json,
+                aniArrayPath + "/tex-file")->GetString();
+            DirectX::XMFLOAT2 stride =
+            {
+                GetJsonNode(_json, aniArrayPath + "/u-v-stride/0")->GetFloat(),
+                GetJsonNode(_json, aniArrayPath + "/u-v-stride/1")->GetFloat()
+            };
+            UINT maxCount = GetJsonNode(_json,
+                aniArrayPath + "/max-count")->GetUint();
+            float switchTime = GetJsonNode(_json,
+                aniArrayPath + "/switch-time")->GetFloat();
+            bool repeatFlg = GetJsonNode(_json,
+                aniArrayPath + "/repeat-flag")->GetBool();
+
+            uamc.LoadAnimate(aniName, aniFile, stride, maxCount,
+                repeatFlg, switchTime);
+        }
+
+        COMP_TYPE type = COMP_TYPE::U_ANIMATE;
+        _ui->AddUComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, uamc);
+    }
+    else if (compType == "button")
+    {
+        UButtonComponent ubc(compName, nullptr);
+
+        bool selected = GetJsonNode(_json,
+            _jsonPath + "/init-selected")->GetBool();
+        ubc.SetIsBeingSelected(selected);
+        JsonNode surdBtn = GetJsonNode(_json, _jsonPath + "/up-btn");
+        if (surdBtn && !surdBtn->IsNull())
+        {
+            ubc.SetUpBtnObjName(surdBtn->GetString());
+        }
+        surdBtn = GetJsonNode(_json, _jsonPath + "/down-btn");
+        if (surdBtn && !surdBtn->IsNull())
+        {
+            ubc.SetDownBtnObjName(surdBtn->GetString());
+        }
+        surdBtn = GetJsonNode(_json, _jsonPath + "/left-btn");
+        if (surdBtn && !surdBtn->IsNull())
+        {
+            ubc.SetLeftBtnObjName(surdBtn->GetString());
+        }
+        surdBtn = GetJsonNode(_json, _jsonPath + "/right-btn");
+        if (surdBtn && !surdBtn->IsNull())
+        {
+            ubc.SetRightBtnObjName(surdBtn->GetString());
+        }
+
+        COMP_TYPE type = COMP_TYPE::U_BUTTON;
+        _ui->AddUComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, ubc);
+    }
+    else
+    {
+        P_LOG(LOG_ERROR, "invlaid comp type : %s\n", compType.c_str());
+        return;
+    }
 }

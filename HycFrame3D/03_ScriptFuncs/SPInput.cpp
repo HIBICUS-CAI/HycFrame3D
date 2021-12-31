@@ -13,6 +13,16 @@ void RegisterSPInput(ObjectFactory* _factory)
         { FUNC_NAME(TestASpUpdate),TestASpUpdate });
     _factory->GetADestoryMapPtr()->insert(
         { FUNC_NAME(TestASpDestory),TestASpDestory });
+    _factory->GetUInputMapPtr()->insert(
+        { FUNC_NAME(TestUSpInput),TestUSpInput });
+    _factory->GetUInputMapPtr()->insert(
+        { FUNC_NAME(TestUSpBtnInput),TestUSpBtnInput });
+    _factory->GetUInitMapPtr()->insert(
+        { FUNC_NAME(TestUSpInit),TestUSpInit });
+    _factory->GetUUpdateMapPtr()->insert(
+        { FUNC_NAME(TestUSpUpdate),TestUSpUpdate });
+    _factory->GetUDestoryMapPtr()->insert(
+        { FUNC_NAME(TestUSpDestory),TestUSpDestory });
 }
 
 void TestASpInput(AInputComponent* _aic, Timer& _timer)
@@ -21,7 +31,7 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     {
         P_LOG(LOG_DEBUG, "to test2\n");
         _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
-            LoadSceneNode("test2", "test2");
+            LoadSceneNode("second-scene", "second-scene.json");
     }
 
     if (InputInterface::IsKeyDownInSingle(KB_W))
@@ -103,3 +113,112 @@ void TestASpDestory(AInteractComponent*)
 {
     P_LOG(LOG_DEBUG, "a sp destory\n");
 }
+
+void TestUSpInput(UInputComponent* _uic, Timer& _timer)
+{
+    float delta = _timer.FloatDeltaTime();
+    auto utc = _uic->GetUiOwner()->
+        GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
+
+    if (InputInterface::IsKeyDownInSingle(KB_W))
+    {
+        utc->TranslateYAsix(0.1f * delta);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_A))
+    {
+        utc->TranslateXAsix(-0.1f * delta);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_S))
+    {
+        utc->TranslateYAsix(-0.1f * delta);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_D))
+    {
+        utc->TranslateXAsix(0.1f * delta);
+    }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_Z))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<USpriteComponent>(COMP_TYPE::U_SPRITE)->
+            ResetTexture();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_X))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE)->
+            ChangeAnimateTo("number");
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_C))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE)->
+            ChangeAnimateTo("runman");
+    }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_N))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlayBgm("test", 0.8f);
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_M))
+    {
+        _uic->GetUiOwner()->
+            GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlayBgm("test", 0.4f);
+    }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
+    {
+        P_LOG(LOG_DEBUG, "to test1\n");
+        _uic->GetUiOwner()->GetSceneNode().GetSceneManager()->
+            LoadSceneNode("first-scene", "first-scene.json");
+    }
+}
+
+void TestUSpBtnInput(UInputComponent* _uic, Timer& _timer)
+{
+    auto ubc = _uic->GetUiOwner()->
+        GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+    if (!ubc) { return; }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_UP))
+    {
+        ubc->SelectUpBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_LEFT))
+    {
+        ubc->SelectLeftBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
+    {
+        ubc->SelectDownBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_RIGHT))
+    {
+        ubc->SelectRightBtn();
+    }
+
+    if (ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN))
+    {
+        P_LOG(LOG_DEBUG, "this btn has been click : %s\n", ubc->GetCompName().c_str());
+    }
+}
+
+bool TestUSpInit(UInteractComponent* _uitc)
+{
+    P_LOG(LOG_DEBUG, "u sp init\n");
+    return true;
+}
+
+void TestUSpUpdate(UInteractComponent* _uitc, Timer& _timer)
+{
+
+}
+
+void TestUSpDestory(UInteractComponent* _uitc)
+{
+    P_LOG(LOG_DEBUG, "u sp destory\n");
+}
+
