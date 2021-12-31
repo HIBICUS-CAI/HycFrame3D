@@ -215,7 +215,26 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
 
             if (loadMode == "model-file")
             {
-
+                std::string fileName = GetJsonNode(_json,
+                    jsonPath + "/load-info/model-file")->GetString();
+                std::string fileType = GetJsonNode(_json,
+                    jsonPath + "/load-info/file-type")->GetString();
+                MODEL_FILE_TYPE type = MODEL_FILE_TYPE::BIN;
+                if (fileType == "binary")
+                {
+                    type = MODEL_FILE_TYPE::BIN;
+                }
+                else if (fileType == "json")
+                {
+                    type = MODEL_FILE_TYPE::JSON;
+                }
+                else
+                {
+                    P_LOG(LOG_ERROR, "invlaid model file type : %s\n",
+                        fileType.c_str());
+                    return;
+                }
+                LoadModelFile(fileName, type, &meshData);
             }
             else if (loadMode == "program-box")
             {
@@ -235,15 +254,48 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
             }
             else if (loadMode == "program-sphere")
             {
-
+                float radius = GetJsonNode(_json,
+                    jsonPath + "/load-info/radius")->GetFloat();
+                UINT slice = GetJsonNode(_json,
+                    jsonPath + "/load-info/slice-stack-count/0")->GetUint();
+                UINT stack = GetJsonNode(_json,
+                    jsonPath + "/load-info/slice-stack-count/1")->GetUint();
+                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                    GeoGenerate()->CreateSphere(radius, slice, stack,
+                        LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
+                        GetJsonNode(_json,
+                            jsonPath + "/load-info/tex-file")->GetString());
             }
             else if (loadMode == "program-geo-sphere")
             {
-
+                float radius = GetJsonNode(_json,
+                    jsonPath + "/load-info/radius")->GetFloat();
+                UINT divide = GetJsonNode(_json,
+                    jsonPath + "/load-info/divide")->GetUint();
+                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                    GeoGenerate()->CreateGeometrySphere(radius, divide,
+                        LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
+                        GetJsonNode(_json,
+                            jsonPath + "/load-info/tex-file")->GetString());
             }
             else if (loadMode == "program-cylinder")
             {
-
+                float topRadius = GetJsonNode(_json,
+                    jsonPath + "/load-info/top-btm-het-size/0")->GetFloat();
+                float bottomRadius = GetJsonNode(_json,
+                    jsonPath + "/load-info/top-btm-het-size/1")->GetFloat();
+                float height = GetJsonNode(_json,
+                    jsonPath + "/load-info/top-btm-het-size/2")->GetFloat();
+                UINT slice = GetJsonNode(_json,
+                    jsonPath + "/load-info/slice-stack-count/0")->GetUint();
+                UINT stack = GetJsonNode(_json,
+                    jsonPath + "/load-info/slice-stack-count/1")->GetUint();
+                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                    GeoGenerate()->CreateCylinder(bottomRadius, topRadius,
+                        height, slice, stack, LAYOUT_TYPE::NORMAL_TANGENT_TEX,
+                        false, {},
+                        GetJsonNode(_json,
+                            jsonPath + "/load-info/tex-file")->GetString());
             }
             else if (loadMode == "program-grid")
             {
@@ -286,6 +338,16 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
             {
                 AddBumpedTexTo(&meshData, forceNormal);
             }
+
+            if (!meshData.mTextures.size())
+            {
+                P_LOG(LOG_ERROR, "invlaid model without diffuse : %s\n",
+                    meshName.c_str());
+                GetRSRoot_DX11_Singleton()->MeshHelper()->
+                    ReleaseSubMesh(meshData);
+                return;
+            }
+
             _node->GetAssetsPool()->
                 InsertNewMesh(meshName, meshData, MESH_TYPE::OPACITY);
         }

@@ -8,7 +8,7 @@
     ],
     "model-assets": [
         {
-            "mesh-name": "yel-box",
+            "mesh-name": "tile-box",
             "static-material": null,
             "material-info": {
                 "albedo": [
@@ -52,6 +52,51 @@
                     2
                 ]
             }
+        },
+        {
+            "mesh-name": "cloud-cyl",
+            "load-mode": "program-cylinder",
+            "load-info": {
+                "tex-file": "cloud.png",
+                "top-btm-het-size": [
+                    10.0,
+                    20.0,
+                    30.0
+                ],
+                "slice-stack-count": [
+                    4,
+                    4
+                ]
+            }
+        },
+        {
+            "mesh-name": "cloud-sphere",
+            "load-mode": "program-sphere",
+            "load-info": {
+                "tex-file": "cloud.png",
+                "radius": 8.0,
+                "slice-stack-count": [
+                    8,
+                    8
+                ]
+            }
+        },
+        {
+            "mesh-name": "cloud-geo-sphere",
+            "load-mode": "program-geo-sphere",
+            "load-info": {
+                "tex-file": "cloud.png",
+                "radius": 8.0,
+                "divide": 2
+            }
+        },
+        {
+            "mesh-name": "dragon",
+            "load-mode": "model-file",
+            "load-info": {
+                "model-file": "Dragon.FBX.meshdata",
+                "file-type": "binary"
+            }
         }
     ],
     "audio-assets": [
@@ -69,7 +114,7 @@
                     "init-position": [
                         0.0,
                         0.0,
-                        150.0
+                        100.0
                     ],
                     "init-angle": [
                         0.0,
@@ -110,7 +155,7 @@
                     "type": "mesh",
                     "meshes": [
                         {
-                            "mesh-name": "yel-box",
+                            "mesh-name": "tile-box",
                             "mesh-offset": null
                         },
                         {
@@ -119,6 +164,38 @@
                                 0.0,
                                 -20.0,
                                 0.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "cloud-cyl",
+                            "mesh-offset": [
+                                -50.0,
+                                -10.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "cloud-sphere",
+                            "mesh-offset": [
+                                50.0,
+                                0.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "cloud-geo-sphere",
+                            "mesh-offset": [
+                                20.0,
+                                10.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "dragon",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                100.0
                             ]
                         }
                     ]
