@@ -55,21 +55,24 @@ bool UButtonComponent::Init()
         GetMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
     if (!mesh)
     {
-        JsonFile btnFlgConfig = {};
-        LoadJsonFile(&btnFlgConfig,
-            ".\\Assets\\Configs\\selected-flag-config.json");
-        if (btnFlgConfig.HasParseError())
+        if (g_SelectFlagTexture == "")
         {
-            P_LOG(LOG_ERROR,
-                "failed to parse btn flag config with error code : %d\n",
-                btnFlgConfig.GetParseError());
-            return false;
+            JsonFile btnFlgConfig = {};
+            LoadJsonFile(&btnFlgConfig,
+                ".\\Assets\\Configs\\selected-flag-config.json");
+            if (btnFlgConfig.HasParseError())
+            {
+                P_LOG(LOG_ERROR,
+                    "failed to parse btn flag config with error code : %d\n",
+                    btnFlgConfig.GetParseError());
+                return false;
+            }
+            g_SelectFlagTexture = btnFlgConfig["flag-tex-file"].GetString();
         }
 
         RS_SUBMESH_DATA btnSelect = GetRSRoot_DX11_Singleton()->
             MeshHelper()->GeoGenerate()->CreateSpriteRect(
-                LAYOUT_TYPE::NORMAL_TANGENT_TEX,
-                btnFlgConfig["flag-tex-file"].GetString());
+                LAYOUT_TYPE::NORMAL_TANGENT_TEX, g_SelectFlagTexture);
         GetUiOwner()->GetSceneNode().GetAssetsPool()->InsertNewMesh(
             SELECTED_BTN_SPRITE_NAME, btnSelect, MESH_TYPE::UI_SPRITE);
         mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
