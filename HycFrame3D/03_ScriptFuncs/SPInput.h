@@ -22,3 +22,5 @@ void TempToTitle(AInputComponent*, Timer&);
 void TempToSelect(AInputComponent*, Timer&);
 void TempToRun(AInputComponent*, Timer&);
 void TempToResult(AInputComponent*, Timer&);
+
+void TempCameraMove(AInputComponent*, Timer&);

@@ -6,6 +6,46 @@
         0.5,
         1.0
     ],
+    "model-assets": [
+        {
+            "mesh-name": "yel-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    15.0,
+                    15.0,
+                    15.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "yel-grid",
+            "load-mode": "program-grid",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "grid-size": [
+                    10.0,
+                    10.0
+                ],
+                "row-col-count": [
+                    2,
+                    2
+                ]
+            }
+        },
+        {
+            "mesh-name": "hill",
+            "load-mode": "model-file",
+            "force-diffuse": "hill_diffuse.png",
+            "force-normal": "hill_normal.png",
+            "load-info": {
+                "model-file": "hill.obj.meshdata",
+                "file-type": "binary"
+            }
+        }
+    ],
     "actor": [
         {
             "actor-name": "temp-result-cmd-actor",
@@ -13,6 +53,113 @@
                 {
                     "type": "input",
                     "func-name": "TempToResult"
+                }
+            ]
+        },
+        {
+            "actor-name": "temp-cam-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "input",
+                    "func-name": "TempCameraMove"
+                }
+            ]
+        },
+        {
+            "actor-name": "direct-light-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        450.0,
+                        -540.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "direct",
+                    "with-shadow": true,
+                    "with-bloom": false,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        1.0
+                    ],
+                    "fall-off-start-end": [
+                        5.0,
+                        15.0
+                    ],
+                    "spot-power": 2.0,
+                    "cam-up-vec": [
+                        0.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "hill-mesh-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -100.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        100.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "hill"
+                        }
+                    ]
                 }
             ]
         }
