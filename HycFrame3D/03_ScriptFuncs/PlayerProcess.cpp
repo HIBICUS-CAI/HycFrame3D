@@ -18,6 +18,7 @@ void RegisterPlayerProcess(ObjectFactory* _factory)
 }
 
 static float g_PlayerYAsixSpeed = 0.f;
+static bool g_PlayerCanJumpFlg = false;
 static std::vector<std::string> g_GroundObjNameVec = {};
 
 void PlayerMove(AInputComponent* _aic, Timer& _timer)
@@ -60,8 +61,9 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
         atc->TranslateZAsix(0.02f * deltatime * cosR);
         atc->TranslateXAsix(0.02f * deltatime * sinR);
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_SPACE))
+    if (g_PlayerCanJumpFlg && InputInterface::IsKeyPushedInSingle(KB_SPACE))
     {
+        g_PlayerCanJumpFlg = false;
         g_PlayerYAsixSpeed = 50.f;
     }
 
@@ -71,6 +73,8 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
 
 bool PlayerInit(AInteractComponent* _aitc)
 {
+    g_PlayerCanJumpFlg = false;
+
     _aitc->GetActorOwner()->GetSceneNode().GetMainCamera()->
         RotateRSCamera(0.f, _aitc->GetActorOwner()->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
@@ -100,13 +104,22 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     auto acc = _aitc->GetActorOwner()->
         GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION);
+    CONTACT_PONT_PAIR contact = {};
     for (auto& ground : g_GroundObjNameVec)
     {
-        if (acc->CheckCollisionWith(ground))
+        if (acc->CheckCollisionWith(ground, &contact))
         {
-            atc->RollBackPositionY();
-            g_PlayerYAsixSpeed = 0.f;
-            break;
+            auto contactPoint =
+                ACollisionComponent::CalcCenterOfContact(contact);
+            if (fabsf(contactPoint.x - atc->GetProcessingPosition().x) < 1.f &&
+                fabsf(contactPoint.z - atc->GetProcessingPosition().z) < 1.f &&
+                (contactPoint.y - atc->GetProcessingPosition().y) < 0.f)
+            {
+                atc->RollBackPositionY();
+                g_PlayerYAsixSpeed = 0.f;
+                g_PlayerCanJumpFlg = true;
+                break;
+            }
         }
     }
 
