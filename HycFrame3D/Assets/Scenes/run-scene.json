@@ -8,15 +8,6 @@
     ],
     "actor": [
         {
-            "actor-name": "temp-back-cmd-actor",
-            "components": [
-                {
-                    "type": "input",
-                    "func-name": "TempToSelect"
-                }
-            ]
-        },
-        {
             "actor-name": "temp-result-cmd-actor",
             "components": [
                 {
