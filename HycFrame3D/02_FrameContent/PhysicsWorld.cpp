@@ -1,10 +1,15 @@
+#define BT_NO_SIMD_OPERATOR_OVERLOADS
+
 #include "PhysicsWorld.h"
 #include "bullet/btBulletCollisionCommon.h"
+
+using namespace DirectX;
 
 PhysicsWorld::PhysicsWorld(class SceneNode& _sceneNode) :
     mSceneNodeOwner(_sceneNode), mCollisionWorld(nullptr),
     mCollisionConfig(nullptr), mCollisionDispatcher(nullptr),
-    mBroadphaseInterface(nullptr), mColliedPair({})
+    mBroadphaseInterface(nullptr), mColliedPair({}),
+    mContactPointMap({})
 {
     CreatePhysicsWorld();
 }
@@ -55,6 +60,7 @@ void PhysicsWorld::DeleteCollisionObject(btCollisionObject* _colliObj)
 void PhysicsWorld::DetectCollision()
 {
     mColliedPair.clear();
+    mContactPointMap.clear();
     mCollisionWorld->performDiscreteCollisionDetection();
 
     int numManifolds = mCollisionWorld->getDispatcher()->getNumManifolds();
@@ -67,17 +73,17 @@ void PhysicsWorld::DetectCollision()
             (contactManifold->getBody0());
         btCollisionObject* obB = (btCollisionObject*)
             (contactManifold->getBody1());
+        int numContacts = contactManifold->getNumContacts();
 
-        COLLIED_PAIR pair0 = { obA,obB };
-        COLLIED_PAIR pair1 = { obB,obA };
+        COLLIED_PAIR pair = {};
+        if (obA < obB) { pair = { obA,obB }; }
+        else { pair = { obB,obA }; }
 
-        if (mColliedPair.find(pair0) == mColliedPair.end() &&
-            mColliedPair.find(pair1) == mColliedPair.end())
+        if (numContacts && mColliedPair.find(pair) == mColliedPair.end())
         {
-            mColliedPair.insert(pair0);
+            mColliedPair.insert(pair);
         }
 
-        /*int numContacts = contactManifold->getNumContacts();
         for (int j = 0; j < numContacts; j++)
         {
             btManifoldPoint& pt = contactManifold->getContactPoint(j);
@@ -85,8 +91,49 @@ void PhysicsWorld::DetectCollision()
             {
                 btVector3 posA = pt.getPositionWorldOnA();
                 btVector3 posB = pt.getPositionWorldOnB();
+                CONTACT_PONT_PAIR contPair =
+                {
+                    { posA.getX(),posA.getY(),-posA.getZ() },
+                    { posB.getX(),posB.getY(),-posB.getZ() }
+                };
+                auto found = mContactPointMap.find(pair);
+                if (found == mContactPointMap.end())
+                {
+                    mContactPointMap.insert({ pair,contPair });
+                }
+                else
+                {
+                    DirectX::XMVECTOR beforeA =
+                        DirectX::XMLoadFloat3(&found->second.first);
+                    DirectX::XMVECTOR newoneA =
+                        DirectX::XMLoadFloat3(&contPair.first);
+                    DirectX::XMVECTOR beforeB =
+                        DirectX::XMLoadFloat3(&found->second.second);
+                    DirectX::XMVECTOR newoneB =
+                        DirectX::XMLoadFloat3(&contPair.second);
+                    beforeA += newoneA;
+                    beforeB += newoneB;
+                    DirectX::XMStoreFloat3(&found->second.first, beforeA);
+                    DirectX::XMStoreFloat3(&found->second.second, beforeB);
+                }
             }
-        }*/
+        }
+        if (numContacts)
+        {
+            auto found = mContactPointMap.find(pair);
+            if (found == mContactPointMap.end())
+            {
+                mColliedPair.erase(pair); return;
+            }
+            DirectX::XMVECTOR contactA =
+                DirectX::XMLoadFloat3(&found->second.first);
+            DirectX::XMVECTOR contactB =
+                DirectX::XMLoadFloat3(&found->second.second);
+            contactA /= (float)numContacts;
+            contactB /= (float)numContacts;
+            DirectX::XMStoreFloat3(&found->second.first, contactA);
+            DirectX::XMStoreFloat3(&found->second.second, contactB);
+        }
     }
 }
 
@@ -98,16 +145,19 @@ void PhysicsWorld::DeletePhysicsWorld()
     delete mCollisionConfig;
 }
 
-bool PhysicsWorld::CheckCollisionResult(
-    COLLIED_PAIR& _pair0, COLLIED_PAIR& _pair1)
+bool PhysicsWorld::CheckCollisionResult(COLLIED_PAIR& _pair,
+    CONTACT_PONT_PAIR* _contactPair)
 {
-    if (mColliedPair.find(_pair0) == mColliedPair.end() &&
-        mColliedPair.find(_pair1) == mColliedPair.end())
+    if (mColliedPair.find(_pair) == mColliedPair.end())
     {
         return false;
     }
     else
     {
+        if (_contactPair)
+        {
+            *_contactPair = mContactPointMap.find(_pair)->second;
+        }
         return true;
     }
 }

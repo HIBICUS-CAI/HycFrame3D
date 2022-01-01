@@ -1,9 +1,13 @@
+#define BT_NO_SIMD_OPERATOR_OVERLOADS
+
 #include "ACollisionComponent.h"
 #include "ActorObject.h"
 #include "SceneNode.h"
 #include "PhysicsWorld.h"
 #include "ATransformComponent.h"
 #include "bullet/btBulletCollisionCommon.h"
+
+using namespace DirectX;
 
 ACollisionComponent::ACollisionComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
@@ -53,7 +57,8 @@ void ACollisionComponent::Destory()
     delete mCollisionShape;
 }
 
-bool ACollisionComponent::CheckCollisionWith(std::string&& _actorName)
+bool ACollisionComponent::CheckCollisionWith(std::string&& _actorName,
+    CONTACT_PONT_PAIR* _contactPair)
 {
     auto actor = GetActorOwner()->GetSceneNode().GetActorObject(_actorName);
     if (!actor)
@@ -71,14 +76,22 @@ bool ACollisionComponent::CheckCollisionWith(std::string&& _actorName)
         return false;
     }
 
-    COLLIED_PAIR pair0 = { mCollisionObject,acc->GetCollisionObject() };
-    COLLIED_PAIR pair1 = { pair0.second,pair0.first };
+    COLLIED_PAIR pair = {};
+    if (mCollisionObject < acc->GetCollisionObject())
+    {
+        pair = { mCollisionObject,acc->GetCollisionObject() };
+    }
+    else
+    {
+        pair = { acc->GetCollisionObject(),mCollisionObject };
+    }
 
     return GetActorOwner()->GetSceneNode().GetPhysicsWorld()->
-        CheckCollisionResult(pair0, pair1);
+        CheckCollisionResult(pair, _contactPair);
 }
 
-bool ACollisionComponent::CheckCollisionWith(std::string& _actorName)
+bool ACollisionComponent::CheckCollisionWith(std::string& _actorName,
+    CONTACT_PONT_PAIR* _contactPair)
 {
     auto actor = GetActorOwner()->GetSceneNode().GetActorObject(_actorName);
     if (!actor)
@@ -96,11 +109,18 @@ bool ACollisionComponent::CheckCollisionWith(std::string& _actorName)
         return false;
     }
 
-    COLLIED_PAIR pair0 = { mCollisionObject,acc->GetCollisionObject() };
-    COLLIED_PAIR pair1 = { pair0.second,pair0.first };
+    COLLIED_PAIR pair = {};
+    if (mCollisionObject < acc->GetCollisionObject())
+    {
+        pair = { mCollisionObject,acc->GetCollisionObject() };
+    }
+    else
+    {
+        pair = { acc->GetCollisionObject(),mCollisionObject };
+    }
 
     return GetActorOwner()->GetSceneNode().GetPhysicsWorld()->
-        CheckCollisionResult(pair0, pair1);
+        CheckCollisionResult(pair, _contactPair);
 }
 
 void ACollisionComponent::CreateCollisionShape(COLLISION_SHAPE _type,
@@ -150,4 +170,16 @@ void ACollisionComponent::SyncDataFromTransform()
 btCollisionObject* ACollisionComponent::GetCollisionObject() const
 {
     return mCollisionObject;
+}
+
+DirectX::XMFLOAT3 ACollisionComponent::CalcCenterOfContact(
+    CONTACT_PONT_PAIR& _pair)
+{
+    DirectX::XMFLOAT3 center = {};
+    DirectX::XMVECTOR contactA = DirectX::XMLoadFloat3(&_pair.first);
+    DirectX::XMVECTOR contactB = DirectX::XMLoadFloat3(&_pair.second);
+    DirectX::XMVECTOR centerV = DirectX::XMLoadFloat3(&_pair.second);
+    centerV = (contactA + contactB) / 2.f;
+    DirectX::XMStoreFloat3(&center, centerV);
+    return center;
 }

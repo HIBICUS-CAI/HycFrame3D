@@ -85,15 +85,22 @@ void TestASpUpdate(AInteractComponent* _aitc, Timer&)
         GetTimer("timer1")->mTime;
     P_LOG(LOG_DEBUG, "timer0 : %f , timer1 : %f\n", time0, time1);*/
 
+    CONTACT_PONT_PAIR contact = {};
     if (_aitc->GetActorOwner()->GetSceneNode().
         GetActorObject("sp-point-light-actor")->
         GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION)->
-        CheckCollisionWith("sp-actor"))
+        CheckCollisionWith("sp-actor", &contact))
     {
         _aitc->GetActorOwner()->GetSceneNode().
             GetActorObject("sp-point-light-actor")->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
             RollBackPosition();
+        P_LOG(LOG_DEBUG, "a : %f, %f, %f ; b : %f, %f, %f\n",
+            contact.first.x, contact.first.y, contact.first.z,
+            contact.second.x, contact.second.y, contact.second.z);
+        auto center = ACollisionComponent::CalcCenterOfContact(contact);
+        P_LOG(LOG_DEBUG, "center of contact : %f, %f, %f\n",
+            center.x, center.y, center.z);
     }
 
     _aitc->GetActorOwner()->GetSceneNode().

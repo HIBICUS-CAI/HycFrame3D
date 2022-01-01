@@ -305,9 +305,9 @@
                     "type": "collision",
                     "collision-shape": "box",
                     "collision-size": [
-                        1.5,
-                        1.5,
-                        1.5
+                        3.0,
+                        3.0,
+                        3.0
                     ]
                 }
             ]
