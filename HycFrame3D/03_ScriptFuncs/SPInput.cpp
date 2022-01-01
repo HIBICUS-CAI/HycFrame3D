@@ -8,8 +8,6 @@ void RegisterSPInput(ObjectFactory* _factory)
     _factory->GetAInputMapPtr()->insert(
         { FUNC_NAME(TestASpInput),TestASpInput });
     _factory->GetAInputMapPtr()->insert(
-        { FUNC_NAME(TempCameraMove),TempCameraMove });
-    _factory->GetAInputMapPtr()->insert(
         { FUNC_NAME(TempToTitle),TempToTitle });
     _factory->GetAInputMapPtr()->insert(
         { FUNC_NAME(TempToSelect),TempToSelect });
@@ -277,47 +275,4 @@ void TempToResult(AInputComponent* _aic, Timer&)
         _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
             LoadSceneNode("result-scene", "result-scene.json");
     }
-}
-
-void TempCameraMove(AInputComponent* _aic, Timer& _timer)
-{
-    auto mouseOffset = InputInterface::GetMouseOffset();
-    float horiR = mouseOffset.x * _timer.FloatDeltaTime() / 1000.f;
-    float vertR = -mouseOffset.y * _timer.FloatDeltaTime() / 1000.f;
-    _aic->GetActorOwner()->GetSceneNode().GetMainCamera()->
-        RotateRSCamera(vertR, horiR);
-
-    DirectX::XMFLOAT3 camOffset = { 0.f,0.f,0.f };
-    auto atc = _aic->GetActorOwner()->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
-    atc->RotateYAsix(horiR);
-
-    float cosF = cosf(atc->GetProcessingRotation().y);
-    float sinF = sinf(atc->GetProcessingRotation().y);
-    float cosR = cosf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
-    float sinR = sinf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
-
-    if (InputInterface::IsKeyDownInSingle(KB_W))
-    {
-        atc->TranslateZAsix(0.1f * _timer.FloatDeltaTime() * cosF);
-        atc->TranslateXAsix(0.1f * _timer.FloatDeltaTime() * sinF);
-    }
-    if (InputInterface::IsKeyDownInSingle(KB_A))
-    {
-        atc->TranslateZAsix(0.1f * _timer.FloatDeltaTime() * -cosR);
-        atc->TranslateXAsix(0.1f * _timer.FloatDeltaTime() * -sinR);
-    }
-    if (InputInterface::IsKeyDownInSingle(KB_S))
-    {
-        atc->TranslateZAsix(0.1f * _timer.FloatDeltaTime() * -cosF);
-        atc->TranslateXAsix(0.1f * _timer.FloatDeltaTime() * -sinF);
-    }
-    if (InputInterface::IsKeyDownInSingle(KB_D))
-    {
-        atc->TranslateZAsix(0.1f * _timer.FloatDeltaTime() * cosR);
-        atc->TranslateXAsix(0.1f * _timer.FloatDeltaTime() * sinR);
-    }
-    camOffset = atc->GetProcessingPosition();
-    _aic->GetActorOwner()->GetSceneNode().GetMainCamera()->
-        ChangeRSCameraPosition(camOffset);
 }

@@ -30,6 +30,9 @@ public:
     void ChangeRSCameraPosition(DirectX::XMFLOAT3& _position);
     void ChangeRSCameraPosition(DirectX::XMFLOAT3&& _position);
 
+    void ResetRSCameraRotation(DirectX::XMFLOAT3 _lookAt,
+        DirectX::XMFLOAT3 _upVec);
+
 private:
     void CalcRSViewMat();
     void CalcRSProjMat();

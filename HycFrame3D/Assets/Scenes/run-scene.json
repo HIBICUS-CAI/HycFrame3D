@@ -26,8 +26,8 @@
             "load-info": {
                 "tex-file": "sand.jpg",
                 "grid-size": [
-                    10.0,
-                    10.0
+                    50.0,
+                    20.0
                 ],
                 "row-col-count": [
                     2,
@@ -57,14 +57,54 @@
             ]
         },
         {
-            "actor-name": "temp-cam-actor",
+            "actor-name": "player-actor",
             "components": [
                 {
                     "type": "transform",
                     "init-position": [
+                        -600.0,
                         0.0,
+                        400.0
+                    ],
+                    "init-angle": [
                         0.0,
+                        2.355,
                         0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "input",
+                    "func-name": "PlayerMove"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "PlayerInit",
+                    "update-func-name": "PlayerUpdate",
+                    "destory-func-name": "PlayerDestory"
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        3.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "ground-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -600.0,
+                        -10.0,
+                        400.0
                     ],
                     "init-angle": [
                         0.0,
@@ -78,8 +118,21 @@
                     ]
                 },
                 {
-                    "type": "input",
-                    "func-name": "TempCameraMove"
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        50.0,
+                        2.0,
+                        20.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "yel-grid"
+                        }
+                    ]
                 }
             ]
         },
