@@ -17,3 +17,8 @@ void TestUSpBtnInput(UInputComponent*, Timer&);
 bool TestUSpInit(UInteractComponent*);
 void TestUSpUpdate(UInteractComponent*, Timer&);
 void TestUSpDestory(UInteractComponent*);
+
+void TempToTitle(AInputComponent*, Timer&);
+void TempToSelect(AInputComponent*, Timer&);
+void TempToRun(AInputComponent*, Timer&);
+void TempToResult(AInputComponent*, Timer&);

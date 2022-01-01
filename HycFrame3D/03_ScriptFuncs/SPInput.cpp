@@ -7,6 +7,14 @@ void RegisterSPInput(ObjectFactory* _factory)
 #endif // _DEBUG
     _factory->GetAInputMapPtr()->insert(
         { FUNC_NAME(TestASpInput),TestASpInput });
+    _factory->GetAInputMapPtr()->insert(
+        { FUNC_NAME(TempToTitle),TempToTitle });
+    _factory->GetAInputMapPtr()->insert(
+        { FUNC_NAME(TempToSelect),TempToSelect });
+    _factory->GetAInputMapPtr()->insert(
+        { FUNC_NAME(TempToRun),TempToRun });
+    _factory->GetAInputMapPtr()->insert(
+        { FUNC_NAME(TempToResult),TempToResult });
     _factory->GetAInitMapPtr()->insert(
         { FUNC_NAME(TestASpInit),TestASpInit });
     _factory->GetAUpdateMapPtr()->insert(
@@ -229,3 +237,42 @@ void TestUSpDestory(UInteractComponent* _uitc)
     P_LOG(LOG_DEBUG, "u sp destory\n");
 }
 
+void TempToTitle(AInputComponent* _aic, Timer&)
+{
+    if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
+    {
+        P_LOG(LOG_DEBUG, "to title\n");
+        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+            LoadSceneNode("title-scene", "title-scene.json");
+    }
+}
+
+void TempToSelect(AInputComponent* _aic, Timer&)
+{
+    if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
+    {
+        P_LOG(LOG_DEBUG, "to select\n");
+        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+            LoadSceneNode("select-scene", "select-scene.json");
+    }
+}
+
+void TempToRun(AInputComponent* _aic, Timer&)
+{
+    if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
+    {
+        P_LOG(LOG_DEBUG, "to run\n");
+        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+            LoadSceneNode("run-scene", "run-scene.json");
+    }
+}
+
+void TempToResult(AInputComponent* _aic, Timer&)
+{
+    if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
+    {
+        P_LOG(LOG_DEBUG, "to result\n");
+        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+            LoadSceneNode("result-scene", "result-scene.json");
+    }
+}

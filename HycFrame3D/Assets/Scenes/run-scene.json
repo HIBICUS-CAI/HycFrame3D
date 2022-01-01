@@ -1,0 +1,29 @@
+{
+    "scene-name": "run-scene",
+    "ambient-light": [
+        0.5,
+        0.5,
+        0.5,
+        1.0
+    ],
+    "actor": [
+        {
+            "actor-name": "temp-back-cmd-actor",
+            "components": [
+                {
+                    "type": "input",
+                    "func-name": "TempToSelect"
+                }
+            ]
+        },
+        {
+            "actor-name": "temp-result-cmd-actor",
+            "components": [
+                {
+                    "type": "input",
+                    "func-name": "TempToResult"
+                }
+            ]
+        }
+    ]
+}
