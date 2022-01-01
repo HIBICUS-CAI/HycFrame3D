@@ -4,8 +4,6 @@
 #include "ObjectContainer.h"
 #include "JsonHelper.h"
 
-#include "DevUsage.h"
-
 SceneManager::SceneManager() :
     mObjectFactoryPtr(nullptr), mLoadingScenePtr(nullptr),
     mCurrentScenePtr(nullptr), mNextScenePtr(nullptr),
@@ -113,29 +111,6 @@ void SceneManager::ReleaseLoadingScene()
 
 void SceneManager::LoadNextScene()
 {
-    // TEMP-------------------------------------------
-    if (mLoadSceneInfo[0] == "test1" &&
-        mLoadSceneInfo[1] == ".\\Assets\\Scenes\\test1")
-    {
-        mNextScenePtr = CreateScene1(this);
-        if (mNextScenePtr)
-        {
-            mLoadSceneInfo = { "","" };
-        }
-        return;
-    }
-    else if (mLoadSceneInfo[0] == "test2" &&
-        mLoadSceneInfo[1] == ".\\Assets\\Scenes\\test2")
-    {
-        mNextScenePtr = CreateScene2(this);
-        if (mNextScenePtr)
-        {
-            mLoadSceneInfo = { "","" };
-        }
-        return;
-    }
-    // TEMP-------------------------------------------
-
     mNextScenePtr = mObjectFactoryPtr->CreateSceneNode(
         mLoadSceneInfo[0], mLoadSceneInfo[1]);
 }

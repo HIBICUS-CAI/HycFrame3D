@@ -116,10 +116,10 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
 void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
 {
     JsonNode modelRoot = GetJsonNode(_json, "/model-assets");
-    UINT modelSize = modelRoot->Size();
     std::string jsonPath = "";
-    if (modelSize)
+    if (modelRoot && modelRoot->Size())
     {
+        UINT modelSize = modelRoot->Size();
         std::string meshName = "";
         std::string staticMatName = "copper";
         bool forceMat = false;

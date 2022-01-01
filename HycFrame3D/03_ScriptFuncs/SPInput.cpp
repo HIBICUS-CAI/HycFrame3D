@@ -31,7 +31,7 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     {
         P_LOG(LOG_DEBUG, "to test2\n");
         _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
-            LoadSceneNode("second-scene", "second-scene.json");
+            LoadSceneNode("sample2-scene", "sample2-scene.json");
     }
 
     if (InputInterface::IsKeyDownInSingle(KB_W))
@@ -180,7 +180,7 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
     {
         P_LOG(LOG_DEBUG, "to test1\n");
         _uic->GetUiOwner()->GetSceneNode().GetSceneManager()->
-            LoadSceneNode("first-scene", "first-scene.json");
+            LoadSceneNode("sample1-scene", "sample1-scene.json");
     }
 }
 
