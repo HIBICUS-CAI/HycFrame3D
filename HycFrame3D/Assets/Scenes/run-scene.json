@@ -389,6 +389,58 @@
                             "mesh-name": "yel-grid"
                         }
                     ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "GoundInit",
+                    "update-func-name": "GoundUpdate",
+                    "destory-func-name": "GoundDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "ground-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -400.0,
+                        -10.0,
+                        400.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        50.0,
+                        2.0,
+                        200.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "yel-grid"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "GoundInit",
+                    "update-func-name": "GoundUpdate",
+                    "destory-func-name": "GoundDestory"
                 }
             ]
         },
@@ -516,7 +568,7 @@
                 {
                     "type": "transform",
                     "init-position": [
-                        -550.0,
+                        -500.0,
                         15.0,
                         400.0
                     ],

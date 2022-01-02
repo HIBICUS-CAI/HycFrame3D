@@ -215,30 +215,6 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
     _aitc->GetActorOwner()->GetSceneNode().GetMainCamera()->
         ChangeRSCameraPosition(camOffset);
 
-    auto acc = _aitc->GetActorOwner()->
-        GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION);
-    CONTACT_PONT_PAIR contact = {};
-    for (auto& ground : g_GroundObjNameVec)
-    {
-        if (acc->CheckCollisionWith(ground, &contact))
-        {
-            auto contactPoint =
-                ACollisionComponent::CalcCenterOfContact(contact);
-            if (fabsf(contactPoint.x - atc->GetProcessingPosition().x) < 1.f &&
-                fabsf(contactPoint.z - atc->GetProcessingPosition().z) < 1.f &&
-                (contactPoint.y - atc->GetProcessingPosition().y) < 0.f)
-            {
-                atc->RollBackPositionY();
-                g_PlayerYAsixSpeed = 0.f;
-                g_PlayerCanJumpFlg = true;
-                g_PlayerCanDashFlg = true;
-                g_PlayerIsDashing = false;
-                g_DashTimer = 0.f;
-                break;
-            }
-        }
-    }
-
     g_PlayerGunAtc->SetPosition(atc->GetProcessingPosition());
 
     float aimSlow = (g_PlayerIsAming && GetPlayerCanAimFlg()) ? 0.1f : 1.f;
@@ -286,4 +262,13 @@ bool GetPlayerDashFlg()
 bool GetPlayerAimingFlg()
 {
     return g_PlayerIsAming;
+}
+
+void SetPlayerContactGround()
+{
+    g_PlayerYAsixSpeed = 0.f;
+    g_PlayerCanJumpFlg = true;
+    g_PlayerCanDashFlg = true;
+    g_PlayerIsDashing = false;
+    g_DashTimer = 0.f;
 }

@@ -16,3 +16,5 @@ void SetPlayerDashFlg(bool _canDashFlg);
 bool GetPlayerDashFlg();
 
 bool GetPlayerAimingFlg();
+
+void SetPlayerContactGround();

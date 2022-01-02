@@ -198,6 +198,7 @@
     <ClCompile Include="03_ScriptFuncs\PlayerProcess.cpp" />
     <ClCompile Include="03_ScriptFuncs\SleepCrystal.cpp" />
     <ClCompile Include="03_ScriptFuncs\SPInput.cpp" />
+    <ClCompile Include="03_ScriptFuncs\StaticGround.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -258,6 +259,7 @@
     <ClInclude Include="03_ScriptFuncs\PlayerProcess.h" />
     <ClInclude Include="03_ScriptFuncs\SleepCrystal.h" />
     <ClInclude Include="03_ScriptFuncs\SPInput.h" />
+    <ClInclude Include="03_ScriptFuncs\StaticGround.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\03_InputDevice\03_InputDevice.vcxproj">

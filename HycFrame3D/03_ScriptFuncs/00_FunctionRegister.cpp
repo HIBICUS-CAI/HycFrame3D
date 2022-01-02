@@ -4,6 +4,7 @@
 #include "NormalCrystal.h"
 #include "SleepCrystal.h"
 #include "BulletProcess.h"
+#include "StaticGround.h"
 
 void RegisterAllFuncPtr(ObjectFactory* _factory)
 {
@@ -12,4 +13,5 @@ void RegisterAllFuncPtr(ObjectFactory* _factory)
     RegisterNormalCrystal(_factory);
     RegisterSleepCrystal(_factory);
     RegisterBulletProcess(_factory);
+    RegisterStaticGround(_factory);
 }
