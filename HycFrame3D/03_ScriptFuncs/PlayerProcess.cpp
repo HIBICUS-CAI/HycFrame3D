@@ -57,6 +57,20 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
     static const DirectX::XMVECTOR identVec = DirectX::XMLoadFloat3(&ident);
     static DirectX::XMFLOAT3 lookAt = { 0.f,0.f,0.f };
 
+    if (g_PlayerCanDashFlg && InputInterface::IsKeyPushedInSingle(KB_LALT))
+    {
+        g_PlayerCanDashFlg = false;
+        g_PlayerIsDashing = true;
+        g_PlayerCanJumpFlg = false;
+        lookAt = g_PlayerAngleAtc->GetProcessingRotation();
+        DirectX::XMMATRIX mat = DirectX::XMMatrixRotationX(lookAt.x) *
+            DirectX::XMMatrixRotationY(lookAt.y);
+        DirectX::XMVECTOR lookAtVec = {};
+        lookAtVec = DirectX::XMVector3TransformNormal(identVec, mat);
+        lookAtVec = DirectX::XMVector3Normalize(lookAtVec);
+        DirectX::XMStoreFloat3(&lookAt, lookAtVec);
+    }
+
     if (!g_PlayerIsDashing)
     {
         if (InputInterface::IsKeyDownInSingle(KB_W))
@@ -78,20 +92,6 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
         {
             atc->TranslateZAsix(0.02f * deltatime * cosR);
             atc->TranslateXAsix(0.02f * deltatime * sinR);
-        }
-        if (g_PlayerCanDashFlg &&
-            InputInterface::IsKeyPushedInSingle(KB_LALT))
-        {
-            g_PlayerCanDashFlg = false;
-            g_PlayerIsDashing = true;
-            g_PlayerCanJumpFlg = false;
-            lookAt = g_PlayerAngleAtc->GetProcessingRotation();
-            DirectX::XMMATRIX mat = DirectX::XMMatrixRotationX(lookAt.x) *
-                DirectX::XMMatrixRotationY(lookAt.y);
-            DirectX::XMVECTOR lookAtVec = {};
-            lookAtVec = DirectX::XMVector3TransformNormal(identVec, mat);
-            lookAtVec = DirectX::XMVector3Normalize(lookAtVec);
-            DirectX::XMStoreFloat3(&lookAt, lookAtVec);
         }
         if (g_PlayerCanJumpFlg &&
             InputInterface::IsKeyPushedInSingle(KB_SPACE))
@@ -135,7 +135,7 @@ bool PlayerInit(AInteractComponent* _aitc)
         GetActorOwner()->GetSceneNode().
         GetComponentContainer()->GetComponent("player-angle-actor-transform"));
 
-    g_PlayerCanDashFlg = false;
+    g_PlayerCanDashFlg = true;
     g_PlayerIsDashing = false;
     g_DashTimer = 0.f;
 
@@ -202,4 +202,14 @@ void PlayerDestory(AInteractComponent* _aitc)
     SetCursorPos((wndRect.right - wndRect.left) / 2,
         (wndRect.bottom - wndRect.top) / 2);
     g_PlayerAngleAtc = nullptr;
+}
+
+void SetPlayerDashFlg(bool _canDashFlg)
+{
+    g_PlayerCanDashFlg = _canDashFlg;
+}
+
+bool GetPlayerDashFlg()
+{
+    return g_PlayerCanDashFlg;
 }

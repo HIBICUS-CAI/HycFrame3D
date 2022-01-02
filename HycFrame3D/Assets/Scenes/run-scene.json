@@ -160,6 +160,124 @@
             ]
         },
         {
+            "actor-name": "n-crystal-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -600.0,
+                        1.0,
+                        400.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "NCrystalInit",
+                    "update-func-name": "NCrystalUpdate",
+                    "destory-func-name": "NCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "n-crystal-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -600.0,
+                        9.0,
+                        400.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "NCrystalInit",
+                    "update-func-name": "NCrystalUpdate",
+                    "destory-func-name": "NCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
             "actor-name": "direct-light-actor",
             "components": [
                 {

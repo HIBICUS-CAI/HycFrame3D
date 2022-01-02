@@ -150,6 +150,20 @@ void RSLight::SetLightBloom(RS_SUBMESH_DATA& _meshData)
         mLightMeshData.mTopologyType;
 }
 
+void RSLight::UpdateBloomColor()
+{
+    if (mBloomLightFlg)
+    {
+        mLightInstanceData[0].mCustomizedData1.x =
+            mLightStrength.x * 1.6f;
+        mLightInstanceData[0].mCustomizedData1.y =
+            mLightStrength.y * 1.6f;
+        mLightInstanceData[0].mCustomizedData1.z =
+            mLightStrength.z * 1.6f;
+        mLightInstanceData[0].mCustomizedData1.w = 1.f;
+    }
+}
+
 void RSLight::UploadLightDrawCall()
 {
     static auto pool = GetRSRoot_DX11_Singleton()->

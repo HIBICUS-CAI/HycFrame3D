@@ -36,6 +36,7 @@ public:
     void SetLightBloom(RS_SUBMESH_DATA& _meshData);
     void UploadLightDrawCall();
     void ReleaseLightBloom();
+    void UpdateBloomColor();
 
 private:
     LIGHT_TYPE mLightType;
