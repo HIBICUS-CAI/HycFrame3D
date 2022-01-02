@@ -31,6 +31,11 @@ static bool g_PlayerCanDashFlg = false;
 static bool g_PlayerIsDashing = false;
 static float g_DashTimer = 0.f;
 
+static ATransformComponent* g_PlayerGunAtc = nullptr;
+static float g_GunYAngleOffset = DirectX::XM_PIDIV4;
+static bool g_PlayerIsAming = false;
+static bool g_PlayerCanShoot = false;
+
 void PlayerMove(AInputComponent* _aic, Timer& _timer)
 {
     float deltatime = _timer.FloatDeltaTime();
@@ -56,6 +61,38 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
     static const DirectX::XMFLOAT3 ident = { 0.f,0.f,1.f };
     static const DirectX::XMVECTOR identVec = DirectX::XMLoadFloat3(&ident);
     static DirectX::XMFLOAT3 lookAt = { 0.f,0.f,0.f };
+
+    if (InputInterface::IsKeyDownInSingle(M_RIGHTBTN))
+    {
+        g_GunYAngleOffset -= deltatime / 150.f;
+        g_PlayerIsAming = true;
+    }
+    else
+    {
+        g_GunYAngleOffset += deltatime / 150.f;
+        g_PlayerIsAming = false;
+    }
+    if (g_GunYAngleOffset >= DirectX::XM_PIDIV4)
+    {
+        g_GunYAngleOffset = DirectX::XM_PIDIV4;
+        g_PlayerCanShoot = false;
+    }
+    else if (g_GunYAngleOffset <= 0.f)
+    {
+        g_GunYAngleOffset = 0.f;
+        g_PlayerCanShoot = true;
+    }
+    else
+    {
+        g_PlayerCanShoot = false;
+    }
+    float aimSlow = g_PlayerIsAming ? 0.1f : 1.f;
+    deltatime *= aimSlow;
+
+    DirectX::XMFLOAT3 angle = g_PlayerAngleAtc->GetProcessingRotation();
+    angle.x *= -1.f;
+    angle.y += g_GunYAngleOffset;
+    g_PlayerGunAtc->SetRotation(angle);
 
     if (g_PlayerCanDashFlg && InputInterface::IsKeyPushedInSingle(KB_LALT))
     {
@@ -135,6 +172,13 @@ bool PlayerInit(AInteractComponent* _aitc)
         GetActorOwner()->GetSceneNode().
         GetComponentContainer()->GetComponent("player-angle-actor-transform"));
 
+    g_PlayerGunAtc = (ATransformComponent*)(_aitc->
+        GetActorOwner()->GetSceneNode().
+        GetComponentContainer()->GetComponent("player-gun-actor-transform"));
+    g_GunYAngleOffset = DirectX::XM_PIDIV4;
+    g_PlayerIsAming = false;
+    g_PlayerCanShoot = false;
+
     g_PlayerCanDashFlg = true;
     g_PlayerIsDashing = false;
     g_DashTimer = 0.f;
@@ -174,9 +218,13 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
         }
     }
 
+    g_PlayerGunAtc->SetPosition(atc->GetProcessingPosition());
+
+    float aimSlow = g_PlayerIsAming ? 0.1f : 1.f;
+
     if (g_PlayerIsDashing)
     {
-        g_DashTimer += _timer.FloatDeltaTime();
+        g_DashTimer += _timer.FloatDeltaTime() * aimSlow;
         if (g_DashTimer > 200.f)
         {
             g_PlayerIsDashing = false;
