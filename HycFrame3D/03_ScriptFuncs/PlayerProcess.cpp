@@ -99,6 +99,7 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
         g_PlayerCanDashFlg = false;
         g_PlayerIsDashing = true;
         g_PlayerCanJumpFlg = false;
+        g_DashTimer = 0.f;
         lookAt = g_PlayerAngleAtc->GetProcessingRotation();
         DirectX::XMMATRIX mat = DirectX::XMMatrixRotationX(lookAt.x) *
             DirectX::XMMatrixRotationY(lookAt.y);
