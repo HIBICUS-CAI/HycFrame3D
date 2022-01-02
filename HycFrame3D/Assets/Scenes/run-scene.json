@@ -47,6 +47,20 @@
             }
         },
         {
+            "mesh-name": "gun-bullet",
+            "load-mode": "program-sphere",
+            "force-diffuse": "tile.dds",
+            "force-normal": "tile_nmap.dds",
+            "load-info": {
+                "tex-file": "cloud.png",
+                "radius": 0.3,
+                "slice-stack-count": [
+                    8,
+                    8
+                ]
+            }
+        },
+        {
             "mesh-name": "yel-grid",
             "load-mode": "program-grid",
             "load-info": {
@@ -208,6 +222,131 @@
                                 -0.4,
                                 2.0
                             ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-manager",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "BulletManagerInit",
+                    "update-func-name": "BulletManagerUpdate",
+                    "destory-func-name": "BulletManagerDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        0.3
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "gun-bullet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        0.3
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "gun-bullet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        0.3
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "gun-bullet"
                         }
                     ]
                 }
@@ -452,5 +591,105 @@
             ]
         }
     ],
-    "ui": []
+    "ui": [
+        {
+            "ui-name": "bullet-icon0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        350.0,
+                        -340.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        40.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "bullet_icon.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "bullet-icon1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        470.0,
+                        -340.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        40.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "bullet_icon.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "bullet-icon2-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        590.0,
+                        -340.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        40.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "bullet_icon.png"
+                }
+            ]
+        }
+    ]
 }

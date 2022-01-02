@@ -3,6 +3,7 @@
 #include "PlayerProcess.h"
 #include "WM_Interface.h"
 #include <vector>
+#include "BulletProcess.h"
 
 using namespace DirectX;
 
@@ -64,8 +65,9 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
 
     if (InputInterface::IsKeyDownInSingle(M_RIGHTBTN))
     {
-        g_GunYAngleOffset -= deltatime / 150.f;
         g_PlayerIsAming = true;
+        if (GetPlayerCanAimFlg()) { g_GunYAngleOffset -= deltatime / 150.f; }
+        else { g_GunYAngleOffset += deltatime / 150.f; }
     }
     else
     {
@@ -86,7 +88,7 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
     {
         g_PlayerCanShoot = false;
     }
-    float aimSlow = g_PlayerIsAming ? 0.1f : 1.f;
+    float aimSlow = (g_PlayerIsAming && GetPlayerCanAimFlg()) ? 0.1f : 1.f;
     deltatime *= aimSlow;
 
     DirectX::XMFLOAT3 angle = g_PlayerAngleAtc->GetProcessingRotation();
@@ -107,6 +109,24 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
         lookAtVec = DirectX::XMVector3TransformNormal(identVec, mat);
         lookAtVec = DirectX::XMVector3Normalize(lookAtVec);
         DirectX::XMStoreFloat3(&lookAt, lookAtVec);
+    }
+
+    if (g_PlayerCanShoot && InputInterface::IsKeyPushedInSingle(M_LEFTBTN))
+    {
+        lookAt = g_PlayerAngleAtc->GetProcessingRotation();
+        DirectX::XMMATRIX mat = DirectX::XMMatrixRotationX(lookAt.x) *
+            DirectX::XMMatrixRotationY(lookAt.y);
+        DirectX::XMVECTOR lookAtVec = {};
+        lookAtVec = DirectX::XMVector3TransformNormal(identVec, mat);
+        lookAtVec = DirectX::XMVector3Normalize(lookAtVec);
+        DirectX::XMStoreFloat3(&lookAt, lookAtVec);
+        DirectX::XMFLOAT3 shootPos = atc->GetProcessingPosition();
+        DirectX::XMFLOAT3 shootAt = lookAt;
+        shootPos.x += shootAt.x * 2.f;
+        shootPos.y += shootAt.y * 2.f;
+        shootPos.z += shootAt.z * 2.f;
+        shootAt.y *= -1.f;
+        SetBulletShoot(shootPos, shootAt);
     }
 
     if (!g_PlayerIsDashing)
@@ -221,7 +241,7 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     g_PlayerGunAtc->SetPosition(atc->GetProcessingPosition());
 
-    float aimSlow = g_PlayerIsAming ? 0.1f : 1.f;
+    float aimSlow = (g_PlayerIsAming && GetPlayerCanAimFlg()) ? 0.1f : 1.f;
 
     if (g_PlayerIsDashing)
     {
@@ -261,4 +281,9 @@ void SetPlayerDashFlg(bool _canDashFlg)
 bool GetPlayerDashFlg()
 {
     return g_PlayerCanDashFlg;
+}
+
+bool GetPlayerAimingFlg()
+{
+    return g_PlayerIsAming;
 }

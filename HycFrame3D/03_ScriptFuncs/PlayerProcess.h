@@ -14,3 +14,5 @@ void PlayerDestory(AInteractComponent*);
 
 void SetPlayerDashFlg(bool _canDashFlg);
 bool GetPlayerDashFlg();
+
+bool GetPlayerAimingFlg();
