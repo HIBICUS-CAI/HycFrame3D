@@ -24,10 +24,10 @@
             "mesh-name": "yel-grid",
             "load-mode": "program-grid",
             "load-info": {
-                "tex-file": "sand.jpg",
+                "tex-file": "cloud.png",
                 "grid-size": [
                     50.0,
-                    20.0
+                    200.0
                 ],
                 "row-col-count": [
                     2,
@@ -97,6 +97,29 @@
             ]
         },
         {
+            "actor-name": "player-angle-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        2.355,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ]
+        },
+        {
             "actor-name": "ground-0-actor",
             "components": [
                 {
@@ -123,7 +146,7 @@
                     "collision-size": [
                         50.0,
                         2.0,
-                        20.0
+                        200.0
                     ]
                 },
                 {

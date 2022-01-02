@@ -1,6 +1,10 @@
+#define BT_NO_SIMD_OPERATOR_OVERLOADS
+
 #include "PlayerProcess.h"
 #include "WM_Interface.h"
 #include <vector>
+
+using namespace DirectX;
 
 void RegisterPlayerProcess(ObjectFactory* _factory)
 {
@@ -21,6 +25,12 @@ static float g_PlayerYAsixSpeed = 0.f;
 static bool g_PlayerCanJumpFlg = false;
 static std::vector<std::string> g_GroundObjNameVec = {};
 
+static ATransformComponent* g_PlayerAngleAtc = nullptr;
+
+static bool g_PlayerCanDashFlg = false;
+static bool g_PlayerIsDashing = false;
+static float g_DashTimer = 0.f;
+
 void PlayerMove(AInputComponent* _aic, Timer& _timer)
 {
     float deltatime = _timer.FloatDeltaTime();
@@ -36,39 +46,69 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
     atc->RotateYAsix(horiR);
 
+    g_PlayerAngleAtc->Rotate({ vertR,horiR,0.f });
+
     float cosF = cosf(atc->GetProcessingRotation().y);
     float sinF = sinf(atc->GetProcessingRotation().y);
     float cosR = cosf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
     float sinR = sinf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
 
-    if (InputInterface::IsKeyDownInSingle(KB_W))
-    {
-        atc->TranslateZAsix(0.02f * deltatime * cosF);
-        atc->TranslateXAsix(0.02f * deltatime * sinF);
-    }
-    if (InputInterface::IsKeyDownInSingle(KB_A))
-    {
-        atc->TranslateZAsix(0.02f * deltatime * -cosR);
-        atc->TranslateXAsix(0.02f * deltatime * -sinR);
-    }
-    if (InputInterface::IsKeyDownInSingle(KB_S))
-    {
-        atc->TranslateZAsix(0.02f * deltatime * -cosF);
-        atc->TranslateXAsix(0.02f * deltatime * -sinF);
-    }
-    if (InputInterface::IsKeyDownInSingle(KB_D))
-    {
-        atc->TranslateZAsix(0.02f * deltatime * cosR);
-        atc->TranslateXAsix(0.02f * deltatime * sinR);
-    }
-    if (g_PlayerCanJumpFlg && InputInterface::IsKeyPushedInSingle(KB_SPACE))
-    {
-        g_PlayerCanJumpFlg = false;
-        g_PlayerYAsixSpeed = 50.f;
-    }
+    static const DirectX::XMFLOAT3 ident = { 0.f,0.f,1.f };
+    static const DirectX::XMVECTOR identVec = DirectX::XMLoadFloat3(&ident);
+    static DirectX::XMFLOAT3 lookAt = { 0.f,0.f,0.f };
 
-    g_PlayerYAsixSpeed -= 120.f * (deltatime / 1000.f);
-    atc->TranslateYAsix(g_PlayerYAsixSpeed * (deltatime / 1000.f));
+    if (!g_PlayerIsDashing)
+    {
+        if (InputInterface::IsKeyDownInSingle(KB_W))
+        {
+            atc->TranslateZAsix(0.02f * deltatime * cosF);
+            atc->TranslateXAsix(0.02f * deltatime * sinF);
+        }
+        if (InputInterface::IsKeyDownInSingle(KB_A))
+        {
+            atc->TranslateZAsix(0.02f * deltatime * -cosR);
+            atc->TranslateXAsix(0.02f * deltatime * -sinR);
+        }
+        if (InputInterface::IsKeyDownInSingle(KB_S))
+        {
+            atc->TranslateZAsix(0.02f * deltatime * -cosF);
+            atc->TranslateXAsix(0.02f * deltatime * -sinF);
+        }
+        if (InputInterface::IsKeyDownInSingle(KB_D))
+        {
+            atc->TranslateZAsix(0.02f * deltatime * cosR);
+            atc->TranslateXAsix(0.02f * deltatime * sinR);
+        }
+        if (g_PlayerCanDashFlg &&
+            InputInterface::IsKeyPushedInSingle(KB_LALT))
+        {
+            g_PlayerCanDashFlg = false;
+            g_PlayerIsDashing = true;
+            g_PlayerCanJumpFlg = false;
+            lookAt = g_PlayerAngleAtc->GetProcessingRotation();
+            DirectX::XMMATRIX mat = DirectX::XMMatrixRotationX(lookAt.x) *
+                DirectX::XMMatrixRotationY(lookAt.y);
+            DirectX::XMVECTOR lookAtVec = {};
+            lookAtVec = DirectX::XMVector3TransformNormal(identVec, mat);
+            lookAtVec = DirectX::XMVector3Normalize(lookAtVec);
+            DirectX::XMStoreFloat3(&lookAt, lookAtVec);
+        }
+        if (g_PlayerCanJumpFlg &&
+            InputInterface::IsKeyPushedInSingle(KB_SPACE))
+        {
+            g_PlayerCanJumpFlg = false;
+            g_PlayerYAsixSpeed = 50.f;
+        }
+
+        g_PlayerYAsixSpeed -= 120.f * (deltatime / 1000.f);
+        atc->TranslateYAsix(g_PlayerYAsixSpeed * (deltatime / 1000.f));
+    }
+    else
+    {
+        atc->TranslateZAsix(0.5f * deltatime * lookAt.z);
+        atc->TranslateYAsix(0.5f * deltatime * -lookAt.y);
+        atc->TranslateXAsix(0.5f * deltatime * lookAt.x);
+    }
 }
 
 bool PlayerInit(AInteractComponent* _aitc)
@@ -90,6 +130,14 @@ bool PlayerInit(AInteractComponent* _aitc)
     }
 
     ShowCursor(FALSE);
+
+    g_PlayerAngleAtc = (ATransformComponent*)(_aitc->
+        GetActorOwner()->GetSceneNode().
+        GetComponentContainer()->GetComponent("player-angle-actor-transform"));
+
+    g_PlayerCanDashFlg = false;
+    g_PlayerIsDashing = false;
+    g_DashTimer = 0.f;
 
     return true;
 }
@@ -118,8 +166,21 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
                 atc->RollBackPositionY();
                 g_PlayerYAsixSpeed = 0.f;
                 g_PlayerCanJumpFlg = true;
+                g_PlayerCanDashFlg = true;
+                g_PlayerIsDashing = false;
+                g_DashTimer = 0.f;
                 break;
             }
+        }
+    }
+
+    if (g_PlayerIsDashing)
+    {
+        g_DashTimer += _timer.FloatDeltaTime();
+        if (g_DashTimer > 200.f)
+        {
+            g_PlayerIsDashing = false;
+            g_DashTimer = 0.f;
         }
     }
 
@@ -140,4 +201,5 @@ void PlayerDestory(AInteractComponent* _aitc)
     GetClientRect(WindowInterface::GetWindowPtr()->GetWndHandle(), &wndRect);
     SetCursorPos((wndRect.right - wndRect.left) / 2,
         (wndRect.bottom - wndRect.top) / 2);
+    g_PlayerAngleAtc = nullptr;
 }
