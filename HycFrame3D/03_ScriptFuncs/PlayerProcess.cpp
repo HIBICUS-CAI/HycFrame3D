@@ -272,3 +272,10 @@ void SetPlayerContactGround()
     g_PlayerIsDashing = false;
     g_DashTimer = 0.f;
 }
+
+void SetPlayerBrokeHead()
+{
+    g_PlayerYAsixSpeed = 0.f;
+    g_PlayerIsDashing = false;
+    g_DashTimer = 0.f;
+}

@@ -18,3 +18,5 @@ bool GetPlayerDashFlg();
 bool GetPlayerAimingFlg();
 
 void SetPlayerContactGround();
+
+void SetPlayerBrokeHead();

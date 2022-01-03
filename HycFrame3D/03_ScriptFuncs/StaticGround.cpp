@@ -38,10 +38,15 @@ void GoundUpdate(AInteractComponent* _aitc, Timer& _timer)
             ACollisionComponent::CalcCenterOfContact(contact);
         if (fabsf(contactPoint.x - playerAtc->GetProcessingPosition().x) < 1.f &&
             fabsf(contactPoint.z - playerAtc->GetProcessingPosition().z) < 1.f &&
-            (contactPoint.y - playerAtc->GetProcessingPosition().y) < 0.f)
+            (contactPoint.y - playerAtc->GetProcessingPosition().y) < 3.1f)
         {
             playerAtc->RollBackPositionY();
             SetPlayerContactGround();
+        }
+        else if ((contactPoint.y - playerAtc->GetProcessingPosition().y) > 0.f)
+        {
+            playerAtc->RollBackPositionY();
+            SetPlayerBrokeHead();
         }
     }
 }
