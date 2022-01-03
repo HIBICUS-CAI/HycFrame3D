@@ -36,8 +36,8 @@ void GoundUpdate(AInteractComponent* _aitc, Timer& _timer)
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
         auto contactPoint =
             ACollisionComponent::CalcCenterOfContact(contact);
-        if (fabsf(contactPoint.x - playerAtc->GetProcessingPosition().x) < 1.f &&
-            fabsf(contactPoint.z - playerAtc->GetProcessingPosition().z) < 1.f &&
+        if (fabsf(contactPoint.x - playerAtc->GetProcessingPosition().x) < 0.1f &&
+            fabsf(contactPoint.z - playerAtc->GetProcessingPosition().z) < 0.1f &&
             (contactPoint.y - playerAtc->GetProcessingPosition().y) < 3.1f)
         {
             playerAtc->RollBackPositionY();

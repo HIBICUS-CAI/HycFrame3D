@@ -22,6 +22,8 @@ void RegisterPlayerProcess(ObjectFactory* _factory)
         { FUNC_NAME(PlayerDestory),PlayerDestory });
 }
 
+static DirectX::XMFLOAT3 g_PlayerMoveVec = { 0.f,0.f,0.f };
+
 static float g_PlayerYAsixSpeed = 0.f;
 static bool g_PlayerCanJumpFlg = false;
 static std::vector<std::string> g_GroundObjNameVec = {};
@@ -54,10 +56,10 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
 
     g_PlayerAngleAtc->Rotate({ vertR,horiR,0.f });
 
-    float cosF = cosf(atc->GetProcessingRotation().y);
-    float sinF = sinf(atc->GetProcessingRotation().y);
-    float cosR = cosf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
-    float sinR = sinf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
+    //float cosF = cosf(atc->GetProcessingRotation().y);
+    //float sinF = sinf(atc->GetProcessingRotation().y);
+    //float cosR = cosf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
+    //float sinR = sinf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
 
     static const DirectX::XMFLOAT3 ident = { 0.f,0.f,1.f };
     static const DirectX::XMVECTOR identVec = DirectX::XMLoadFloat3(&ident);
@@ -102,6 +104,7 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
         g_PlayerIsDashing = true;
         g_PlayerCanJumpFlg = false;
         g_DashTimer = 0.f;
+        g_PlayerYAsixSpeed = 0.f;
         lookAt = g_PlayerAngleAtc->GetProcessingRotation();
         DirectX::XMMATRIX mat = DirectX::XMMatrixRotationX(lookAt.x) *
             DirectX::XMMatrixRotationY(lookAt.y);
@@ -131,28 +134,23 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
 
     if (!g_PlayerIsDashing)
     {
-        if (InputInterface::IsKeyDownInSingle(KB_W))
-        {
-            atc->TranslateZAsix(0.02f * deltatime * cosF);
-            atc->TranslateXAsix(0.02f * deltatime * sinF);
-        }
-        if (InputInterface::IsKeyDownInSingle(KB_A))
-        {
-            atc->TranslateZAsix(0.02f * deltatime * -cosR);
-            atc->TranslateXAsix(0.02f * deltatime * -sinR);
-        }
-        if (InputInterface::IsKeyDownInSingle(KB_S))
-        {
-            atc->TranslateZAsix(0.02f * deltatime * -cosF);
-            atc->TranslateXAsix(0.02f * deltatime * -sinF);
-        }
-        if (InputInterface::IsKeyDownInSingle(KB_D))
-        {
-            atc->TranslateZAsix(0.02f * deltatime * cosR);
-            atc->TranslateXAsix(0.02f * deltatime * sinR);
-        }
-        if (g_PlayerCanJumpFlg &&
-            InputInterface::IsKeyPushedInSingle(KB_SPACE))
+        float angleY = atc->GetProcessingRotation().y;
+        DirectX::XMVECTOR frontVec = DirectX::XMVector3TransformNormal(
+            identVec, DirectX::XMMatrixRotationY(angleY));
+        DirectX::XMVECTOR rightVec = DirectX::XMVector3TransformNormal(
+            identVec, DirectX::XMMatrixRotationY(angleY + DirectX::XM_PIDIV2));
+        DirectX::XMVECTOR moveVec = DirectX::XMVectorZero();
+
+        if (InputInterface::IsKeyDownInSingle(KB_W)) { moveVec += frontVec; }
+        if (InputInterface::IsKeyDownInSingle(KB_A)) { moveVec -= rightVec; }
+        if (InputInterface::IsKeyDownInSingle(KB_S)) { moveVec -= frontVec; }
+        if (InputInterface::IsKeyDownInSingle(KB_D)) { moveVec += rightVec; }
+        moveVec = DirectX::XMVector3Normalize(moveVec);
+        DirectX::XMStoreFloat3(&g_PlayerMoveVec, moveVec);
+        atc->TranslateZAsix(0.02f * deltatime * g_PlayerMoveVec.z);
+        atc->TranslateXAsix(0.02f * deltatime * g_PlayerMoveVec.x);
+
+        if (g_PlayerCanJumpFlg && InputInterface::IsKeyPushedInSingle(KB_SPACE))
         {
             g_PlayerCanJumpFlg = false;
             g_PlayerYAsixSpeed = 50.f;
