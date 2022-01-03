@@ -208,6 +208,9 @@
     <ClCompile Include="03_ScriptFuncs\StaticGround.cpp">
       <Filter>03_ScriptFuncs</Filter>
     </ClCompile>
+    <ClCompile Include="03_ScriptFuncs\StaticObstacle.cpp">
+      <Filter>03_ScriptFuncs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -382,6 +385,9 @@
       <Filter>03_ScriptFuncs</Filter>
     </ClInclude>
     <ClInclude Include="03_ScriptFuncs\StaticGround.h">
+      <Filter>03_ScriptFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="03_ScriptFuncs\StaticObstacle.h">
       <Filter>03_ScriptFuncs</Filter>
     </ClInclude>
   </ItemGroup>

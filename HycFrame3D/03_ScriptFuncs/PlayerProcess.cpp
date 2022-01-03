@@ -56,11 +56,6 @@ void PlayerMove(AInputComponent* _aic, Timer& _timer)
 
     g_PlayerAngleAtc->Rotate({ vertR,horiR,0.f });
 
-    //float cosF = cosf(atc->GetProcessingRotation().y);
-    //float sinF = sinf(atc->GetProcessingRotation().y);
-    //float cosR = cosf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
-    //float sinR = sinf(atc->GetProcessingRotation().y + DirectX::XM_PIDIV2);
-
     static const DirectX::XMFLOAT3 ident = { 0.f,0.f,1.f };
     static const DirectX::XMVECTOR identVec = DirectX::XMLoadFloat3(&ident);
     static DirectX::XMFLOAT3 lookAt = { 0.f,0.f,0.f };
@@ -257,6 +252,11 @@ bool GetPlayerDashFlg()
     return g_PlayerCanDashFlg;
 }
 
+bool GetPlayerIsDashingFlg()
+{
+    return g_PlayerIsDashing;
+}
+
 bool GetPlayerAimingFlg()
 {
     return g_PlayerIsAming;
@@ -276,4 +276,16 @@ void SetPlayerBrokeHead()
     g_PlayerYAsixSpeed = 0.f;
     g_PlayerIsDashing = false;
     g_DashTimer = 0.f;
+}
+
+void SetPlayerDashToObstacle()
+{
+    g_PlayerYAsixSpeed = 0.f;
+    g_PlayerIsDashing = false;
+    g_DashTimer = 0.f;
+}
+
+DirectX::XMFLOAT3& GetPlayerMoveDirection()
+{
+    return g_PlayerMoveVec;
 }

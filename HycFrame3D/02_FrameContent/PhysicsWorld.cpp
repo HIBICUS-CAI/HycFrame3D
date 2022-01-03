@@ -123,7 +123,7 @@ void PhysicsWorld::DetectCollision()
             auto found = mContactPointMap.find(pair);
             if (found == mContactPointMap.end())
             {
-                mColliedPair.erase(pair); return;
+                mColliedPair.erase(pair); continue;
             }
             DirectX::XMVECTOR contactA =
                 DirectX::XMLoadFloat3(&found->second.first);

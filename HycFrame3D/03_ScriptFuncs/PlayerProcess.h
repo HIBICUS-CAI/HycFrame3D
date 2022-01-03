@@ -15,8 +15,14 @@ void PlayerDestory(AInteractComponent*);
 void SetPlayerDashFlg(bool _canDashFlg);
 bool GetPlayerDashFlg();
 
+bool GetPlayerIsDashingFlg();
+
 bool GetPlayerAimingFlg();
 
 void SetPlayerContactGround();
 
 void SetPlayerBrokeHead();
+
+void SetPlayerDashToObstacle();
+
+DirectX::XMFLOAT3& GetPlayerMoveDirection();

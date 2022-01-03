@@ -139,6 +139,7 @@ void ACollisionComponent::CreateCollisionShape(COLLISION_SHAPE _type,
         assert(mCollisionShape);
         break;
     }
+    mCollisionShape->setMargin(0.f);
     mCollisionObject = new btCollisionObject();
     mCollisionObject->setCollisionShape(mCollisionShape);
 }
