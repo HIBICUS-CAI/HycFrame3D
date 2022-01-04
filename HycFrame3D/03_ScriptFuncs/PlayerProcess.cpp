@@ -5,6 +5,7 @@
 #include <vector>
 #include "BulletProcess.h"
 #include "FadeProcess.h"
+#include "PauseMenu.h"
 
 using namespace DirectX;
 
@@ -47,7 +48,7 @@ static bool g_ResetDeadPlayerToGround = false;
 void PlayerInput(AInputComponent* _aic, Timer& _timer)
 {
     static bool outTrigger = false;
-    if (GetSceneInFlg()) { outTrigger = false; return; }
+    if (GetGamePauseFlg() || GetSceneInFlg()) { outTrigger = false; return; }
     if (InputInterface::IsKeyPushedInSingle(KB_BACKSPACE))
     {
         outTrigger = true;
@@ -223,6 +224,8 @@ bool PlayerInit(AInteractComponent* _aitc)
 
 void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
+    if (GetGamePauseFlg()) { return; }
+
     auto atc = _aitc->GetActorOwner()->
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
     DirectX::XMFLOAT3 camOffset = atc->GetProcessingPosition();

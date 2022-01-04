@@ -196,6 +196,7 @@
     <ClCompile Include="03_ScriptFuncs\BulletProcess.cpp" />
     <ClCompile Include="03_ScriptFuncs\FadeProcess.cpp" />
     <ClCompile Include="03_ScriptFuncs\NormalCrystal.cpp" />
+    <ClCompile Include="03_ScriptFuncs\PauseMenu.cpp" />
     <ClCompile Include="03_ScriptFuncs\PlayerProcess.cpp" />
     <ClCompile Include="03_ScriptFuncs\SleepCrystal.cpp" />
     <ClCompile Include="03_ScriptFuncs\SPInput.cpp" />
@@ -259,6 +260,7 @@
     <ClInclude Include="03_ScriptFuncs\BulletProcess.h" />
     <ClInclude Include="03_ScriptFuncs\FadeProcess.h" />
     <ClInclude Include="03_ScriptFuncs\NormalCrystal.h" />
+    <ClInclude Include="03_ScriptFuncs\PauseMenu.h" />
     <ClInclude Include="03_ScriptFuncs\PlayerProcess.h" />
     <ClInclude Include="03_ScriptFuncs\SleepCrystal.h" />
     <ClInclude Include="03_ScriptFuncs\SPInput.h" />

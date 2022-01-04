@@ -7,6 +7,7 @@
 #include "StaticGround.h"
 #include "StaticObstacle.h"
 #include "FadeProcess.h"
+#include "PauseMenu.h"
 
 void RegisterAllFuncPtr(ObjectFactory* _factory)
 {
@@ -18,4 +19,5 @@ void RegisterAllFuncPtr(ObjectFactory* _factory)
     RegisterStaticGround(_factory);
     RegisterStaticObstacle(_factory);
     RegisterFadeProcess(_factory);
+    RegisterPauseMenu(_factory);
 }

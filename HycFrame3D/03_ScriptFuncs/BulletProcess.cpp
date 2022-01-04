@@ -1,6 +1,7 @@
 #include "BulletProcess.h"
 #include <vector>
 #include "PlayerProcess.h"
+#include "PauseMenu.h"
 
 using namespace DirectX;
 
@@ -62,6 +63,8 @@ bool BulletManagerInit(AInteractComponent* _aitc)
 
 void BulletManagerUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
+    if (GetGamePauseFlg()) { return; }
+
     if (GetPlayerAimingFlg())
     {
         g_AimingRestTimer -= _timer.FloatDeltaTime() / 1000.f;

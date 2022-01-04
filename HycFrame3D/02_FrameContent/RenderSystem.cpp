@@ -14,6 +14,7 @@
 #include "SceneManager.h"
 #include "SceneNode.h"
 #include "AssetsPool.h"
+#include "UButtonComponent.h"
 
 RenderSystem::RenderSystem(SystemExecutive* _sysExecutive) :
     System("render-system", _sysExecutive),
@@ -82,7 +83,8 @@ void RenderSystem::Run(Timer& _timer)
 
     static RS_DRAWCALL_DATA drawCall = {};
     auto& meshPool = mAssetsPool->mMeshPool;
-
+    RS_DRAWCALL_DATA btnSelectFlg = {};
+    bool hasBtnSelect = false;
     for (auto& mesh : meshPool)
     {
         mesh.second.mInstanceVector.clear();
@@ -122,6 +124,16 @@ void RenderSystem::Run(Timer& _timer)
         }
 
         drawCallPool->AddDrawCallToPipe(dType, drawCall);
+        if (mesh.first == SELECTED_BTN_SPRITE_NAME)
+        {
+            hasBtnSelect = true;
+            btnSelectFlg = drawCall;
+        }
+    }
+    if (hasBtnSelect)
+    {
+        mRenderSystemRoot->DrawCallsPool()->AddDrawCallToPipe(
+            DRAWCALL_TYPE::UI_SPRITE, btnSelectFlg);
     }
     mRenderSystemRoot->LightsContainer()->UploadLightBloomDrawCall();
 
