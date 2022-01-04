@@ -539,6 +539,69 @@
             ]
         },
         {
+            "actor-name": "smoke-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -600.0,
+                        -7.5,
+                        400.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "emit-per-second": 120.0,
+                    "velocity": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "pos-variance": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "vel-variance": 0.5,
+                    "acceleration": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "particle-mass": 0.1,
+                    "life-span": 150.0,
+                    "start-end-size": [
+                        2.0,
+                        5.0
+                    ],
+                    "start-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "end-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "streak-flag": false,
+                    "texture-name": "smoke"
+                }
+            ]
+        },
+        {
             "actor-name": "ground-1-actor",
             "components": [
                 {
@@ -585,6 +648,69 @@
             ]
         },
         {
+            "actor-name": "smoke-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -400.0,
+                        -7.5,
+                        400.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "emit-per-second": 120.0,
+                    "velocity": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "pos-variance": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "vel-variance": 0.5,
+                    "acceleration": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "particle-mass": 0.1,
+                    "life-span": 150.0,
+                    "start-end-size": [
+                        2.0,
+                        5.0
+                    ],
+                    "start-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "end-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "streak-flag": false,
+                    "texture-name": "smoke"
+                }
+            ]
+        },
+        {
             "actor-name": "n-crystal-0-actor",
             "components": [
                 {
@@ -592,7 +718,7 @@
                     "init-position": [
                         -600.0,
                         1.0,
-                        400.0
+                        350.0
                     ],
                     "init-angle": [
                         0.0,
@@ -651,7 +777,7 @@
                     "init-position": [
                         -600.0,
                         9.0,
-                        400.0
+                        350.0
                     ],
                     "init-angle": [
                         0.0,

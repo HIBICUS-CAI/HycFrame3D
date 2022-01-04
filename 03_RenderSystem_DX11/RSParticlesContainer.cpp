@@ -27,6 +27,8 @@ bool RSParticlesContainer::StartUp(RSRoot_DX11* _root)
     if (!_root) { return false; }
     mRootPtr = _root;
 
+    mParticleEmitterVec.reserve(MAX_INSTANCE_SIZE);
+
     return true;
 }
 
