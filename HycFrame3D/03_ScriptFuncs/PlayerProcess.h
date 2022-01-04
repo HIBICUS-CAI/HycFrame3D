@@ -6,7 +6,7 @@ constexpr auto PLAYER_NAME = "player-actor";
 
 void RegisterPlayerProcess(ObjectFactory* _factory);
 
-void PlayerMove(AInputComponent*, Timer&);
+void PlayerInput(AInputComponent*, Timer&);
 
 bool PlayerInit(AInteractComponent*);
 void PlayerUpdate(AInteractComponent*, Timer&);
@@ -27,3 +27,5 @@ void SetPlayerDashToObstacle();
 
 DirectX::XMFLOAT3& GetPlayerMoveDirection();
 void SetPlayerMoveDirection(DirectX::XMFLOAT3 _dir);
+
+void SetPlayerLastReachGround(ATransformComponent* _groundAtc);

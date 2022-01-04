@@ -121,7 +121,7 @@
                 },
                 {
                     "type": "input",
-                    "func-name": "PlayerMove"
+                    "func-name": "PlayerInput"
                 },
                 {
                     "type": "interact",

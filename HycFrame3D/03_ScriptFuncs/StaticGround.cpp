@@ -42,6 +42,9 @@ void GoundUpdate(AInteractComponent* _aitc, Timer& _timer)
         {
             playerAtc->RollBackPositionY();
             SetPlayerContactGround();
+            auto atc = _aitc->GetActorOwner()->
+                GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+            SetPlayerLastReachGround(atc);
         }
         else if ((contactPoint.y - playerAtc->GetProcessingPosition().y) > 0.f)
         {

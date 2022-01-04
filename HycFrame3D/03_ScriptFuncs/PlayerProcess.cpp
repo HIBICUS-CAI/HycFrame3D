@@ -13,7 +13,7 @@ void RegisterPlayerProcess(ObjectFactory* _factory)
     assert(_factory);
 #endif // _DEBUG
     _factory->GetAInputMapPtr()->insert(
-        { FUNC_NAME(PlayerMove),PlayerMove });
+        { FUNC_NAME(PlayerInput),PlayerInput });
     _factory->GetAInitMapPtr()->insert(
         { FUNC_NAME(PlayerInit),PlayerInit });
     _factory->GetAUpdateMapPtr()->insert(
@@ -39,7 +39,9 @@ static float g_GunYAngleOffset = DirectX::XM_PIDIV4;
 static bool g_PlayerIsAming = false;
 static bool g_PlayerCanShoot = false;
 
-void PlayerMove(AInputComponent* _aic, Timer& _timer)
+static ATransformComponent* g_LastReachGroundAtc = nullptr;
+
+void PlayerInput(AInputComponent* _aic, Timer& _timer)
 {
     float deltatime = _timer.FloatDeltaTime();
 
@@ -197,6 +199,8 @@ bool PlayerInit(AInteractComponent* _aitc)
     g_PlayerIsDashing = false;
     g_DashTimer = 0.f;
 
+    g_LastReachGroundAtc = nullptr;
+
     return true;
 }
 
@@ -224,9 +228,23 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     if (atc->GetProcessingPosition().y < -50.f)
     {
-        P_LOG(LOG_DEBUG, "to result\n");
-        _aitc->GetActorOwner()->GetSceneNode().GetSceneManager()->
-            LoadSceneNode("result-scene", "result-scene.json");
+        if (!g_LastReachGroundAtc)
+        {
+            g_LastReachGroundAtc = _aitc->GetActorOwner()->GetSceneNode().
+                GetActorObject("ground-0-actor")->
+                GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+        }
+        DirectX::XMFLOAT3 rebirth = g_LastReachGroundAtc->GetPosition();
+        rebirth.y += 10.f;
+        atc->SetPosition(rebirth);
+        g_PlayerYAsixSpeed = 0.f;
+        g_PlayerCanJumpFlg = false;
+        g_GunYAngleOffset = DirectX::XM_PIDIV4;
+        g_PlayerIsAming = false;
+        g_PlayerCanShoot = false;
+        g_PlayerCanDashFlg = true;
+        g_PlayerIsDashing = false;
+        g_DashTimer = 0.f;
     }
 }
 
@@ -240,6 +258,7 @@ void PlayerDestory(AInteractComponent* _aitc)
     SetCursorPos((wndRect.right - wndRect.left) / 2,
         (wndRect.bottom - wndRect.top) / 2);
     g_PlayerAngleAtc = nullptr;
+    g_LastReachGroundAtc = nullptr;
 }
 
 void SetPlayerDashFlg(bool _canDashFlg)
@@ -293,4 +312,9 @@ DirectX::XMFLOAT3& GetPlayerMoveDirection()
 void SetPlayerMoveDirection(DirectX::XMFLOAT3 _dir)
 {
     g_PlayerMoveVec = _dir;
+}
+
+void SetPlayerLastReachGround(ATransformComponent* _groundAtc)
+{
+    g_LastReachGroundAtc = _groundAtc;
 }
