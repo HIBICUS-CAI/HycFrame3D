@@ -175,9 +175,9 @@ void RSLight::UploadLightDrawCall()
     }
 }
 
-void RSLight::ReleaseLightBloom()
+void RSLight::ReleaseLightBloom(bool _deleteByFrame)
 {
-    if (mBloomLightFlg)
+    if (mBloomLightFlg && !_deleteByFrame)
     {
         GetRSRoot_DX11_Singleton()->MeshHelper()->ReleaseSubMesh(
             mLightMeshData);

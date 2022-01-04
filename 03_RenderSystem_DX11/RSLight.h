@@ -35,7 +35,7 @@ public:
 
     void SetLightBloom(RS_SUBMESH_DATA& _meshData);
     void UploadLightDrawCall();
-    void ReleaseLightBloom();
+    void ReleaseLightBloom(bool _deleteByFrame);
     void UpdateBloomColor();
 
 private:

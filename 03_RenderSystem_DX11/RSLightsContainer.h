@@ -24,7 +24,7 @@ public:
     class RSLight* CreateRSLight(std::string& _name, LIGHT_INFO* _info);
     class RSLight* GetRSLight(std::string& _name);
     RS_LIGHT_INFO* GetRSLightInfo(std::string& _name);
-    void DeleteRSLight(std::string& _name);
+    void DeleteRSLight(std::string& _name, bool _bloomDeleteByFrame);
 
     bool CreateLightCameraFor(std::string& _name, CAM_INFO* _info);
 

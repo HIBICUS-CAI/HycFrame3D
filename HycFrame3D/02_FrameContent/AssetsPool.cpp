@@ -119,10 +119,6 @@ void AssetsPool::DeleteAllAssets()
         {
             continue;
         }
-        else if (mesh_data.first == BOX_BLOOM_MESH_NAME)
-        {
-            continue;
-        }
         else if (mesh_data.first == SELECTED_BTN_SPRITE_NAME)
         {
             continue;

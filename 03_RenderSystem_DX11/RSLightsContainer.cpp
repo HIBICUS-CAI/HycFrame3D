@@ -103,7 +103,8 @@ RS_LIGHT_INFO* RSLightsContainer::GetRSLightInfo(
     }
 }
 
-void RSLightsContainer::DeleteRSLight(std::string& _name)
+void RSLightsContainer::DeleteRSLight(std::string& _name,
+    bool _bloomDeleteByFrame)
 {
     auto found = mLightMap.find(_name);
     if (found != mLightMap.end())
@@ -138,7 +139,7 @@ void RSLightsContainer::DeleteRSLight(std::string& _name)
                 break;
             }
         }
-        found->second->ReleaseLightBloom();
+        found->second->ReleaseLightBloom(_bloomDeleteByFrame);
         delete found->second;
         mLightMap.erase(found);
     }

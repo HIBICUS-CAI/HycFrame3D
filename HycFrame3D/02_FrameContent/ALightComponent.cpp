@@ -49,7 +49,8 @@ void ALightComponent::Update(Timer& _timer)
 
 void ALightComponent::Destory()
 {
-    GetRSRoot_DX11_Singleton()->LightsContainer()->DeleteRSLight(mLightName);
+    GetRSRoot_DX11_Singleton()->LightsContainer()->
+        DeleteRSLight(mLightName, true);
 }
 
 void ALightComponent::CreateLight()
