@@ -85,3 +85,8 @@ void RSParticleEmitter::SetEmitterPosition(DirectX::XMFLOAT3&& _position)
 {
     mRSParticleEmitterInfo.mPosition = _position;
 }
+
+void RSParticleEmitter::ResetEmitterIndex()
+{
+    g_ParticleEmitterCounter = 0;
+}

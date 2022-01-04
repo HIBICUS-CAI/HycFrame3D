@@ -45,6 +45,7 @@ bool RSParticlesContainer::GetResetFlg()
 
 void RSParticlesContainer::ResetRSParticleSystem()
 {
+    RSParticleEmitter::ResetEmitterIndex();
     mResetFlg = true;
 }
 
@@ -57,11 +58,11 @@ RSParticleEmitter* RSParticlesContainer::CreateRSParticleEmitter(
     std::string& _name, PARTICLE_EMITTER_INFO* _info)
 {
     auto size = mParticleEmitterVec.size();
-    mParticleEmitterVec.push_back(RSParticleEmitter(_info));
-    mParticleEmitterMap.insert(
-        { _name,&mParticleEmitterVec[size] });
+    RSParticleEmitter* emitter = new RSParticleEmitter(_info);
+    mParticleEmitterVec.push_back(emitter);
+    mParticleEmitterMap.insert({ _name,emitter });
 
-    return &mParticleEmitterVec[size];
+    return emitter;
 }
 
 void RSParticlesContainer::DeleteRSParticleEmitter(
@@ -74,7 +75,7 @@ void RSParticlesContainer::DeleteRSParticleEmitter(
         for (auto i = mParticleEmitterVec.begin();
             i != mParticleEmitterVec.end(); i++)
         {
-            if ((&(*i)) == ptr)
+            if ((*i) == ptr)
             {
                 mParticleEmitterVec.erase(i);
                 mParticleEmitterMap.erase(found);
@@ -98,7 +99,7 @@ RSParticleEmitter* RSParticlesContainer::GetRSParticleEmitter(
     }
 }
 
-std::vector<RSParticleEmitter>*
+std::vector<RSParticleEmitter*>*
 RSParticlesContainer::GetAllParticleEmitters()
 {
     return &mParticleEmitterVec;

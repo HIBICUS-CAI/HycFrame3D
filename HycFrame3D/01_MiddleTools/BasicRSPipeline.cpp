@@ -4097,7 +4097,7 @@ void RSPass_PriticleEmitSimulate::ExecuatePass()
         STContext()->Unmap(mTimeConstantBuffer, 0);
         for (auto& emitter : *emitters)
         {
-            auto& rsinfo = emitter.GetRSParticleEmitterInfo();
+            auto& rsinfo = emitter->GetRSParticleEmitterInfo();
             rsinfo.mAccumulation += rsinfo.mEmitNumPerSecond *
                 g_DeltaTimeInSecond;
             if (rsinfo.mAccumulation > 1.f)
@@ -4181,7 +4181,7 @@ void RSPass_PriticleEmitSimulate::ExecuatePass()
             (SIMULATE_EMITTER_INFO*)msr.pData;
         for (size_t i = 0; i < size; i++)
         {
-            emitter[i].mWorldPosition = (*emitterVec)[i].
+            emitter[i].mWorldPosition = (*(*emitterVec)[i]).
                 GetRSParticleEmitterInfo().mPosition;
         }
         STContext()->Unmap(mSimulEmitterStructedBuffer, 0);
