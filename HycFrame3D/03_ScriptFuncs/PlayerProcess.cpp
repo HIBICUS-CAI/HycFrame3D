@@ -46,6 +46,20 @@ static bool g_ResetDeadPlayerToGround = false;
 
 void PlayerInput(AInputComponent* _aic, Timer& _timer)
 {
+    static bool outTrigger = false;
+    if (GetSceneInFlg()) { outTrigger = false; return; }
+    if (InputInterface::IsKeyPushedInSingle(KB_BACKSPACE))
+    {
+        outTrigger = true;
+        SetSceneOutFlg(true);
+    }
+    if (outTrigger && !GetSceneOutFlg())
+    {
+        P_LOG(LOG_DEBUG, "to result\n");
+        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+            LoadSceneNode("result-scene", "result-scene.json");
+    }
+
     float deltatime = _timer.FloatDeltaTime();
 
     auto mouseOffset = InputInterface::GetMouseOffset();

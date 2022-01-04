@@ -12,6 +12,12 @@ void RegisterFadeProcess(ObjectFactory* _factory)
         { FUNC_NAME(DeadFadeUpdate),DeadFadeUpdate });
     _factory->GetUDestoryMapPtr()->insert(
         { FUNC_NAME(DeadFadeDestory),DeadFadeDestory });
+    _factory->GetUInitMapPtr()->insert(
+        { FUNC_NAME(SceneFadeInit),SceneFadeInit });
+    _factory->GetUUpdateMapPtr()->insert(
+        { FUNC_NAME(SceneFadeUpdate),SceneFadeUpdate });
+    _factory->GetUDestoryMapPtr()->insert(
+        { FUNC_NAME(SceneFadeDestory),SceneFadeDestory });
 }
 
 static UTransformComponent* g_DeadFadesUtc[10] = { nullptr };
@@ -103,4 +109,102 @@ bool GetDeadFadeRunningFlg()
 void SetDeadFadeRunningFlg(bool _flag)
 {
     g_DeadFadeRun = _flag;
+}
+
+static bool g_SceneInFlg = true;
+static bool g_SceneOutFlg = false;
+
+static UTransformComponent* g_SceneInUtc[2] = { nullptr };
+static UTransformComponent* g_SceneOutUtc[2] = { nullptr };
+
+static float g_SceneInOutTimer = 0.f;
+
+bool SceneFadeInit(UInteractComponent* _uitc)
+{
+    g_SceneInFlg = true;
+    g_SceneOutFlg = false;
+    g_SceneInOutTimer = 0.f;
+
+    auto compContainer = _uitc->GetUiOwner()->GetSceneNode().
+        GetComponentContainer();
+    for (UINT i = 0; i < 2; i++)
+    {
+        std::string name = "";
+        name = "scene-in-" + std::to_string(i) + "-ui-transform";
+        g_SceneInUtc[i] = (UTransformComponent*)(compContainer->
+            GetComponent(name));
+        name = "scene-out-" + std::to_string(i) + "-ui-transform";
+        g_SceneOutUtc[i] = (UTransformComponent*)(compContainer->
+            GetComponent(name));
+    }
+
+    return true;
+}
+
+void SceneFadeUpdate(UInteractComponent* _uitc, Timer& _timer)
+{
+    if (g_SceneInFlg)
+    {
+        if (g_SceneInOutTimer > 500.f)
+        {
+            g_SceneInFlg = false;
+            g_SceneInOutTimer = 0.f;
+            return;
+        }
+
+        float sinVal = sinf(g_SceneInOutTimer / 500.f * DirectX::XM_PIDIV2);
+        float absX = (sinVal) * 640.f + 320.f;
+        DirectX::XMFLOAT3 pos = {};
+        pos = g_SceneInUtc[0]->GetPosition();
+        pos.x = -1.f * absX;
+        g_SceneInUtc[0]->SetPosition(pos);
+        pos = g_SceneInUtc[1]->GetPosition();
+        pos.x = 1.f * absX;
+        g_SceneInUtc[1]->SetPosition(pos);
+
+        g_SceneInOutTimer += _timer.FloatDeltaTime();
+    }
+
+    if (g_SceneOutFlg)
+    {
+        if (g_SceneInOutTimer > 500.f)
+        {
+            g_SceneOutFlg = false;
+            g_SceneInOutTimer = 0.f;
+            return;
+        }
+
+        float sinVal = sinf(g_SceneInOutTimer / 500.f * DirectX::XM_PIDIV2);
+        float absY = (1.f - sinVal) * 360.f + 180.f;
+        DirectX::XMFLOAT3 pos = {};
+        pos = g_SceneOutUtc[0]->GetPosition();
+        pos.y = -1.f * absY;
+        g_SceneOutUtc[0]->SetPosition(pos);
+        pos = g_SceneOutUtc[1]->GetPosition();
+        pos.y = 1.f * absY;
+        g_SceneOutUtc[1]->SetPosition(pos);
+
+        g_SceneInOutTimer += _timer.FloatDeltaTime();
+    }
+}
+
+void SceneFadeDestory(UInteractComponent* _uitc)
+{
+    g_SceneInFlg = true;
+    g_SceneOutFlg = false;
+}
+
+bool GetSceneInFlg()
+{
+    return g_SceneInFlg;
+}
+
+bool GetSceneOutFlg()
+{
+    return g_SceneOutFlg;
+}
+
+void SetSceneOutFlg(bool _flag)
+{
+    g_SceneOutFlg = _flag;
 }
