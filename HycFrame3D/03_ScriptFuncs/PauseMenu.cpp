@@ -47,7 +47,8 @@ void PauseMenuBtnInput(UInputComponent* _uic, Timer& _timer)
     if (InputInterface::IsKeyPushedInSingle(KB_UP)) { ubc->SelectUpBtn(); }
     if (InputInterface::IsKeyPushedInSingle(KB_DOWN)) { ubc->SelectDownBtn(); }
 
-    if (ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN))
+    if ((ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN)) ||
+        (InputInterface::IsKeyPushedInSingle(KB_RETURN) && ubc->IsBeingSelected()))
     {
         if (ubc->GetCompName() == "pause-continue-btn-ui-button")
         {
