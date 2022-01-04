@@ -4,6 +4,7 @@
 #include "WM_Interface.h"
 #include <vector>
 #include "BulletProcess.h"
+#include "FadeProcess.h"
 
 using namespace DirectX;
 
@@ -40,6 +41,8 @@ static bool g_PlayerIsAming = false;
 static bool g_PlayerCanShoot = false;
 
 static ATransformComponent* g_LastReachGroundAtc = nullptr;
+
+static bool g_ResetDeadPlayerToGround = false;
 
 void PlayerInput(AInputComponent* _aic, Timer& _timer)
 {
@@ -228,6 +231,11 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     if (atc->GetProcessingPosition().y < -50.f)
     {
+        SetDeadFadeRunningFlg(true);
+    }
+
+    if (g_ResetDeadPlayerToGround)
+    {
         if (!g_LastReachGroundAtc)
         {
             g_LastReachGroundAtc = _aitc->GetActorOwner()->GetSceneNode().
@@ -245,6 +253,7 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
         g_PlayerCanDashFlg = true;
         g_PlayerIsDashing = false;
         g_DashTimer = 0.f;
+        g_ResetDeadPlayerToGround = false;
     }
 }
 
@@ -317,4 +326,9 @@ void SetPlayerMoveDirection(DirectX::XMFLOAT3 _dir)
 void SetPlayerLastReachGround(ATransformComponent* _groundAtc)
 {
     g_LastReachGroundAtc = _groundAtc;
+}
+
+void ResetDeadPlayerToGround()
+{
+    g_ResetDeadPlayerToGround = true;
 }

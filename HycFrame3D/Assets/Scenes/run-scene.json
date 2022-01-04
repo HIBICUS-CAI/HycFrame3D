@@ -1126,6 +1126,347 @@
                     "tex-file": "bullet_icon.png"
                 }
             ]
+        },
+        {
+            "ui-name": "dead-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "DeadFadeInit",
+                    "update-func-name": "DeadFadeUpdate",
+                    "destory-func-name": "DeadFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -576.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -448.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-2-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -320.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-3-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -192.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-4-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -64.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-5-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        64.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-6-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        192.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-7-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        320.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-8-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        448.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-9-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        576.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
         }
     ]
 }

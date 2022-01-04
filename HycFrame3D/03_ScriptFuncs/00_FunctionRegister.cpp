@@ -6,6 +6,7 @@
 #include "BulletProcess.h"
 #include "StaticGround.h"
 #include "StaticObstacle.h"
+#include "FadeProcess.h"
 
 void RegisterAllFuncPtr(ObjectFactory* _factory)
 {
@@ -16,4 +17,5 @@ void RegisterAllFuncPtr(ObjectFactory* _factory)
     RegisterBulletProcess(_factory);
     RegisterStaticGround(_factory);
     RegisterStaticObstacle(_factory);
+    RegisterFadeProcess(_factory);
 }

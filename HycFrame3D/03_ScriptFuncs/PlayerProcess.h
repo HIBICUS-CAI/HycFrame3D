@@ -29,3 +29,5 @@ DirectX::XMFLOAT3& GetPlayerMoveDirection();
 void SetPlayerMoveDirection(DirectX::XMFLOAT3 _dir);
 
 void SetPlayerLastReachGround(ATransformComponent* _groundAtc);
+
+void ResetDeadPlayerToGround();
