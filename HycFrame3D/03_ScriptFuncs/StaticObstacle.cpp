@@ -34,20 +34,54 @@ void ObstacleUpdate(AInteractComponent* _aitc, Timer& _timer)
         auto playerAtc = _aitc->GetActorOwner()->GetSceneNode().
             GetActorObject(PLAYER_NAME)->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+        float xOffset = fabsf(contactPnt.x -
+            playerAtc->GetProcessingPosition().x);
+        float zOffset = fabsf(contactPnt.z -
+            playerAtc->GetProcessingPosition().z);
         if (GetPlayerIsDashingFlg())
         {
             playerAtc->RollBackPosition();
             SetPlayerDashToObstacle();
         }
-        else if (fabsf(contactPnt.x - playerAtc->GetProcessingPosition().x) < 0.1f &&
-            fabsf(contactPnt.z - playerAtc->GetProcessingPosition().z) < 0.1f &&
-            (contactPnt.y - playerAtc->GetProcessingPosition().y) < 3.1f)
+        else if (xOffset < 3.1f && zOffset < 3.1f &&
+            (contactPnt.y - playerAtc->GetProcessingPosition().y) < -0.1f)
         {
             playerAtc->RollBackPositionY();
-            float offset = 3.f - fabsf(playerAtc->GetProcessingPosition().y -
-                contactPnt.y);
+
+            XMFLOAT3 playerPnt = playerAtc->GetProcessingPosition();
+            XMVECTOR contactVec = XMLoadFloat3(&contact.first) -
+                XMLoadFloat3(&playerPnt);
+            float lengthFirSq = XMVectorGetX(XMVector3LengthSq(contactVec));
+            contactVec = XMLoadFloat3(&contact.second) -
+                XMLoadFloat3(&playerPnt);
+            float lengthSecSq = XMVectorGetX(XMVector3LengthSq(contactVec));
+            float xzSq = xOffset * xOffset + zOffset * zOffset;
+            float yFir = sqrtf(lengthFirSq - xzSq);
+            float ySec = sqrtf(lengthSecSq - xzSq);
+            float offset = fabsf(yFir - ySec);
             playerAtc->TranslateYAsix(offset);
+
             SetPlayerContactGround();
+        }
+        else if (xOffset < 3.1f && zOffset < 3.1f &&
+            (contactPnt.y - playerAtc->GetProcessingPosition().y) > 2.5f)
+        {
+            playerAtc->RollBackPositionY();
+
+            XMFLOAT3 playerPnt = playerAtc->GetProcessingPosition();
+            XMVECTOR contactVec = XMLoadFloat3(&contact.first) -
+                XMLoadFloat3(&playerPnt);
+            float lengthFirSq = XMVectorGetX(XMVector3LengthSq(contactVec));
+            contactVec = XMLoadFloat3(&contact.second) -
+                XMLoadFloat3(&playerPnt);
+            float lengthSecSq = XMVectorGetX(XMVector3LengthSq(contactVec));
+            float xzSq = xOffset * xOffset + zOffset * zOffset;
+            float yFir = sqrtf(lengthFirSq - xzSq);
+            float ySec = sqrtf(lengthSecSq - xzSq);
+            float offset = fabsf(yFir - ySec);
+            playerAtc->TranslateYAsix(-offset);
+
+            SetPlayerBrokeHead();
         }
         else
         {
