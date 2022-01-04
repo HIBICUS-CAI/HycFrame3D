@@ -289,3 +289,8 @@ DirectX::XMFLOAT3& GetPlayerMoveDirection()
 {
     return g_PlayerMoveVec;
 }
+
+void SetPlayerMoveDirection(DirectX::XMFLOAT3 _dir)
+{
+    g_PlayerMoveVec = _dir;
+}

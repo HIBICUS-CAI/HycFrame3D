@@ -51,10 +51,10 @@ void ObstacleUpdate(AInteractComponent* _aitc, Timer& _timer)
         }
         else
         {
-            DirectX::XMFLOAT3 xUnit = { 1.f,0.f,0.f };
-            DirectX::XMFLOAT3 zUnit = { 0.f,0.f,1.f };
-            DirectX::XMVECTOR xVec = DirectX::XMLoadFloat3(&xUnit);
-            DirectX::XMVECTOR zVec = DirectX::XMLoadFloat3(&zUnit);
+            static const DirectX::XMFLOAT3 xUnit = { 1.f,0.f,0.f };
+            static const DirectX::XMFLOAT3 zUnit = { 0.f,0.f,1.f };
+            static const DirectX::XMVECTOR xVec = DirectX::XMLoadFloat3(&xUnit);
+            static const DirectX::XMVECTOR zVec = DirectX::XMLoadFloat3(&zUnit);
             DirectX::XMFLOAT3 playerMove = GetPlayerMoveDirection();
             DirectX::XMFLOAT3 playerPnt = playerAtc->GetProcessingPosition();
             DirectX::XMVECTOR plyMoveVec = DirectX::XMLoadFloat3(&playerMove);
@@ -75,6 +75,8 @@ void ObstacleUpdate(AInteractComponent* _aitc, Timer& _timer)
             playerAtc->RollBackPositionZ();
             playerAtc->TranslateZAsix(0.02f * deltatime * zAsix);
             playerAtc->TranslateXAsix(0.02f * deltatime * xAsix);
+            DirectX::XMStoreFloat3(&playerMove, moveVec);
+            SetPlayerMoveDirection(playerMove);
         }
     }
 }

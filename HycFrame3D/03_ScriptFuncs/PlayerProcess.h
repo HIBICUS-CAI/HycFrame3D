@@ -26,3 +26,4 @@ void SetPlayerBrokeHead();
 void SetPlayerDashToObstacle();
 
 DirectX::XMFLOAT3& GetPlayerMoveDirection();
+void SetPlayerMoveDirection(DirectX::XMFLOAT3 _dir);

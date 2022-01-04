@@ -401,6 +401,52 @@
             ]
         },
         {
+            "actor-name": "obstacle-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -610.0,
+                        -2.5,
+                        335.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        15.0,
+                        15.0,
+                        15.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "yel-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
             "actor-name": "ground-0-actor",
             "components": [
                 {
