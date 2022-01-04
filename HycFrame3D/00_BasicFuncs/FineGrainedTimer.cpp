@@ -28,9 +28,9 @@ void Timer::TimeOut()
     mDfm = 1000. * (double)(mQt2 - mQt1);
     mDft = mDfm / mDff;
 
-    if (mDft > 16.6666666667f)
+    if (mDft > 33.3333333333f)
     {
-        mDft = 16.6666666667f;
+        mDft = 33.3333333333f;
     }
 
 #ifdef _DEBUG
