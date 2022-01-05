@@ -109,7 +109,7 @@ void BulletManagerUpdate(AInteractComponent* _aitc, Timer& _timer)
         vec = DirectX::XMVector3Length(vec);
         if (DirectX::XMVectorGetX(vec) > 150.f)
         {
-            g_UsingBulletAtcVec.erase(i);
+            i = g_UsingBulletAtcVec.erase(i);
             g_UsableBulletAtcVec.push_back(bltAtc);
         }
         else { ++i; }
