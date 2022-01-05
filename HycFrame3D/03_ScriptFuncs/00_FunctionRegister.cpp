@@ -8,6 +8,7 @@
 #include "StaticObstacle.h"
 #include "FadeProcess.h"
 #include "PauseMenu.h"
+#include "DestProcess.h"
 
 void RegisterAllFuncPtr(ObjectFactory* _factory)
 {
@@ -20,4 +21,5 @@ void RegisterAllFuncPtr(ObjectFactory* _factory)
     RegisterStaticObstacle(_factory);
     RegisterFadeProcess(_factory);
     RegisterPauseMenu(_factory);
+    RegisterDestProcess(_factory);
 }

@@ -78,6 +78,22 @@
             }
         },
         {
+            "mesh-name": "destination-cyl",
+            "load-mode": "program-cylinder",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "top-btm-het-size": [
+                    0.1,
+                    10.0,
+                    20.0
+                ],
+                "slice-stack-count": [
+                    3,
+                    1
+                ]
+            }
+        },
+        {
             "mesh-name": "hill",
             "load-mode": "model-file",
             "force-diffuse": "hill_diffuse.png",
@@ -943,6 +959,128 @@
                         80.0
                     ],
                     "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "destination-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -400.0,
+                        8.0,
+                        320.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "destination-cyl"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "DestInit",
+                    "update-func-name": "DestUpdate",
+                    "destory-func-name": "DestDestory"
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        10.0,
+                        20.0,
+                        10.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "destination-particle-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -400.0,
+                        20.0,
+                        320.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "emit-per-second": 400.0,
+                    "velocity": [
+                        0.0,
+                        18.0,
+                        0.0
+                    ],
+                    "pos-variance": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "vel-variance": 0.5,
+                    "acceleration": [
+                        0.0,
+                        -9.8,
+                        0.0
+                    ],
+                    "particle-mass": 0.3,
+                    "life-span": 100.0,
+                    "start-end-size": [
+                        0.5,
+                        0.0
+                    ],
+                    "start-color": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "end-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "streak-flag": true,
+                    "texture-name": "circle"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "DestPtcInit",
+                    "update-func-name": "DestPtcUpdate",
+                    "destory-func-name": "DestPtcDestory"
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        100.0
+                    ]
                 }
             ]
         },

@@ -194,6 +194,7 @@
     <ClCompile Include="02_FrameContent\UTransformComponent.cpp" />
     <ClCompile Include="03_ScriptFuncs\00_FunctionRegister.cpp" />
     <ClCompile Include="03_ScriptFuncs\BulletProcess.cpp" />
+    <ClCompile Include="03_ScriptFuncs\DestProcess.cpp" />
     <ClCompile Include="03_ScriptFuncs\FadeProcess.cpp" />
     <ClCompile Include="03_ScriptFuncs\NormalCrystal.cpp" />
     <ClCompile Include="03_ScriptFuncs\PauseMenu.cpp" />
@@ -258,6 +259,7 @@
     <ClInclude Include="02_FrameContent\UTransformComponent.h" />
     <ClInclude Include="03_ScriptFuncs\00_FunctionRegister.h" />
     <ClInclude Include="03_ScriptFuncs\BulletProcess.h" />
+    <ClInclude Include="03_ScriptFuncs\DestProcess.h" />
     <ClInclude Include="03_ScriptFuncs\FadeProcess.h" />
     <ClInclude Include="03_ScriptFuncs\NormalCrystal.h" />
     <ClInclude Include="03_ScriptFuncs\PauseMenu.h" />
