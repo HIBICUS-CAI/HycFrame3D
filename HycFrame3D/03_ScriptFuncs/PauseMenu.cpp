@@ -58,7 +58,15 @@ void PauseMenuBtnInput(UInputComponent* _uic, Timer& _timer)
         else if (ubc->GetCompName() == "pause-title-btn-ui-button")
         {
             g_SceneBackTitleTrigger = true;
+            SetSceneOutFlg(true);
             ShowCursor(FALSE);
+            auto& map = g_BtnFlagSprite->mInstanceMap;
+            for (auto& ins : map)
+            {
+                auto& ins_data = ins.second;
+                ins_data.mCustomizedData1 = { 1.f,1.f,1.f,0.f };
+                break;
+            }
         }
     }
     if (g_SceneBackTitleTrigger && !GetSceneOutFlg())
@@ -104,11 +112,23 @@ void PauseMenuUpdate(UInteractComponent* _uitc, Timer& _timer)
         g_PauseMenuUsc[1]->SetOffsetColor({ 1.f,1.f,1.f,1.f });
         g_PauseMenuUsc[2]->SetOffsetColor({ 1.f,1.f,1.f,1.f });
         auto& map = g_BtnFlagSprite->mInstanceMap;
-        for (auto& ins : map)
+        if (GetSceneOutFlg())
         {
-            auto& ins_data = ins.second;
-            ins_data.mCustomizedData1 = { 1.f,1.f,1.f,1.f };
-            break;
+            for (auto& ins : map)
+            {
+                auto& ins_data = ins.second;
+                ins_data.mCustomizedData1 = { 1.f,1.f,1.f,0.f };
+                break;
+            }
+        }
+        else
+        {
+            for (auto& ins : map)
+            {
+                auto& ins_data = ins.second;
+                ins_data.mCustomizedData1 = { 1.f,1.f,1.f,1.f };
+                break;
+            }
         }
     }
     else

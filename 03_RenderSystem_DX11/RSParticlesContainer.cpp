@@ -77,6 +77,7 @@ void RSParticlesContainer::DeleteRSParticleEmitter(
         {
             if ((*i) == ptr)
             {
+                delete ptr;
                 mParticleEmitterVec.erase(i);
                 mParticleEmitterMap.erase(found);
                 break;
