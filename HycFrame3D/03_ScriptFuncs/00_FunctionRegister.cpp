@@ -9,6 +9,7 @@
 #include "FadeProcess.h"
 #include "PauseMenu.h"
 #include "DestProcess.h"
+#include "ButtonProcess.h"
 
 void RegisterAllFuncPtr(ObjectFactory* _factory)
 {
@@ -22,4 +23,5 @@ void RegisterAllFuncPtr(ObjectFactory* _factory)
     RegisterFadeProcess(_factory);
     RegisterPauseMenu(_factory);
     RegisterDestProcess(_factory);
+    RegisterButtonProcess(_factory);
 }

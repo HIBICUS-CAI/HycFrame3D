@@ -1,4 +1,4 @@
 {
-    "entry-scene-name": "run-scene",
-    "entry-scene-file": "run-scene.json"
+    "entry-scene-name": "select-scene",
+    "entry-scene-file": "select-scene.json"
 }

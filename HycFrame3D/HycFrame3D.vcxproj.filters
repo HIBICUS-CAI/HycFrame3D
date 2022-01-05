@@ -220,6 +220,9 @@
     <ClCompile Include="03_ScriptFuncs\DestProcess.cpp">
       <Filter>03_ScriptFuncs</Filter>
     </ClCompile>
+    <ClCompile Include="03_ScriptFuncs\ButtonProcess.cpp">
+      <Filter>03_ScriptFuncs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -406,6 +409,9 @@
       <Filter>03_ScriptFuncs</Filter>
     </ClInclude>
     <ClInclude Include="03_ScriptFuncs\DestProcess.h">
+      <Filter>03_ScriptFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="03_ScriptFuncs\ButtonProcess.h">
       <Filter>03_ScriptFuncs</Filter>
     </ClInclude>
   </ItemGroup>

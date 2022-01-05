@@ -16,5 +16,369 @@
                 }
             ]
         }
+    ],
+    "ui": [
+        {
+            "ui-name": "back-title-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -500.0,
+                        300.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "down-btn": "tutorial-btn-ui",
+                    "right-btn": "tutorial-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "NormalBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "tutorial-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -300.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": true,
+                    "up-btn": "back-title-btn-ui",
+                    "left-btn": "back-title-btn-ui",
+                    "right-btn": "route1-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "NormalBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "route1-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        300.0,
+                        100.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "down-btn": "route2-btn-ui",
+                    "left-btn": "tutorial-btn-ui",
+                    "right-btn": "quit-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "NormalBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "route2-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        300.0,
+                        -100.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "left-btn": "tutorial-btn-ui",
+                    "up-btn": "route1-btn-ui",
+                    "down-btn": "quit-btn-ui",
+                    "right-btn": "quit-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "NormalBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "quit-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        500.0,
+                        -300.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "left-btn": "route2-btn-ui",
+                    "up-btn": "route2-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "NormalBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "SceneFadeInit",
+                    "update-func-name": "SceneFadeUpdate",
+                    "destory-func-name": "SceneFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        540.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -540.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        }
     ]
 }

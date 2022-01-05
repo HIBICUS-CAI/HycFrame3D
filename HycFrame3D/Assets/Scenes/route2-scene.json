@@ -1,0 +1,1275 @@
+{
+    "scene-name": "route2-scene",
+    "ambient-light": [
+        0.5,
+        0.5,
+        0.5,
+        1.0
+    ],
+    "model-assets": [
+        {
+            "mesh-name": "yel-box",
+            "load-mode": "program-box",
+            "force-diffuse": "tile.dds",
+            "force-normal": "tile_nmap.dds",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    15.0,
+                    15.0,
+                    15.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "small-yel-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    0.2,
+                    0.3,
+                    0.3
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "smallest-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    0.025,
+                    0.05,
+                    0.025
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "gun-bullet",
+            "load-mode": "program-sphere",
+            "force-diffuse": "tile.dds",
+            "force-normal": "tile_nmap.dds",
+            "load-info": {
+                "tex-file": "cloud.png",
+                "radius": 0.3,
+                "slice-stack-count": [
+                    8,
+                    8
+                ]
+            }
+        },
+        {
+            "mesh-name": "yel-grid",
+            "load-mode": "program-grid",
+            "load-info": {
+                "tex-file": "cloud.png",
+                "grid-size": [
+                    50.0,
+                    200.0
+                ],
+                "row-col-count": [
+                    2,
+                    2
+                ]
+            }
+        },
+        {
+            "mesh-name": "destination-cyl",
+            "load-mode": "program-cylinder",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "top-btm-het-size": [
+                    0.1,
+                    10.0,
+                    20.0
+                ],
+                "slice-stack-count": [
+                    3,
+                    1
+                ]
+            }
+        },
+        {
+            "mesh-name": "hill",
+            "load-mode": "model-file",
+            "force-diffuse": "hill_diffuse.png",
+            "force-normal": "hill_normal.png",
+            "load-info": {
+                "model-file": "hill.obj.meshdata",
+                "file-type": "binary"
+            }
+        }
+    ],
+    "actor": [
+        {
+            "actor-name": "temp-result-cmd-actor",
+            "components": [
+                {
+                    "type": "input",
+                    "func-name": "TempToResult"
+                }
+            ]
+        },
+        {
+            "actor-name": "player-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        360.0,
+                        -10.0,
+                        -100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "input",
+                    "func-name": "PlayerInput"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "PlayerInit",
+                    "update-func-name": "PlayerUpdate",
+                    "destory-func-name": "PlayerDestory"
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        3.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "player-angle-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "player-gun-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        360.0,
+                        -15.0,
+                        -100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "smallest-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.025,
+                                2.6
+                            ]
+                        },
+                        {
+                            "mesh-name": "small-yel-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.2,
+                                2.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "small-yel-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.2,
+                                2.3
+                            ]
+                        },
+                        {
+                            "mesh-name": "small-yel-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.2,
+                                2.6
+                            ]
+                        },
+                        {
+                            "mesh-name": "small-yel-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.4,
+                                2.0
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-manager",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "BulletManagerInit",
+                    "update-func-name": "BulletManagerUpdate",
+                    "destory-func-name": "BulletManagerDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        0.3
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "gun-bullet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        0.3
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "gun-bullet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        0.3
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "gun-bullet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "ground-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        360.0,
+                        -20.0,
+                        -100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        50.0,
+                        2.0,
+                        200.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "yel-grid"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "GoundInit",
+                    "update-func-name": "GoundUpdate",
+                    "destory-func-name": "GoundDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "smoke-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        360.0,
+                        -17.5,
+                        -100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "emit-per-second": 120.0,
+                    "velocity": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "pos-variance": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "vel-variance": 0.5,
+                    "acceleration": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "particle-mass": 0.1,
+                    "life-span": 150.0,
+                    "start-end-size": [
+                        2.0,
+                        5.0
+                    ],
+                    "start-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "end-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "streak-flag": false,
+                    "texture-name": "smoke"
+                }
+            ]
+        },
+        {
+            "actor-name": "direct-light-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        450.0,
+                        -540.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "direct",
+                    "with-shadow": true,
+                    "with-bloom": false,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        1.0
+                    ],
+                    "fall-off-start-end": [
+                        5.0,
+                        15.0
+                    ],
+                    "spot-power": 2.0,
+                    "cam-up-vec": [
+                        0.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "hill-mesh-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -100.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        100.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "hill"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ui": [
+        {
+            "ui-name": "bullet-icon0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        350.0,
+                        -340.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        40.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "bullet_icon.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "bullet-icon1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        470.0,
+                        -340.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        40.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "bullet_icon.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "bullet-icon2-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        590.0,
+                        -340.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        40.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "bullet_icon.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "pause-menu-main-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.8
+                    ],
+                    "tex-file": "white.jpg"
+                },
+                {
+                    "type": "input",
+                    "func-name": "PauseMenuInput"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "PauseMenuInit",
+                    "update-func-name": "PauseMenuUpdate",
+                    "destory-func-name": "PauseMenuDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "pause-continue-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        50.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": true,
+                    "down-btn": "pause-title-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "PauseMenuBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "pause-title-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -50.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "up-btn": "pause-continue-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "PauseMenuBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "DeadFadeInit",
+                    "update-func-name": "DeadFadeUpdate",
+                    "destory-func-name": "DeadFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -576.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -448.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-2-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -320.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-3-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -192.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-4-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -64.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-5-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        64.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-6-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        192.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-7-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        320.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-8-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        448.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-9-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        576.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "SceneFadeInit",
+                    "update-func-name": "SceneFadeUpdate",
+                    "destory-func-name": "SceneFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        540.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -540.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        }
+    ]
+}
