@@ -64,17 +64,31 @@
         },
         {
             "mesh-name": "yel-grid",
-            "load-mode": "program-grid",
+            "load-mode": "program-box",
+            "material-info": {
+                "albedo": [
+                    0.5,
+                    0.5,
+                    0.5,
+                    0.5
+                ],
+                "fresnel": [
+                    0.1,
+                    0.3,
+                    0.1
+                ],
+                "shininess": 0.1
+            },
+            "force-diffuse": "ground_diffuse.jpg",
+            "force-normal": "ground_normal.jpg",
             "load-info": {
                 "tex-file": "cloud.png",
-                "grid-size": [
+                "box-size": [
                     50.0,
-                    200.0
+                    2.0,
+                    100.0
                 ],
-                "row-col-count": [
-                    2,
-                    2
-                ]
+                "divide": 0
             }
         },
         {
@@ -542,7 +556,20 @@
                     "type": "mesh",
                     "meshes": [
                         {
-                            "mesh-name": "yel-grid"
+                            "mesh-name": "yel-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "yel-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                50.0
+                            ]
                         }
                     ]
                 },
@@ -651,7 +678,20 @@
                     "type": "mesh",
                     "meshes": [
                         {
-                            "mesh-name": "yel-grid"
+                            "mesh-name": "yel-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "yel-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                50.0
+                            ]
                         }
                     ]
                 },
