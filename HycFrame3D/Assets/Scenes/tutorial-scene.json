@@ -352,7 +352,7 @@
                     "type": "transform",
                     "init-position": [
                         -50.0,
-                        50.0,
+                        100.0,
                         400.0
                     ],
                     "init-angle": [
@@ -382,7 +382,7 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
-                                0.0,
+                                -50.0,
                                 -350.0
                             ]
                         },
@@ -390,7 +390,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                -350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 -250.0
                             ]
                         },
@@ -398,7 +406,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                -250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 -150.0
                             ]
                         },
@@ -406,7 +422,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                -150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 -50.0
                             ]
                         },
@@ -414,7 +438,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 50.0
                             ]
                         },
@@ -422,7 +454,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 150.0
                             ]
                         },
@@ -430,7 +470,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 250.0
                             ]
                         },
@@ -438,7 +486,23 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
+                                350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
                                 350.0
                             ]
                         }
@@ -459,7 +523,7 @@
                     "type": "transform",
                     "init-position": [
                         50.0,
-                        50.0,
+                        100.0,
                         400.0
                     ],
                     "init-angle": [
@@ -478,7 +542,7 @@
                     "collision-shape": "box",
                     "collision-size": [
                         2.0,
-                        100.0,
+                        300.0,
                         800.0
                     ]
                 },
@@ -489,7 +553,7 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
-                                0.0,
+                                -50.0,
                                 -350.0
                             ]
                         },
@@ -497,7 +561,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                -350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 -250.0
                             ]
                         },
@@ -505,7 +577,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                -250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 -150.0
                             ]
                         },
@@ -513,7 +593,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                -150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 -50.0
                             ]
                         },
@@ -521,7 +609,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 50.0
                             ]
                         },
@@ -529,7 +625,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 150.0
                             ]
                         },
@@ -537,7 +641,15 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
                                 250.0
                             ]
                         },
@@ -545,7 +657,23 @@
                             "mesh-name": "wall-box",
                             "mesh-offset": [
                                 0.0,
+                                50.0,
+                                250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
                                 0.0,
+                                -50.0,
+                                350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
                                 350.0
                             ]
                         }
@@ -566,7 +694,7 @@
                     "type": "transform",
                     "init-position": [
                         0.0,
-                        50.0,
+                        100.0,
                         0.0
                     ],
                     "init-angle": [
@@ -585,7 +713,7 @@
                     "collision-shape": "box",
                     "collision-size": [
                         2.0,
-                        100.0,
+                        300.0,
                         100.0
                     ]
                 },
@@ -593,7 +721,20 @@
                     "type": "mesh",
                     "meshes": [
                         {
-                            "mesh-name": "wall-box"
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                0.0
+                            ]
                         }
                     ]
                 },
@@ -612,7 +753,7 @@
                     "type": "transform",
                     "init-position": [
                         0.0,
-                        50.0,
+                        100.0,
                         800.0
                     ],
                     "init-angle": [
@@ -631,7 +772,7 @@
                     "collision-shape": "box",
                     "collision-size": [
                         2.0,
-                        100.0,
+                        300.0,
                         100.0
                     ]
                 },
@@ -639,7 +780,20 @@
                     "type": "mesh",
                     "meshes": [
                         {
-                            "mesh-name": "wall-box"
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                0.0
+                            ]
                         }
                     ]
                 },
@@ -765,7 +919,7 @@
                     "type": "transform",
                     "init-position": [
                         0.0,
-                        100.0,
+                        200.0,
                         400.0
                     ],
                     "init-angle": [
