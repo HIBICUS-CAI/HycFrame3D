@@ -204,6 +204,7 @@
     <ClCompile Include="03_ScriptFuncs\SPInput.cpp" />
     <ClCompile Include="03_ScriptFuncs\StaticGround.cpp" />
     <ClCompile Include="03_ScriptFuncs\StaticObstacle.cpp" />
+    <ClCompile Include="03_ScriptFuncs\TitleCamera.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -270,6 +271,7 @@
     <ClInclude Include="03_ScriptFuncs\SPInput.h" />
     <ClInclude Include="03_ScriptFuncs\StaticGround.h" />
     <ClInclude Include="03_ScriptFuncs\StaticObstacle.h" />
+    <ClInclude Include="03_ScriptFuncs\TitleCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\03_InputDevice\03_InputDevice.vcxproj">

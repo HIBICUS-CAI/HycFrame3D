@@ -15,6 +15,17 @@
                     "func-name": "TempToSelect"
                 }
             ]
+        },
+        {
+            "actor-name": "cam-rotate-actor",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "TitleCamInit",
+                    "update-func-name": "TitleCamUpdate",
+                    "destory-func-name": "TitleCamDestory"
+                }
+            ]
         }
     ],
     "ui": [
