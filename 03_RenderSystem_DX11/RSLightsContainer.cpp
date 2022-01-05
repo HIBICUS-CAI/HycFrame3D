@@ -117,7 +117,33 @@ void RSLightsContainer::DeleteRSLight(std::string& _name,
                 break;
             }
         }
-        int index = 0;
+
+        for (auto i = mShadowLightIndeices.begin();
+            i != mShadowLightIndeices.end(); i++)
+        {
+            if (mShadowLights[(*i)] == found->second)
+            {
+                for (auto& index : mShadowLightIndeices)
+                {
+                    if (index > (*i)) { --index; }
+                }
+                mShadowLightIndeices.erase(i);
+                std::string camName = _name + "-light-cam";
+                mRootPtr->CamerasContainer()->DeleteRSCamera(camName);
+                break;
+            }
+        }
+        for (auto i = mShadowLights.begin();
+            i != mShadowLights.end(); i++)
+        {
+            if ((*i) == found->second)
+            {
+                mShadowLights.erase(i);
+                break;
+            }
+        }
+
+        /*int index = 0;
         for (auto i = mShadowLights.begin();
             i != mShadowLights.end(); i++)
         {
@@ -138,7 +164,7 @@ void RSLightsContainer::DeleteRSLight(std::string& _name,
                 mRootPtr->CamerasContainer()->DeleteRSCamera(camName);
                 break;
             }
-        }
+        }*/
         found->second->ReleaseLightBloom(_bloomDeleteByFrame);
         delete found->second;
         mLightMap.erase(found);

@@ -684,7 +684,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             ci.mType = LENS_TYPE::ORTHOGRAPHIC;
             ci.mPosition = li.mPosition;
             ci.mLookAt = li.mDirection;
-            ci.mNearFarZ = { 1.f,1000.f };
+            ci.mNearFarZ = { 0.f,1000.f };
             ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
             ci.mOWidthAndHeight = { 128.f * 9.5f,72.f * 9.5f };
             ci.mUpVec.x = GetJsonNode(_json,

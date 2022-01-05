@@ -87,7 +87,10 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "tutorial-btn-ui-button")
         {
-
+            sceneName = "tutorial-scene";
+            sceneFile = "tutorial-scene.json";
+            P_LOG(LOG_DEBUG, "to tutorial\n");
+            SetSceneOutFlg(true);
         }
         else if (ubc->GetCompName() == "route1-btn-ui-button")
         {
