@@ -47,14 +47,12 @@ static bool g_ResetDeadPlayerToGround = false;
 
 void PlayerInput(AInputComponent* _aic, Timer& _timer)
 {
-    static bool outTrigger = false;
-    if (GetGamePauseFlg() || GetSceneInFlg()) { outTrigger = false; return; }
+    if (GetGamePauseFlg() || GetSceneInFlg()) { return; }
     if (InputInterface::IsKeyPushedInSingle(KB_BACKSPACE))
     {
-        outTrigger = true;
         SetSceneOutFlg(true);
     }
-    if (outTrigger && !GetSceneOutFlg())
+    if (GetSceneOutFinish())
     {
         P_LOG(LOG_DEBUG, "to result\n");
         _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->

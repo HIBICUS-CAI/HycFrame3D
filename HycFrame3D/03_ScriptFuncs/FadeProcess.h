@@ -17,4 +17,5 @@ void SetDeadFadeRunningFlg(bool _flag);
 
 bool GetSceneInFlg();
 bool GetSceneOutFlg();
+bool GetSceneOutFinish();
 void SetSceneOutFlg(bool _flag);

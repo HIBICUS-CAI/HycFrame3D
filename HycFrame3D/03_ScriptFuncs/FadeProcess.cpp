@@ -113,6 +113,7 @@ void SetDeadFadeRunningFlg(bool _flag)
 
 static bool g_SceneInFlg = true;
 static bool g_SceneOutFlg = false;
+static bool g_SceneOutTrigger = false;
 
 static UTransformComponent* g_SceneInUtc[2] = { nullptr };
 static UTransformComponent* g_SceneOutUtc[2] = { nullptr };
@@ -123,6 +124,7 @@ bool SceneFadeInit(UInteractComponent* _uitc)
 {
     g_SceneInFlg = true;
     g_SceneOutFlg = false;
+    g_SceneOutTrigger = false;
     g_SceneInOutTimer = 0.f;
 
     auto compContainer = _uitc->GetUiOwner()->GetSceneNode().
@@ -192,6 +194,7 @@ void SceneFadeDestory(UInteractComponent* _uitc)
 {
     g_SceneInFlg = true;
     g_SceneOutFlg = false;
+    g_SceneOutTrigger = false;
 }
 
 bool GetSceneInFlg()
@@ -204,7 +207,15 @@ bool GetSceneOutFlg()
     return g_SceneOutFlg;
 }
 
+bool GetSceneOutFinish()
+{
+    return g_SceneOutTrigger && !g_SceneOutFlg;
+}
+
 void SetSceneOutFlg(bool _flag)
 {
+    if (g_SceneOutTrigger || g_SceneOutFlg) { return; }
     g_SceneOutFlg = _flag;
+    g_SceneOutTrigger = true;
+    g_SceneInOutTimer = 0.f;
 }

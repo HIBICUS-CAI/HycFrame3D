@@ -26,8 +26,6 @@ static ATransformComponent* g_DestAtc = nullptr;
 static ACollisionComponent* g_DestPtcAcc = nullptr;
 static AParticleComponent* g_DestPtcApc = nullptr;
 
-static bool g_ToResultTigger = false;
-
 bool DestInit(AInteractComponent* _aitc)
 {
     g_DestAcc = _aitc->GetActorOwner()->
@@ -37,8 +35,6 @@ bool DestInit(AInteractComponent* _aitc)
     g_DestAtc = _aitc->GetActorOwner()->
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
     if (!g_DestAtc) { return false; }
-
-    g_ToResultTigger = false;
 
     return true;
 }
@@ -50,11 +46,10 @@ void DestUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     if (g_DestAcc->CheckCollisionWith(PLAYER_NAME))
     {
-        if (!g_ToResultTigger) { SetSceneOutFlg(true); }
-        g_ToResultTigger = true;
+        SetSceneOutFlg(true);
     }
 
-    if (g_ToResultTigger && !GetSceneOutFlg())
+    if (GetSceneOutFinish())
     {
         P_LOG(LOG_DEBUG, "to result\n");
         _aitc->GetActorOwner()->GetSceneNode().GetSceneManager()->
@@ -66,7 +61,6 @@ void DestDestory(AInteractComponent* _aitc)
 {
     g_DestAcc = nullptr;
     g_DestAtc = nullptr;
-    g_ToResultTigger = false;
 }
 
 bool DestPtcInit(AInteractComponent* _aitc)
