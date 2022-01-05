@@ -26,6 +26,8 @@ static ATransformComponent* g_DestAtc = nullptr;
 static ACollisionComponent* g_DestPtcAcc = nullptr;
 static AParticleComponent* g_DestPtcApc = nullptr;
 
+static const UINT DEST_REACH = 0;
+
 bool DestInit(AInteractComponent* _aitc)
 {
     g_DestAcc = _aitc->GetActorOwner()->
@@ -46,10 +48,10 @@ void DestUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     if (g_DestAcc->CheckCollisionWith(PLAYER_NAME))
     {
-        SetSceneOutFlg(true);
+        SetSceneOutFlg(true, DEST_REACH);
     }
 
-    if (GetSceneOutFinish())
+    if (GetSceneOutFinish(DEST_REACH))
     {
         P_LOG(LOG_DEBUG, "to result\n");
         _aitc->GetActorOwner()->GetSceneNode().GetSceneManager()->

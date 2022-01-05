@@ -25,6 +25,8 @@ static USpriteComponent* g_PauseMenuUsc[3] = { nullptr };
 
 static MESH_DATA* g_BtnFlagSprite = nullptr;
 
+static const UINT DEST_NOT_REACH = 1;
+
 void PauseMenuInput(UInputComponent* _uic, Timer& _timer)
 {
     if (GetSceneInFlg() || GetSceneOutFlg()) { return; }
@@ -55,7 +57,7 @@ void PauseMenuBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "pause-title-btn-ui-button")
         {
-            SetSceneOutFlg(true);
+            SetSceneOutFlg(true, DEST_NOT_REACH);
             ShowCursor(FALSE);
             auto& map = g_BtnFlagSprite->mInstanceMap;
             for (auto& ins : map)
@@ -66,7 +68,7 @@ void PauseMenuBtnInput(UInputComponent* _uic, Timer& _timer)
             }
         }
     }
-    if (GetSceneOutFinish())
+    if (GetSceneOutFinish(DEST_NOT_REACH))
     {
         P_LOG(LOG_DEBUG, "to title\n");
         _uic->GetUiOwner()->GetSceneNode().GetSceneManager()->

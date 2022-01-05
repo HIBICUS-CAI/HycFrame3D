@@ -17,5 +17,5 @@ void SetDeadFadeRunningFlg(bool _flag);
 
 bool GetSceneInFlg();
 bool GetSceneOutFlg();
-bool GetSceneOutFinish();
-void SetSceneOutFlg(bool _flag);
+bool GetSceneOutFinish(UINT _filter = (UINT)-1);
+void SetSceneOutFlg(bool _flag, UINT _filter = (UINT)-1);

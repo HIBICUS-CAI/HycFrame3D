@@ -207,15 +207,20 @@ bool GetSceneOutFlg()
     return g_SceneOutFlg;
 }
 
-bool GetSceneOutFinish()
+static UINT g_SceneOutFilter = (UINT)-1;
+
+bool GetSceneOutFinish(UINT _filter)
 {
-    return g_SceneOutTrigger && !g_SceneOutFlg;
+    bool filter = (g_SceneOutFilter == (UINT)-1) ? true :
+        ((g_SceneOutFilter == _filter) ? true : false);
+    return g_SceneOutTrigger && !g_SceneOutFlg && filter;
 }
 
-void SetSceneOutFlg(bool _flag)
+void SetSceneOutFlg(bool _flag, UINT _filter)
 {
     if (g_SceneOutTrigger || g_SceneOutFlg) { return; }
     g_SceneOutFlg = _flag;
     g_SceneOutTrigger = true;
     g_SceneInOutTimer = 0.f;
+    g_SceneOutFilter = _filter;
 }

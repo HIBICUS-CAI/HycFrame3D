@@ -48,16 +48,6 @@ static bool g_ResetDeadPlayerToGround = false;
 void PlayerInput(AInputComponent* _aic, Timer& _timer)
 {
     if (GetGamePauseFlg() || GetSceneInFlg()) { return; }
-    if (InputInterface::IsKeyPushedInSingle(KB_BACKSPACE))
-    {
-        SetSceneOutFlg(true);
-    }
-    if (GetSceneOutFinish())
-    {
-        P_LOG(LOG_DEBUG, "to result\n");
-        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
-            LoadSceneNode("result-scene", "result-scene.json");
-    }
 
     float deltatime = _timer.FloatDeltaTime();
 
