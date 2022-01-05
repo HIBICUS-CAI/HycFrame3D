@@ -46,9 +46,14 @@ void InputSystem::Run(Timer& _timer)
     bool down = InputInterface::IsKeyPushedInSingle(KB_DOWN);
     bool left = InputInterface::IsKeyPushedInSingle(KB_LEFT);
     bool right = InputInterface::IsKeyPushedInSingle(KB_RIGHT);
+    bool click = InputInterface::IsKeyPushedInSingle(M_LEFTBTN);
     if (up || down || left || right)
     {
         UButtonComponent::SetShouldUseMouse(false);
+    }
+    else if (click)
+    {
+        UButtonComponent::SetShouldUseMouse(true);
     }
 
     for (auto& aic : *mAInputVecPtr)

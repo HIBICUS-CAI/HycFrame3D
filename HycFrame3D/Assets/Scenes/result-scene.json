@@ -16,5 +16,191 @@
                 }
             ]
         }
+    ],
+    "ui": [
+        {
+            "ui-name": "result-title-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -300.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "basic_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": true
+                },
+                {
+                    "type": "input",
+                    "func-name": "NormalBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "SceneFadeInit",
+                    "update-func-name": "SceneFadeUpdate",
+                    "destory-func-name": "SceneFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        540.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -540.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        }
     ]
 }

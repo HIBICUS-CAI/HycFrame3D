@@ -55,6 +55,17 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
     }
 
+    if (_uic->GetUiOwner()->GetSceneNode().GetSceneNodeName() == "title-scene")
+    {
+        auto& map = g_BtnFlagSprite->mInstanceMap;
+        for (auto& ins : map)
+        {
+            auto& ins_data = ins.second;
+            ins_data.mCustomizedData1 = { 1.f,1.f,1.f,0.f };
+            break;
+        }
+    }
+
     auto ubc = _uic->GetUiOwner()->
         GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
     if (!ubc) { return; }
@@ -95,6 +106,20 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         else if (ubc->GetCompName() == "quit-btn-ui-button")
         {
             PostQuitMessage(0);
+        }
+        else if (ubc->GetCompName() == "result-title-btn-ui-button")
+        {
+            sceneName = "title-scene";
+            sceneFile = "title-scene.json";
+            P_LOG(LOG_DEBUG, "to title\n");
+            SetSceneOutFlg(true);
+        }
+        else if (ubc->GetCompName() == "start-game-btn-ui-button")
+        {
+            sceneName = "select-scene";
+            sceneFile = "select-scene.json";
+            P_LOG(LOG_DEBUG, "to title\n");
+            SetSceneOutFlg(true);
         }
     }
 
