@@ -2,6 +2,8 @@
 #include "PlayerProcess.h"
 #include <unordered_set>
 
+using namespace DirectX;
+
 static std::unordered_set<AInteractComponent*> g_GroundSet = {};
 
 void RegisterStaticGround(ObjectFactory* _factory)
@@ -36,19 +38,36 @@ void GoundUpdate(AInteractComponent* _aitc, Timer& _timer)
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
         auto contactPoint =
             ACollisionComponent::CalcCenterOfContact(contact);
-        if (fabsf(contactPoint.x - playerAtc->GetProcessingPosition().x) < 0.1f &&
-            fabsf(contactPoint.z - playerAtc->GetProcessingPosition().z) < 0.1f &&
-            (contactPoint.y - playerAtc->GetProcessingPosition().y) < 3.1f)
+        float xOffset = fabsf(contactPoint.x -
+            playerAtc->GetProcessingPosition().x);
+        float zOffset = fabsf(contactPoint.z -
+            playerAtc->GetProcessingPosition().z);
+        if (xOffset < 3.1f && zOffset < 3.1f &&
+            (contactPoint.y - playerAtc->GetProcessingPosition().y) < -0.1f)
         {
             playerAtc->RollBackPositionY();
+
+            XMFLOAT3 playerPnt = playerAtc->GetProcessingPosition();
+            XMVECTOR contactVec = XMLoadFloat3(&contact.first) -
+                XMLoadFloat3(&playerPnt);
+            float lengthFirSq = XMVectorGetX(XMVector3LengthSq(contactVec));
+            contactVec = XMLoadFloat3(&contact.second) -
+                XMLoadFloat3(&playerPnt);
+            float lengthSecSq = XMVectorGetX(XMVector3LengthSq(contactVec));
+            float xzSq = xOffset * xOffset + zOffset * zOffset;
+            float yFir = sqrtf(lengthFirSq - xzSq);
+            float ySec = sqrtf(lengthSecSq - xzSq);
+            float offset = fabsf(yFir - ySec);
+            playerAtc->TranslateYAsix(offset);
+
             SetPlayerContactGround();
             auto atc = _aitc->GetActorOwner()->
                 GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
             SetPlayerLastReachGround(atc);
         }
-        else if ((contactPoint.y - playerAtc->GetProcessingPosition().y) > 0.f)
+        else
         {
-            playerAtc->RollBackPositionY();
+            playerAtc->RollBackPosition();
             SetPlayerBrokeHead();
         }
     }
