@@ -46,8 +46,13 @@ void InputSystem::Run(Timer& _timer)
     bool down = InputInterface::IsKeyPushedInSingle(KB_DOWN);
     bool left = InputInterface::IsKeyPushedInSingle(KB_LEFT);
     bool right = InputInterface::IsKeyPushedInSingle(KB_RIGHT);
+    bool gp_up = InputInterface::IsKeyPushedInSingle(GP_UPDIRBTN);
+    bool gp_down = InputInterface::IsKeyPushedInSingle(GP_DOWNDIRBTN);
+    bool gp_left = InputInterface::IsKeyPushedInSingle(GP_LEFTDIRBTN);
+    bool gp_right = InputInterface::IsKeyPushedInSingle(GP_RIGHTDIRBTN);
     bool click = InputInterface::IsKeyPushedInSingle(M_LEFTBTN);
-    if (up || down || left || right)
+    if (up || down || left || right ||
+        gp_up || gp_down || gp_left || gp_right)
     {
         UButtonComponent::SetShouldUseMouse(false);
     }

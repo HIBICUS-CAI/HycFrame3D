@@ -74,9 +74,15 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
     if (InputInterface::IsKeyPushedInSingle(KB_DOWN)) { ubc->SelectDownBtn(); }
     if (InputInterface::IsKeyPushedInSingle(KB_LEFT)) { ubc->SelectLeftBtn(); }
     if (InputInterface::IsKeyPushedInSingle(KB_RIGHT)) { ubc->SelectRightBtn(); }
+    if (InputInterface::IsKeyPushedInSingle(GP_UPDIRBTN)) { ubc->SelectUpBtn(); }
+    if (InputInterface::IsKeyPushedInSingle(GP_DOWNDIRBTN)) { ubc->SelectDownBtn(); }
+    if (InputInterface::IsKeyPushedInSingle(GP_LEFTDIRBTN)) { ubc->SelectLeftBtn(); }
+    if (InputInterface::IsKeyPushedInSingle(GP_RIGHTDIRBTN)) { ubc->SelectRightBtn(); }
 
     if ((ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN)) ||
-        (InputInterface::IsKeyPushedInSingle(KB_RETURN) && ubc->IsBeingSelected()))
+        ((InputInterface::IsKeyPushedInSingle(KB_RETURN) ||
+            InputInterface::IsKeyPushedInSingle(GP_BOTTOMBTN)) &&
+            ubc->IsBeingSelected()))
     {
         if (ubc->GetCompName() == "back-title-btn-ui-button")
         {

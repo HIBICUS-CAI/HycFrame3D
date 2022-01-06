@@ -52,6 +52,12 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
     float deltatime = _timer.FloatDeltaTime();
 
     auto mouseOffset = InputInterface::GetMouseOffset();
+    if (!mouseOffset.x && !mouseOffset.y)
+    {
+        mouseOffset = InputInterface::RightStickOffset();
+        mouseOffset.x /= 200;
+        mouseOffset.y /= 200;
+    }
     float horiR = mouseOffset.x * deltatime / 2000.f;
     float vertR = -mouseOffset.y * deltatime / 2000.f;
     _aic->GetActorOwner()->GetSceneNode().GetMainCamera()->
@@ -68,7 +74,8 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
     static const DirectX::XMVECTOR identVec = DirectX::XMLoadFloat3(&ident);
     static DirectX::XMFLOAT3 lookAt = { 0.f,0.f,0.f };
 
-    if (InputInterface::IsKeyDownInSingle(M_RIGHTBTN))
+    if (InputInterface::IsKeyDownInSingle(M_RIGHTBTN) ||
+        InputInterface::IsKeyDownInSingle(GP_LEFTBACKSHDBTN))
     {
         g_PlayerIsAming = true;
         if (GetPlayerCanAimFlg()) { g_GunYAngleOffset -= deltatime / 150.f; }
@@ -101,7 +108,8 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
     angle.y += g_GunYAngleOffset;
     g_PlayerGunAtc->SetRotation(angle);
 
-    if (g_PlayerCanDashFlg && InputInterface::IsKeyPushedInSingle(KB_LALT))
+    if (g_PlayerCanDashFlg && (InputInterface::IsKeyPushedInSingle(KB_LALT) ||
+        InputInterface::IsKeyPushedInSingle(GP_RIGHTFORESHDBTN)))
     {
         g_PlayerCanDashFlg = false;
         g_PlayerIsDashing = true;
@@ -117,7 +125,8 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
         DirectX::XMStoreFloat3(&lookAt, lookAtVec);
     }
 
-    if (g_PlayerCanShoot && InputInterface::IsKeyPushedInSingle(M_LEFTBTN))
+    if (g_PlayerCanShoot && (InputInterface::IsKeyPushedInSingle(M_LEFTBTN) ||
+        InputInterface::IsKeyPushedInSingle(GP_RIGHTBACKSHDBTN)))
     {
         lookAt = g_PlayerAngleAtc->GetProcessingRotation();
         DirectX::XMMATRIX mat = DirectX::XMMatrixRotationX(lookAt.x) *
@@ -148,12 +157,19 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
         if (InputInterface::IsKeyDownInSingle(KB_A)) { moveVec -= rightVec; }
         if (InputInterface::IsKeyDownInSingle(KB_S)) { moveVec -= frontVec; }
         if (InputInterface::IsKeyDownInSingle(KB_D)) { moveVec += rightVec; }
+        auto leftStick = InputInterface::LeftStickOffset();
+        if (leftStick.x > 0) { moveVec += rightVec; }
+        if (leftStick.x < 0) { moveVec -= rightVec; }
+        if (leftStick.y > 0) { moveVec -= frontVec; }
+        if (leftStick.y < 0) { moveVec += frontVec; }
         moveVec = DirectX::XMVector3Normalize(moveVec);
         DirectX::XMStoreFloat3(&g_PlayerMoveVec, moveVec);
         atc->TranslateZAsix(0.02f * deltatime * g_PlayerMoveVec.z);
         atc->TranslateXAsix(0.02f * deltatime * g_PlayerMoveVec.x);
 
-        if (g_PlayerCanJumpFlg && InputInterface::IsKeyPushedInSingle(KB_SPACE))
+        if (g_PlayerCanJumpFlg && (InputInterface::IsKeyPushedInSingle(KB_SPACE) ||
+            InputInterface::IsKeyPushedInSingle(GP_LEFTFORESHDBTN) ||
+            InputInterface::IsKeyPushedInSingle(GP_BOTTOMBTN)))
         {
             g_PlayerCanJumpFlg = false;
             g_PlayerYAsixSpeed = 50.f;

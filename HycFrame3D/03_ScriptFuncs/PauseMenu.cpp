@@ -31,7 +31,8 @@ void PauseMenuInput(UInputComponent* _uic, Timer& _timer)
 {
     if (GetSceneInFlg() || GetSceneOutFlg()) { return; }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_ESCAPE))
+    if (InputInterface::IsKeyPushedInSingle(KB_ESCAPE) ||
+        InputInterface::IsKeyPushedInSingle(GP_RIGHTMENUBTN))
     {
         g_PauseFlg = !g_PauseFlg;
         ShowCursor(g_PauseFlg ? TRUE : FALSE);
@@ -42,13 +43,17 @@ void PauseMenuBtnInput(UInputComponent* _uic, Timer& _timer)
 {
     auto ubc = _uic->GetUiOwner()->
         GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
-    if (!ubc) { return; }
+    if (!ubc || !g_PauseFlg) { return; }
 
     if (InputInterface::IsKeyPushedInSingle(KB_UP)) { ubc->SelectUpBtn(); }
     if (InputInterface::IsKeyPushedInSingle(KB_DOWN)) { ubc->SelectDownBtn(); }
+    if (InputInterface::IsKeyPushedInSingle(GP_UPDIRBTN)) { ubc->SelectUpBtn(); }
+    if (InputInterface::IsKeyPushedInSingle(GP_DOWNDIRBTN)) { ubc->SelectDownBtn(); }
 
     if ((ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN)) ||
-        (InputInterface::IsKeyPushedInSingle(KB_RETURN) && ubc->IsBeingSelected()))
+        ((InputInterface::IsKeyPushedInSingle(KB_RETURN) ||
+            InputInterface::IsKeyPushedInSingle(GP_BOTTOMBTN)) &&
+            ubc->IsBeingSelected()))
     {
         if (ubc->GetCompName() == "pause-continue-btn-ui-button")
         {
