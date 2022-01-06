@@ -101,6 +101,22 @@
                     8
                 ]
             }
+        },
+        {
+            "mesh-name": "destination-cyl",
+            "load-mode": "program-cylinder",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "top-btm-het-size": [
+                    0.1,
+                    10.0,
+                    20.0
+                ],
+                "slice-stack-count": [
+                    3,
+                    1
+                ]
+            }
         }
     ],
     "actor": [
@@ -827,8 +843,8 @@
                     "type": "transform",
                     "init-position": [
                         0.0,
-                        -40.0,
-                        150.0
+                        25.0,
+                        250.0
                     ],
                     "init-angle": [
                         0.0,
@@ -863,6 +879,430 @@
                     "init-func-name": "ObstacleInit",
                     "update-func-name": "ObstacleUpdate",
                     "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "obs-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        20.0,
+                        405.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        0.005,
+                        1.0,
+                        0.5
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        0.5,
+                        100.0,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "obstacle-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "obs-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        62.5,
+                        425.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.25,
+                        0.5
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        100.0,
+                        125.0,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "obstacle-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "obs-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        62.5,
+                        575.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.25,
+                        0.5
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        100.0,
+                        125.0,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "obstacle-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "obs-4-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        62.5,
+                        725.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.25,
+                        0.5
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        100.0,
+                        125.0,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "obstacle-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "n-crystal-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        40.0,
+                        500.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "NCrystalInit",
+                    "update-func-name": "NCrystalUpdate",
+                    "destory-func-name": "NCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "s-crystal-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        40.0,
+                        650.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "SCrystalInit",
+                    "update-func-name": "SCrystalUpdate",
+                    "destory-func-name": "SCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.9,
+                        0.0,
+                        0.9
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "destination-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        8.0,
+                        775.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "destination-cyl"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "DestInit",
+                    "update-func-name": "DestUpdate",
+                    "destory-func-name": "DestDestory"
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        10.0,
+                        20.0,
+                        10.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "destination-particle-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        20.0,
+                        775.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "emit-per-second": 400.0,
+                    "velocity": [
+                        0.0,
+                        18.0,
+                        0.0
+                    ],
+                    "pos-variance": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "vel-variance": 0.5,
+                    "acceleration": [
+                        0.0,
+                        -9.8,
+                        0.0
+                    ],
+                    "particle-mass": 0.3,
+                    "life-span": 100.0,
+                    "start-end-size": [
+                        0.5,
+                        0.0
+                    ],
+                    "start-color": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "end-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "streak-flag": true,
+                    "texture-name": "circle"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "DestPtcInit",
+                    "update-func-name": "DestPtcUpdate",
+                    "destory-func-name": "DestPtcDestory"
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        100.0
+                    ]
                 }
             ]
         },
