@@ -57,18 +57,9 @@ void ObstacleUpdate(AInteractComponent* _aitc, Timer& _timer)
             float yFir = sqrtf(fabsf(lengthFirSq - xzSq));
             float ySec = sqrtf(fabsf(lengthSecSq - xzSq));
             float offset = fabsf(yFir - ySec);
-
-            if (fabsf(contactPnt.y - playerAtc->GetProcessingPosition().y) <
-                0.15f)
-            {
-                SetPlayerContactGround();
-            }
-            else
-            {
-                playerAtc->RollBackPositionY();
-                playerAtc->TranslateYAsix(offset);
-                SetPlayerContactGround();
-            }
+            playerAtc->RollBackPositionY();
+            playerAtc->TranslateYAsix(offset);
+            SetPlayerContactGround();
         }
         else if (xOffset < 3.1f && zOffset < 3.1f &&
             (contactPnt.y - playerAtc->GetProcessingPosition().y) > 2.5f)
