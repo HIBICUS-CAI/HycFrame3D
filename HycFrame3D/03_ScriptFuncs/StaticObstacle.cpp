@@ -46,8 +46,6 @@ void ObstacleUpdate(AInteractComponent* _aitc, Timer& _timer)
         else if (xOffset < 3.1f && zOffset < 3.1f &&
             (contactPnt.y - playerAtc->GetProcessingPosition().y) < -0.1f)
         {
-            playerAtc->RollBackPositionY();
-
             XMFLOAT3 playerPnt = playerAtc->GetProcessingPosition();
             XMVECTOR contactVec = XMLoadFloat3(&contact.first) -
                 XMLoadFloat3(&playerPnt);
@@ -56,12 +54,21 @@ void ObstacleUpdate(AInteractComponent* _aitc, Timer& _timer)
                 XMLoadFloat3(&playerPnt);
             float lengthSecSq = XMVectorGetX(XMVector3LengthSq(contactVec));
             float xzSq = xOffset * xOffset + zOffset * zOffset;
-            float yFir = sqrtf(lengthFirSq - xzSq);
-            float ySec = sqrtf(lengthSecSq - xzSq);
+            float yFir = sqrtf(fabsf(lengthFirSq - xzSq));
+            float ySec = sqrtf(fabsf(lengthSecSq - xzSq));
             float offset = fabsf(yFir - ySec);
-            playerAtc->TranslateYAsix(offset);
 
-            SetPlayerContactGround();
+            if (fabsf(contactPnt.y - playerAtc->GetProcessingPosition().y) <
+                0.15f)
+            {
+                SetPlayerContactGround();
+            }
+            else
+            {
+                playerAtc->RollBackPositionY();
+                playerAtc->TranslateYAsix(offset);
+                SetPlayerContactGround();
+            }
         }
         else if (xOffset < 3.1f && zOffset < 3.1f &&
             (contactPnt.y - playerAtc->GetProcessingPosition().y) > 2.5f)
