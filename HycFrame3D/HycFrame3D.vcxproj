@@ -197,6 +197,7 @@
     <ClCompile Include="03_ScriptFuncs\ButtonProcess.cpp" />
     <ClCompile Include="03_ScriptFuncs\DestProcess.cpp" />
     <ClCompile Include="03_ScriptFuncs\FadeProcess.cpp" />
+    <ClCompile Include="03_ScriptFuncs\MiscProcess.cpp" />
     <ClCompile Include="03_ScriptFuncs\NormalCrystal.cpp" />
     <ClCompile Include="03_ScriptFuncs\PauseMenu.cpp" />
     <ClCompile Include="03_ScriptFuncs\PlayerProcess.cpp" />
@@ -264,6 +265,7 @@
     <ClInclude Include="03_ScriptFuncs\ButtonProcess.h" />
     <ClInclude Include="03_ScriptFuncs\DestProcess.h" />
     <ClInclude Include="03_ScriptFuncs\FadeProcess.h" />
+    <ClInclude Include="03_ScriptFuncs\MiscProcess.h" />
     <ClInclude Include="03_ScriptFuncs\NormalCrystal.h" />
     <ClInclude Include="03_ScriptFuncs\PauseMenu.h" />
     <ClInclude Include="03_ScriptFuncs\PlayerProcess.h" />

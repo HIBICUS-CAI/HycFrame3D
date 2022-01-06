@@ -1256,7 +1256,7 @@
                     "emit-per-second": 400.0,
                     "velocity": [
                         0.0,
-                        18.0,
+                        30.0,
                         0.0
                     ],
                     "pos-variance": [
@@ -1548,6 +1548,12 @@
                             "mesh-name": "dragon"
                         }
                     ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "DragonInit",
+                    "update-func-name": "DragonUpdate",
+                    "destory-func-name": "DragonDestory"
                 }
             ]
         },
@@ -1706,7 +1712,7 @@
                     "init-position": [
                         40.0,
                         100.0,
-                        100.0
+                        300.0
                     ],
                     "init-angle": [
                         0.0,
@@ -1728,6 +1734,138 @@
                         0.6,
                         0.6,
                         0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        100.0,
+                        100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        9.0,
+                        9.0,
+                        9.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        100.0,
+                        100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        9.0,
+                        9.0,
+                        9.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        1.0,
+                        1.0
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        100.0,
+                        100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        9.0,
+                        9.0,
+                        9.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        1.0,
+                        0.0,
+                        1.0
                     ],
                     "direction": [
                         0.0,

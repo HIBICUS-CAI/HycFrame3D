@@ -11,6 +11,7 @@
 #include "DestProcess.h"
 #include "ButtonProcess.h"
 #include "TitleCamera.h"
+#include "MiscProcess.h"
 
 void RegisterAllFuncPtr(ObjectFactory* _factory)
 {
@@ -26,4 +27,5 @@ void RegisterAllFuncPtr(ObjectFactory* _factory)
     RegisterDestProcess(_factory);
     RegisterButtonProcess(_factory);
     RegisterTitleCamera(_factory);
+    RegisterMiscProcess(_factory);
 }
