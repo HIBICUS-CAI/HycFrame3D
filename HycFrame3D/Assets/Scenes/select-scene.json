@@ -37,6 +37,45 @@
     ],
     "ui": [
         {
+            "ui-name": "hill-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.1,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "ui-hill.png"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "HillInfoInit",
+                    "update-func-name": "HillInfoUpdate",
+                    "destory-func-name": "HillInfoDestory"
+                }
+            ]
+        },
+        {
             "ui-name": "back-title-btn-ui",
             "components": [
                 {
@@ -65,7 +104,7 @@
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "tex-file": "ui-title.png"
                 },
                 {
                     "type": "button",
@@ -115,7 +154,7 @@
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "tex-file": "ui-tutorial.png"
                 },
                 {
                     "type": "button",
@@ -166,7 +205,7 @@
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "tex-file": "ui-route1.png"
                 },
                 {
                     "type": "button",
@@ -217,7 +256,7 @@
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "tex-file": "ui-route2.png"
                 },
                 {
                     "type": "button",
@@ -269,7 +308,7 @@
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "tex-file": "ui-quit.png"
                 },
                 {
                     "type": "button",
@@ -287,6 +326,105 @@
                         "select-btn",
                         "click-btn"
                     ]
+                }
+            ]
+        },
+        {
+            "ui-name": "text-tutorial-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        128.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "ui-text-tutorial.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "text-route1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        128.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "ui-text-route1.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "text-route2-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        128.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "ui-text-route2.png"
                 }
             ]
         },
