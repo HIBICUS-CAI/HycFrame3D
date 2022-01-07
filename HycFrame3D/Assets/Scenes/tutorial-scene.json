@@ -208,6 +208,19 @@
                 ],
                 "divide": 0
             }
+        },
+        {
+            "mesh-name": "goal-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "goal.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
         }
     ],
     "actor": [
@@ -964,6 +977,213 @@
                     "meshes": [
                         {
                             "mesh-name": "sleep-crystal-1-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-point-light-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        190.0,
+                        780.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-point-light-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        135.0,
+                        780.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-point-light-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        190.0,
+                        780.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-point-light-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        135.0,
+                        780.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        162.5,
+                        799.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        75.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "goal-manual-box"
                         }
                     ]
                 }
