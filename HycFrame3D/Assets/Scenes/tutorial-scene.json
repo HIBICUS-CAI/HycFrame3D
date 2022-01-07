@@ -156,6 +156,58 @@
                 ],
                 "divide": 0
             }
+        },
+        {
+            "mesh-name": "aim-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "aim.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "normal-crystal-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "normal_crystal.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "sleep-crystal-0-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sleep_crystal_0.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "sleep-crystal-1-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sleep_crystal_1.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
         }
     ],
     "actor": [
@@ -392,6 +444,526 @@
                     "meshes": [
                         {
                             "mesh-name": "jump-dash-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-aim-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        35.0,
+                        75.0,
+                        350.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        80.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "aim-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        37.5,
+                        350.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        75.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "aim-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-normal-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        5.0,
+                        540.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-normal-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        5.0,
+                        460.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-normal-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        5.0,
+                        540.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-normal-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        5.0,
+                        460.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "normal-crystal-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        37.5,
+                        500.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        75.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "normal-crystal-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-shoot-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        5.0,
+                        690.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-shoot-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        5.0,
+                        610.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-shoot-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        5.0,
+                        690.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-shoot-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        5.0,
+                        610.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "sleep-crystal-0-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        37.5,
+                        650.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        75.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "sleep-crystal-0-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "sleep-crystal-1-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -49.0,
+                        37.5,
+                        650.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        75.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "sleep-crystal-1-manual-box"
                         }
                     ]
                 }
