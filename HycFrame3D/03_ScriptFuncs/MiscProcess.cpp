@@ -17,6 +17,12 @@ void RegisterMiscProcess(ObjectFactory* _factory)
         { FUNC_NAME(HillInfoUpdate),HillInfoUpdate });
     _factory->GetUDestoryMapPtr()->insert(
         { FUNC_NAME(HillInfoDestory),HillInfoDestory });
+    _factory->GetUInitMapPtr()->insert(
+        { FUNC_NAME(ResultInit),ResultInit });
+    _factory->GetUUpdateMapPtr()->insert(
+        { FUNC_NAME(ResultUpdate),ResultUpdate });
+    _factory->GetUDestoryMapPtr()->insert(
+        { FUNC_NAME(ResultDestory),ResultDestory });
 }
 
 static ATransformComponent* g_DragonAtc = nullptr;
@@ -121,4 +127,21 @@ void HillInfoDestory(UInteractComponent* _uitc)
     g_TutorialInfoUsc = nullptr;
     g_Route1InfoUsc = nullptr;
     g_Route2InfoUsc = nullptr;
+}
+
+bool ResultInit(UInteractComponent* _uitc)
+{
+    _uitc->GetUiOwner()->GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE)->
+        ChangeAnimateTo("success");
+    return true;
+}
+
+void ResultUpdate(UInteractComponent* _uitc, Timer& _timer)
+{
+
+}
+
+void ResultDestory(UInteractComponent* _uitc)
+{
+
 }

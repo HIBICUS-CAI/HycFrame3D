@@ -12,3 +12,7 @@ void DragonDestory(AInteractComponent*);
 bool HillInfoInit(UInteractComponent*);
 void HillInfoUpdate(UInteractComponent*, Timer&);
 void HillInfoDestory(UInteractComponent*);
+
+bool ResultInit(UInteractComponent*);
+void ResultUpdate(UInteractComponent*, Timer&);
+void ResultDestory(UInteractComponent*);

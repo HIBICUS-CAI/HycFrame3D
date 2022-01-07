@@ -37,6 +37,61 @@
     ],
     "ui": [
         {
+            "ui-name": "congratuate-ani-ui",
+            "components":[
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        1280.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "empty.png"
+                },
+                {
+                    "type": "animate",
+                    "animates": [
+                        {
+                            "name": "success",
+                            "tex-file": "congratuate_animate.png",
+                            "u-v-stride": [
+                                0.2,
+                                1.0
+                            ],
+                            "max-count": 5,
+                            "switch-time": 0.2,
+                            "repeat-flag": true
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ResultInit",
+                    "update-func-name": "ResultUpdate",
+                    "destory-func-name": "ResultDestory"
+                }
+            ]
+        },
+        {
             "ui-name": "result-title-btn-ui",
             "components": [
                 {
