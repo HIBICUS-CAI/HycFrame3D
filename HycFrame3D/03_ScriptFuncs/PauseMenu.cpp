@@ -34,6 +34,8 @@ void PauseMenuInput(UInputComponent* _uic, Timer& _timer)
     if (InputInterface::IsKeyPushedInSingle(KB_ESCAPE) ||
         InputInterface::IsKeyPushedInSingle(GP_RIGHTMENUBTN))
     {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("click-btn", 0.3f);
         g_PauseFlg = !g_PauseFlg;
         ShowCursor(g_PauseFlg ? TRUE : FALSE);
     }
@@ -45,16 +47,39 @@ void PauseMenuBtnInput(UInputComponent* _uic, Timer& _timer)
         GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
     if (!ubc || !g_PauseFlg) { return; }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_UP)) { ubc->SelectUpBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(KB_DOWN)) { ubc->SelectDownBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(GP_UPDIRBTN)) { ubc->SelectUpBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(GP_DOWNDIRBTN)) { ubc->SelectDownBtn(); }
+    if (InputInterface::IsKeyPushedInSingle(KB_UP))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectUpBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectDownBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(GP_UPDIRBTN))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectUpBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(GP_DOWNDIRBTN))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectDownBtn();
+    }
 
     if ((ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN)) ||
         ((InputInterface::IsKeyPushedInSingle(KB_RETURN) ||
             InputInterface::IsKeyPushedInSingle(GP_BOTTOMBTN)) &&
             ubc->IsBeingSelected()))
     {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("click-btn", 0.3f);
+
         if (ubc->GetCompName() == "pause-continue-btn-ui-button")
         {
             g_PauseFlg = false;

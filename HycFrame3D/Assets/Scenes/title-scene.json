@@ -6,6 +6,52 @@
         0.5,
         1.0
     ],
+    "audio-assets": [
+        {
+            "audio-name": "click-btn",
+            "audio-file": "se-click-button.wav"
+        },
+        {
+            "audio-name": "crystal-hit",
+            "audio-file": "se-crystal-hit.wav"
+        },
+        {
+            "audio-name": "dash",
+            "audio-file": "se-dash.wav"
+        },
+        {
+            "audio-name": "fall",
+            "audio-file": "se-fall.wav"
+        },
+        {
+            "audio-name": "goal",
+            "audio-file": "se-goal.wav"
+        },
+        {
+            "audio-name": "jump",
+            "audio-file": "se-jump.wav"
+        },
+        {
+            "audio-name": "select-btn",
+            "audio-file": "se-select-button.wav"
+        },
+        {
+            "audio-name": "shoot",
+            "audio-file": "se-shoot.wav"
+        },
+        {
+            "audio-name": "start-run",
+            "audio-file": "se-start-run.wav"
+        },
+        {
+            "audio-name": "start-tutorial",
+            "audio-file": "se-start-tutorial.wav"
+        },
+        {
+            "audio-name": "wake-crystal",
+            "audio-file": "se-wake-crystal.wav"
+        }
+    ],
     "actor": [
         {
             "actor-name": "temp-cmd-actor",

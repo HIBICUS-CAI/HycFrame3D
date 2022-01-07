@@ -111,6 +111,9 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
     if (g_PlayerCanDashFlg && (InputInterface::IsKeyPushedInSingle(KB_LALT) ||
         InputInterface::IsKeyPushedInSingle(GP_RIGHTFORESHDBTN)))
     {
+        _aic->GetActorOwner()->
+            GetAComponent<AAudioComponent>(COMP_TYPE::A_AUDIO)->
+            PlaySe("dash", 0.7f);
         g_PlayerCanDashFlg = false;
         g_PlayerIsDashing = true;
         g_PlayerCanJumpFlg = false;
@@ -128,6 +131,9 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
     if (g_PlayerCanShoot && (InputInterface::IsKeyPushedInSingle(M_LEFTBTN) ||
         InputInterface::IsKeyPushedInSingle(GP_RIGHTBACKSHDBTN)))
     {
+        _aic->GetActorOwner()->
+            GetAComponent<AAudioComponent>(COMP_TYPE::A_AUDIO)->
+            PlaySe("shoot", 0.3f);
         lookAt = g_PlayerAngleAtc->GetProcessingRotation();
         DirectX::XMMATRIX mat = DirectX::XMMatrixRotationX(lookAt.x) *
             DirectX::XMMatrixRotationY(lookAt.y);

@@ -6,6 +6,24 @@
         0.5,
         1.0
     ],
+    "audio-assets": [
+        {
+            "audio-name": "click-btn",
+            "audio-file": "se-click-button.wav"
+        },
+        {
+            "audio-name": "select-btn",
+            "audio-file": "se-select-button.wav"
+        },
+        {
+            "audio-name": "start-run",
+            "audio-file": "se-start-run.wav"
+        },
+        {
+            "audio-name": "start-tutorial",
+            "audio-file": "se-start-tutorial.wav"
+        }
+    ],
     "actor": [
         {
             "actor-name": "temp-run-cmd-actor",
@@ -58,6 +76,13 @@
                 {
                     "type": "input",
                     "func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn",
+                        "click-btn"
+                    ]
                 }
             ]
         },
@@ -102,6 +127,13 @@
                 {
                     "type": "input",
                     "func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn",
+                        "start-tutorial"
+                    ]
                 }
             ]
         },
@@ -146,6 +178,13 @@
                 {
                     "type": "input",
                     "func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn",
+                        "start-run"
+                    ]
                 }
             ]
         },
@@ -191,6 +230,13 @@
                 {
                     "type": "input",
                     "func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn",
+                        "start-run"
+                    ]
                 }
             ]
         },
@@ -234,6 +280,13 @@
                 {
                     "type": "input",
                     "func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn",
+                        "click-btn"
+                    ]
                 }
             ]
         },

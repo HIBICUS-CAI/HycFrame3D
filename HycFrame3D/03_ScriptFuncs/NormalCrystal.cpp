@@ -34,6 +34,9 @@ void NCrystalUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     if (!GetPlayerDashFlg() && active && acc->CheckCollisionWith(PLAYER_NAME))
     {
+        _aitc->GetActorOwner()->
+            GetAComponent<AAudioComponent>(COMP_TYPE::A_AUDIO)->
+            PlaySe("crystal-hit", 0.7f);
         SetPlayerDashFlg(true);
         found->second = 0.f;
     }

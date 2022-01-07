@@ -74,6 +74,9 @@ void SCrystalUpdate(AInteractComponent* _aitc, Timer& _timer)
     {
         if (CheckCollisionWithBullet(acc))
         {
+            _aitc->GetActorOwner()->
+                GetAComponent<AAudioComponent>(COMP_TYPE::A_AUDIO)->
+                PlaySe("wake-crystal", 0.5f);
             g_SCrystalActiveMap[_aitc] = TRUE;
             found->second = 5.f;
         }
@@ -82,6 +85,9 @@ void SCrystalUpdate(AInteractComponent* _aitc, Timer& _timer)
     if (g_SCrystalActiveMap[_aitc] && !GetPlayerDashFlg() &&
         acc->CheckCollisionWith(PLAYER_NAME))
     {
+        _aitc->GetActorOwner()->
+            GetAComponent<AAudioComponent>(COMP_TYPE::A_AUDIO)->
+            PlaySe("crystal-hit", 0.7f);
         SetPlayerDashFlg(true);
         g_SCrystalActiveMap[_aitc] = FALSE;
         found->second = 0.f;

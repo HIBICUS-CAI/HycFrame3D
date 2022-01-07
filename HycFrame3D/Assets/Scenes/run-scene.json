@@ -118,6 +118,44 @@
             }
         }
     ],
+    "audio-assets": [
+        {
+            "audio-name": "click-btn",
+            "audio-file": "se-click-button.wav"
+        },
+        {
+            "audio-name": "crystal-hit",
+            "audio-file": "se-crystal-hit.wav"
+        },
+        {
+            "audio-name": "dash",
+            "audio-file": "se-dash.wav"
+        },
+        {
+            "audio-name": "fall",
+            "audio-file": "se-fall.wav"
+        },
+        {
+            "audio-name": "goal",
+            "audio-file": "se-goal.wav"
+        },
+        {
+            "audio-name": "jump",
+            "audio-file": "se-jump.wav"
+        },
+        {
+            "audio-name": "select-btn",
+            "audio-file": "se-select-button.wav"
+        },
+        {
+            "audio-name": "shoot",
+            "audio-file": "se-shoot.wav"
+        },
+        {
+            "audio-name": "wake-crystal",
+            "audio-file": "se-wake-crystal.wav"
+        }
+    ],
     "actor": [
         {
             "actor-name": "temp-result-cmd-actor",
@@ -164,6 +202,14 @@
                     "collision-shape": "sphere",
                     "collision-size": [
                         3.0
+                    ]
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "dash",
+                        "jump",
+                        "shoot"
                     ]
                 }
             ]
@@ -822,6 +868,12 @@
                         80.0
                     ],
                     "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit"
+                    ]
                 }
             ]
         },
@@ -881,6 +933,12 @@
                         80.0
                     ],
                     "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit"
+                    ]
                 }
             ]
         },
@@ -940,6 +998,13 @@
                         80.0
                     ],
                     "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit",
+                        "wake-crystal"
+                    ]
                 }
             ]
         },
@@ -999,6 +1064,13 @@
                         80.0
                     ],
                     "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit",
+                        "wake-crystal"
+                    ]
                 }
             ]
         },
@@ -1044,6 +1116,12 @@
                         10.0,
                         20.0,
                         10.0
+                    ]
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "goal"
                     ]
                 }
             ]
@@ -1345,6 +1423,12 @@
                     "init-func-name": "PauseMenuInit",
                     "update-func-name": "PauseMenuUpdate",
                     "destory-func-name": "PauseMenuDestory"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn"
+                    ]
                 }
             ]
         },
@@ -1387,6 +1471,13 @@
                 {
                     "type": "input",
                     "func-name": "PauseMenuBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn",
+                        "click-btn"
+                    ]
                 }
             ]
         },
@@ -1429,6 +1520,13 @@
                 {
                     "type": "input",
                     "func-name": "PauseMenuBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn",
+                        "click-btn"
+                    ]
                 }
             ]
         },

@@ -70,14 +70,54 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
     if (!ubc) { return; }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_UP)) { ubc->SelectUpBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(KB_DOWN)) { ubc->SelectDownBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(KB_LEFT)) { ubc->SelectLeftBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(KB_RIGHT)) { ubc->SelectRightBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(GP_UPDIRBTN)) { ubc->SelectUpBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(GP_DOWNDIRBTN)) { ubc->SelectDownBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(GP_LEFTDIRBTN)) { ubc->SelectLeftBtn(); }
-    if (InputInterface::IsKeyPushedInSingle(GP_RIGHTDIRBTN)) { ubc->SelectRightBtn(); }
+    if (InputInterface::IsKeyPushedInSingle(KB_UP))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectUpBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectDownBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_LEFT))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectLeftBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_RIGHT))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectRightBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(GP_UPDIRBTN))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectUpBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(GP_DOWNDIRBTN))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectDownBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(GP_LEFTDIRBTN))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectLeftBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(GP_RIGHTDIRBTN))
+    {
+        _uic->GetUiOwner()->GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            PlaySe("select-btn", 0.3f);
+        ubc->SelectRightBtn();
+    }
 
     if ((ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN)) ||
         ((InputInterface::IsKeyPushedInSingle(KB_RETURN) ||
@@ -86,6 +126,9 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
     {
         if (ubc->GetCompName() == "back-title-btn-ui-button")
         {
+            _uic->GetUiOwner()->
+                GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+                PlaySe("click-btn", 0.3f);
             sceneName = "title-scene";
             sceneFile = "title-scene.json";
             P_LOG(LOG_DEBUG, "to title\n");
@@ -93,6 +136,9 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "tutorial-btn-ui-button")
         {
+            _uic->GetUiOwner()->
+                GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+                PlaySe("start-tutorial", 0.3f);
             sceneName = "tutorial-scene";
             sceneFile = "tutorial-scene.json";
             P_LOG(LOG_DEBUG, "to tutorial\n");
@@ -100,6 +146,9 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "route1-btn-ui-button")
         {
+            _uic->GetUiOwner()->
+                GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+                PlaySe("start-run", 0.3f);
             sceneName = "run-scene";
             sceneFile = "run-scene.json";
             P_LOG(LOG_DEBUG, "to run\n");
@@ -107,6 +156,9 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "route2-btn-ui-button")
         {
+            _uic->GetUiOwner()->
+                GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+                PlaySe("start-run", 0.3f);
             sceneName = "route2-scene";
             sceneFile = "route2-scene.json";
             P_LOG(LOG_DEBUG, "to run2\n");
@@ -118,6 +170,9 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "result-title-btn-ui-button")
         {
+            _uic->GetUiOwner()->
+                GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+                PlaySe("click-btn", 0.3f);
             sceneName = "title-scene";
             sceneFile = "title-scene.json";
             P_LOG(LOG_DEBUG, "to title\n");
@@ -127,7 +182,7 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         {
             sceneName = "select-scene";
             sceneFile = "select-scene.json";
-            P_LOG(LOG_DEBUG, "to title\n");
+            P_LOG(LOG_DEBUG, "to select\n");
             SetSceneOutFlg(true);
         }
     }

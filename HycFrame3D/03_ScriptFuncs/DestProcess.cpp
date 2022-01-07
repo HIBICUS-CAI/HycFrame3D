@@ -48,6 +48,9 @@ void DestUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     if (g_DestAcc->CheckCollisionWith(PLAYER_NAME))
     {
+        _aitc->GetActorOwner()->
+            GetAComponent<AAudioComponent>(COMP_TYPE::A_AUDIO)->
+            PlaySe("goal", 0.3f);
         SetSceneOutFlg(true, DEST_REACH);
     }
 

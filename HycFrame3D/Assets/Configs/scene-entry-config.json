@@ -1,4 +1,4 @@
 {
-    "entry-scene-name": "tutorial-scene",
-    "entry-scene-file": "tutorial-scene.json"
+    "entry-scene-name": "title-scene",
+    "entry-scene-file": "title-scene.json"
 }
