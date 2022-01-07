@@ -117,9 +117,273 @@
                     1
                 ]
             }
+        },
+        {
+            "mesh-name": "move-cam-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "move_and_camera.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "jump-dash-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "jump_and_dash.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
         }
     ],
     "actor": [
+        {
+            "actor-name": "move-cam-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        5.0,
+                        -3.8
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        10.0,
+                        10.0,
+                        10.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "move-cam-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-jumpdash0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -45.0,
+                        70.0,
+                        175.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-jumpdash1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        45.0,
+                        70.0,
+                        175.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-jumpdash2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -45.0,
+                        5.0,
+                        175.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-jumpdash3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        45.0,
+                        5.0,
+                        175.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "jump-dash-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        37.5,
+                        200.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        74.9,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "jump-dash-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
         {
             "actor-name": "player-actor",
             "components": [
