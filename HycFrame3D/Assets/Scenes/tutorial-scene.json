@@ -119,6 +119,19 @@
             }
         },
         {
+            "mesh-name": "need-get-down-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "tutorial_not_here.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
             "mesh-name": "move-cam-manual-box",
             "load-mode": "program-box",
             "load-info": {
@@ -379,6 +392,231 @@
                     "meshes": [
                         {
                             "mesh-name": "jump-dash-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-point-light-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        100.0,
+                        300.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        93.75,
+                        275.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        37.5,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "need-get-down-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-point-light-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        150.0,
+                        450.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        143.75,
+                        425.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        37.5,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "need-get-down-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-point-light-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        150.0,
+                        600.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -49.0,
+                        143.75,
+                        575.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        37.5,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "need-get-down-box"
                         }
                     ]
                 }
@@ -1965,50 +2203,6 @@
                         1.0,
                         -1.0
                     ]
-                }
-            ]
-        },
-        {
-            "actor-name": "point-light0-actor",
-            "components": [
-                {
-                    "type": "transform",
-                    "init-position": [
-                        40.0,
-                        100.0,
-                        300.0
-                    ],
-                    "init-angle": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "init-scale": [
-                        3.0,
-                        3.0,
-                        3.0
-                    ]
-                },
-                {
-                    "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
-                        0.6,
-                        0.6,
-                        0.6
-                    ],
-                    "direction": [
-                        0.0,
-                        -1.0,
-                        -1.0
-                    ],
-                    "fall-off-start-end": [
-                        30.0,
-                        80.0
-                    ],
-                    "spot-power": 5.0
                 }
             ]
         },
