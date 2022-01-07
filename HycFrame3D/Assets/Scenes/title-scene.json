@@ -117,6 +117,39 @@
             ]
         },
         {
+            "ui-name": "btn-hint-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        128.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "ui-title-btn.png"
+                }
+            ]
+        },
+        {
             "ui-name": "scene-fade-manager-ui",
             "components": [
                 {
