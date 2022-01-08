@@ -1,4 +1,4 @@
 {
     "force-adapter-index": null,
-    "force-single-thread": true
+    "force-single-thread": false
 }
