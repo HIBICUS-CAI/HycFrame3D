@@ -143,10 +143,10 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
         DirectX::XMStoreFloat3(&lookAt, lookAtVec);
         DirectX::XMFLOAT3 shootPos = atc->GetProcessingPosition();
         DirectX::XMFLOAT3 shootAt = lookAt;
+        shootAt.y *= -1.f;
         shootPos.x += shootAt.x * 2.f;
         shootPos.y += shootAt.y * 2.f;
         shootPos.z += shootAt.z * 2.f;
-        shootAt.y *= -1.f;
         SetBulletShoot(shootPos, shootAt);
     }
 
