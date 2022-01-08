@@ -24,6 +24,7 @@
 #include "RSUtilityFunctions.h"
 #include "DDSTextureLoader11.h"
 #include "WICTextureLoader11.h"
+#include "JsonHelper.h"
 
 #define RS_RELEASE(p) { if (p) { (p)->Release(); (p)=nullptr; } }
 static RSRoot_DX11* g_Root = nullptr;
@@ -33,6 +34,14 @@ static D3D11_VIEWPORT g_ViewPort = {};
 
 static float g_DeltaTimeInSecond = 0.f;
 
+struct RENDER_EFFECT_CONFIG
+{
+    UINT mSsaoBlurCount = 4;
+    bool mParticleOff = false;
+};
+
+static RENDER_EFFECT_CONFIG g_RenderEffectConfig = {};
+
 void SetPipeLineDeltaTime(float _deltaMilliSecond)
 {
     g_DeltaTimeInSecond = _deltaMilliSecond / 1000.f;
@@ -40,6 +49,16 @@ void SetPipeLineDeltaTime(float _deltaMilliSecond)
 
 bool CreateBasicPipeline()
 {
+    {
+        JsonFile config = {};
+        LoadJsonFile(&config, ".\\Assets\\Configs\\render-effect-config.json");
+        if (config.HasParseError()) { return false; }
+        g_RenderEffectConfig.mSsaoBlurCount =
+            config["ssao-blur-loop-count"].GetUint();
+        g_RenderEffectConfig.mParticleOff =
+            config["particle-off"].GetBool();
+    }
+
     g_Root = GetRSRoot_DX11_Singleton();
     std::string name = "";
 
@@ -132,29 +151,33 @@ bool CreateBasicPipeline()
     bloom_topic->SetExecuateOrder(6);
     bloom_topic->FinishTopicAssembly();
 
-    name = "particle-setup-pass";
-    RSPass_PriticleSetUp* ptcsetup = new RSPass_PriticleSetUp(
-        name, PASS_TYPE::COMPUTE, g_Root);
-    ptcsetup->SetExecuateOrder(1);
+    RSTopic* particle_topic = nullptr;
+    if (!g_RenderEffectConfig.mParticleOff)
+    {
+        name = "particle-setup-pass";
+        RSPass_PriticleSetUp* ptcsetup = new RSPass_PriticleSetUp(
+            name, PASS_TYPE::COMPUTE, g_Root);
+        ptcsetup->SetExecuateOrder(1);
 
-    name = "particle-emit-simulate-pass";
-    RSPass_PriticleEmitSimulate* ptcemitsimul = new RSPass_PriticleEmitSimulate(
-        name, PASS_TYPE::COMPUTE, g_Root);
-    ptcemitsimul->SetExecuateOrder(2);
+        name = "particle-emit-simulate-pass";
+        RSPass_PriticleEmitSimulate* ptcemitsimul = new RSPass_PriticleEmitSimulate(
+            name, PASS_TYPE::COMPUTE, g_Root);
+        ptcemitsimul->SetExecuateOrder(2);
 
-    name = "particle-tile-render-pass";
-    RSPass_PriticleTileRender* ptctile = new RSPass_PriticleTileRender(
-        name, PASS_TYPE::COMPUTE, g_Root);
-    ptctile->SetExecuateOrder(3);
+        name = "particle-tile-render-pass";
+        RSPass_PriticleTileRender* ptctile = new RSPass_PriticleTileRender(
+            name, PASS_TYPE::COMPUTE, g_Root);
+        ptctile->SetExecuateOrder(3);
 
-    name = "paricle-topic";
-    RSTopic* particle_topic = new RSTopic(name);
-    particle_topic->StartTopicAssembly();
-    particle_topic->InsertPass(ptcsetup);
-    particle_topic->InsertPass(ptcemitsimul);
-    particle_topic->InsertPass(ptctile);
-    particle_topic->SetExecuateOrder(7);
-    particle_topic->FinishTopicAssembly();
+        name = "paricle-topic";
+        particle_topic = new RSTopic(name);
+        particle_topic->StartTopicAssembly();
+        particle_topic->InsertPass(ptcsetup);
+        particle_topic->InsertPass(ptcemitsimul);
+        particle_topic->InsertPass(ptctile);
+        particle_topic->SetExecuateOrder(7);
+        particle_topic->FinishTopicAssembly();
+    }
 
     name = "sprite-ui";
     RSPass_Sprite* sprite = new RSPass_Sprite(
@@ -177,7 +200,10 @@ bool CreateBasicPipeline()
     g_BasicPipeline->InsertTopic(defered_topic);
     g_BasicPipeline->InsertTopic(sky_topic);
     g_BasicPipeline->InsertTopic(bloom_topic);
-    g_BasicPipeline->InsertTopic(particle_topic);
+    if (!g_RenderEffectConfig.mParticleOff)
+    {
+        g_BasicPipeline->InsertTopic(particle_topic);
+    }
     g_BasicPipeline->InsertTopic(sprite_topic);
     g_BasicPipeline->FinishPipelineAssembly();
 
@@ -1387,7 +1413,7 @@ void RSPass_KBBlur::ExecuatePass()
         nullptr, nullptr
     };
 
-    static UINT loopCount = 4;
+    static const UINT loopCount = g_RenderEffectConfig.mSsaoBlurCount;
     static UINT width = GetRSRoot_DX11_Singleton()->Devices()->
         GetCurrWndWidth() / 2;
     static UINT height = GetRSRoot_DX11_Singleton()->Devices()->

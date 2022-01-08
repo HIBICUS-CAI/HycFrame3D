@@ -1,0 +1,7 @@
+{
+    "ssao-blur-loop-count": 4,
+    
+    "// CAUTION0": "Turn off particle is okay but it play a quite important role in vision",
+    "// CAUTION1": "So recommend to be enable",
+    "particle-off": false
+}
