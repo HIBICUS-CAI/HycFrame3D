@@ -23,6 +23,12 @@ void RegisterMiscProcess(ObjectFactory* _factory)
         { FUNC_NAME(ResultUpdate),ResultUpdate });
     _factory->GetUDestoryMapPtr()->insert(
         { FUNC_NAME(ResultDestory),ResultDestory });
+    _factory->GetUInitMapPtr()->insert(
+        { FUNC_NAME(LogoFadeInit),LogoFadeInit });
+    _factory->GetUUpdateMapPtr()->insert(
+        { FUNC_NAME(LogoFadeUpdate),LogoFadeUpdate });
+    _factory->GetUDestoryMapPtr()->insert(
+        { FUNC_NAME(LogoFadeDestory),LogoFadeDestory });
 }
 
 static ATransformComponent* g_DragonAtc = nullptr;
@@ -144,4 +150,43 @@ void ResultUpdate(UInteractComponent* _uitc, Timer& _timer)
 void ResultDestory(UInteractComponent* _uitc)
 {
 
+}
+
+static USpriteComponent* g_LogoFadeUsc = nullptr;
+static float g_LogoTimer = 0.f;
+
+bool LogoFadeInit(UInteractComponent* _uitc)
+{
+    g_LogoTimer = 0.f;
+    g_LogoFadeUsc = _uitc->GetUiOwner()->
+        GetUComponent<USpriteComponent>(COMP_TYPE::U_SPRITE);
+    if (!g_LogoFadeUsc) { return false; }
+    return true;
+}
+
+void LogoFadeUpdate(UInteractComponent* _uitc, Timer& _timer)
+{
+    if (g_LogoTimer < 1000.f)
+    {
+        g_LogoFadeUsc->SetOffsetColor(
+            { 1.f,1.f,1.f,1.f - (g_LogoTimer / 1000.f) });
+    }
+    else if (g_LogoTimer > 2500.f && g_LogoTimer < 3500.f)
+    {
+        g_LogoFadeUsc->SetOffsetColor(
+            { 1.f,1.f,1.f,(g_LogoTimer - 2500.f) / 1000.f });
+    }
+    else if (g_LogoTimer > 3500.f)
+    {
+        _uitc->GetUiOwner()->GetSceneNode().GetSceneManager()->
+            LoadSceneNode("title-scene", "title-scene.json");
+    }
+
+    g_LogoTimer += _timer.FloatDeltaTime();
+}
+
+void LogoFadeDestory(UInteractComponent* _uitc)
+{
+    g_LogoTimer = 0.f;
+    g_LogoFadeUsc = nullptr;
 }

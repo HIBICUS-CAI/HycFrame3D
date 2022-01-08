@@ -16,3 +16,7 @@ void HillInfoDestory(UInteractComponent*);
 bool ResultInit(UInteractComponent*);
 void ResultUpdate(UInteractComponent*, Timer&);
 void ResultDestory(UInteractComponent*);
+
+bool LogoFadeInit(UInteractComponent*);
+void LogoFadeUpdate(UInteractComponent*, Timer&);
+void LogoFadeDestory(UInteractComponent*);
