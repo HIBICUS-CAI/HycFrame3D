@@ -23,6 +23,21 @@
             }
         },
         {
+            "mesh-name": "wall-box",
+            "load-mode": "program-box",
+            "force-diffuse": "wall_diffuse.jpg",
+            "force-normal": "wall_normal.jpg",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
             "mesh-name": "small-yel-box",
             "load-mode": "program-box",
             "load-info": {
@@ -110,6 +125,20 @@
         {
             "mesh-name": "hill",
             "load-mode": "model-file",
+            "material-info": {
+                "albedo": [
+                    0.8,
+                    0.8,
+                    0.8,
+                    0.8
+                ],
+                "fresnel": [
+                    0.05,
+                    0.05,
+                    0.05
+                ],
+                "shininess": 0.3
+            },
             "force-diffuse": "hill_diffuse.png",
             "force-normal": "hill_normal.png",
             "load-info": {
@@ -174,11 +203,11 @@
                     "init-position": [
                         -600.0,
                         0.0,
-                        400.0
+                        440.0
                     ],
                     "init-angle": [
                         0.0,
-                        3.14,
+                        0.0,
                         0.0
                     ],
                     "init-scale": [
@@ -226,7 +255,7 @@
                     ],
                     "init-angle": [
                         0.0,
-                        3.14,
+                        0.0,
                         0.0
                     ],
                     "init-scale": [
@@ -245,11 +274,11 @@
                     "init-position": [
                         -600.0,
                         -5.0,
-                        400.0
+                        440.0
                     ],
                     "init-angle": [
                         0.0,
-                        3.14,
+                        0.0,
                         0.0
                     ],
                     "init-scale": [
@@ -427,6 +456,502 @@
                             "mesh-name": "gun-bullet"
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -600.0,
+                        15.0,
+                        505.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        50.0,
+                        50.0,
+                        9.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        50.0,
+                        50.0,
+                        9.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -575.0,
+                        15.0,
+                        455.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        50.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        50.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -625.0,
+                        15.0,
+                        455.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        50.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        50.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -600.0,
+                        40.0,
+                        455.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        50.0,
+                        3.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        50.0,
+                        3.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-4-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -586.0,
+                        15.0,
+                        405.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        22.0,
+                        50.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        22.0,
+                        50.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-5-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -614.0,
+                        15.0,
+                        405.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        22.0,
+                        50.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        22.0,
+                        50.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "room-light-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -620.0,
+                        30.0,
+                        495.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "room-light-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -580.0,
+                        30.0,
+                        495.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "room-light-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -620.0,
+                        30.0,
+                        415.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "room-light-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -580.0,
+                        30.0,
+                        415.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "room-light-4-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -600.0,
+                        30.0,
+                        455.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        9.0,
+                        3.0,
+                        9.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.7,
+                        0.7,
+                        0.7
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
                 }
             ]
         },
@@ -1217,8 +1742,8 @@
                     "type": "transform",
                     "init-position": [
                         -600.0,
-                        1.0,
-                        350.0
+                        9.0,
+                        328.0
                     ],
                     "init-angle": [
                         0.0,
@@ -1282,8 +1807,8 @@
                     "type": "transform",
                     "init-position": [
                         -600.0,
-                        9.0,
-                        350.0
+                        17.0,
+                        328.0
                     ],
                     "init-angle": [
                         0.0,
@@ -1543,7 +2068,7 @@
                     "init-position": [
                         -500.0,
                         15.0,
-                        400.0
+                        300.0
                     ],
                     "init-angle": [
                         0.0,
@@ -1609,7 +2134,7 @@
                     "init-position": [
                         -650.0,
                         15.0,
-                        400.0
+                        300.0
                     ],
                     "init-angle": [
                         0.0,

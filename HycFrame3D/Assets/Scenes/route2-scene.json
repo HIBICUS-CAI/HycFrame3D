@@ -148,6 +148,20 @@
         {
             "mesh-name": "hill",
             "load-mode": "model-file",
+            "material-info": {
+                "albedo": [
+                    0.8,
+                    0.8,
+                    0.8,
+                    0.8
+                ],
+                "fresnel": [
+                    0.05,
+                    0.05,
+                    0.05
+                ],
+                "shininess": 0.3
+            },
             "force-diffuse": "hill_diffuse.png",
             "force-normal": "hill_normal.png",
             "load-info": {
