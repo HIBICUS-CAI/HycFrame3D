@@ -12,9 +12,10 @@
 #include "RSDevices.h"
 #include "RSRoot_DX11.h"
 #include <fstream>
+#include "..\HycFrame3D\01_MiddleTools\JsonHelper.h"
 
 RSDevices::RSDevices() :
-    mRootPtr(nullptr),
+    mRootPtr(nullptr), mRenderDeivceConfig({}),
     mDriveType(D3D_DRIVER_TYPE_HARDWARE),
     mFeatureLevel(D3D_FEATURE_LEVEL_11_1),
     mDevice(nullptr), mImmediateContext(nullptr),
@@ -37,6 +38,17 @@ bool RSDevices::StartUp(RSRoot_DX11* _root, HWND _wnd)
     if (!_root) { return false; }
 
     mRootPtr = _root;
+
+    JsonFile config = {};
+    LoadJsonFile(&config, ".\\Assets\\Configs\\render-device-config.json");
+    if (config.HasParseError()) { return false; }
+    if (!config["force-adapter-index"].IsNull())
+    {
+        mRenderDeivceConfig.mForceAdapterIndex =
+            config["force-adapter-index"].GetUint();
+    }
+    mRenderDeivceConfig.mForceSingleThread =
+        config["force-single-thread"].GetBool();
 
     UINT wndWidth = 1280;
     UINT wndHeight = 720;
@@ -193,8 +205,12 @@ bool RSDevices::CreateDevices(HWND _wnd,
     {
         --adapterIndex;
     }
+    if (mRenderDeivceConfig.mForceAdapterIndex != (UINT)(-1))
+    {
+        adapterIndex = mRenderDeivceConfig.mForceAdapterIndex;
+    }
 
-    if (adapterIndex >= 0)
+    if (adapterIndex >= 0 && adapterIndex < (UINT)allAdapters.size())
     {
         hr = D3D11CreateDevice(allAdapters[adapterIndex].first,
             D3D_DRIVER_TYPE_UNKNOWN,
@@ -233,6 +249,8 @@ bool RSDevices::CreateDevices(HWND _wnd,
         }
         FAIL_HR_RETURN(hr);
     }
+
+    if (!mDevice || !mImmediateContext) { return false; }
 
     IDXGIFactory1* dxgiFactory1 = nullptr;
     {
@@ -337,7 +355,7 @@ bool RSDevices::GetConcurrentCreateSupport() const
 
 bool RSDevices::GetCommandListSupport() const
 {
-    return mCommandListSupport;
+    return mCommandListSupport && (!mRenderDeivceConfig.mForceSingleThread);
 }
 
 UINT RSDevices::GetCurrWndWidth() const
