@@ -7,8 +7,11 @@
 // Comt: NULL
 //---------------------------------------------------------------
 
+#pragma comment(lib, "dxgi")
+
 #include "RSDevices.h"
 #include "RSRoot_DX11.h"
+#include <fstream>
 
 RSDevices::RSDevices() :
     mRootPtr(nullptr),
@@ -146,30 +149,90 @@ bool RSDevices::CreateDevices(HWND _wnd,
     UINT numFeatLevels = ARRAYSIZE(featureLevels);
     mFeatureLevel = featureLevels[0];
 
-    for (UINT i = 0; i < numDriverTypes; i++)
+    std::vector<std::pair<IDXGIAdapter*, std::wstring>> allAdapters = {};
+    allAdapters.clear();
     {
-        mDriveType = driverTypes[i];
-        hr = D3D11CreateDevice(nullptr, mDriveType,
-            nullptr, deviceCreateFlag, featureLevels,
-            numFeatLevels, D3D11_SDK_VERSION,
-            &mDevice, &mFeatureLevel,
-            &mImmediateContext);
+        IDXGIFactory1* dxgiFactory = nullptr;
+        UINT index = 0;
+        IDXGIAdapter* adapter = nullptr;
 
+        hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
+        FAIL_HR_RETURN(hr);
+
+        while (dxgiFactory->EnumAdapters(index, &adapter) !=
+            DXGI_ERROR_NOT_FOUND)
+        {
+            DXGI_ADAPTER_DESC adapDesc = {};
+            ZeroMemory(&adapDesc, sizeof(adapDesc));
+            std::wstring wstr = L"";
+
+            adapter->GetDesc(&adapDesc);
+            wstr = L"--------------------\nAdapter Info in Index : " +
+                std::to_wstring(index++) + L"\n";
+            wstr += adapDesc.Description;
+            wstr += L"\n--------------------\n";
+            OutputDebugStringW(wstr.c_str());
+            allAdapters.push_back({ adapter,adapDesc.Description });
+        }
+
+        std::wofstream file(L".\\Assets\\Configs\\AutoCreated_AdapterInfoInSystem.txt");
+        index = 0;
+        for (auto& adapInfo : allAdapters)
+        {
+            std::wstring info =
+                L"--------------------\nAdapter Info in Index : " +
+                std::to_wstring(index++) + L"\n" + adapInfo.second +
+                L"\n--------------------\n";
+            file << info;
+        }
+        file.close();
+    }
+
+    UINT adapterIndex = (UINT)(allAdapters.size() - 1);
+    if (allAdapters[adapterIndex].second == L"Microsoft Basic Render Driver")
+    {
+        --adapterIndex;
+    }
+
+    if (adapterIndex >= 0)
+    {
+        hr = D3D11CreateDevice(allAdapters[adapterIndex].first,
+            D3D_DRIVER_TYPE_UNKNOWN,
+            nullptr, deviceCreateFlag, featureLevels, numFeatLevels,
+            D3D11_SDK_VERSION, &mDevice, &mFeatureLevel, &mImmediateContext);
         if (hr == E_INVALIDARG)
         {
-            hr = D3D11CreateDevice(nullptr, mDriveType,
-                nullptr, deviceCreateFlag,
-                featureLevels + 1, numFeatLevels - 1,
-                D3D11_SDK_VERSION, &mDevice,
-                &mFeatureLevel, &mImmediateContext);
-        }
-
-        if (SUCCEEDED(hr))
-        {
-            break;
+            hr = D3D11CreateDevice(allAdapters[adapterIndex].first,
+                D3D_DRIVER_TYPE_UNKNOWN,
+                nullptr, deviceCreateFlag, featureLevels + 1, numFeatLevels - 1,
+                D3D11_SDK_VERSION, &mDevice, &mFeatureLevel, &mImmediateContext);
         }
     }
-    FAIL_HR_RETURN(hr);
+
+    if (!mDevice && !mImmediateContext)
+    {
+        for (UINT i = 0; i < numDriverTypes; i++)
+        {
+            mDriveType = driverTypes[i];
+            hr = D3D11CreateDevice(nullptr, mDriveType,
+                nullptr, deviceCreateFlag, featureLevels,
+                numFeatLevels, D3D11_SDK_VERSION,
+                &mDevice, &mFeatureLevel,
+                &mImmediateContext);
+
+            if (hr == E_INVALIDARG)
+            {
+                hr = D3D11CreateDevice(nullptr, mDriveType,
+                    nullptr, deviceCreateFlag,
+                    featureLevels + 1, numFeatLevels - 1,
+                    D3D11_SDK_VERSION, &mDevice,
+                    &mFeatureLevel, &mImmediateContext);
+            }
+
+            if (SUCCEEDED(hr)) { break; }
+        }
+        FAIL_HR_RETURN(hr);
+    }
 
     IDXGIFactory1* dxgiFactory1 = nullptr;
     {
