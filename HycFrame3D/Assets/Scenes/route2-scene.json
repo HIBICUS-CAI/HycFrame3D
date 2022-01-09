@@ -196,7 +196,7 @@
                     ],
                     "init-angle": [
                         0.0,
-                        0.0,
+                        3.14,
                         0.0
                     ],
                     "init-scale": [
@@ -244,7 +244,7 @@
                     ],
                     "init-angle": [
                         0.0,
-                        0.0,
+                        3.14,
                         0.0
                     ],
                     "init-scale": [
@@ -567,6 +567,520 @@
                     ],
                     "streak-flag": false,
                     "texture-name": "smoke"
+                }
+            ]
+        },
+        {
+            "actor-name": "ground-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        260.0,
+                        230.0,
+                        -300.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        50.0,
+                        2.0,
+                        200.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "yel-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "yel-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                50.0
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "GoundInit",
+                    "update-func-name": "GoundUpdate",
+                    "destory-func-name": "GoundDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "smoke-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        260.0,
+                        232.5,
+                        -300.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "emit-per-second": 120.0,
+                    "velocity": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "pos-variance": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "vel-variance": 0.5,
+                    "acceleration": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "particle-mass": 0.1,
+                    "life-span": 150.0,
+                    "start-end-size": [
+                        2.0,
+                        5.0
+                    ],
+                    "start-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "end-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "streak-flag": false,
+                    "texture-name": "smoke"
+                }
+            ]
+        },
+        {
+            "actor-name": "n-crystal-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        425.0,
+                        56.0,
+                        -265.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "NCrystalInit",
+                    "update-func-name": "NCrystalUpdate",
+                    "destory-func-name": "NCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit"
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "n-crystal-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        360.0,
+                        92.0,
+                        -330.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "NCrystalInit",
+                    "update-func-name": "NCrystalUpdate",
+                    "destory-func-name": "NCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit"
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "n-crystal-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        295.0,
+                        128.0,
+                        -265.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "NCrystalInit",
+                    "update-func-name": "NCrystalUpdate",
+                    "destory-func-name": "NCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit"
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "n-crystal-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        360.0,
+                        164.0,
+                        -200.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "NCrystalInit",
+                    "update-func-name": "NCrystalUpdate",
+                    "destory-func-name": "NCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit"
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "s-crystal-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        360.0,
+                        20.0,
+                        -200.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "SCrystalInit",
+                    "update-func-name": "SCrystalUpdate",
+                    "destory-func-name": "SCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.9,
+                        0.0,
+                        0.9
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit",
+                        "wake-crystal"
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "s-crystal-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        360.0,
+                        200.0,
+                        -200.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "SCrystalInit",
+                    "update-func-name": "SCrystalUpdate",
+                    "destory-func-name": "SCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.9,
+                        0.0,
+                        0.9
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit",
+                        "wake-crystal"
+                    ]
                 }
             ]
         },
