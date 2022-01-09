@@ -1,5 +1,11 @@
 {
     "ssao-blur-loop-count": 4,
+
+    "// OPTITION : 0": "D3D11_FILTER_MIN_MAG_MIP_POINT",
+    "// OPTITION : 1": "D3D11_FILTER_MIN_MAG_MIP_LINEAR",
+    "// OPTITION : 2": "D3D11_FILTER_ANISOTROPIC 8X",
+    "// OPTITION : 3": "D3D11_FILTER_ANISOTROPIC 16X",
+    "filter-level": 3,
     
     "// CAUTION0": "Turn off particle is okay but it play a quite important role in vision",
     "// CAUTION1": "So recommend to be enable",

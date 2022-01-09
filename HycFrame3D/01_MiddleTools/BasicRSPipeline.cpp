@@ -34,9 +34,18 @@ static D3D11_VIEWPORT g_ViewPort = {};
 
 static float g_DeltaTimeInSecond = 0.f;
 
+enum class SAMPLER_LEVEL
+{
+    POINT = 0,
+    BILINEAR = 1,
+    ANISO_8X = 2,
+    ANISO_16X = 3
+};
+
 struct RENDER_EFFECT_CONFIG
 {
     UINT mSsaoBlurCount = 4;
+    SAMPLER_LEVEL mSamplerLevel = SAMPLER_LEVEL::ANISO_16X;
     bool mParticleOff = false;
 };
 
@@ -55,8 +64,16 @@ bool CreateBasicPipeline()
         if (config.HasParseError()) { return false; }
         g_RenderEffectConfig.mSsaoBlurCount =
             config["ssao-blur-loop-count"].GetUint();
+        g_RenderEffectConfig.mSamplerLevel =
+            (SAMPLER_LEVEL)(config["filter-level"].GetUint());
         g_RenderEffectConfig.mParticleOff =
             config["particle-off"].GetBool();
+
+        if ((UINT)g_RenderEffectConfig.mSamplerLevel < 0 ||
+            (UINT)g_RenderEffectConfig.mSamplerLevel > 3)
+        {
+            return false;
+        }
     }
 
     g_Root = GetRSRoot_DX11_Singleton();
@@ -722,7 +739,25 @@ bool RSPass_MRT::CreateSamplers()
     HRESULT hr = S_OK;
     D3D11_SAMPLER_DESC sampDesc = {};
     ZeroMemory(&sampDesc, sizeof(sampDesc));
-    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    auto filter = g_RenderEffectConfig.mSamplerLevel;
+    switch (filter)
+    {
+    case SAMPLER_LEVEL::POINT:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+        break;
+    case SAMPLER_LEVEL::BILINEAR:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        break;
+    case SAMPLER_LEVEL::ANISO_8X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 8;
+        break;
+    case SAMPLER_LEVEL::ANISO_16X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 16;
+        break;
+    default: return false;
+    }
     sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
     sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -2248,7 +2283,25 @@ bool RSPass_Defered::CreateSamplers()
     HRESULT hr = S_OK;
     D3D11_SAMPLER_DESC sampDesc = {};
     ZeroMemory(&sampDesc, sizeof(sampDesc));
-    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    auto filter = g_RenderEffectConfig.mSamplerLevel;
+    switch (filter)
+    {
+    case SAMPLER_LEVEL::POINT:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+        break;
+    case SAMPLER_LEVEL::BILINEAR:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        break;
+    case SAMPLER_LEVEL::ANISO_8X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 8;
+        break;
+    case SAMPLER_LEVEL::ANISO_16X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 16;
+        break;
+    default: return false;
+    }
     sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
     sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -5133,7 +5186,16 @@ bool RSPass_Sprite::CreateSamplers()
     HRESULT hr = S_OK;
     D3D11_SAMPLER_DESC sampDesc = {};
     ZeroMemory(&sampDesc, sizeof(sampDesc));
-    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    auto filter = g_RenderEffectConfig.mSamplerLevel;
+    switch (filter)
+    {
+    case SAMPLER_LEVEL::POINT:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+        break;
+    default:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        break;
+    }
     sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
     sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
     sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
