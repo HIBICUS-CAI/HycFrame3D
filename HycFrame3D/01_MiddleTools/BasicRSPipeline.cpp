@@ -1685,7 +1685,7 @@ bool RSPass_Shadow::CreateStates()
     shadowRasterDesc.FillMode = D3D11_FILL_SOLID;
     shadowRasterDesc.CullMode = D3D11_CULL_BACK;
     shadowRasterDesc.FrontCounterClockwise = FALSE;
-    shadowRasterDesc.DepthBias = 200000;
+    shadowRasterDesc.DepthBias = 50000;
     shadowRasterDesc.SlopeScaledDepthBias = 1.f;
     shadowRasterDesc.DepthBiasClamp = 0.f;
     shadowRasterDesc.DepthClipEnable = TRUE;
