@@ -60,15 +60,18 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
     }
     float horiR = mouseOffset.x * deltatime / 2000.f;
     float vertR = -mouseOffset.y * deltatime / 2000.f;
+
+    g_PlayerAngleAtc->Rotate({ vertR,horiR,0.f });
+    if (fabsf(g_PlayerAngleAtc->GetProcessingRotation().x) > XM_PIDIV2)
+    {
+        g_PlayerAngleAtc->RollBackRotationX();
+        vertR = 0.f;
+    }
     _aic->GetActorOwner()->GetSceneNode().GetMainCamera()->
         RotateRSCamera(vertR, horiR);
-
-    DirectX::XMFLOAT3 camOffset = { 0.f,0.f,0.f };
     auto atc = _aic->GetActorOwner()->
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
     atc->RotateYAsix(horiR);
-
-    g_PlayerAngleAtc->Rotate({ vertR,horiR,0.f });
 
     static const DirectX::XMFLOAT3 ident = { 0.f,0.f,1.f };
     static const DirectX::XMVECTOR identVec = DirectX::XMLoadFloat3(&ident);

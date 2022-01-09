@@ -69,6 +69,9 @@ void DeadFadeUpdate(UInteractComponent* _uitc, Timer& _timer)
         {
             if (runTime >= 1000.f)
             {
+                _uitc->GetUiOwner()->
+                    GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+                    PlaySe("reborn", 0.15f);
                 runTime = 0.f;
                 g_DeadFadeRun = false;
                 g_DeadFadeDestDown = !g_DeadFadeDestDown;

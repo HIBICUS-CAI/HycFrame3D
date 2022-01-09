@@ -183,6 +183,10 @@
         {
             "audio-name": "wake-crystal",
             "audio-file": "se-wake-crystal.wav"
+        },
+        {
+            "audio-name": "reborn",
+            "audio-file": "se-reborn.wav"
         }
     ],
     "actor": [
@@ -2920,6 +2924,12 @@
                     "init-func-name": "DeadFadeInit",
                     "update-func-name": "DeadFadeUpdate",
                     "destory-func-name": "DeadFadeDestory"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "reborn"
+                    ]
                 }
             ]
         },
