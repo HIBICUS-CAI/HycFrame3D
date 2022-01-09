@@ -136,6 +136,7 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "tutorial-btn-ui-button")
         {
+            StopBGM();
             _uic->GetUiOwner()->
                 GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
                 PlaySe("start-tutorial", 0.3f);
@@ -146,6 +147,9 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "route1-btn-ui-button")
         {
+            StopBGM();
+            SetVolume("route1", 0.2f);
+            PlayBGM("route1");
             _uic->GetUiOwner()->
                 GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
                 PlaySe("start-run", 0.3f);
@@ -156,6 +160,9 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "route2-btn-ui-button")
         {
+            StopBGM();
+            SetVolume("route2", 0.2f);
+            PlayBGM("route2");
             _uic->GetUiOwner()->
                 GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
                 PlaySe("start-run", 0.3f);
@@ -170,6 +177,9 @@ void NormalBtnInput(UInputComponent* _uic, Timer& _timer)
         }
         else if (ubc->GetCompName() == "result-title-btn-ui-button")
         {
+            StopBGM();
+            SetVolume("title", 0.2f);
+            PlayBGM("title");
             _uic->GetUiOwner()->
                 GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
                 PlaySe("click-btn", 0.3f);

@@ -6,6 +6,24 @@
         0.5,
         1.0
     ],
+    "audio-assets": [
+        {
+            "audio-name": "title",
+            "audio-file": "bgm-title.wav"
+        },
+        {
+            "audio-name": "route1",
+            "audio-file": "bgm-route1.wav"
+        },
+        {
+            "audio-name": "route2",
+            "audio-file": "bgm-route2.wav"
+        },
+        {
+            "audio-name": "result",
+            "audio-file": "bgm-success.wav"
+        }
+    ],
     "actor": [
         {
             "actor-name": "temp-cmd-actor",

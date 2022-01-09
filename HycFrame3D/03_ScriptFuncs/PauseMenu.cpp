@@ -103,6 +103,9 @@ void PauseMenuBtnInput(UInputComponent* _uic, Timer& _timer)
         P_LOG(LOG_DEBUG, "to title\n");
         _uic->GetUiOwner()->GetSceneNode().GetSceneManager()->
             LoadSceneNode("title-scene", "title-scene.json");
+        StopBGM();
+        SetVolume("title", 0.2f);
+        PlayBGM("title");
     }
 }
 

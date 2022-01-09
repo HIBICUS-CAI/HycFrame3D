@@ -180,6 +180,9 @@ void LogoFadeUpdate(UInteractComponent* _uitc, Timer& _timer)
     {
         _uitc->GetUiOwner()->GetSceneNode().GetSceneManager()->
             LoadSceneNode("title-scene", "title-scene.json");
+        StopBGM();
+        SetVolume("title", 0.2f);
+        PlayBGM("title");
     }
 
     g_LogoTimer += _timer.FloatDeltaTime();
