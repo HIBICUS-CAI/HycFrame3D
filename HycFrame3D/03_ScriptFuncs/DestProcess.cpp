@@ -48,6 +48,7 @@ void DestUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     if (g_DestAcc->CheckCollisionWith(PLAYER_NAME))
     {
+        StopBGM();
         _aitc->GetActorOwner()->
             GetAComponent<AAudioComponent>(COMP_TYPE::A_AUDIO)->
             PlaySe("goal", 0.3f);
@@ -59,6 +60,8 @@ void DestUpdate(AInteractComponent* _aitc, Timer& _timer)
         P_LOG(LOG_DEBUG, "to result\n");
         _aitc->GetActorOwner()->GetSceneNode().GetSceneManager()->
             LoadSceneNode("result-scene", "result-scene.json");
+        SetVolume("result", 0.2f);
+        PlayBGM("result");
     }
 }
 
