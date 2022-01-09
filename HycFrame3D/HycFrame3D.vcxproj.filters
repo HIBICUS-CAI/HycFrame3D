@@ -187,46 +187,10 @@
     <ClCompile Include="02_FrameContent\ButtonSystem.cpp">
       <Filter>02_FrameContent\System</Filter>
     </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\SPInput.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\PlayerProcess.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
     <ClCompile Include="03_ScriptFuncs\00_FunctionRegister.cpp">
       <Filter>03_ScriptFuncs</Filter>
     </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\NormalCrystal.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\BulletProcess.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\SleepCrystal.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\StaticGround.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\StaticObstacle.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\FadeProcess.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\PauseMenu.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\DestProcess.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\ButtonProcess.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\TitleCamera.cpp">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClCompile>
-    <ClCompile Include="03_ScriptFuncs\MiscProcess.cpp">
+    <ClCompile Include="03_ScriptFuncs\SPInput.cpp">
       <Filter>03_ScriptFuncs</Filter>
     </ClCompile>
   </ItemGroup>
@@ -388,42 +352,6 @@
       <Filter>03_ScriptFuncs</Filter>
     </ClInclude>
     <ClInclude Include="03_ScriptFuncs\SPInput.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\PlayerProcess.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\NormalCrystal.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\BulletProcess.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\SleepCrystal.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\StaticGround.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\StaticObstacle.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\FadeProcess.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\PauseMenu.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\DestProcess.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\ButtonProcess.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\TitleCamera.h">
-      <Filter>03_ScriptFuncs</Filter>
-    </ClInclude>
-    <ClInclude Include="03_ScriptFuncs\MiscProcess.h">
       <Filter>03_ScriptFuncs</Filter>
     </ClInclude>
   </ItemGroup>
