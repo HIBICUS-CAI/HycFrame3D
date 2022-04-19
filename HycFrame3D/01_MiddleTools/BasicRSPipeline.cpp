@@ -26,6 +26,8 @@
 #include "WICTextureLoader11.h"
 #include "JsonHelper.h"
 
+//#define ONE_PASS_PER_TOPIC
+
 #define RS_RELEASE(p) { if (p) { (p)->Release(); (p)=nullptr; } }
 static RSRoot_DX11* g_Root = nullptr;
 static RSPass_PriticleSetUp* g_ParticleSetUpPass = nullptr;
@@ -79,6 +81,184 @@ bool CreateBasicPipeline()
     g_Root = GetRSRoot_DX11_Singleton();
     std::string name = "";
 
+#ifdef ONE_PASS_PER_TOPIC
+    name = "mrt-pass";
+    RSPass_MRT* mrt = new RSPass_MRT(name, PASS_TYPE::RENDER, g_Root);
+    mrt->SetExecuateOrder(1);
+
+    name = "mrt-topic";
+    RSTopic* mrt_topic = new RSTopic(name);
+    mrt_topic->StartTopicAssembly();
+    mrt_topic->InsertPass(mrt);
+    mrt_topic->SetExecuateOrder(1);
+    mrt_topic->FinishTopicAssembly();
+
+    name = "basic-ssao";
+    RSPass_Ssao* ssao = new RSPass_Ssao(
+        name, PASS_TYPE::RENDER, g_Root);
+    ssao->SetExecuateOrder(2);
+
+    name = "kbblur-ssao";
+    RSPass_KBBlur* kbblur = new RSPass_KBBlur(
+        name, PASS_TYPE::COMPUTE, g_Root);
+    kbblur->SetExecuateOrder(3);
+
+    name = "ssao-topic1";
+    RSTopic* ssao_topic1 = new RSTopic(name);
+    ssao_topic1->StartTopicAssembly();
+    ssao_topic1->InsertPass(ssao);
+    ssao_topic1->SetExecuateOrder(2);
+    ssao_topic1->FinishTopicAssembly();
+    name = "ssao-topic2";
+    RSTopic* ssao_topic2 = new RSTopic(name);
+    ssao_topic2->StartTopicAssembly();
+    ssao_topic2->InsertPass(kbblur);
+    ssao_topic2->SetExecuateOrder(3);
+    ssao_topic2->FinishTopicAssembly();
+
+    name = "basic-shadowmap";
+    RSPass_Shadow* shadow = new RSPass_Shadow(
+        name, PASS_TYPE::RENDER, g_Root);
+    shadow->SetExecuateOrder(1);
+
+    name = "shadowmap-topic";
+    RSTopic* shadow_topic = new RSTopic(name);
+    shadow_topic->StartTopicAssembly();
+    shadow_topic->InsertPass(shadow);
+    shadow_topic->SetExecuateOrder(4);
+    shadow_topic->FinishTopicAssembly();
+
+    name = "defered-light";
+    RSPass_Defered* defered = new RSPass_Defered(
+        name, PASS_TYPE::RENDER, g_Root);
+    defered->SetExecuateOrder(1);
+
+    name = "defered-light-topic";
+    RSTopic* defered_topic = new RSTopic(name);
+    defered_topic->StartTopicAssembly();
+    defered_topic->InsertPass(defered);
+    defered_topic->SetExecuateOrder(5);
+    defered_topic->FinishTopicAssembly();
+
+    name = "sky-skysphere";
+    RSPass_SkyShpere* skysphere = new RSPass_SkyShpere(
+        name, PASS_TYPE::RENDER, g_Root);
+    skysphere->SetExecuateOrder(1);
+
+    name = "skysphere-topic";
+    RSTopic* sky_topic = new RSTopic(name);
+    sky_topic->StartTopicAssembly();
+    sky_topic->InsertPass(skysphere);
+    sky_topic->SetExecuateOrder(6);
+    sky_topic->FinishTopicAssembly();
+
+    name = "bloomdraw-pass";
+    RSPass_Bloom* bloomdraw = new RSPass_Bloom(
+        name, PASS_TYPE::RENDER, g_Root);
+    bloomdraw->SetExecuateOrder(1);
+
+    name = "bloomblur-pass";
+    RSPass_Blur* bloomblur = new RSPass_Blur(
+        name, PASS_TYPE::COMPUTE, g_Root);
+    bloomblur->SetExecuateOrder(2);
+
+    name = "bloomblend-pass";
+    RSPass_BloomOn* bloomblend = new RSPass_BloomOn(
+        name, PASS_TYPE::RENDER, g_Root);
+    bloomblend->SetExecuateOrder(3);
+
+    name = "bloom-topic1";
+    RSTopic* bloom_topic1 = new RSTopic(name);
+    bloom_topic1->StartTopicAssembly();
+    bloom_topic1->InsertPass(bloomdraw);
+    bloom_topic1->SetExecuateOrder(7);
+    bloom_topic1->FinishTopicAssembly();
+    name = "bloom-topic2";
+    RSTopic* bloom_topic2 = new RSTopic(name);
+    bloom_topic2->StartTopicAssembly();
+    bloom_topic2->InsertPass(bloomblur);
+    bloom_topic2->SetExecuateOrder(8);
+    bloom_topic2->FinishTopicAssembly();
+    name = "bloom-topic3";
+    RSTopic* bloom_topic3 = new RSTopic(name);
+    bloom_topic3->StartTopicAssembly();
+    bloom_topic3->InsertPass(bloomblend);
+    bloom_topic3->SetExecuateOrder(9);
+    bloom_topic3->FinishTopicAssembly();
+
+    RSTopic* particle_topic1 = nullptr;
+    RSTopic* particle_topic2 = nullptr;
+    RSTopic* particle_topic3 = nullptr;
+    if (!g_RenderEffectConfig.mParticleOff)
+    {
+        name = "particle-setup-pass";
+        RSPass_PriticleSetUp* ptcsetup = new RSPass_PriticleSetUp(
+            name, PASS_TYPE::COMPUTE, g_Root);
+        ptcsetup->SetExecuateOrder(1);
+
+        name = "particle-emit-simulate-pass";
+        RSPass_PriticleEmitSimulate* ptcemitsimul = new RSPass_PriticleEmitSimulate(
+            name, PASS_TYPE::COMPUTE, g_Root);
+        ptcemitsimul->SetExecuateOrder(2);
+
+        name = "particle-tile-render-pass";
+        RSPass_PriticleTileRender* ptctile = new RSPass_PriticleTileRender(
+            name, PASS_TYPE::COMPUTE, g_Root);
+        ptctile->SetExecuateOrder(3);
+
+        name = "paricle-topic1";
+        particle_topic1 = new RSTopic(name);
+        particle_topic1->StartTopicAssembly();
+        particle_topic1->InsertPass(ptcsetup);
+        particle_topic1->SetExecuateOrder(10);
+        particle_topic1->FinishTopicAssembly();
+        name = "paricle-topic2";
+        particle_topic2 = new RSTopic(name);
+        particle_topic2->StartTopicAssembly();
+        particle_topic2->InsertPass(ptcemitsimul);
+        particle_topic2->SetExecuateOrder(11);
+        particle_topic2->FinishTopicAssembly();
+        name = "paricle-topic3";
+        particle_topic3 = new RSTopic(name);
+        particle_topic3->StartTopicAssembly();
+        particle_topic3->InsertPass(ptctile);
+        particle_topic3->SetExecuateOrder(12);
+        particle_topic3->FinishTopicAssembly();
+    }
+
+    name = "sprite-ui";
+    RSPass_Sprite* sprite = new RSPass_Sprite(
+        name, PASS_TYPE::RENDER, g_Root);
+    sprite->SetExecuateOrder(1);
+
+    name = "sprite-topic";
+    RSTopic* sprite_topic = new RSTopic(name);
+    sprite_topic->StartTopicAssembly();
+    sprite_topic->InsertPass(sprite);
+    sprite_topic->SetExecuateOrder(13);
+    sprite_topic->FinishTopicAssembly();
+
+    name = "light-pipeline";
+    g_BasicPipeline = new RSPipeline(name);
+    g_BasicPipeline->StartPipelineAssembly();
+    g_BasicPipeline->InsertTopic(mrt_topic);
+    g_BasicPipeline->InsertTopic(ssao_topic1);
+    g_BasicPipeline->InsertTopic(ssao_topic2);
+    g_BasicPipeline->InsertTopic(shadow_topic);
+    g_BasicPipeline->InsertTopic(defered_topic);
+    g_BasicPipeline->InsertTopic(sky_topic);
+    g_BasicPipeline->InsertTopic(bloom_topic1);
+    g_BasicPipeline->InsertTopic(bloom_topic2);
+    g_BasicPipeline->InsertTopic(bloom_topic3);
+    if (!g_RenderEffectConfig.mParticleOff)
+    {
+        g_BasicPipeline->InsertTopic(particle_topic1);
+        g_BasicPipeline->InsertTopic(particle_topic2);
+        g_BasicPipeline->InsertTopic(particle_topic3);
+    }
+    g_BasicPipeline->InsertTopic(sprite_topic);
+    g_BasicPipeline->FinishPipelineAssembly();
+#else
     name = "mrt-pass";
     RSPass_MRT* mrt = new RSPass_MRT(name, PASS_TYPE::RENDER, g_Root);
     mrt->SetExecuateOrder(1);
@@ -223,6 +403,7 @@ bool CreateBasicPipeline()
     }
     g_BasicPipeline->InsertTopic(sprite_topic);
     g_BasicPipeline->FinishPipelineAssembly();
+#endif // ONE_PASS_PER_TOPIC
 
     if (!g_BasicPipeline->InitAllTopics(g_Root->Devices()))
     {
