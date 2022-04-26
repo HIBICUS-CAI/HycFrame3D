@@ -186,7 +186,7 @@
                             "mesh-name": "cloud-sphere",
                             "mesh-offset": [
                                 50.0,
-                                0.0,
+                                -20.0,
                                 0.0
                             ]
                         },
@@ -194,7 +194,7 @@
                             "mesh-name": "cloud-geo-sphere",
                             "mesh-offset": [
                                 20.0,
-                                10.0,
+                                -10.0,
                                 0.0
                             ]
                         },

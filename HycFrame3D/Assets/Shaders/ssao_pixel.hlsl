@@ -57,7 +57,7 @@ float4 main(VS_OUTPUT _input) : SV_TARGET
     float3 p = (pz / _input.PosV.z) * _input.PosV;
     
     float3 randVec = gRandomMap.SampleLevel(gSamLinearWrap, 5.0f * _input.TexCoordL, 0.0f).rgb;
-    randVec = 2.0f * randVec - 1.0f;
+    randVec = normalize(2.0f * randVec - 1.0f);
 
     float occlusionSum = 0.0f;
 

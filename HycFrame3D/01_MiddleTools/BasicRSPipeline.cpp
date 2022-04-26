@@ -46,6 +46,10 @@ enum class SAMPLER_LEVEL
 
 struct RENDER_EFFECT_CONFIG
 {
+    float mSsaoRadius = 0.5f;
+    float mSsaoStart = 0.2f;
+    float mSsaoEnd = 1.f;
+    float mSsaoEpsilon = 0.05f;
     UINT mSsaoBlurCount = 4;
     SAMPLER_LEVEL mSamplerLevel = SAMPLER_LEVEL::ANISO_16X;
     bool mParticleOff = false;
@@ -64,6 +68,10 @@ bool CreateBasicPipeline()
         JsonFile config = {};
         LoadJsonFile(&config, ".\\Assets\\Configs\\render-effect-config.json");
         if (config.HasParseError()) { return false; }
+        g_RenderEffectConfig.mSsaoRadius = config["ssao-radius"].GetFloat();
+        g_RenderEffectConfig.mSsaoStart = config["ssao-start"].GetFloat();
+        g_RenderEffectConfig.mSsaoEnd = config["ssao-end"].GetFloat();
+        g_RenderEffectConfig.mSsaoEpsilon = config["ssao-epsilon"].GetFloat();
         g_RenderEffectConfig.mSsaoBlurCount =
             config["ssao-blur-loop-count"].GetUint();
         g_RenderEffectConfig.mSamplerLevel =
@@ -1129,11 +1137,10 @@ void RSPass_Ssao::ExecuatePass()
         ss_data[0].mOffsetVec[i] = mOffsetVec[i];
     }
 
-    ss_data[0].mOcclusionRadius = 0.5f;
-    ss_data[0].mOcclusionFadeStart = 0.2f;
-    ss_data[0].mOcclusionFadeEnd = 1.0f;
-    ss_data[0].mSurfaceEpsilon = 0.05f;
-    // TEMP---------------------
+    ss_data[0].mOcclusionRadius = g_RenderEffectConfig.mSsaoRadius;
+    ss_data[0].mOcclusionFadeStart = g_RenderEffectConfig.mSsaoStart;
+    ss_data[0].mOcclusionFadeEnd = g_RenderEffectConfig.mSsaoEnd;
+    ss_data[0].mSurfaceEpsilon = g_RenderEffectConfig.mSsaoEpsilon;
     STContext()->Unmap(mSsaoInfoStructedBuffer, 0);
 
     STContext()->IASetPrimitiveTopology(

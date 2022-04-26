@@ -1,4 +1,8 @@
 {
+    "ssao-radius": 6.0,
+    "ssao-start": 3.0,
+    "ssao-end": 15.0,
+    "ssao-epsilon": 5.0,
     "ssao-blur-loop-count": 4,
 
     "// OPTITION : 0": "D3D11_FILTER_MIN_MAG_MIP_POINT",
