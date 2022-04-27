@@ -738,4 +738,39 @@ private:
     RS_CAM_INFO* mRSCameraInfo;
 };
 
+class RSPass_SimpleLight :public RSPass_Base
+{
+public:
+    RSPass_SimpleLight(std::string& _name, PASS_TYPE _type,
+        class RSRoot_DX11* _root);
+    RSPass_SimpleLight(const RSPass_SimpleLight& _source);
+    virtual ~RSPass_SimpleLight();
+
+public:
+    virtual RSPass_SimpleLight* ClonePass() override;
+
+    virtual bool InitPass();
+
+    virtual void ReleasePass();
+
+    virtual void ExecuatePass();
+
+private:
+    bool CreateShaders();
+    bool CreateBuffers();
+    bool CreateViews();
+    bool CreateSamplers();
+
+private:
+    ID3D11VertexShader* mVertexShader;
+    ID3D11PixelShader* mPixelShader;
+    ID3D11RenderTargetView* mRenderTargetView;
+    ID3D11SamplerState* mLinearWrapSampler;
+    ID3D11ShaderResourceView* mDiffuseSrv;
+    ID3D11ShaderResourceView* mDiffuseAlbedoSrv;
+    ID3D11ShaderResourceView* mSsaoSrv;
+    ID3D11Buffer* mVertexBuffer;
+    ID3D11Buffer* mIndexBuffer;
+};
+
 void SetPipeLineDeltaTime(float _deltaMilliSecond);

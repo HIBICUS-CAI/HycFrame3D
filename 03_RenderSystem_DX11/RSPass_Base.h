@@ -45,4 +45,7 @@ private:
     ID3D11Device* mDevice;
     ID3D11DeviceContext* mSTContext;
     ID3D11DeviceContext* mMTContext;
+
+protected:
+    bool mHasBeenInited;
 };

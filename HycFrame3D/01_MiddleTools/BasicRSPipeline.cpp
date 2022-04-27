@@ -29,9 +29,11 @@
 //#define ONE_PASS_PER_TOPIC
 
 #define RS_RELEASE(p) { if (p) { (p)->Release(); (p)=nullptr; } }
+#define RS_ADD(p) { if(p) { p->AddRef(); } }
 static RSRoot_DX11* g_Root = nullptr;
 static RSPass_PriticleSetUp* g_ParticleSetUpPass = nullptr;
 static RSPipeline* g_BasicPipeline = nullptr;
+static RSPipeline* g_SimplePipeline = nullptr;
 static D3D11_VIEWPORT g_ViewPort = {};
 
 static float g_DeltaTimeInSecond = 0.f;
@@ -423,6 +425,70 @@ bool CreateBasicPipeline()
     g_Root->PipelinesManager()->SetPipeline(name);
     g_Root->PipelinesManager()->ProcessNextPipeline();
 
+    name = "simp-mrt-pass";
+    RSPass_MRT* simp_mrt = mrt->ClonePass();
+    simp_mrt->SetExecuateOrder(1);
+
+    name = "simp-mrt-topic";
+    RSTopic* simp_mrt_topic = new RSTopic(name);
+    simp_mrt_topic->StartTopicAssembly();
+    simp_mrt_topic->InsertPass(simp_mrt);
+    simp_mrt_topic->SetExecuateOrder(1);
+    simp_mrt_topic->FinishTopicAssembly();
+
+    name = "simp-basic-ssao";
+    RSPass_Ssao* simp_ssao = ssao->ClonePass();
+    simp_ssao->SetExecuateOrder(1);
+
+    name = "simp-ssao-topic";
+    RSTopic* simp_ssao_topic = new RSTopic(name);
+    simp_ssao_topic->StartTopicAssembly();
+    simp_ssao_topic->InsertPass(simp_ssao);
+    simp_ssao_topic->SetExecuateOrder(2);
+    simp_ssao_topic->FinishTopicAssembly();
+
+    name = "simp-lit-shadowmap";
+    RSPass_SimpleLight* simp_lit = new RSPass_SimpleLight(
+        name, PASS_TYPE::RENDER, g_Root);
+    simp_lit->SetExecuateOrder(1);
+
+    name = "simp-lit-topic";
+    RSTopic* simp_lit_topic = new RSTopic(name);
+    simp_lit_topic->StartTopicAssembly();
+    simp_lit_topic->InsertPass(simp_lit);
+    simp_lit_topic->SetExecuateOrder(3);
+    simp_lit_topic->FinishTopicAssembly();
+
+    name = "simp-sprite-ui";
+    RSPass_Sprite* simp_sprite = sprite->ClonePass();
+    simp_sprite->SetExecuateOrder(1);
+
+    name = "simp-sprite-topic";
+    RSTopic* simp_sprite_topic = new RSTopic(name);
+    simp_sprite_topic->StartTopicAssembly();
+    simp_sprite_topic->InsertPass(simp_sprite);
+    simp_sprite_topic->SetExecuateOrder(4);
+    simp_sprite_topic->FinishTopicAssembly();
+
+    name = "simple-pipeline";
+    g_SimplePipeline = new RSPipeline(name);
+    g_SimplePipeline->StartPipelineAssembly();
+    g_SimplePipeline->InsertTopic(simp_mrt_topic);
+    g_SimplePipeline->InsertTopic(simp_ssao_topic);
+    g_SimplePipeline->InsertTopic(simp_lit_topic);
+    g_SimplePipeline->InsertTopic(simp_sprite_topic);
+    g_SimplePipeline->FinishPipelineAssembly();
+
+    if (!g_SimplePipeline->InitAllTopics(g_Root->Devices()))
+    {
+        return false;
+    }
+
+    name = g_SimplePipeline->GetPipelineName();
+    g_Root->PipelinesManager()->AddPipeline(name, g_SimplePipeline);
+    g_Root->PipelinesManager()->SetPipeline(name);
+    g_Root->PipelinesManager()->ProcessNextPipeline();
+
     g_ViewPort.Width = (float)g_Root->Devices()->GetCurrWndWidth();
     g_ViewPort.Height = (float)g_Root->Devices()->GetCurrWndHeight();
     g_ViewPort.MinDepth = 0.f;
@@ -471,7 +537,16 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
     mDiffAlbeRtv(_source.mDiffAlbeRtv),
     mFresShinRtv(_source.mFresShinRtv)
 {
-
+    if (mHasBeenInited)
+    {
+        RS_ADD(mVertexShader);
+        RS_ADD(mPixelShader);
+        RS_ADD(mViewProjStructedBuffer);
+        RS_ADD(mViewProjStructedBufferSrv);
+        RS_ADD(mInstanceStructedBuffer);
+        RS_ADD(mInstanceStructedBufferSrv);
+        RS_ADD(mLinearSampler);
+    }
 }
 
 RSPass_MRT::~RSPass_MRT()
@@ -486,6 +561,8 @@ RSPass_MRT* RSPass_MRT::ClonePass()
 
 bool RSPass_MRT::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
     if (!CreateViews()) { return false; }
@@ -496,6 +573,8 @@ bool RSPass_MRT::InitPass()
 
     std::string name = "temp-cam";
     mRSCameraInfo = g_Root->CamerasContainer()->GetRSCameraInfo(name);
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -997,7 +1076,8 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao& _source) :
     mNormalMapSrv(_source.mNormalMapSrv),
     mDepthMapSrv(_source.mDepthMapSrv),
     mRandomMapSrv(_source.mRandomMapSrv),
-    mVertexBuffer(nullptr), mIndexBuffer(nullptr),
+    mVertexBuffer(_source.mVertexBuffer),
+    mIndexBuffer(_source.mIndexBuffer),
     mRSCameraInfo(_source.mRSCameraInfo),
     mCompressVertexShader(_source.mCompressVertexShader),
     mCompressPixelShader(_source.mCompressPixelShader),
@@ -1007,6 +1087,22 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao& _source) :
     for (UINT i = 0; i < 14; i++)
     {
         mOffsetVec[i] = _source.mOffsetVec[i];
+    }
+
+    if (mHasBeenInited)
+    {
+        RS_ADD(mVertexShader);
+        RS_ADD(mPixelShader);
+        RS_ADD(mCompressVertexShader);
+        RS_ADD(mCompressPixelShader);
+        RS_ADD(mSamplePointClamp);
+        RS_ADD(mSampleLinearClamp);
+        RS_ADD(mSampleDepthMap);
+        RS_ADD(mSampleLinearWrap);
+        RS_ADD(mSsaoInfoStructedBuffer);
+        RS_ADD(mSsaoInfoStructedBufferSrv);
+        RS_ADD(mVertexBuffer);
+        RS_ADD(mIndexBuffer);
     }
 }
 
@@ -1022,6 +1118,8 @@ RSPass_Ssao* RSPass_Ssao::ClonePass()
 
 bool RSPass_Ssao::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
     if (!CreateTextures()) { return false; }
@@ -1063,6 +1161,8 @@ bool RSPass_Ssao::InitPass()
     mRSCameraInfo = g_Root->CamerasContainer()->
         GetRSCameraInfo(name);
 
+    mHasBeenInited = true;
+
     return true;
 }
 
@@ -1093,8 +1193,7 @@ void RSPass_Ssao::ExecuatePass()
 {
     ID3D11RenderTargetView* null = nullptr;
     ID3D11ShaderResourceView* srvnull = nullptr;
-    STContext()->OMSetRenderTargets(1,
-        &mRenderTargetView, nullptr);
+    STContext()->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
     STContext()->RSSetViewports(1, &g_ViewPort);
     STContext()->VSSetShader(mVertexShader, nullptr, 0);
     STContext()->PSSetShader(mPixelShader, nullptr, 0);
@@ -1597,7 +1696,11 @@ RSPass_KBBlur::RSPass_KBBlur(const RSPass_KBBlur& _source) :
     mNormalMapSrv(_source.mNormalMapSrv),
     mDepthMapSrv(_source.mDepthMapSrv)
 {
-
+    if (mHasBeenInited)
+    {
+        RS_ADD(mHoriBlurShader);
+        RS_ADD(mVertBlurShader);
+    }
 }
 
 RSPass_KBBlur::~RSPass_KBBlur()
@@ -1612,8 +1715,12 @@ RSPass_KBBlur* RSPass_KBBlur::ClonePass()
 
 bool RSPass_KBBlur::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -1758,6 +1865,8 @@ RSPass_Shadow* RSPass_Shadow::ClonePass()
 
 bool RSPass_Shadow::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateStates()) { return false; }
     if (!CreateBuffers()) { return false; }
@@ -1767,6 +1876,8 @@ bool RSPass_Shadow::InitPass()
     mDrawCallType = DRAWCALL_TYPE::OPACITY;
     mDrawCallPipe = g_Root->DrawCallsPool()->
         GetDrawCallsPipe(mDrawCallType);
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -2109,6 +2220,8 @@ RSPass_Defered* RSPass_Defered::ClonePass()
 
 bool RSPass_Defered::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
     if (!CreateViews()) { return false; }
@@ -2117,6 +2230,8 @@ bool RSPass_Defered::InitPass()
     std::string name = "temp-cam";
     mRSCameraInfo = g_Root->CamerasContainer()->
         GetRSCameraInfo(name);
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -2571,6 +2686,8 @@ RSPass_SkyShpere* RSPass_SkyShpere::ClonePass()
 
 bool RSPass_SkyShpere::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateStates()) { return false; }
     if (!CreateBuffers()) { return false; }
@@ -2585,6 +2702,8 @@ bool RSPass_SkyShpere::InitPass()
     std::string name = "temp-cam";
     mRSCameraInfo = g_Root->CamerasContainer()->
         GetRSCameraInfo(name);
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -2833,6 +2952,8 @@ RSPass_Bloom* RSPass_Bloom::ClonePass()
 
 bool RSPass_Bloom::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
     if (!CreateViews()) { return false; }
@@ -2845,6 +2966,8 @@ bool RSPass_Bloom::InitPass()
     mRSCameraInfo = g_Root->CamerasContainer()->
         GetRSCameraInfo(name);
     if (!mRSCameraInfo) { return false; }
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -3280,11 +3403,15 @@ RSPass_BloomOn* RSPass_BloomOn::ClonePass()
 
 bool RSPass_BloomOn::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
     if (!CreateViews()) { return false; }
     if (!CreateStates()) { return false; }
     if (!CreateSamplers()) { return false; }
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -3513,8 +3640,12 @@ RSPass_Blur* RSPass_Blur::ClonePass()
 
 bool RSPass_Blur::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -3700,6 +3831,8 @@ RSPass_PriticleSetUp* RSPass_PriticleSetUp::ClonePass()
 
 bool RSPass_PriticleSetUp::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     int width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
     int height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
 
@@ -3860,6 +3993,8 @@ bool RSPass_PriticleSetUp::InitPass()
     res.mResource.mBuffer = mTimeConstantBuffer;
     name = PTC_TIME_CONSTANT_NAME;
     resManager->AddResource(name, res);
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -4266,6 +4401,8 @@ RSPass_PriticleEmitSimulate* RSPass_PriticleEmitSimulate::ClonePass()
 
 bool RSPass_PriticleEmitSimulate::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     mRSParticleContainerPtr = GetRSRoot_DX11_Singleton()->ParticlesContainer();
     if (!mRSParticleContainerPtr) { return false; }
 
@@ -4279,6 +4416,8 @@ bool RSPass_PriticleEmitSimulate::InitPass()
     if (!CheckResources()) { return false; }
 
     mRSParticleContainerPtr->ResetRSParticleSystem();
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -4671,6 +4810,8 @@ RSPass_PriticleTileRender* RSPass_PriticleTileRender::ClonePass()
 
 bool RSPass_PriticleTileRender::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     std::string name = "temp-cam";
     mRSCameraInfo = GetRSRoot_DX11_Singleton()->CamerasContainer()->
         GetRSCameraInfo(name);
@@ -4681,6 +4822,8 @@ bool RSPass_PriticleTileRender::InitPass()
     if (!CreateSampler()) { return false; }
     if (!CreateBlend()) { return false; }
     if (!CheckResources()) { return false; }
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -5137,7 +5280,17 @@ RSPass_Sprite::RSPass_Sprite(
     mLinearSampler(_source.mLinearSampler),
     mRSCameraInfo(_source.mRSCameraInfo)
 {
-
+    if (mHasBeenInited)
+    {
+        RS_ADD(mVertexShader);
+        RS_ADD(mPixelShader);
+        RS_ADD(mDepthStencilState);
+        RS_ADD(mLinearSampler);
+        RS_ADD(mProjStructedBufferSrv);
+        RS_ADD(mProjStructedBuffer);
+        RS_ADD(mInstanceStructedBufferSrv);
+        RS_ADD(mInstanceStructedBuffer);
+    }
 }
 
 RSPass_Sprite::~RSPass_Sprite()
@@ -5152,6 +5305,8 @@ RSPass_Sprite* RSPass_Sprite::ClonePass()
 
 bool RSPass_Sprite::InitPass()
 {
+    if (mHasBeenInited) { return true; }
+
     if (!CreateShaders()) { return false; }
     if (!CreateStates()) { return false; }
     if (!CreateBuffers()) { return false; }
@@ -5165,6 +5320,8 @@ bool RSPass_Sprite::InitPass()
     std::string name = "temp-ui-cam";
     mRSCameraInfo = g_Root->CamerasContainer()->
         GetRSCameraInfo(name);
+
+    mHasBeenInited = true;
 
     return true;
 }
@@ -5393,6 +5550,237 @@ bool RSPass_Sprite::CreateSamplers()
 
     hr = Device()->CreateSamplerState(
         &sampDesc, &mLinearSampler);
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+RSPass_SimpleLight::RSPass_SimpleLight(
+    std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
+    RSPass_Base(_name, _type, _root),
+    mVertexShader(nullptr), mPixelShader(nullptr),
+    mLinearWrapSampler(nullptr), mRenderTargetView(nullptr),
+    mVertexBuffer(nullptr), mIndexBuffer(nullptr),
+    mSsaoSrv(nullptr), mDiffuseSrv(nullptr), mDiffuseAlbedoSrv(nullptr)
+{
+
+}
+
+RSPass_SimpleLight::RSPass_SimpleLight(const RSPass_SimpleLight& _source) :
+    RSPass_Base(_source),
+    mVertexShader(_source.mVertexShader),
+    mPixelShader(_source.mPixelShader),
+    mRenderTargetView(_source.mRenderTargetView),
+    mLinearWrapSampler(_source.mLinearWrapSampler),
+    mSsaoSrv(_source.mSsaoSrv),
+    mVertexBuffer(_source.mVertexBuffer),
+    mIndexBuffer(_source.mIndexBuffer),
+    mDiffuseSrv(_source.mDiffuseSrv),
+    mDiffuseAlbedoSrv(_source.mDiffuseAlbedoSrv)
+{
+
+}
+
+RSPass_SimpleLight::~RSPass_SimpleLight()
+{
+
+}
+
+RSPass_SimpleLight* RSPass_SimpleLight::ClonePass()
+{
+    return new RSPass_SimpleLight(*this);
+}
+
+bool RSPass_SimpleLight::InitPass()
+{
+    if (mHasBeenInited) { return true; }
+
+    if (!CreateShaders()) { return false; }
+    if (!CreateBuffers()) { return false; }
+    if (!CreateViews()) { return false; }
+    if (!CreateSamplers()) { return false; }
+
+    mHasBeenInited = true;
+
+    return true;
+}
+
+void RSPass_SimpleLight::ReleasePass()
+{
+    RS_RELEASE(mVertexShader);
+    RS_RELEASE(mPixelShader);
+    RS_RELEASE(mLinearWrapSampler);
+    RS_RELEASE(mVertexBuffer);
+    RS_RELEASE(mIndexBuffer);
+}
+
+void RSPass_SimpleLight::ExecuatePass()
+{
+    STContext()->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
+    STContext()->RSSetViewports(1, &g_ViewPort);
+    STContext()->ClearRenderTargetView(
+        mRenderTargetView, DirectX::Colors::DarkGreen);
+    STContext()->VSSetShader(mVertexShader, nullptr, 0);
+    STContext()->PSSetShader(mPixelShader, nullptr, 0);
+
+    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT offset = 0;
+
+    static ID3D11ShaderResourceView* srvs[] =
+    {
+        mDiffuseSrv, mDiffuseAlbedoSrv, mSsaoSrv
+    };
+    STContext()->PSSetShaderResources(0, 3, srvs);
+
+    static ID3D11SamplerState* samps[] =
+    {
+        mLinearWrapSampler,
+    };
+    STContext()->PSSetSamplers(0, 1, samps);
+
+    STContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    STContext()->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
+    STContext()->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+    ID3D11RenderTargetView* rtvnull = nullptr;
+    STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
+    static ID3D11ShaderResourceView* nullsrvs[] =
+    {
+        nullptr, nullptr, nullptr
+    };
+    STContext()->PSSetShaderResources(0, 3, nullsrvs);
+}
+
+bool RSPass_SimpleLight::CreateShaders()
+{
+    ID3DBlob* shaderBlob = nullptr;
+    HRESULT hr = S_OK;
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\simplylit_vertex.hlsl",
+        "main", "vs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateVertexShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mVertexShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\simplylit_pixel.hlsl",
+        "main", "ps_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreatePixelShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mPixelShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_SimpleLight::CreateBuffers()
+{
+    HRESULT hr = S_OK;
+    D3D11_BUFFER_DESC bufDesc = {};
+
+    VertexType::TangentVertex v[4] = {};
+    v[0].Position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
+    v[1].Position = DirectX::XMFLOAT3(-1.0f, +1.0f, 0.0f);
+    v[2].Position = DirectX::XMFLOAT3(+1.0f, +1.0f, 0.0f);
+    v[3].Position = DirectX::XMFLOAT3(+1.0f, -1.0f, 0.0f);
+    v[0].TexCoord = DirectX::XMFLOAT2(0.0f, 1.0f);
+    v[1].TexCoord = DirectX::XMFLOAT2(0.0f, 0.0f);
+    v[2].TexCoord = DirectX::XMFLOAT2(1.0f, 0.0f);
+    v[3].TexCoord = DirectX::XMFLOAT2(1.0f, 1.0f);
+    ZeroMemory(&bufDesc, sizeof(bufDesc));
+    bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufDesc.ByteWidth = sizeof(VertexType::TangentVertex) * 4;
+    bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufDesc.CPUAccessFlags = 0;
+    bufDesc.MiscFlags = 0;
+    bufDesc.StructureByteStride = 0;
+    D3D11_SUBRESOURCE_DATA vinitData = {};
+    ZeroMemory(&vinitData, sizeof(vinitData));
+    vinitData.pSysMem = v;
+    hr = Device()->CreateBuffer(&bufDesc, &vinitData, &mVertexBuffer);
+    if (FAILED(hr)) { return false; }
+
+    UINT indices[6] =
+    {
+        0, 1, 2,
+        0, 2, 3
+    };
+    ZeroMemory(&bufDesc, sizeof(bufDesc));
+    bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufDesc.ByteWidth = sizeof(UINT) * 6;
+    bufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufDesc.CPUAccessFlags = 0;
+    bufDesc.StructureByteStride = 0;
+    bufDesc.MiscFlags = 0;
+    D3D11_SUBRESOURCE_DATA iinitData = {};
+    ZeroMemory(&iinitData, sizeof(iinitData));
+    iinitData.pSysMem = indices;
+    hr = Device()->CreateBuffer(&bufDesc, &iinitData, &mIndexBuffer);
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_SimpleLight::CreateViews()
+{
+    mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
+
+    std::string name = "mrt-diffuse";
+    mDiffuseSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
+    name = "mrt-diffuse-albedo";
+    mDiffuseAlbedoSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
+    name = "ssao-tex-compress-ssao";
+    mSsaoSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
+
+    return true;
+}
+
+bool RSPass_SimpleLight::CreateSamplers()
+{
+    HRESULT hr = S_OK;
+    D3D11_SAMPLER_DESC sampDesc = {};
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+    auto filter = g_RenderEffectConfig.mSamplerLevel;
+    switch (filter)
+    {
+    case SAMPLER_LEVEL::POINT:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+        break;
+    case SAMPLER_LEVEL::BILINEAR:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        break;
+    case SAMPLER_LEVEL::ANISO_8X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 8;
+        break;
+    case SAMPLER_LEVEL::ANISO_16X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 16;
+        break;
+    default: return false;
+    }
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    hr = Device()->CreateSamplerState(
+        &sampDesc, &mLinearWrapSampler);
     if (FAILED(hr)) { return false; }
 
     return true;

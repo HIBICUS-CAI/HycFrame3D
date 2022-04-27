@@ -17,7 +17,7 @@ RSPass_Base::RSPass_Base(std::string& _name, PASS_TYPE _type,
     mExecuateOrderInTopic(RS_INVALID_ORDER),
     mDevice(_root->Devices()->GetDevice()),
     mSTContext(_root->Devices()->GetSTContext()),
-    mMTContext(nullptr)
+    mMTContext(nullptr), mHasBeenInited(false)
 {
 
 }
@@ -26,7 +26,7 @@ RSPass_Base::RSPass_Base(const RSPass_Base& _source) :
     mName(_source.mName), mPassType(_source.mPassType),
     mExecuateOrderInTopic(_source.mExecuateOrderInTopic),
     mDevice(_source.mDevice), mSTContext(_source.mSTContext),
-    mMTContext(_source.mMTContext)
+    mMTContext(_source.mMTContext), mHasBeenInited(_source.mHasBeenInited)
 {
 
 }

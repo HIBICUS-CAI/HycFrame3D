@@ -143,6 +143,7 @@ void RenderSystem::Run(Timer& _timer)
 
     SetPipeLineDeltaTime(_timer.FloatDeltaTime());
 
+    GetRSRoot_DX11_Singleton()->PipelinesManager()->ProcessNextPipeline();
     mRenderSystemRoot->PipelinesManager()->ExecuateCurrentPipeline();
     mRenderSystemRoot->Devices()->PresentSwapChain();
     mRenderSystemRoot->DrawCallsPool()->ClearAllDrawCallsInPipes();

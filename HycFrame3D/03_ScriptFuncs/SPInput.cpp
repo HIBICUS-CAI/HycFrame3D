@@ -1,4 +1,6 @@
 #include "SPInput.h"
+#include "RSRoot_DX11.h"
+#include "RSPipelinesManager.h"
 
 void RegisterSPInput(ObjectFactory* _factory)
 {
@@ -69,6 +71,21 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
             GetActorObject("sp-point-light-actor")->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
             TranslateXAsix(0.1f * _timer.FloatDeltaTime());
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_P))
+    {
+        static bool simp = true;
+        std::string basic = "light-pipeline";
+        std::string simple = "simple-pipeline";
+        if (simp)
+        {
+            GetRSRoot_DX11_Singleton()->PipelinesManager()->SetPipeline(basic);
+        }
+        else
+        {
+            GetRSRoot_DX11_Singleton()->PipelinesManager()->SetPipeline(simple);
+        }
+        simp = !simp;
     }
 }
 
