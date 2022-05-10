@@ -33,6 +33,10 @@ void RegisterSPInput(ObjectFactory* _factory)
         { FUNC_NAME(TestUSpUpdate),TestUSpUpdate });
     _factory->GetUDestoryMapPtr()->insert(
         { FUNC_NAME(TestUSpDestory),TestUSpDestory });
+
+    _factory->GetAInitMapPtr()->insert({ FUNC_NAME(AniInit),AniInit });
+    _factory->GetAUpdateMapPtr()->insert({ FUNC_NAME(AniUpdate),AniUpdate });
+    _factory->GetADestoryMapPtr()->insert({ FUNC_NAME(AniDestory),AniDestory });
 }
 
 void TestASpInput(AInputComponent* _aic, Timer& _timer)
@@ -292,4 +296,20 @@ void TempToResult(AInputComponent* _aic, Timer&)
         _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
             LoadSceneNode("result-scene", "result-scene.json");
     }
+}
+
+bool AniInit(AInteractComponent* _aitc)
+{
+    P_LOG(LOG_DEBUG, "animate init\n");
+    return true;
+}
+
+void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
+{
+    //P_LOG(LOG_DEBUG, "animate update\n");
+}
+
+void AniDestory(AInteractComponent* _aitc)
+{
+    P_LOG(LOG_DEBUG, "animate destory\n");
 }

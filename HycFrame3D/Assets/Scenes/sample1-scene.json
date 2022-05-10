@@ -427,6 +427,12 @@
                             "mesh-offset": null
                         }
                     ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "AniInit",
+                    "update-func-name": "AniUpdate",
+                    "destory-func-name": "AniDestory"
                 }
             ]
         }

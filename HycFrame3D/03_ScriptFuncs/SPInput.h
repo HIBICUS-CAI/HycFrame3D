@@ -22,3 +22,7 @@ void TempToTitle(AInputComponent*, Timer&);
 void TempToSelect(AInputComponent*, Timer&);
 void TempToRun(AInputComponent*, Timer&);
 void TempToResult(AInputComponent*, Timer&);
+
+bool AniInit(AInteractComponent*);
+void AniUpdate(AInteractComponent*, Timer&);
+void AniDestory(AInteractComponent*);
