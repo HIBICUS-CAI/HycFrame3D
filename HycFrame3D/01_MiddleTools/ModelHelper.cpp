@@ -45,6 +45,7 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result)
 
     std::string directory = "";
     std::string texType = "";
+    bool animated = false;
 
     // directory
     {
@@ -62,6 +63,13 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result)
         inFile.read((char*)&size, sizeof(size));
         inFile.read(str, size);
         texType = str;
+    }
+
+    // animation-flag
+    {
+        int flag = 0;
+        inFile.read((char*)&flag, sizeof(flag));
+        animated = flag ? true : false;
     }
 
     // sub-model-size
@@ -188,6 +196,7 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)
 
     std::string directory = doc["directory"].GetString();
     std::string texType = doc["texture-type"].GetString();
+    bool animated = doc["with-animation"].GetBool();
 
     UINT subSize = doc["sub-model-size"].GetUint();
 #ifdef _DEBUG

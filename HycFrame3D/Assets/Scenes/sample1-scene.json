@@ -97,6 +97,29 @@
                 "model-file": "Dragon.FBX.meshdata",
                 "file-type": "binary"
             }
+        },
+        {
+            "mesh-name": "rex",
+            "load-mode": "model-file",
+            "force-diffuse": "rex_diffuse.png",
+            "material-info": {
+                "albedo": [
+                    0.8,
+                    0.8,
+                    0.8,
+                    0.8
+                ],
+                "fresnel": [
+                    0.1,
+                    0.3,
+                    0.1
+                ],
+                "shininess": 0.5
+            },
+            "load-info": {
+                "model-file": "rex.gltf.json",
+                "file-type": "json"
+            }
         }
     ],
     "audio-assets": [
@@ -372,6 +395,38 @@
                     ],
                     "streak-flag": true,
                     "texture-name": "circle"
+                }
+            ]
+        },
+        {
+            "actor-name": "sp-rex-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -20.0,
+                        60.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        1.57,
+                        0.0
+                    ],
+                    "init-scale": [
+                        0.03,
+                        0.03,
+                        0.03
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "rex",
+                            "mesh-offset": null
+                        }
+                    ]
                 }
             ]
         }
