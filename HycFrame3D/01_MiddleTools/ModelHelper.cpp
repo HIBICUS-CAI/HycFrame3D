@@ -209,6 +209,7 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)
 
     std::vector<UINT> index = {};
     std::vector<VertexType::TangentVertex> vertex = {};
+    std::vector<VertexType::AnimationVertex> aniVertex = {};
     std::vector<MODEL_TEXTURE_INFO> texture = {};
     for (UINT i = 0; i < subSize; i++)
     {
@@ -233,38 +234,95 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)
             index.push_back(doc["sub-model"][i]["index"][j].GetUint());
         }
 
-        for (UINT j = 0; j < vertexSize; j++)
+        if (animated)
         {
-            static VertexType::TangentVertex v = {};
-            v = {};
+            for (UINT j = 0; j < vertexSize; j++)
+            {
+                static VertexType::AnimationVertex v = {};
+                v = {};
 
-            v.Position.x =
-                doc["sub-model"][i]["vertex"][j]["position"][0].GetFloat();
-            v.Position.y =
-                doc["sub-model"][i]["vertex"][j]["position"][1].GetFloat();
-            v.Position.z =
-                doc["sub-model"][i]["vertex"][j]["position"][2].GetFloat();
+                v.Position.x =
+                    doc["sub-model"][i]["vertex"][j]["position"][0].GetFloat();
+                v.Position.y =
+                    doc["sub-model"][i]["vertex"][j]["position"][1].GetFloat();
+                v.Position.z =
+                    doc["sub-model"][i]["vertex"][j]["position"][2].GetFloat();
 
-            v.Normal.x =
-                doc["sub-model"][i]["vertex"][j]["normal"][0].GetFloat();
-            v.Normal.y =
-                doc["sub-model"][i]["vertex"][j]["normal"][1].GetFloat();
-            v.Normal.z =
-                doc["sub-model"][i]["vertex"][j]["normal"][2].GetFloat();
+                v.Normal.x =
+                    doc["sub-model"][i]["vertex"][j]["normal"][0].GetFloat();
+                v.Normal.y =
+                    doc["sub-model"][i]["vertex"][j]["normal"][1].GetFloat();
+                v.Normal.z =
+                    doc["sub-model"][i]["vertex"][j]["normal"][2].GetFloat();
 
-            v.Tangent.x =
-                doc["sub-model"][i]["vertex"][j]["tangent"][0].GetFloat();
-            v.Tangent.y =
-                doc["sub-model"][i]["vertex"][j]["tangent"][1].GetFloat();
-            v.Tangent.z =
-                doc["sub-model"][i]["vertex"][j]["tangent"][2].GetFloat();
+                v.Tangent.x =
+                    doc["sub-model"][i]["vertex"][j]["tangent"][0].GetFloat();
+                v.Tangent.y =
+                    doc["sub-model"][i]["vertex"][j]["tangent"][1].GetFloat();
+                v.Tangent.z =
+                    doc["sub-model"][i]["vertex"][j]["tangent"][2].GetFloat();
 
-            v.TexCoord.x =
-                doc["sub-model"][i]["vertex"][j]["texcoord"][0].GetFloat();
-            v.TexCoord.y =
-                doc["sub-model"][i]["vertex"][j]["texcoord"][1].GetFloat();
+                v.TexCoord.x =
+                    doc["sub-model"][i]["vertex"][j]["texcoord"][0].GetFloat();
+                v.TexCoord.y =
+                    doc["sub-model"][i]["vertex"][j]["texcoord"][1].GetFloat();
 
-            vertex.push_back(v);
+                v.Weight.x =
+                    doc["sub-model"][i]["vertex"][j]["weight"][0].GetFloat();
+                v.Weight.y =
+                    doc["sub-model"][i]["vertex"][j]["weight"][1].GetFloat();
+                v.Weight.z =
+                    doc["sub-model"][i]["vertex"][j]["weight"][2].GetFloat();
+                v.Weight.w =
+                    doc["sub-model"][i]["vertex"][j]["weight"][3].GetFloat();
+
+                v.BoneID.x =
+                    doc["sub-model"][i]["vertex"][j]["boneid"][0].GetUint();
+                v.BoneID.y =
+                    doc["sub-model"][i]["vertex"][j]["boneid"][1].GetUint();
+                v.BoneID.z =
+                    doc["sub-model"][i]["vertex"][j]["boneid"][2].GetUint();
+                v.BoneID.w =
+                    doc["sub-model"][i]["vertex"][j]["boneid"][3].GetUint();
+
+                aniVertex.push_back(v);
+            }
+        }
+        else
+        {
+            for (UINT j = 0; j < vertexSize; j++)
+            {
+                static VertexType::TangentVertex v = {};
+                v = {};
+
+                v.Position.x =
+                    doc["sub-model"][i]["vertex"][j]["position"][0].GetFloat();
+                v.Position.y =
+                    doc["sub-model"][i]["vertex"][j]["position"][1].GetFloat();
+                v.Position.z =
+                    doc["sub-model"][i]["vertex"][j]["position"][2].GetFloat();
+
+                v.Normal.x =
+                    doc["sub-model"][i]["vertex"][j]["normal"][0].GetFloat();
+                v.Normal.y =
+                    doc["sub-model"][i]["vertex"][j]["normal"][1].GetFloat();
+                v.Normal.z =
+                    doc["sub-model"][i]["vertex"][j]["normal"][2].GetFloat();
+
+                v.Tangent.x =
+                    doc["sub-model"][i]["vertex"][j]["tangent"][0].GetFloat();
+                v.Tangent.y =
+                    doc["sub-model"][i]["vertex"][j]["tangent"][1].GetFloat();
+                v.Tangent.z =
+                    doc["sub-model"][i]["vertex"][j]["tangent"][2].GetFloat();
+
+                v.TexCoord.x =
+                    doc["sub-model"][i]["vertex"][j]["texcoord"][0].GetFloat();
+                v.TexCoord.y =
+                    doc["sub-model"][i]["vertex"][j]["texcoord"][1].GetFloat();
+
+                vertex.push_back(v);
+            }
         }
 
         for (UINT j = 0; j < texSize; j++)
@@ -280,13 +338,16 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)
         SUBMESH_INFO si = {};
         si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
         si.mIndeices = &index;
-        si.mVerteices = &vertex;
+        si.mVerteices = animated ? (void*)(&aniVertex) : (void*)(&vertex);
         std::vector<std::string> t = {};
         for (auto& tex : texture) { t.emplace_back(tex.mPath); }
         si.mTextures = &t;
         si.mStaticMaterial = "copper";
+        LAYOUT_TYPE layoutType = animated ?
+            LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE :
+            LAYOUT_TYPE::NORMAL_TANGENT_TEX;
         GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
-            &si, LAYOUT_TYPE::NORMAL_TANGENT_TEX);
+            &si, layoutType);
     }
 }
 

@@ -123,6 +123,9 @@ ID3D11InputLayout* RSMeshHelper::RefStaticInputLayout(
     case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
         name = "TangentVertex";
         break;
+    case LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE:
+        name = "AnimationVertex";
+        break;
     default:
         return nullptr;
     }
@@ -169,6 +172,7 @@ ID3D11Buffer* RSMeshHelper::CreateVertexBuffer(
     std::vector<VertexType::BasicVertex>* basic = nullptr;
     std::vector<VertexType::ColorVertex>* color = nullptr;
     std::vector<VertexType::TangentVertex>* tangent = nullptr;
+    std::vector<VertexType::AnimationVertex>* animated = nullptr;
     UINT size = 0;
     UINT vertexSize = 0;
     void* vertArray = nullptr;
@@ -195,6 +199,13 @@ ID3D11Buffer* RSMeshHelper::CreateVertexBuffer(
         size = (UINT)tangent->size();
         vertexSize = (UINT)sizeof(VertexType::TangentVertex);
         vertArray = &((*tangent)[0]);
+        break;
+    case LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE:
+        animated =
+            (std::vector<VertexType::AnimationVertex>*)_vertices;
+        size = (UINT)animated->size();
+        vertexSize = (UINT)sizeof(VertexType::AnimationVertex);
+        vertArray = &((*animated)[0]);
         break;
     default:
         return nullptr;

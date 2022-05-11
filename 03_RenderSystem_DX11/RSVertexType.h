@@ -34,4 +34,14 @@ namespace VertexType
         DirectX::XMFLOAT3 Tangent;
         DirectX::XMFLOAT2 TexCoord;
     };
+
+    struct AnimationVertex
+    {
+        DirectX::XMFLOAT3 Position;
+        DirectX::XMFLOAT3 Normal;
+        DirectX::XMFLOAT3 Tangent;
+        DirectX::XMFLOAT2 TexCoord;
+        DirectX::XMFLOAT4 Weight;
+        DirectX::XMUINT4 BoneID;
+    };
 }
