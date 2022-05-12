@@ -236,7 +236,8 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
                         fileType.c_str());
                     return;
                 }
-                LoadModelFile(fileName, type, &meshData);
+                LoadModelFile(fileName, type, &meshData, &bonesData,
+                    &animationData);
             }
             else if (loadMode == "program-box")
             {

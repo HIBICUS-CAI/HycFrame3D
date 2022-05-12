@@ -4,10 +4,10 @@
 #include <vector>
 #include <string>
 #include <queue>
-#include <map>
 #include <unordered_map>
 #include "RSCommon.h"
 #include "SoundHelper.h"
+#include "ModelHelper.h"
 
 enum class MESH_TYPE
 {
@@ -18,15 +18,6 @@ enum class MESH_TYPE
     SIZE
 };
 
-struct SUBMESH_BONE_DATA
-{
-    std::string mBoneName = "";
-    DirectX::XMFLOAT4X4 mLocalToBone = {};
-    DirectX::XMFLOAT4X4 mBoneTransform = {};
-};
-
-using SUBMESH_BONES = std::vector<SUBMESH_BONE_DATA>;
-
 struct MESH_DATA
 {
     RS_SUBMESH_DATA mMeshData = {};
@@ -35,42 +26,6 @@ struct MESH_DATA
     std::vector<RS_INSTANCE_DATA> mInstanceVector = {};
     // TODO shoule be able to process mutiply instance data
     SUBMESH_BONES mBoneData = {};
-};
-
-struct MESH_NODE
-{
-    std::string mNodeName = "";
-    MESH_NODE* mParent = nullptr;
-    std::vector<MESH_NODE*> mChildren = {};
-    DirectX::XMFLOAT4X4 mThisToParent = {};
-};
-
-using POSITION_KEY = std::pair<float, DirectX::XMFLOAT3>;
-using ROTATION_KEY = std::pair<float, DirectX::XMFLOAT3>;
-using SCALING_KEY = std::pair<float, DirectX::XMFLOAT3>;
-
-struct ANIMATION_CHANNEL
-{
-    std::string mNodeName = "";
-    std::map<float, DirectX::XMFLOAT3> mPositionKeys = {};
-    std::map<float, DirectX::XMFLOAT4> mRotationKeys = {};
-    std::map<float, DirectX::XMFLOAT3> mScalingKeys = {};
-};
-
-struct ANIMATION_INFO
-{
-    std::string mAnimationName = "";
-    float mDuration = 0.f;
-    float mTicksPerSecond = 0.f;
-    std::vector<ANIMATION_CHANNEL> mNodeActions = {};
-};
-
-using MESH_ANIMATIONS = std::vector<ANIMATION_INFO>;
-
-struct MESH_ANIMATION_DATA
-{
-    MESH_NODE* mRootNode = nullptr;
-    MESH_ANIMATIONS mAllAnimations = {};
 };
 
 class AssetsPool

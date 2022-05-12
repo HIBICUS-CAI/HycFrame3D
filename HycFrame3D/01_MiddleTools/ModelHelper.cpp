@@ -15,11 +15,16 @@
 #include "RSDevices.h"
 #include "RSResourceManager.h"
 
-void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result);
-void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result);
+void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
+    SUBMESH_BONES* _boneData,
+    MESH_ANIMATION_DATA** _animData);
+void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
+    SUBMESH_BONES* _boneData,
+    MESH_ANIMATION_DATA** _animData);
 
 void LoadModelFile(const std::string _filePath, MODEL_FILE_TYPE _type,
-    RS_SUBMESH_DATA* _result)
+    RS_SUBMESH_DATA* _result,
+    SUBMESH_BONES* _boneData, MESH_ANIMATION_DATA** _animData)
 {
     static std::string path = "";
     path = ".\\Assets\\Models\\" + _filePath;
@@ -27,15 +32,17 @@ void LoadModelFile(const std::string _filePath, MODEL_FILE_TYPE _type,
     switch (_type)
     {
     case MODEL_FILE_TYPE::BIN:
-        LoadByBinary(path, _result); break;
+        LoadByBinary(path, _result, _boneData, _animData); break;
     case MODEL_FILE_TYPE::JSON:
-        LoadByJson(path, _result); break;
+        LoadByJson(path, _result, _boneData, _animData); break;
     default:
         break;
     }
 }
 
-void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result)
+void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
+    SUBMESH_BONES* _boneData,
+    MESH_ANIMATION_DATA** _animData)
 {
     std::ifstream inFile(_filePath, std::ios::in | std::ios::binary);
 
@@ -171,7 +178,9 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result)
     inFile.close();
 }
 
-void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)
+void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
+    SUBMESH_BONES* _boneData,
+    MESH_ANIMATION_DATA** _animData)
 {
     std::FILE* fp = std::fopen(_filePath.c_str(), "rb");
     if (!fp) { P_LOG(LOG_ERROR, "cannt open file : %s\n", _filePath.c_str()); }
@@ -335,6 +344,33 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)
             texture.push_back(t);
         }
 
+        if (animated && _boneData)
+        {
+            UINT boneSize = doc["sub-model"][i]["bone"].Size();
+            _boneData->resize(boneSize);
+            for (UINT j = 0; j < boneSize; j++)
+            {
+                auto& bone = (*_boneData)[j];
+                bone.mBoneName =
+                    doc["sub-model"][i]["bone"][j]["name"].GetString();
+                float mat[4][4] = {};
+                for (UINT k = 0; k < 16; k++)
+                {
+                    int fir = k / 4, sec = k % 4;
+                    mat[fir][sec] =
+                        (float)(doc["sub-model"][i]["bone"][j]["to-bone"][k].
+                            GetDouble());
+                }
+                bone.mLocalToBone = DirectX::XMFLOAT4X4(
+                    mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                    mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                    mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                    mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+                DirectX::XMStoreFloat4x4(&bone.mBoneTransform,
+                    DirectX::XMMatrixIdentity());
+            }
+        }
+
         SUBMESH_INFO si = {};
         si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
         si.mIndeices = &index;
@@ -349,6 +385,83 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)
             LAYOUT_TYPE::NORMAL_TANGENT_TEX;
         GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
             &si, layoutType);
+    }
+
+    if (animated && _animData)
+    {
+        UINT nodeSize = doc["node-relationship"].Size();
+
+        *_animData = new MESH_ANIMATION_DATA;
+        assert(*_animData);
+        MESH_NODE* rootNode = nullptr;
+        static std::unordered_map<std::string, MESH_NODE*> nodeMap = {};
+        nodeMap.clear();
+
+        for (UINT i = 0; i < nodeSize; i++)
+        {
+            MESH_NODE* node = new MESH_NODE;
+            if (!rootNode) { rootNode = node; }
+            node->mNodeName =
+                doc["node-relationship"][i]["name"].GetString();
+            float mat[4][4] = {};
+            for (UINT j = 0; j < 16; j++)
+            {
+                int fir = j / 4, sec = j % 4;
+                mat[fir][sec] = (float)(
+                    doc["node-relationship"][i]["to-parent"][j].
+                    GetDouble());
+            }
+            node->mThisToParent = DirectX::XMFLOAT4X4(
+                mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+
+            nodeMap.insert({ node->mNodeName,node });
+        }
+
+        for (UINT i = 0; i < nodeSize; i++)
+        {
+            std::string nodeName =
+                doc["node-relationship"][i]["name"].GetString();
+            MESH_NODE* nodePtr = nodeMap[nodeName];
+            assert(nodePtr);
+
+            std::string parentName =
+                doc["node-relationship"][i]["parent"].GetString();
+            if (parentName == "" && nodePtr == rootNode)
+            {
+                nodePtr->mParent = nullptr;
+            }
+            else
+            {
+                nodePtr->mParent = nodeMap[parentName];
+            }
+
+            UINT childrenSize =
+                doc["node-relationship"][i]["children"].Size();
+            nodePtr->mChildren.resize(childrenSize);
+            for (UINT j = 0; j < childrenSize; j++)
+            {
+                std::string childName =
+                    doc["node-relationship"][i]["children"][j].
+                    GetString();
+                nodePtr->mChildren[j] = nodeMap[childName];
+            }
+        }
+
+        (*_animData)->mRootNode = rootNode;
+
+        UINT animationSize = doc["animation"].Size();
+        auto& aniVec = (*_animData)->mAllAnimations;
+        aniVec.resize(animationSize);
+        for (UINT aniIndex = 0; aniIndex < animationSize; aniIndex++)
+        {
+            auto& thisAni = aniVec[aniIndex];
+            aniVec[aniIndex].mAnimationName =
+                doc["animation"][aniIndex]["name"].GetString();
+            
+        }
     }
 }
 
