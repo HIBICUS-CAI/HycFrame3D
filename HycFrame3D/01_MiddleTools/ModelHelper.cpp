@@ -458,9 +458,21 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
         for (UINT aniIndex = 0; aniIndex < animationSize; aniIndex++)
         {
             auto& thisAni = aniVec[aniIndex];
-            aniVec[aniIndex].mAnimationName =
+            thisAni.mAnimationName =
                 doc["animation"][aniIndex]["name"].GetString();
-            
+            thisAni.mDuration = (float)
+                doc["animation"][aniIndex]["duration"].GetDouble();
+            thisAni.mTicksPerSecond = (float)
+                doc["animation"][aniIndex]["ticks-per-second"].GetDouble();
+
+            UINT thisNodeActionSize =
+                doc["animation"][aniIndex]["node-actions"].Size();
+            thisAni.mNodeActions.resize(thisNodeActionSize);
+            for (UINT actionIndex = 0; 
+                actionIndex < thisNodeActionSize; actionIndex++)
+            {
+                std::string;
+            }
         }
     }
 }
