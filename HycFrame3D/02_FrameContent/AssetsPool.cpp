@@ -5,7 +5,8 @@
 #include "UButtonComponent.h"
 
 AssetsPool::AssetsPool(SceneNode& _sceneNode) :
-    mSceneNodeOwner(_sceneNode), mMeshPool({}), mSoundPool({})
+    mSceneNodeOwner(_sceneNode), mMeshPool({}), mSoundPool({}),
+    mMeshAnimationsPool({})
 {
     mMeshPool.reserve(256);
 }
@@ -74,23 +75,39 @@ SOUND_HANDLE AssetsPool::GetSoundIfExisted(std::string& _soundName)
 }
 
 void AssetsPool::InsertNewMesh(std::string&& _meshName,
-    RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType)
+    RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
+    SUBMESH_BONES* _bonesData, MESH_ANIMATION_DATA* _animationData)
 {
     MESH_DATA md = {};
     mMeshPool.insert({ _meshName,md });
     mMeshPool[_meshName].mMeshData = _meshData;
     mMeshPool[_meshName].mMeshType = _meshType;
+    if (_bonesData) { mMeshPool[_meshName].mBoneData = *_bonesData; }
     mMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
+
+    if (_meshData.mWithAnimation && _animationData)
+    {
+        // TODO shoule be able to process mutiply submesh data
+        mMeshAnimationsPool.insert({ _meshName,_animationData });
+    }
 }
 
 void AssetsPool::InsertNewMesh(std::string& _meshName,
-    RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType)
+    RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
+    SUBMESH_BONES* _bonesData, MESH_ANIMATION_DATA* _animationData)
 {
     MESH_DATA md = {};
     mMeshPool.insert({ _meshName,md });
     mMeshPool[_meshName].mMeshData = _meshData;
     mMeshPool[_meshName].mMeshType = _meshType;
+    if (_bonesData) { mMeshPool[_meshName].mBoneData = *_bonesData; }
     mMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
+
+    if (_meshData.mWithAnimation && _animationData)
+    {
+        // TODO shoule be able to process mutiply submesh data
+        mMeshAnimationsPool.insert({ _meshName,_animationData });
+    }
 }
 
 void AssetsPool::InsertNewSound(std::string&& _soundName)
@@ -128,6 +145,12 @@ void AssetsPool::DeleteAllAssets()
             ReleaseSubMesh(mesh_data.second.mMeshData);
     }
     mMeshPool.clear();
+
+    for (auto& mesh_ani_data : mMeshAnimationsPool)
+    {
+        delete mesh_ani_data.second;
+    }
+    mMeshAnimationsPool.clear();
 
     mSoundPool.clear();
 }

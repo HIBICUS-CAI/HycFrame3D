@@ -128,6 +128,8 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
         std::string forceNormal = "";
         std::string loadMode = "";
         RS_SUBMESH_DATA meshData = {};
+        SUBMESH_BONES bonesData = {};
+        MESH_ANIMATION_DATA* animationData = nullptr;
         for (UINT i = 0; i < modelSize; i++)
         {
             meshName = "";
@@ -349,7 +351,8 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
             }
 
             _node->GetAssetsPool()->
-                InsertNewMesh(meshName, meshData, MESH_TYPE::OPACITY);
+                InsertNewMesh(meshName, meshData, MESH_TYPE::OPACITY,
+                    &bonesData, animationData);
         }
     }
 
