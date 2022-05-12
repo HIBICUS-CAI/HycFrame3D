@@ -186,6 +186,7 @@ struct SUBMESH_INFO
     std::vector<std::string>* mTextures = nullptr;
     MATERIAL_INFO* mMaterial = nullptr;
     std::string mStaticMaterial = "";
+    bool mWithAnimation = false;
 };
 
 struct RS_SUBMESH_DATA
@@ -198,6 +199,7 @@ struct RS_SUBMESH_DATA
     UINT mIndexCount = 0;
     std::vector<std::string> mTextures = {};
     RS_MATERIAL_INFO mMaterial = {};
+    bool mWithAnimation = false;
 };
 
 struct RS_SUBMESH_DRAWCALL_DATA

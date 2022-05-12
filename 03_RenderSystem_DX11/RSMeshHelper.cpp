@@ -91,6 +91,7 @@ void RSMeshHelper::ProcessSubMesh(
             D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
         break;
     }
+    _result->mWithAnimation = _info->mWithAnimation;
     _result->mLayout = RefStaticInputLayout(_layoutType);
     _result->mIndexBuffer = CreateIndexBuffer(_info->mIndeices);
     _result->mVertexBuffer = CreateVertexBuffer(_info->mVerteices,

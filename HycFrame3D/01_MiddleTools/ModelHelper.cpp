@@ -343,6 +343,7 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result)
         for (auto& tex : texture) { t.emplace_back(tex.mPath); }
         si.mTextures = &t;
         si.mStaticMaterial = "copper";
+        si.mWithAnimation = animated;
         LAYOUT_TYPE layoutType = animated ?
             LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE :
             LAYOUT_TYPE::NORMAL_TANGENT_TEX;
