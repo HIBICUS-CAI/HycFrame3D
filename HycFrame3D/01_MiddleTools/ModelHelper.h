@@ -34,15 +34,15 @@ struct MESH_NODE
 };
 
 using POSITION_KEY = std::pair<float, DirectX::XMFLOAT3>;
-using ROTATION_KEY = std::pair<float, DirectX::XMFLOAT3>;
+using ROTATION_KEY = std::pair<float, DirectX::XMFLOAT4>;
 using SCALING_KEY = std::pair<float, DirectX::XMFLOAT3>;
 
 struct ANIMATION_CHANNEL
 {
     std::string mNodeName = "";
-    std::map<float, DirectX::XMFLOAT3> mPositionKeys = {};
-    std::map<float, DirectX::XMFLOAT4> mRotationKeys = {};
-    std::map<float, DirectX::XMFLOAT3> mScalingKeys = {};
+    std::vector<POSITION_KEY> mPositionKeys = {};
+    std::vector<ROTATION_KEY> mRotationKeys = {};
+    std::vector<SCALING_KEY> mScalingKeys = {};
 };
 
 struct ANIMATION_INFO

@@ -468,10 +468,99 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
             UINT thisNodeActionSize =
                 doc["animation"][aniIndex]["node-actions"].Size();
             thisAni.mNodeActions.resize(thisNodeActionSize);
-            for (UINT actionIndex = 0; 
+            for (UINT actionIndex = 0;
                 actionIndex < thisNodeActionSize; actionIndex++)
             {
-                std::string;
+                auto& thisChnl = thisAni.mNodeActions[actionIndex];
+                thisChnl.mNodeName =
+                    doc["animation"][aniIndex]["node-actions"]
+                    [actionIndex]["node-name"].GetString();
+
+                UINT posKeySize = doc["animation"][aniIndex]
+                    ["node-actions"][actionIndex]["position-keys"].
+                    Size();
+                thisChnl.mPositionKeys.resize(posKeySize);
+                for (UINT pkIndex = 0; pkIndex < posKeySize; pkIndex++)
+                {
+                    thisChnl.mPositionKeys[pkIndex].first = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["position-keys"][pkIndex]["time"].GetDouble();
+                    thisChnl.mPositionKeys[pkIndex].second.x = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["position-keys"][pkIndex]
+                        ["value"][0].GetDouble();
+                    thisChnl.mPositionKeys[pkIndex].second.y = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["position-keys"][pkIndex]
+                        ["value"][1].GetDouble();
+                    thisChnl.mPositionKeys[pkIndex].second.z = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["position-keys"][pkIndex]
+                        ["value"][2].GetDouble();
+                }
+
+                UINT rotKeySize = doc["animation"][aniIndex]
+                    ["node-actions"][actionIndex]["rotation-keys"].
+                    Size();
+                thisChnl.mRotationKeys.resize(rotKeySize);
+                for (UINT rkIndex = 0; rkIndex < rotKeySize; rkIndex++)
+                {
+                    thisChnl.mRotationKeys[rkIndex].first = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["rotation-keys"][rkIndex]["time"].GetDouble();
+                    thisChnl.mRotationKeys[rkIndex].second.x = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["rotation-keys"][rkIndex]
+                        ["value"][0].GetDouble();
+                    thisChnl.mRotationKeys[rkIndex].second.y = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["rotation-keys"][rkIndex]
+                        ["value"][1].GetDouble();
+                    thisChnl.mRotationKeys[rkIndex].second.z = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["rotation-keys"][rkIndex]
+                        ["value"][2].GetDouble();
+                    thisChnl.mRotationKeys[rkIndex].second.w = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["rotation-keys"][rkIndex]
+                        ["value"][3].GetDouble();
+                }
+
+                UINT scaKeySize = doc["animation"][aniIndex]
+                    ["node-actions"][actionIndex]["scaling-keys"].
+                    Size();
+                thisChnl.mScalingKeys.resize(scaKeySize);
+                for (UINT skIndex = 0; skIndex < scaKeySize; skIndex++)
+                {
+                    thisChnl.mScalingKeys[skIndex].first = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["scaling-keys"][skIndex]["time"].GetDouble();
+                    thisChnl.mScalingKeys[skIndex].second.x = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["scaling-keys"][skIndex]
+                        ["value"][0].GetDouble();
+                    thisChnl.mScalingKeys[skIndex].second.y = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["scaling-keys"][skIndex]
+                        ["value"][1].GetDouble();
+                    thisChnl.mScalingKeys[skIndex].second.z = (float)
+                        doc["animation"][aniIndex]
+                        ["node-actions"][actionIndex]
+                        ["scaling-keys"][skIndex]
+                        ["value"][2].GetDouble();
+                }
             }
         }
     }
