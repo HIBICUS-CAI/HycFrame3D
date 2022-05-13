@@ -20,6 +20,7 @@
 #include "RSParticleEmitter.h"
 #include "RSParticlesContainer.h"
 #include "RSResourceManager.h"
+#include "RSStaticResources.h"
 #include "RSShaderCompile.h"
 #include "RSUtilityFunctions.h"
 #include "DDSTextureLoader11.h"
@@ -504,7 +505,7 @@ RSPass_MRT::RSPass_MRT(std::string& _name, PASS_TYPE _type,
     RSPass_Base(_name, _type, _root),
     mDrawCallType(DRAWCALL_TYPE::OPACITY), mDrawCallPipe(nullptr),
     mVertexShader(nullptr), mPixelShader(nullptr),
-    mNDPixelShader(nullptr),
+    mNDPixelShader(nullptr), mAniVertexShader(nullptr),
     mViewProjStructedBuffer(nullptr),
     mViewProjStructedBufferSrv(nullptr),
     mInstanceStructedBuffer(nullptr),
@@ -522,6 +523,7 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
     mDrawCallType(_source.mDrawCallType),
     mDrawCallPipe(_source.mDrawCallPipe),
     mVertexShader(_source.mVertexShader),
+    mAniVertexShader(_source.mAniVertexShader),
     mPixelShader(_source.mPixelShader),
     mNDPixelShader(_source.mNDPixelShader),
     mViewProjStructedBuffer(_source.mViewProjStructedBuffer),
@@ -540,7 +542,9 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
     if (mHasBeenInited)
     {
         RS_ADD(mVertexShader);
+        RS_ADD(mAniVertexShader);
         RS_ADD(mPixelShader);
+        RS_ADD(mNDPixelShader);
         RS_ADD(mViewProjStructedBuffer);
         RS_ADD(mViewProjStructedBufferSrv);
         RS_ADD(mInstanceStructedBuffer);
@@ -582,7 +586,9 @@ bool RSPass_MRT::InitPass()
 void RSPass_MRT::ReleasePass()
 {
     RS_RELEASE(mVertexShader);
+    RS_RELEASE(mAniVertexShader);
     RS_RELEASE(mPixelShader);
+    RS_RELEASE(mNDPixelShader);
     RS_RELEASE(mViewProjStructedBuffer);
     RS_RELEASE(mViewProjStructedBufferSrv);
     RS_RELEASE(mInstanceStructedBuffer);
@@ -621,7 +627,7 @@ void RSPass_MRT::ExecuatePass()
     STContext()->ClearRenderTargetView(
         mFresShinRtv, DirectX::Colors::Transparent);
     STContext()->ClearDepthStencilView(mDepthDsv, D3D11_CLEAR_DEPTH, 1.f, 0);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
+    //STContext()->VSSetShader(mVertexShader, nullptr, 0);
     STContext()->PSSetShader(mPixelShader, nullptr, 0);
 
     STContext()->PSSetSamplers(0, 1, &mLinearSampler);
@@ -629,6 +635,7 @@ void RSPass_MRT::ExecuatePass()
     DirectX::XMMATRIX mat = {};
     DirectX::XMFLOAT4X4 flt44 = {};
     UINT stride = sizeof(VertexType::TangentVertex);
+    UINT aniStride = sizeof(VertexType::AnimationVertex);
     UINT offset = 0;
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
@@ -645,8 +652,26 @@ void RSPass_MRT::ExecuatePass()
 
     STContext()->VSSetShaderResources(0, 1, &mViewProjStructedBufferSrv);
 
+    static std::string A_NAME = "AnimationVertex";
+    static const auto ANIMAT_LAYOUT =
+        GetRSRoot_DX11_Singleton()->StaticResources()->
+        GetStaticInputLayout(A_NAME);
+
     for (auto& call : mDrawCallPipe->mDatas)
     {
+        if (call.mMeshData.mLayout == ANIMAT_LAYOUT)
+        {
+            STContext()->VSSetShader(mAniVertexShader, nullptr, 0);
+            STContext()->IASetVertexBuffers(
+                0, 1, &call.mMeshData.mVertexBuffer, &aniStride, &offset);
+        }
+        else
+        {
+            STContext()->VSSetShader(mVertexShader, nullptr, 0);
+            STContext()->IASetVertexBuffers(
+                0, 1, &call.mMeshData.mVertexBuffer, &stride, &offset);
+        }
+
         auto vecPtr = call.mInstanceData.mDataPtr;
         auto size = vecPtr->size();
         STContext()->Map(mInstanceStructedBuffer, 0,
@@ -665,8 +690,8 @@ void RSPass_MRT::ExecuatePass()
 
         STContext()->IASetInputLayout(call.mMeshData.mLayout);
         STContext()->IASetPrimitiveTopology(call.mMeshData.mTopologyType);
-        STContext()->IASetVertexBuffers(
-            0, 1, &call.mMeshData.mVertexBuffer, &stride, &offset);
+        /*STContext()->IASetVertexBuffers(
+            0, 1, &call.mMeshData.mVertexBuffer, &stride, &offset);*/
         STContext()->IASetIndexBuffer(
             call.mMeshData.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
         STContext()->VSSetShaderResources(1, 1, &mInstanceStructedBufferSrv);
@@ -699,6 +724,21 @@ bool RSPass_MRT::CreateShaders()
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    D3D_SHADER_MACRO macro[] =
+    { "ANIMATION_VERTEX","1",nullptr,nullptr };
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\mrt_vertex.hlsl",
+        "main", "vs_5_0", &shaderBlob, macro);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateVertexShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mAniVertexShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }

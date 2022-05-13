@@ -185,6 +185,7 @@ private:
 
 private:
     ID3D11VertexShader* mVertexShader;
+    ID3D11VertexShader* mAniVertexShader;
     ID3D11PixelShader* mPixelShader;
     ID3D11PixelShader* mNDPixelShader;
     DRAWCALL_TYPE mDrawCallType;

@@ -301,7 +301,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
             },
             {
                 "BLENDINDICES",0,
-                DXGI_FORMAT_R32G32B32A32_UINT,0,76,
+                DXGI_FORMAT_R32G32B32A32_UINT,0,60,
                 D3D11_INPUT_PER_VERTEX_DATA,0
             }
         };

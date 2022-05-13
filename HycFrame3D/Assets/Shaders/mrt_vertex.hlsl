@@ -4,6 +4,10 @@ struct VS_INPUT
     float3 NormalL : NORMAL;
     float3 TangentL : TANGENT;
     float2 TexCoordL : TEXCOORD;
+#if defined (ANIMATION_VERTEX)
+    float4 Weight : BLENDWEIGHT;
+    uint4 BoneID : BLENDINDICES;
+#endif
 };
 
 struct VS_OUTPUT

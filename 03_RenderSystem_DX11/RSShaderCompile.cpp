@@ -4,7 +4,7 @@
 
 HRESULT Tool::CompileShaderFromFile(const WCHAR* _fileName,
     LPCSTR _entryPoint, LPCSTR _shaderModel,
-    ID3DBlob** _ppBlobOut)
+    ID3DBlob** _ppBlobOut, const D3D_SHADER_MACRO* _macro)
 {
     HRESULT hr = S_OK;
 
@@ -17,7 +17,7 @@ HRESULT Tool::CompileShaderFromFile(const WCHAR* _fileName,
     ID3DBlob* pErrorBlob = nullptr;
 
     hr = D3DCompileFromFile(
-        _fileName, nullptr,
+        _fileName, _macro,
         D3D_COMPILE_STANDARD_FILE_INCLUDE,
         _entryPoint, _shaderModel,
         dwShaderFlags, 0, _ppBlobOut, &pErrorBlob);
@@ -38,7 +38,7 @@ HRESULT Tool::CompileShaderFromFile(const WCHAR* _fileName,
 
 HRESULT Tool::CompileShaderFromFile(LPCSTR _fileName,
     LPCSTR _entryPoint, LPCSTR _shaderModel,
-    ID3DBlob** _ppBlobOut)
+    ID3DBlob** _ppBlobOut, const D3D_SHADER_MACRO* _macro)
 {
     std::string path = std::string(_fileName);
     std::wstring wpath = std::wstring(path.begin(), path.end());
@@ -54,7 +54,7 @@ HRESULT Tool::CompileShaderFromFile(LPCSTR _fileName,
     ID3DBlob* pErrorBlob = nullptr;
 
     hr = D3DCompileFromFile(
-        wpath.c_str(), nullptr,
+        wpath.c_str(), _macro,
         D3D_COMPILE_STANDARD_FILE_INCLUDE,
         _entryPoint, _shaderModel,
         dwShaderFlags, 0, _ppBlobOut, &pErrorBlob);
