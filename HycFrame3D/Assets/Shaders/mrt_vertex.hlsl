@@ -43,8 +43,16 @@ struct INSTANCE_DATA
     float4 gCustomizedData2;
 };
 
+struct BONE_TRANSFORM
+{
+    matrix gBoneTransMat;
+};
+
 StructuredBuffer<VIEWPROJ> gViewProj : register(t0);
 StructuredBuffer<INSTANCE_DATA> gInstances : register(t1);
+#if defined (ANIMATION_VERTEX)
+StructuredBuffer<BONE_TRANSFORM> gBoneTransforms : register(t2);
+#endif
 
 VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
 {

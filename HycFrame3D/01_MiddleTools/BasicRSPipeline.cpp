@@ -510,6 +510,8 @@ RSPass_MRT::RSPass_MRT(std::string& _name, PASS_TYPE _type,
     mViewProjStructedBufferSrv(nullptr),
     mInstanceStructedBuffer(nullptr),
     mInstanceStructedBufferSrv(nullptr),
+    mBonesStructedBuffer(nullptr),
+    mBonesStructedBufferSrv(nullptr),
     mLinearSampler(nullptr), mDepthDsv(nullptr),
     mDiffuseRtv(nullptr), mNormalRtv(nullptr),
     mRSCameraInfo(nullptr), mWorldPosRtv(nullptr),
@@ -528,8 +530,10 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
     mNDPixelShader(_source.mNDPixelShader),
     mViewProjStructedBuffer(_source.mViewProjStructedBuffer),
     mInstanceStructedBuffer(_source.mInstanceStructedBuffer),
+    mBonesStructedBuffer(_source.mBonesStructedBuffer),
     mViewProjStructedBufferSrv(_source.mViewProjStructedBufferSrv),
     mInstanceStructedBufferSrv(_source.mInstanceStructedBufferSrv),
+    mBonesStructedBufferSrv(_source.mBonesStructedBufferSrv),
     mLinearSampler(_source.mLinearSampler),
     mDiffuseRtv(_source.mDiffuseRtv),
     mNormalRtv(_source.mNormalRtv),
@@ -549,6 +553,8 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
         RS_ADD(mViewProjStructedBufferSrv);
         RS_ADD(mInstanceStructedBuffer);
         RS_ADD(mInstanceStructedBufferSrv);
+        RS_ADD(mBonesStructedBuffer);
+        RS_ADD(mBonesStructedBufferSrv);
         RS_ADD(mLinearSampler);
     }
 }
@@ -593,6 +599,8 @@ void RSPass_MRT::ReleasePass()
     RS_RELEASE(mViewProjStructedBufferSrv);
     RS_RELEASE(mInstanceStructedBuffer);
     RS_RELEASE(mInstanceStructedBufferSrv);
+    RS_RELEASE(mBonesStructedBuffer);
+    RS_RELEASE(mBonesStructedBufferSrv);
     RS_RELEASE(mLinearSampler);
 
     std::string name = "mrt-depth";
@@ -664,6 +672,19 @@ void RSPass_MRT::ExecuatePass()
             STContext()->VSSetShader(mAniVertexShader, nullptr, 0);
             STContext()->IASetVertexBuffers(
                 0, 1, &call.mMeshData.mVertexBuffer, &aniStride, &offset);
+
+            STContext()->Map(mBonesStructedBuffer, 0,
+                D3D11_MAP_WRITE_DISCARD, 0, &msr);
+            DirectX::XMFLOAT4X4* b_data = (DirectX::XMFLOAT4X4*)msr.pData;
+            for (size_t i = 0; i < MAX_STRUCTURED_BUFFER_SIZE; i++)
+            {
+                DirectX::XMStoreFloat4x4(b_data + i,
+                    DirectX::XMMatrixIdentity());
+            }
+            STContext()->Unmap(mBonesStructedBuffer, 0);
+            
+            STContext()->VSSetShaderResources(2, 1,
+                &mBonesStructedBufferSrv);
         }
         else
         {
@@ -705,6 +726,13 @@ void RSPass_MRT::ExecuatePass()
         STContext()->DrawIndexedInstanced(
             call.mMeshData.mIndexCount,
             (UINT)call.mInstanceData.mDataPtr->size(), 0, 0, 0);
+
+        if (call.mMeshData.mLayout == ANIMAT_LAYOUT)
+        {
+            ID3D11ShaderResourceView* nullSRV = nullptr;
+            STContext()->VSSetShaderResources(2, 1,
+                &nullSRV);
+        }
     }
 
     STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
@@ -787,6 +815,11 @@ bool RSPass_MRT::CreateBuffers()
     hr = Device()->CreateBuffer(&bdc, nullptr, &mInstanceStructedBuffer);
     if (FAILED(hr)) { return false; }
 
+    bdc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE *
+        sizeof(DirectX::XMFLOAT4X4);
+    bdc.StructureByteStride = sizeof(DirectX::XMFLOAT4X4);
+    hr = Device()->CreateBuffer(&bdc, nullptr, &mBonesStructedBuffer);
+
     bdc.ByteWidth = sizeof(ViewProj);
     bdc.StructureByteStride = sizeof(ViewProj);
     hr = Device()->CreateBuffer(&bdc, nullptr, &mViewProjStructedBuffer);
@@ -811,6 +844,12 @@ bool RSPass_MRT::CreateViews()
     hr = Device()->CreateShaderResourceView(
         mInstanceStructedBuffer,
         &srvDesc, &mInstanceStructedBufferSrv);
+    if (FAILED(hr)) { return false; }
+
+    srvDesc.Buffer.ElementWidth = MAX_STRUCTURED_BUFFER_SIZE;
+    hr = Device()->CreateShaderResourceView(
+        mBonesStructedBuffer,
+        &srvDesc, &mBonesStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Buffer.ElementWidth = 1;

@@ -194,6 +194,8 @@ private:
     ID3D11ShaderResourceView* mViewProjStructedBufferSrv;
     ID3D11Buffer* mInstanceStructedBuffer;
     ID3D11ShaderResourceView* mInstanceStructedBufferSrv;
+    ID3D11Buffer* mBonesStructedBuffer;
+    ID3D11ShaderResourceView* mBonesStructedBufferSrv;
     ID3D11SamplerState* mLinearSampler;
     ID3D11RenderTargetView* mDiffuseRtv;
     ID3D11RenderTargetView* mNormalRtv;
