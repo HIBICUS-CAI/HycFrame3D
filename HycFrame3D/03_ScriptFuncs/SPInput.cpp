@@ -299,6 +299,8 @@ void TempToResult(AInputComponent* _aic, Timer&)
 }
 
 static MESH_ANIMATION_DATA* g_RexAniData = nullptr;
+static SUBMESH_BONES* g_RexBoneData = nullptr;
+static std::string g_InitAni = "run";
 
 bool AniInit(AInteractComponent* _aitc)
 {
@@ -307,6 +309,10 @@ bool AniInit(AInteractComponent* _aitc)
     g_RexAniData = _aitc->GetActorOwner()->GetSceneNode().
         GetAssetsPool()->GetAnimationIfExisted("rex");
     if (!g_RexAniData) { return false; }
+
+    g_RexBoneData = &(_aitc->GetActorOwner()->GetSceneNode().
+        GetAssetsPool()->GetMeshIfExisted("rex")->mBoneData);
+    if (!g_RexBoneData) { return false; }
 
     return true;
 }
@@ -320,4 +326,5 @@ void AniDestory(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate destory\n");
     g_RexAniData = nullptr;
+    g_RexBoneData = nullptr;
 }
