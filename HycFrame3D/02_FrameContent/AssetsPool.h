@@ -38,6 +38,8 @@ public:
 
     MESH_DATA* GetMeshIfExisted(std::string&& _meshName);
     MESH_DATA* GetMeshIfExisted(std::string& _meshName);
+    MESH_ANIMATION_DATA* GetAnimationIfExisted(std::string&& _aniName);
+    MESH_ANIMATION_DATA* GetAnimationIfExisted(std::string& _aniName);
     SOUND_HANDLE GetSoundIfExisted(std::string&& _soundName);
     SOUND_HANDLE GetSoundIfExisted(std::string& _soundName);
 

@@ -44,6 +44,38 @@ MESH_DATA* AssetsPool::GetMeshIfExisted(std::string& _meshName)
     }
 }
 
+MESH_ANIMATION_DATA* AssetsPool::GetAnimationIfExisted(
+    std::string&& _aniName)
+{
+    auto found = mMeshAnimationsPool.find(_aniName);
+    if (found != mMeshAnimationsPool.end())
+    {
+        return found->second;
+    }
+    else
+    {
+        P_LOG(LOG_WARNING, "this animation doesnt exist : %s\n",
+            _aniName.c_str());
+        return nullptr;
+    }
+}
+
+MESH_ANIMATION_DATA* AssetsPool::GetAnimationIfExisted(
+    std::string& _aniName)
+{
+    auto found = mMeshAnimationsPool.find(_aniName);
+    if (found != mMeshAnimationsPool.end())
+    {
+        return found->second;
+    }
+    else
+    {
+        P_LOG(LOG_WARNING, "this animation doesnt exist : %s\n",
+            _aniName.c_str());
+        return nullptr;
+    }
+}
+
 SOUND_HANDLE AssetsPool::GetSoundIfExisted(std::string&& _soundName)
 {
     auto found = mSoundPool.find(_soundName);

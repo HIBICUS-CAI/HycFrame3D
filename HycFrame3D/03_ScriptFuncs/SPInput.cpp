@@ -298,9 +298,16 @@ void TempToResult(AInputComponent* _aic, Timer&)
     }
 }
 
+static MESH_ANIMATION_DATA* g_RexAniData = nullptr;
+
 bool AniInit(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate init\n");
+
+    g_RexAniData = _aitc->GetActorOwner()->GetSceneNode().
+        GetAssetsPool()->GetAnimationIfExisted("rex");
+    if (!g_RexAniData) { return false; }
+
     return true;
 }
 
@@ -312,4 +319,5 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
 void AniDestory(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate destory\n");
+    g_RexAniData = nullptr;
 }
