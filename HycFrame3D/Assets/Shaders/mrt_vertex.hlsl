@@ -43,27 +43,52 @@ struct INSTANCE_DATA
     float4 gCustomizedData2;
 };
 
-struct BONE_TRANSFORM
-{
-    matrix gBoneTransMat;
-};
-
 StructuredBuffer<VIEWPROJ> gViewProj : register(t0);
 StructuredBuffer<INSTANCE_DATA> gInstances : register(t1);
 #if defined (ANIMATION_VERTEX)
-StructuredBuffer<BONE_TRANSFORM> gBoneTransforms : register(t2);
+StructuredBuffer<matrix> gBoneTransforms : register(t2);
 #endif
 
 VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
 {
     VS_OUTPUT _out = (VS_OUTPUT)0;
 
-    _out.PosH = mul(float4(_in.PosL, 1.0f), gInstances[_instanceID].gWorld);
+    _out.PosH = float4(_in.PosL, 1.0f);
+    _out.NormalW = _in.NormalL;
+    _out.TangentW = _in.TangentL;
+
+#if defined (ANIMATION_VERTEX)
+    uint boneID0 = _in.BoneID.x;
+    uint boneID1 = _in.BoneID.y;
+    uint boneID2 = _in.BoneID.z;
+    uint boneID3 = _in.BoneID.w;
+    float weight0 = _in.Weight.x;
+    float weight1 = _in.Weight.y;
+    float weight2 = _in.Weight.z;
+    float weight3 = _in.Weight.w;
+    
+    _out.PosH = mul(_out.PosH, mul(weight0, gBoneTransforms[boneID0]));
+    _out.PosH += mul(_out.PosH, mul(weight1, gBoneTransforms[boneID1]));
+    _out.PosH += mul(_out.PosH, mul(weight2, gBoneTransforms[boneID2]));
+    _out.PosH += mul(_out.PosH, mul(weight3, gBoneTransforms[boneID3]));
+
+    _out.NormalW = mul(_out.NormalW, (float3x3)mul(weight0, gBoneTransforms[boneID0]));
+    _out.NormalW += mul(_out.NormalW, (float3x3)mul(weight1, gBoneTransforms[boneID1]));
+    _out.NormalW += mul(_out.NormalW, (float3x3)mul(weight2, gBoneTransforms[boneID2]));
+    _out.NormalW += mul(_out.NormalW, (float3x3)mul(weight3, gBoneTransforms[boneID3]));
+
+    _out.TangentW = mul(_out.TangentW, (float3x3)mul(weight0, gBoneTransforms[boneID0]));
+    _out.TangentW += mul(_out.TangentW, (float3x3)mul(weight1, gBoneTransforms[boneID1]));
+    _out.TangentW += mul(_out.TangentW, (float3x3)mul(weight2, gBoneTransforms[boneID2]));
+    _out.TangentW += mul(_out.TangentW, (float3x3)mul(weight3, gBoneTransforms[boneID3]));
+#endif
+
+    _out.PosH = mul(_out.PosH, gInstances[_instanceID].gWorld);
     _out.PosW = _out.PosH.xyz;
     _out.DiffuseAlbedo = gInstances[_instanceID].gMaterial.gDiffuseAlbedo;
     _out.FresnelShiniese = float4(gInstances[_instanceID].gMaterial.gFresnelR0, gInstances[_instanceID].gMaterial.gShininess);
-    _out.NormalW = mul(_in.NormalL, (float3x3)gInstances[_instanceID].gWorld);
-    _out.TangentW = mul(_in.TangentL, (float3x3)gInstances[_instanceID].gWorld);
+    _out.NormalW = mul(_out.NormalW, (float3x3)gInstances[_instanceID].gWorld);
+    _out.TangentW = mul(_out.TangentW, (float3x3)gInstances[_instanceID].gWorld);
     _out.PosH = mul(_out.PosH, gViewProj[0].gView);
     _out.PosH = mul(_out.PosH, gViewProj[0].gProjection);
     _out.TexCoordL = _in.TexCoordL;

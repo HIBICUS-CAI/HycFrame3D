@@ -26,6 +26,9 @@
 #include "DDSTextureLoader11.h"
 #include "WICTextureLoader11.h"
 #include "JsonHelper.h"
+// TEMP
+#include "SPInput.h"
+// TEMP
 
 //#define ONE_PASS_PER_TOPIC
 
@@ -676,13 +679,24 @@ void RSPass_MRT::ExecuatePass()
             STContext()->Map(mBonesStructedBuffer, 0,
                 D3D11_MAP_WRITE_DISCARD, 0, &msr);
             DirectX::XMFLOAT4X4* b_data = (DirectX::XMFLOAT4X4*)msr.pData;
+            auto boneData = TempGetBoneData();
             for (size_t i = 0; i < MAX_STRUCTURED_BUFFER_SIZE; i++)
             {
-                DirectX::XMStoreFloat4x4(b_data + i,
-                    DirectX::XMMatrixIdentity());
+                if (i < boneData->size())
+                {
+                    DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
+                        &((*boneData)[i].mBoneTransform));
+                    trans = DirectX::XMMatrixTranspose(trans);
+                    DirectX::XMStoreFloat4x4(b_data + i, trans);
+                }
+                else
+                {
+                    DirectX::XMStoreFloat4x4(b_data + i,
+                        DirectX::XMMatrixIdentity());
+                }
             }
             STContext()->Unmap(mBonesStructedBuffer, 0);
-            
+
             STContext()->VSSetShaderResources(2, 1,
                 &mBonesStructedBufferSrv);
         }
