@@ -308,6 +308,7 @@ private:
 
 private:
     ID3D11VertexShader* mVertexShader;
+    ID3D11VertexShader* mAniVertexShader;
     ID3D11RasterizerState* mRasterizerState;
     std::array<ID3D11DepthStencilView*, MAX_SHADOW_SIZE> mDepthStencilView;
     DRAWCALL_TYPE mDrawCallType;
@@ -316,6 +317,8 @@ private:
     ID3D11ShaderResourceView* mViewProjStructedBufferSrv;
     ID3D11Buffer* mInstanceStructedBuffer;
     ID3D11ShaderResourceView* mInstanceStructedBufferSrv;
+    ID3D11Buffer* mBonesStructedBuffer;
+    ID3D11ShaderResourceView* mBonesStructedBufferSrv;
 };
 
 class RSPass_Defered :public RSPass_Base

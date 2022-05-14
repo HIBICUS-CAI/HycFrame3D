@@ -71,10 +71,6 @@ VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
     float weight2 = _in.Weight.z;
     float weight3 = _in.Weight.w;
 
-    // _out.PosH = mul(_out.PosH, mul(weight0, gBoneTransforms[boneID0]));
-    // _out.PosH += mul(_out.PosH, mul(weight1, gBoneTransforms[boneID1]));
-    // _out.PosH += mul(_out.PosH, mul(weight2, gBoneTransforms[boneID2]));
-    // _out.PosH += mul(_out.PosH, mul(weight3, gBoneTransforms[boneID3]));
     posL += weight0 * mul(_out.PosH, gBoneTransforms[boneID0]).xyz;
     posL += weight1 * mul(_out.PosH, gBoneTransforms[boneID1]).xyz;
     posL += weight2 * mul(_out.PosH, gBoneTransforms[boneID2]).xyz;
