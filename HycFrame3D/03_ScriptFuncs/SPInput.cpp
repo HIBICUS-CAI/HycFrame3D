@@ -300,7 +300,7 @@ void TempToResult(AInputComponent* _aic, Timer&)
 
 static MESH_ANIMATION_DATA* g_RexAniData = nullptr;
 static SUBMESH_BONES* g_RexBoneData = nullptr;
-static std::string g_InitAni = "run";
+static std::string g_InitAni = "rigbone|BoneShake";
 static float g_TotalTime = 0.f;
 
 SUBMESH_BONES* TempGetBoneData()
@@ -313,11 +313,11 @@ bool AniInit(AInteractComponent* _aitc)
     P_LOG(LOG_DEBUG, "animate init\n");
 
     g_RexAniData = _aitc->GetActorOwner()->GetSceneNode().
-        GetAssetsPool()->GetAnimationIfExisted("rex");
+        GetAssetsPool()->GetAnimationIfExisted("bonetest");
     if (!g_RexAniData) { return false; }
 
     g_RexBoneData = &(_aitc->GetActorOwner()->GetSceneNode().
-        GetAssetsPool()->GetMeshIfExisted("rex")->mBoneData);
+        GetAssetsPool()->GetMeshIfExisted("bonetest")->mBoneData);
     if (!g_RexBoneData) { return false; }
 
     g_TotalTime = 0.f;

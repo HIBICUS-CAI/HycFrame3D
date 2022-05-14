@@ -99,9 +99,9 @@
             }
         },
         {
-            "mesh-name": "rex",
+            "mesh-name": "bonetest",
             "load-mode": "model-file",
-            "force-diffuse": "rex_diffuse.png",
+            "force-diffuse": "white.jpg",
             "material-info": {
                 "albedo": [
                     0.8,
@@ -117,7 +117,7 @@
                 "shininess": 0.5
             },
             "load-info": {
-                "model-file": "rex_ani.gltf.json",
+                "model-file": "bonemove.fbx.json",
                 "file-type": "json"
             }
         }
@@ -405,25 +405,25 @@
                     "type": "transform",
                     "init-position": [
                         0.0,
-                        -20.0,
+                        10.0,
                         60.0
                     ],
                     "init-angle": [
                         0.0,
-                        1.57,
+                        0.0,
                         0.0
                     ],
                     "init-scale": [
-                        0.03,
-                        0.03,
-                        0.03
+                        0.13,
+                        0.13,
+                        0.13
                     ]
                 },
                 {
                     "type": "mesh",
                     "meshes": [
                         {
-                            "mesh-name": "rex",
+                            "mesh-name": "bonetest",
                             "mesh-offset": null
                         }
                     ]
