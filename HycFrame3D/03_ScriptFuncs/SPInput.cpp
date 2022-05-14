@@ -300,7 +300,7 @@ void TempToResult(AInputComponent* _aic, Timer&)
 
 static MESH_ANIMATION_DATA* g_RexAniData = nullptr;
 static SUBMESH_BONES* g_RexBoneData = nullptr;
-static std::string g_InitAni = "rigbone|BoneShake";
+static std::string g_InitAni = "run";
 static float g_TotalTime = 0.f;
 
 SUBMESH_BONES* TempGetBoneData()
@@ -346,7 +346,7 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
     {
         if (ani.mAnimationName != g_InitAni) { continue; }
         runAni = &ani;
-        float ticks = g_TotalTime * runAni->mTicksPerSecond;
+        float ticks = g_TotalTime * runAni->mTicksPerSecond*50.f;
         float duration = runAni->mDuration;
         aniTime = fmodf(ticks, duration);
         break;
@@ -470,7 +470,12 @@ void CalcRot(DirectX::XMVECTOR& _result, float _aniTime,
     assert(size > 0);
     if (size == 1)
     {
-        _result = DirectX::XMLoadFloat4(&(_aniInfo->mRotationKeys[0].second));
+        DirectX::XMFLOAT4 q = {};
+        q.x = _aniInfo->mRotationKeys[0].second.y;
+        q.y = _aniInfo->mRotationKeys[0].second.z;
+        q.z = _aniInfo->mRotationKeys[0].second.w;
+        q.w = _aniInfo->mRotationKeys[0].second.x;
+        _result = DirectX::XMLoadFloat4(&q);
         _result = DirectX::XMQuaternionNormalize(_result);
         return;
     }
@@ -492,11 +497,18 @@ void CalcRot(DirectX::XMVECTOR& _result, float _aniTime,
     float deltaTime = _aniInfo->mRotationKeys[nextIndex].first - startTime;
     float factor = (_aniTime - startTime) / deltaTime;
     assert(factor >= 0.0f && factor <= 1.0f);
-    DirectX::XMVECTOR baseRot = DirectX::XMLoadFloat4(
-        &_aniInfo->mRotationKeys[baseIndex].second);
+    DirectX::XMFLOAT4 q = {};
+    q.x = _aniInfo->mRotationKeys[baseIndex].second.y;
+    q.y = _aniInfo->mRotationKeys[baseIndex].second.z;
+    q.z = _aniInfo->mRotationKeys[baseIndex].second.w;
+    q.w = _aniInfo->mRotationKeys[baseIndex].second.x;
+    DirectX::XMVECTOR baseRot = DirectX::XMLoadFloat4(&q);
     baseRot = DirectX::XMQuaternionNormalize(baseRot);
-    DirectX::XMVECTOR nextRot = DirectX::XMLoadFloat4(
-        &_aniInfo->mRotationKeys[nextIndex].second);
+    q.x = _aniInfo->mRotationKeys[nextIndex].second.y;
+    q.y = _aniInfo->mRotationKeys[nextIndex].second.z;
+    q.z = _aniInfo->mRotationKeys[nextIndex].second.w;
+    q.w = _aniInfo->mRotationKeys[nextIndex].second.x;
+    DirectX::XMVECTOR nextRot = DirectX::XMLoadFloat4(&q);
     nextRot = DirectX::XMQuaternionNormalize(nextRot);
     _result = DirectX::XMQuaternionSlerp(baseRot, nextRot, factor);
     _result = DirectX::XMQuaternionNormalize(_result);
