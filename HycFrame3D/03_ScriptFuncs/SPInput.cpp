@@ -304,6 +304,7 @@ static int g_AniIndex = 0;
 static std::vector<std::string> g_AniMap = {
     "run","bite","roar","attack_tail","idle" };
 static float g_TotalTime = 0.f;
+static float g_AniSpdFactor = 50.f;
 
 SUBMESH_BONES* TempGetBoneData()
 {
@@ -323,6 +324,7 @@ bool AniInit(AInteractComponent* _aitc)
     if (!g_RexBoneData) { return false; }
 
     g_TotalTime = 0.f;
+    g_AniSpdFactor = 50.f;
 
     return true;
 }
@@ -370,6 +372,14 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
         g_AniIndex = 4;
         g_TotalTime = 0.f;
     }
+    else if (InputInterface::IsKeyPushedInSingle(KB_UP))
+    {
+        g_AniSpdFactor *= 2.f;
+    }
+    else if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
+    {
+        g_AniSpdFactor /= 2.f;
+    }
 
     g_TotalTime += _timer.FloatDeltaTime() / 1000.f;
     float aniTime = 0.f;
@@ -378,7 +388,7 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
     {
         if (ani.mAnimationName != g_AniMap[g_AniIndex]) { continue; }
         runAni = &ani;
-        float ticks = g_TotalTime * runAni->mTicksPerSecond * 50.f;
+        float ticks = g_TotalTime * runAni->mTicksPerSecond * g_AniSpdFactor;
         float duration = runAni->mDuration;
         aniTime = fmodf(ticks, duration);
         break;
