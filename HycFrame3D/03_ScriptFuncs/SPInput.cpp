@@ -300,7 +300,9 @@ void TempToResult(AInputComponent* _aic, Timer&)
 
 static MESH_ANIMATION_DATA* g_RexAniData = nullptr;
 static SUBMESH_BONES* g_RexBoneData = nullptr;
-static std::string g_InitAni = "run";
+static int g_AniIndex = 0;
+static std::vector<std::string> g_AniMap = {
+    "run","bite","roar","attack_tail","idle" };
 static float g_TotalTime = 0.f;
 
 SUBMESH_BONES* TempGetBoneData()
@@ -339,14 +341,44 @@ void CalcSca(DirectX::XMVECTOR& _result, float _aniTime,
 
 void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
+    _aitc->GetActorOwner()->
+        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+        RotateYAsix(_timer.FloatDeltaTime() / 1000.f);
+
+    if (InputInterface::IsKeyPushedInSingle(KB_1))
+    {
+        g_AniIndex = 0;
+        g_TotalTime = 0.f;
+    }
+    else if (InputInterface::IsKeyPushedInSingle(KB_2))
+    {
+        g_AniIndex = 1;
+        g_TotalTime = 0.f;
+    }
+    else if (InputInterface::IsKeyPushedInSingle(KB_3))
+    {
+        g_AniIndex = 2;
+        g_TotalTime = 0.f;
+    }
+    else if (InputInterface::IsKeyPushedInSingle(KB_4))
+    {
+        g_AniIndex = 3;
+        g_TotalTime = 0.f;
+    }
+    else if (InputInterface::IsKeyPushedInSingle(KB_5))
+    {
+        g_AniIndex = 4;
+        g_TotalTime = 0.f;
+    }
+
     g_TotalTime += _timer.FloatDeltaTime() / 1000.f;
     float aniTime = 0.f;
     ANIMATION_INFO* runAni = nullptr;
     for (auto& ani : g_RexAniData->mAllAnimations)
     {
-        if (ani.mAnimationName != g_InitAni) { continue; }
+        if (ani.mAnimationName != g_AniMap[g_AniIndex]) { continue; }
         runAni = &ani;
-        float ticks = g_TotalTime * runAni->mTicksPerSecond*50.f;
+        float ticks = g_TotalTime * runAni->mTicksPerSecond * 50.f;
         float duration = runAni->mDuration;
         aniTime = fmodf(ticks, duration);
         break;
@@ -402,7 +434,7 @@ void ProcessNodes(float _aniTime, const MESH_NODE* _node,
         CalcRot(rot, _aniTime, nodeAct);
         DirectX::XMVECTOR pos = {};
         CalcPos(pos, _aniTime, nodeAct);
-        
+
         DirectX::XMVECTOR zero = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
         nodeTrans = DirectX::XMMatrixAffineTransformation(sca, zero, rot, pos);
     }
