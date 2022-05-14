@@ -58,6 +58,10 @@ VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
     _out.TangentW = _in.TangentL;
 
 #if defined (ANIMATION_VERTEX)
+    float3 posL = float3(0.0f, 0.0f, 0.0f);
+    float3 normalL = float3(0.0f, 0.0f, 0.0f);
+    float3 tangentL = float3(0.0f, 0.0f, 0.0f);
+
     uint boneID0 = _in.BoneID.x;
     uint boneID1 = _in.BoneID.y;
     uint boneID2 = _in.BoneID.z;
@@ -66,21 +70,28 @@ VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
     float weight1 = _in.Weight.y;
     float weight2 = _in.Weight.z;
     float weight3 = _in.Weight.w;
-    
-    _out.PosH = mul(_out.PosH, mul(weight0, gBoneTransforms[boneID0]));
-    _out.PosH += mul(_out.PosH, mul(weight1, gBoneTransforms[boneID1]));
-    _out.PosH += mul(_out.PosH, mul(weight2, gBoneTransforms[boneID2]));
-    _out.PosH += mul(_out.PosH, mul(weight3, gBoneTransforms[boneID3]));
 
-    _out.NormalW = mul(_out.NormalW, (float3x3)mul(weight0, gBoneTransforms[boneID0]));
-    _out.NormalW += mul(_out.NormalW, (float3x3)mul(weight1, gBoneTransforms[boneID1]));
-    _out.NormalW += mul(_out.NormalW, (float3x3)mul(weight2, gBoneTransforms[boneID2]));
-    _out.NormalW += mul(_out.NormalW, (float3x3)mul(weight3, gBoneTransforms[boneID3]));
+    // _out.PosH = mul(_out.PosH, mul(weight0, gBoneTransforms[boneID0]));
+    // _out.PosH += mul(_out.PosH, mul(weight1, gBoneTransforms[boneID1]));
+    // _out.PosH += mul(_out.PosH, mul(weight2, gBoneTransforms[boneID2]));
+    // _out.PosH += mul(_out.PosH, mul(weight3, gBoneTransforms[boneID3]));
+    posL += weight0 * mul(_out.PosH, gBoneTransforms[boneID0]).xyz;
+    posL += weight1 * mul(_out.PosH, gBoneTransforms[boneID1]).xyz;
+    posL += weight2 * mul(_out.PosH, gBoneTransforms[boneID2]).xyz;
+    posL += weight3 * mul(_out.PosH, gBoneTransforms[boneID3]).xyz;
+    _out.PosH = float4(posL, 1.0f);
 
-    _out.TangentW = mul(_out.TangentW, (float3x3)mul(weight0, gBoneTransforms[boneID0]));
-    _out.TangentW += mul(_out.TangentW, (float3x3)mul(weight1, gBoneTransforms[boneID1]));
-    _out.TangentW += mul(_out.TangentW, (float3x3)mul(weight2, gBoneTransforms[boneID2]));
-    _out.TangentW += mul(_out.TangentW, (float3x3)mul(weight3, gBoneTransforms[boneID3]));
+    normalL += weight0 * mul(_out.NormalW, (float3x3)gBoneTransforms[boneID0]);
+    normalL += weight1 * mul(_out.NormalW, (float3x3)gBoneTransforms[boneID1]);
+    normalL += weight2 * mul(_out.NormalW, (float3x3)gBoneTransforms[boneID2]);
+    normalL += weight3 * mul(_out.NormalW, (float3x3)gBoneTransforms[boneID3]);
+    _out.NormalW = normalL;
+
+    tangentL += weight0 * mul(_out.TangentW, (float3x3)gBoneTransforms[boneID0]);
+    tangentL += weight1 * mul(_out.TangentW, (float3x3)gBoneTransforms[boneID1]);
+    tangentL += weight2 * mul(_out.TangentW, (float3x3)gBoneTransforms[boneID2]);
+    tangentL += weight3 * mul(_out.TangentW, (float3x3)gBoneTransforms[boneID3]);
+    _out.TangentW = tangentL;
 #endif
 
     _out.PosH = mul(_out.PosH, gInstances[_instanceID].gWorld);

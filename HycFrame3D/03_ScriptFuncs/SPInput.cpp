@@ -326,8 +326,8 @@ bool AniInit(AInteractComponent* _aitc)
 }
 
 void ProcessNodes(float _aniTime, const MESH_NODE* _node,
-    const DirectX::XMMATRIX& _parentTrans,
-    const DirectX::XMMATRIX& _glbInvTrans,
+    const DirectX::XMFLOAT4X4& _parentTrans,
+    const DirectX::XMFLOAT4X4& _glbInvTrans,
     const ANIMATION_INFO* const _aniInfo);
 
 void CalcPos(DirectX::XMVECTOR& _result, float _aniTime,
@@ -352,12 +352,16 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
         break;
     }
 
-    DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
-    DirectX::XMMATRIX glbInv = {};
-    glbInv = DirectX::XMLoadFloat4x4(&g_RexAniData->mRootNode->mThisToParent);
+    DirectX::XMFLOAT4X4 identity = {};
+    DirectX::XMMATRIX identityM = DirectX::XMMatrixIdentity();
+    DirectX::XMStoreFloat4x4(&identity, identityM);
+    DirectX::XMFLOAT4X4 glbInv = {};
+    DirectX::XMMATRIX glbInvM = {};
+    glbInvM = DirectX::XMLoadFloat4x4(&g_RexAniData->mRootNode->mThisToParent);
     {
-        DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(glbInv);
-        glbInv = DirectX::XMMatrixInverse(&det, glbInv);
+        DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(glbInvM);
+        glbInvM = DirectX::XMMatrixInverse(&det, glbInvM);
+        DirectX::XMStoreFloat4x4(&glbInv, glbInvM);
     }
 
     ProcessNodes(aniTime, g_RexAniData->mRootNode, identity, glbInv, runAni);
@@ -371,8 +375,8 @@ void AniDestory(AInteractComponent* _aitc)
 }
 
 void ProcessNodes(float _aniTime, const MESH_NODE* _node,
-    const DirectX::XMMATRIX& _parentTrans,
-    const DirectX::XMMATRIX& _glbInvTrans,
+    const DirectX::XMFLOAT4X4& _parentTrans,
+    const DirectX::XMFLOAT4X4& _glbInvTrans,
     const ANIMATION_INFO* const _aniInfo)
 {
     std::string nodeName = _node->mNodeName;
@@ -398,33 +402,29 @@ void ProcessNodes(float _aniTime, const MESH_NODE* _node,
         CalcRot(rot, _aniTime, nodeAct);
         DirectX::XMVECTOR pos = {};
         CalcPos(pos, _aniTime, nodeAct);
-        nodeTrans = DirectX::XMMatrixMultiply(
-            DirectX::XMMatrixScalingFromVector(sca),
-            DirectX::XMMatrixRotationQuaternion(rot));
-        nodeTrans = DirectX::XMMatrixMultiply(nodeTrans,
-            DirectX::XMMatrixTranslationFromVector(pos));
+        
+        DirectX::XMVECTOR zero = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
+        nodeTrans = DirectX::XMMatrixAffineTransformation(sca, zero, rot, pos);
     }
 
-    DirectX::XMMATRIX glbTrans = DirectX::XMMatrixMultiply(
-        nodeTrans, _parentTrans);
+    DirectX::XMMATRIX parentGlb = DirectX::XMLoadFloat4x4(&_parentTrans);
+    DirectX::XMMATRIX glbTrans = nodeTrans * parentGlb;
+    DirectX::XMFLOAT4X4 thisGlbTrans = {};
+    DirectX::XMStoreFloat4x4(&thisGlbTrans, glbTrans);
 
     if (bone)
     {
         DirectX::XMMATRIX boneSpace = DirectX::XMLoadFloat4x4(
             &bone->mLocalToBone);
         boneSpace = DirectX::XMMatrixTranspose(boneSpace);
-        DirectX::XMMATRIX finalTrans = DirectX::XMMatrixMultiply(
-            boneSpace, glbTrans);
-        DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(boneSpace);
-        DirectX::XMMATRIX boneInv = DirectX::XMMatrixInverse(&det, boneSpace);
-        finalTrans = DirectX::XMMatrixMultiply(finalTrans, boneInv);
-        finalTrans = DirectX::XMMatrixMultiply(finalTrans, _glbInvTrans);
+        DirectX::XMMATRIX glbInv = DirectX::XMLoadFloat4x4(&_glbInvTrans);
+        DirectX::XMMATRIX finalTrans = boneSpace * glbTrans * glbInv;
         DirectX::XMStoreFloat4x4(&bone->mBoneTransform, finalTrans);
     }
 
     for (auto child : _node->mChildren)
     {
-        ProcessNodes(_aniTime, child, glbTrans, _glbInvTrans, _aniInfo);
+        ProcessNodes(_aniTime, child, thisGlbTrans, _glbInvTrans, _aniInfo);
     }
 }
 
@@ -494,8 +494,10 @@ void CalcRot(DirectX::XMVECTOR& _result, float _aniTime,
     assert(factor >= 0.0f && factor <= 1.0f);
     DirectX::XMVECTOR baseRot = DirectX::XMLoadFloat4(
         &_aniInfo->mRotationKeys[baseIndex].second);
+    baseRot = DirectX::XMQuaternionNormalize(baseRot);
     DirectX::XMVECTOR nextRot = DirectX::XMLoadFloat4(
         &_aniInfo->mRotationKeys[nextIndex].second);
+    nextRot = DirectX::XMQuaternionNormalize(nextRot);
     _result = DirectX::XMQuaternionSlerp(baseRot, nextRot, factor);
     _result = DirectX::XMQuaternionNormalize(_result);
 }
