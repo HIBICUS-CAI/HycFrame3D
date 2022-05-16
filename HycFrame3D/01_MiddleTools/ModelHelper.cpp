@@ -88,6 +88,7 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
 
     std::vector<UINT> index = {};
     std::vector<VertexType::TangentVertex> vertex = {};
+    std::vector<VertexType::AnimationVertex> aniVertex = {};
     std::vector<MODEL_TEXTURE_INFO> texture = {};
     int indexSize = 0;
     int vertexSize = 0;
@@ -106,6 +107,7 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
         // each-sub-index
         UINT ind = 0;
         VertexType::TangentVertex ver = {};
+        VertexType::AnimationVertex aniVer = {};
         MODEL_TEXTURE_INFO tex = {};
         for (int j = 0; j < indexSize; j++)
         {
@@ -114,6 +116,7 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
         }
 
         // each-sub-vertex
+        if (!animated)
         {
             double temp = 0.0;
             for (int j = 0; j < vertexSize; j++)
@@ -147,6 +150,59 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
                 vertex.push_back(ver);
             }
         }
+        else
+        {
+            double temp = 0.0;
+            UINT tempUI = 0;
+            for (int j = 0; j < vertexSize; j++)
+            {
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Position.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Position.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Position.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Normal.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Normal.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Normal.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Tangent.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Tangent.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Tangent.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.TexCoord.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.TexCoord.y = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Weight.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Weight.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Weight.z = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Weight.w = (float)temp;
+
+                inFile.read((char*)(&tempUI), sizeof(UINT));
+                aniVer.BoneID.x = tempUI;
+                inFile.read((char*)(&tempUI), sizeof(UINT));
+                aniVer.BoneID.y = tempUI;
+                inFile.read((char*)(&tempUI), sizeof(UINT));
+                aniVer.BoneID.z = tempUI;
+                inFile.read((char*)(&tempUI), sizeof(UINT));
+                aniVer.BoneID.w = tempUI;
+
+                aniVertex.push_back(aniVer);
+            }
+        }
 
         // each-sub-texture
         for (int j = 0; j < textureSize; j++)
@@ -163,17 +219,30 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
             texture.push_back(tex);
         }
 
-        SUBMESH_INFO si = {};
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mIndeices = &index;
-        si.mVerteices = &vertex;
-        std::vector<std::string> t = {};
-        for (auto& tex : texture) { t.emplace_back(tex.mPath); }
-        si.mTextures = &t;
-        si.mStaticMaterial = "copper";
-        GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
-            &si, LAYOUT_TYPE::NORMAL_TANGENT_TEX);
+        // each-sub-bone
+        {
+            int boneSize = 0;
+            inFile.read((char*)(&boneSize), sizeof(int));
+            for (int i = 0; i < boneSize; i++)
+            {
+                int len = 0;
+                char boneName[1024] = "";
+                inFile.read((char*)(&len), sizeof(len));
+                inFile.read(boneName, len);
+            }
+        }
     }
+
+    SUBMESH_INFO si = {};
+    si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    si.mIndeices = &index;
+    si.mVerteices = &vertex;
+    std::vector<std::string> t = {};
+    for (auto& tex : texture) { t.emplace_back(tex.mPath); }
+    si.mTextures = &t;
+    si.mStaticMaterial = "copper";
+    GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
+        &si, LAYOUT_TYPE::NORMAL_TANGENT_TEX);
 
     inFile.close();
 }
