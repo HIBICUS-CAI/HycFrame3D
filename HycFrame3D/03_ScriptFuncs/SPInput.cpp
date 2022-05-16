@@ -460,7 +460,7 @@ void ProcessNodes(float _aniTime, const MESH_NODE* _node,
             &bone->mLocalToBone);
         boneSpace = DirectX::XMMatrixTranspose(boneSpace);
         DirectX::XMMATRIX glbInv = DirectX::XMLoadFloat4x4(&_glbInvTrans);
-        DirectX::XMMATRIX finalTrans = boneSpace * glbTrans * glbInv;
+        DirectX::XMMATRIX finalTrans = boneSpace * glbTrans/* * glbInv*/;
         DirectX::XMStoreFloat4x4(&bone->mBoneTransform, finalTrans);
     }
 
