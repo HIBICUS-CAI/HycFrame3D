@@ -223,12 +223,30 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
         {
             int boneSize = 0;
             inFile.read((char*)(&boneSize), sizeof(int));
+            _boneData->resize(boneSize);
             for (int i = 0; i < boneSize; i++)
             {
+                auto& bone = (*_boneData)[i];
                 int len = 0;
                 char boneName[1024] = "";
                 inFile.read((char*)(&len), sizeof(len));
                 inFile.read(boneName, len);
+                bone.mBoneName = boneName;
+                float mat[4][4] = {};
+                for (UINT j = 0; j < 16; j++)
+                {
+                    double tempD = 0.0;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    int fir = j / 4, sec = j % 4;
+                    mat[fir][sec] = (float)tempD;
+                }
+                bone.mLocalToBone = DirectX::XMFLOAT4X4(
+                    mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                    mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                    mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                    mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+                DirectX::XMStoreFloat4x4(&bone.mBoneTransform,
+                    DirectX::XMMatrixIdentity());
             }
         }
     }
@@ -236,13 +254,186 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
     SUBMESH_INFO si = {};
     si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
     si.mIndeices = &index;
-    si.mVerteices = &vertex;
+    si.mVerteices = animated ? (void*)(&aniVertex) : (void*)(&vertex);
     std::vector<std::string> t = {};
     for (auto& tex : texture) { t.emplace_back(tex.mPath); }
     si.mTextures = &t;
     si.mStaticMaterial = "copper";
+    si.mWithAnimation = animated;
+    LAYOUT_TYPE layoutType = animated ?
+        LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE :
+        LAYOUT_TYPE::NORMAL_TANGENT_TEX;
     GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
-        &si, LAYOUT_TYPE::NORMAL_TANGENT_TEX);
+        &si, layoutType);
+
+    if (animated)
+    {
+        *_animData = new MESH_ANIMATION_DATA;
+        assert(*_animData);
+        MESH_NODE* rootNode = nullptr;
+        static std::unordered_map<std::string, MESH_NODE*> nodeMap = {};
+        static std::unordered_map<std::string, std::string> parentMap = {};
+        static std::unordered_map<std::string, std::vector<std::string>> childrenMap = {};
+        nodeMap.clear();
+        parentMap.clear();
+        childrenMap.clear();
+
+        // node relationship
+        int nodeSize = 0;
+        inFile.read((char*)(&nodeSize), sizeof(int));
+        for (int i = 0; i < nodeSize; i++)
+        {
+            MESH_NODE* node = new MESH_NODE;
+            if (!rootNode) { rootNode = node; }
+            int nameLen = 0;
+            char nodeName[1024] = "";
+            inFile.read((char*)(&nameLen), sizeof(int));
+            inFile.read(nodeName, nameLen);
+            node->mNodeName = nodeName;
+
+            float mat[4][4] = {};
+            for (UINT j = 0; j < 16; j++)
+            {
+                double tempD = 0.0;
+                inFile.read((char*)(&tempD), sizeof(double));
+                int fir = j / 4, sec = j % 4;
+                mat[fir][sec] = (float)tempD;
+            }
+
+            node->mThisToParent = DirectX::XMFLOAT4X4(
+                mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+            nodeMap.insert({ nodeName,node });
+
+            int parNameLen = 0;
+            char parName[1024] = "";
+            inFile.read((char*)(&parNameLen), sizeof(int));
+            inFile.read(parName, parNameLen);
+            parentMap.insert({ nodeName,parName });
+
+            int childrenSize = 0;
+            inFile.read((char*)(&childrenSize), sizeof(int));
+            childrenMap.insert({ nodeName,{} });
+            childrenMap[nodeName].resize(childrenSize);
+            for (int j = 0; j < childrenSize; j++)
+            {
+                int chdNameLen = 0;
+                char chdName[1024] = "";
+                inFile.read((char*)(&chdNameLen), sizeof(int));
+                inFile.read(chdName, chdNameLen);
+                childrenMap[nodeName][j] = chdName;
+            }
+        }
+
+        for (auto& node : nodeMap)
+        {
+            if (node.second == rootNode)
+            {
+                node.second->mParent = nullptr;
+            }
+            else
+            {
+                node.second->mParent = nodeMap[parentMap[node.first]];
+            }
+
+            auto chdSize = childrenMap[node.first].size();
+            node.second->mChildren.resize(chdSize);
+            for (size_t i = 0; i < chdSize; i++)
+            {
+                node.second->mChildren[i] = nodeMap[childrenMap[node.first][i]];
+            }
+        }
+
+        (*_animData)->mRootNode = rootNode;
+
+        // animations
+        int aniSize = 0;
+        inFile.read((char*)(&aniSize), sizeof(int));
+        (*_animData)->mAllAnimations.resize(aniSize);
+        for (int i = 0; i < aniSize; i++)
+        {
+            auto& ani = (*_animData)->mAllAnimations[i];
+
+            int aniNameLen = 0;
+            char aniName[1024] = "";
+            inFile.read((char*)(&aniNameLen), sizeof(int));
+            inFile.read(aniName, aniNameLen);
+            ani.mAnimationName = aniName;
+
+            double duration = 0.0;
+            inFile.read((char*)(&duration), sizeof(double));
+            ani.mDuration = (float)duration;
+
+            double ticksPerSec = 0.0;
+            inFile.read((char*)(&ticksPerSec), sizeof(double));
+            ani.mTicksPerSecond = (float)ticksPerSec;
+
+            int nodeActSize = 0;
+            inFile.read((char*)(&nodeActSize), sizeof(int));
+            ani.mNodeActions.resize(nodeActSize);
+            for (int j = 0; j < nodeActSize; j++)
+            {
+                auto& nodeAct = ani.mNodeActions[j];
+                int nodeActNameLen = 0;
+                char nodeActName[1024] = "";
+                inFile.read((char*)(&nodeActNameLen), sizeof(int));
+                inFile.read(nodeActName, nodeActNameLen);
+                nodeAct.mNodeName = nodeActName;
+
+                int pkSize = 0;
+                inFile.read((char*)(&pkSize), sizeof(int));
+                nodeAct.mPositionKeys.resize(pkSize);
+                for (auto& pk : nodeAct.mPositionKeys)
+                {
+                    double tempD = 0.0;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    pk.first = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    pk.second.x = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    pk.second.y = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    pk.second.z = (float)tempD;
+                }
+
+                int rkSize = 0;
+                inFile.read((char*)(&rkSize), sizeof(int));
+                nodeAct.mRotationKeys.resize(rkSize);
+                for (auto& rk : nodeAct.mRotationKeys)
+                {
+                    double tempD = 0.0;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    rk.first = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    rk.second.x = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    rk.second.y = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    rk.second.z = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    rk.second.w = (float)tempD;
+                }
+
+                int skSize = 0;
+                inFile.read((char*)(&skSize), sizeof(int));
+                nodeAct.mScalingKeys.resize(skSize);
+                for (auto& sk : nodeAct.mScalingKeys)
+                {
+                    double tempD = 0.0;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    sk.first = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    sk.second.x = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    sk.second.y = (float)tempD;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    sk.second.z = (float)tempD;
+                }
+            }
+        }
+    }
 
     inFile.close();
 }

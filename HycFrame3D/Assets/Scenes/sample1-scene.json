@@ -117,8 +117,8 @@
                 "shininess": 0.5
             },
             "load-info": {
-                "model-file": "rex_ani.gltf.json",
-                "file-type": "json"
+                "model-file": "rex_ani.gltf.meshdata",
+                "file-type": "binary"
             }
         }
     ],
