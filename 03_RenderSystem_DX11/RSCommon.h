@@ -220,9 +220,17 @@ struct RS_INSTANCE_DATA
     DirectX::XMFLOAT4 mCustomizedData2 = {};
 };
 
+struct RS_SUBMESH_BONE_DATA
+{
+    std::string mBoneName = "";
+    DirectX::XMFLOAT4X4 mLocalToBone = {};
+    DirectX::XMFLOAT4X4 mBoneTransform = {};
+};
+
 struct RS_INSTANCE_DRAWCALL_DATA
 {
     std::vector<RS_INSTANCE_DATA>* mDataPtr = nullptr;
+    void* mBonesDataPtr = nullptr;  // std::vector<RS_SUBMESH_BONE_DATA>*
 };
 
 constexpr UINT MESH_TEX_MAX = 10;

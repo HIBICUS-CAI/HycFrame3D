@@ -112,6 +112,7 @@ void RenderSystem::Run(Timer& _timer)
         drawCall.mMeshData.mIndexBuffer = mesh.second.mMeshData.mIndexBuffer;
         drawCall.mMeshData.mIndexCount = mesh.second.mMeshData.mIndexCount;
         drawCall.mInstanceData.mDataPtr = &(mesh.second.mInstanceVector);
+        drawCall.mInstanceData.mBonesDataPtr = &(mesh.second.mBoneData);
         drawCall.mTextureDatas[0].mUse = true;
         drawCall.mTextureDatas[0].mSrv = mRenderSystemRoot->ResourceManager()->
             GetMeshSrv(mesh.second.mMeshData.mTextures[0]);

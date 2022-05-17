@@ -26,9 +26,6 @@
 #include "DDSTextureLoader11.h"
 #include "WICTextureLoader11.h"
 #include "JsonHelper.h"
-// TEMP
-#include "SPInput.h"
-// TEMP
 
 //#define ONE_PASS_PER_TOPIC
 
@@ -679,13 +676,15 @@ void RSPass_MRT::ExecuatePass()
             STContext()->Map(mBonesStructedBuffer, 0,
                 D3D11_MAP_WRITE_DISCARD, 0, &msr);
             DirectX::XMFLOAT4X4* b_data = (DirectX::XMFLOAT4X4*)msr.pData;
-            auto boneData = TempGetBoneData();
+            void* boneData = call.mInstanceData.mBonesDataPtr;
+            std::vector<RS_SUBMESH_BONE_DATA>* bones = nullptr;
+            bones = static_cast<decltype(bones)>(boneData);
             for (size_t i = 0; i < MAX_STRUCTURED_BUFFER_SIZE; i++)
             {
-                if (i < boneData->size())
+                if (i < bones->size())
                 {
                     DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
-                        &((*boneData)[i].mBoneTransform));
+                        &((*bones)[i].mBoneTransform));
                     trans = DirectX::XMMatrixTranspose(trans);
                     DirectX::XMStoreFloat4x4(b_data + i, trans);
                 }
@@ -2062,13 +2061,15 @@ void RSPass_Shadow::ExecuatePass()
                 STContext()->Map(mBonesStructedBuffer, 0,
                     D3D11_MAP_WRITE_DISCARD, 0, &msr);
                 DirectX::XMFLOAT4X4* b_data = (DirectX::XMFLOAT4X4*)msr.pData;
-                auto boneData = TempGetBoneData();
+                void* boneData = call.mInstanceData.mBonesDataPtr;
+                std::vector<RS_SUBMESH_BONE_DATA>* bones = nullptr;
+                bones = static_cast<decltype(bones)>(boneData);
                 for (size_t i = 0; i < MAX_STRUCTURED_BUFFER_SIZE; i++)
                 {
-                    if (i < boneData->size())
+                    if (i < bones->size())
                     {
                         DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
-                            &((*boneData)[i].mBoneTransform));
+                            &((*bones)[i].mBoneTransform));
                         trans = DirectX::XMMatrixTranspose(trans);
                         DirectX::XMStoreFloat4x4(b_data + i, trans);
                     }

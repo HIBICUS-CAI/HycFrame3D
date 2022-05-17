@@ -301,11 +301,6 @@ void TempToResult(AInputComponent* _aic, Timer&)
 static float g_AniSpdFactor = 50.f;
 static AAnimateComponent* g_Aanc = nullptr;
 
-SUBMESH_BONES* TempGetBoneData()
-{
-    return g_Aanc->GetBonesData();
-}
-
 bool AniInit(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate init\n");
@@ -368,4 +363,5 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
 void AniDestory(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate destory\n");
+    g_Aanc = nullptr;
 }
