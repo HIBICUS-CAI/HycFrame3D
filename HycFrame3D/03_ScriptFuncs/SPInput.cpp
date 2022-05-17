@@ -305,16 +305,6 @@ bool AniInit(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate init\n");
 
-    std::string aniCompName = _aitc->GetActorOwner()->GetObjectName() +
-        "-animate";
-    COMP_TYPE aniCompType = COMP_TYPE::A_ANIMATE;
-    AAnimateComponent aanc(aniCompName, _aitc->GetActorOwner());
-    aanc.ChangeAnimationTo("run");
-    aanc.SetSpeedFactor(50.f);
-    _aitc->GetActorOwner()->AddAComponent(aniCompType);
-    _aitc->GetActorOwner()->GetSceneNode().GetComponentContainer()->
-        AddComponent(aniCompType, aanc);
-
     g_Aanc = _aitc->GetActorOwner()->
         GetAComponent<AAnimateComponent>(COMP_TYPE::A_ANIMATE);
     if (!g_Aanc) { return false; }

@@ -829,6 +829,24 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         _actor->AddAComponent(type);
         _node->GetComponentContainer()->AddComponent(type, apc);
     }
+    else if (compType == "animate")
+    {
+        AAnimateComponent aanc(compName, nullptr);
+
+        std::string initAni = GetJsonNode(_json, _jsonPath + "/init-animation")->
+            GetString();
+        float spdFactor = 1.f;
+        if (!GetJsonNode(_json, _jsonPath + "/speed-factor")->IsNull())
+        {
+            spdFactor = GetJsonNode(_json, _jsonPath + "/speed-factor")->GetFloat();
+        }
+        aanc.ChangeAnimationTo(initAni);
+        aanc.SetSpeedFactor(spdFactor);
+
+        COMP_TYPE type = COMP_TYPE::A_ANIMATE;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, aanc);
+    }
     else
     {
         P_LOG(LOG_ERROR, "invlaid comp type : %s\n", compType.c_str());

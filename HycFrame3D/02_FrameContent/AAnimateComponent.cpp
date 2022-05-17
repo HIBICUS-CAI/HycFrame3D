@@ -44,8 +44,18 @@ bool AAnimateComponent::Init()
         GetAssetsPool()->GetAnimationIfExisted(meshName);
     if (!mMeshAnimationDataPtr) { return false; }
 
-    mSubMeshBoneDataPtr = &(GetActorOwner()->GetSceneNode().
-        GetAssetsPool()->GetMeshIfExisted(meshName)->mBoneData);
+    auto mesh = GetActorOwner()->GetSceneNode().
+        GetAssetsPool()->GetMeshIfExisted(meshName);
+#ifdef _DEBUG
+    assert(mesh);
+#endif // _DEBUG
+    if (!mesh->mMeshData.mWithAnimation)
+    {
+        P_LOG(LOG_ERROR, "this mesh doesn't have animation info : %s\n",
+            meshName);
+        return false;
+    }
+    mSubMeshBoneDataPtr = &(mesh->mBoneData);
     if (!mSubMeshBoneDataPtr) { return false; }
 
     auto aniSize = mMeshAnimationDataPtr->mAllAnimations.size();

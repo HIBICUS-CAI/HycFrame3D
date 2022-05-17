@@ -429,6 +429,11 @@
                     ]
                 },
                 {
+                    "type": "animate",
+                    "init-animation": "run",
+                    "speed-factor": 50.0
+                },
+                {
                     "type": "interact",
                     "init-func-name": "AniInit",
                     "update-func-name": "AniUpdate",
