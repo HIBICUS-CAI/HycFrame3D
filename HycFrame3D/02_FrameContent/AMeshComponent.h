@@ -27,6 +27,7 @@ private:
     void SyncTransformDataToInstance();
 
 private:
+    friend class AAnimateComponent;
     std::vector<std::string> mMeshesName;
     std::vector<DirectX::XMFLOAT3> mOffsetPosition;
 };

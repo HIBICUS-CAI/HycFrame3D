@@ -298,56 +298,34 @@ void TempToResult(AInputComponent* _aic, Timer&)
     }
 }
 
-static MESH_ANIMATION_DATA* g_RexAniData = nullptr;
-static SUBMESH_BONES* g_RexBoneData = nullptr;
-static int g_AniIndex = 0;
-static std::vector<std::string> g_AniMap = {
-    "run","bite","roar","attack_tail","idle" };
-static float g_TotalTime = 0.f;
 static float g_AniSpdFactor = 50.f;
+static AAnimateComponent* g_Aanc = nullptr;
 
 SUBMESH_BONES* TempGetBoneData()
 {
-    return g_RexBoneData;
+    return g_Aanc->GetBonesData();
 }
 
 bool AniInit(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate init\n");
 
-    g_RexAniData = _aitc->GetActorOwner()->GetSceneNode().
-        GetAssetsPool()->GetAnimationIfExisted("bonetest");
-    if (!g_RexAniData) { return false; }
-
-    g_RexBoneData = &(_aitc->GetActorOwner()->GetSceneNode().
-        GetAssetsPool()->GetMeshIfExisted("bonetest")->mBoneData);
-    if (!g_RexBoneData) { return false; }
-
-    g_TotalTime = 0.f;
-    g_AniSpdFactor = 50.f;
-
     std::string aniCompName = _aitc->GetActorOwner()->GetObjectName() +
         "-animate";
     COMP_TYPE aniCompType = COMP_TYPE::A_ANIMATE;
     AAnimateComponent aanc(aniCompName, _aitc->GetActorOwner());
+    aanc.ChangeAnimationTo("run");
+    aanc.SetSpeedFactor(50.f);
     _aitc->GetActorOwner()->AddAComponent(aniCompType);
     _aitc->GetActorOwner()->GetSceneNode().GetComponentContainer()->
         AddComponent(aniCompType, aanc);
 
+    g_Aanc = _aitc->GetActorOwner()->
+        GetAComponent<AAnimateComponent>(COMP_TYPE::A_ANIMATE);
+    if (!g_Aanc) { return false; }
+
     return true;
 }
-
-void ProcessNodes(float _aniTime, const MESH_NODE* _node,
-    const DirectX::XMFLOAT4X4& _parentTrans,
-    const DirectX::XMFLOAT4X4& _glbInvTrans,
-    const ANIMATION_INFO* const _aniInfo);
-
-void CalcPos(DirectX::XMVECTOR& _result, float _aniTime,
-    const ANIMATION_CHANNEL* const _aniInfo);
-void CalcRot(DirectX::XMVECTOR& _result, float _aniTime,
-    const ANIMATION_CHANNEL* const _aniInfo);
-void CalcSca(DirectX::XMVECTOR& _result, float _aniTime,
-    const ANIMATION_CHANNEL* const _aniInfo);
 
 void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
@@ -357,233 +335,37 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     if (InputInterface::IsKeyPushedInSingle(KB_1))
     {
-        g_AniIndex = 0;
-        g_TotalTime = 0.f;
+        g_Aanc->ChangeAnimationTo("run");
     }
     else if (InputInterface::IsKeyPushedInSingle(KB_2))
     {
-        g_AniIndex = 1;
-        g_TotalTime = 0.f;
+        g_Aanc->ChangeAnimationTo("bite");
     }
     else if (InputInterface::IsKeyPushedInSingle(KB_3))
     {
-        g_AniIndex = 2;
-        g_TotalTime = 0.f;
+        g_Aanc->ChangeAnimationTo("roar");
     }
     else if (InputInterface::IsKeyPushedInSingle(KB_4))
     {
-        g_AniIndex = 3;
-        g_TotalTime = 0.f;
+        g_Aanc->ChangeAnimationTo("attack_tail");
     }
     else if (InputInterface::IsKeyPushedInSingle(KB_5))
     {
-        g_AniIndex = 4;
-        g_TotalTime = 0.f;
+        g_Aanc->ChangeAnimationTo("idle");
     }
     else if (InputInterface::IsKeyPushedInSingle(KB_UP))
     {
-        g_AniSpdFactor *= 2.f;
+        g_AniSpdFactor += 50.f;
+        g_Aanc->SetSpeedFactor(g_AniSpdFactor);
     }
     else if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
     {
-        g_AniSpdFactor /= 2.f;
+        g_AniSpdFactor -= 50.f;
+        g_Aanc->SetSpeedFactor(g_AniSpdFactor);
     }
-
-    g_TotalTime += _timer.FloatDeltaTime() / 1000.f;
-    float aniTime = 0.f;
-    ANIMATION_INFO* runAni = nullptr;
-    for (auto& ani : g_RexAniData->mAllAnimations)
-    {
-        if (ani.mAnimationName != g_AniMap[g_AniIndex]) { continue; }
-        runAni = &ani;
-        float ticks = g_TotalTime * runAni->mTicksPerSecond * g_AniSpdFactor;
-        float duration = runAni->mDuration;
-        aniTime = fmodf(ticks, duration);
-        break;
-    }
-
-    DirectX::XMFLOAT4X4 identity = {};
-    DirectX::XMMATRIX identityM = DirectX::XMMatrixIdentity();
-    DirectX::XMStoreFloat4x4(&identity, identityM);
-    DirectX::XMFLOAT4X4 glbInv = {};
-    DirectX::XMMATRIX glbInvM = {};
-    glbInvM = DirectX::XMLoadFloat4x4(&g_RexAniData->mRootNode->mThisToParent);
-    {
-        DirectX::XMVECTOR det = DirectX::XMMatrixDeterminant(glbInvM);
-        glbInvM = DirectX::XMMatrixInverse(&det, glbInvM);
-        DirectX::XMStoreFloat4x4(&glbInv, glbInvM);
-    }
-
-    ProcessNodes(aniTime, g_RexAniData->mRootNode, identity, glbInv, runAni);
 }
 
 void AniDestory(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate destory\n");
-    g_RexAniData = nullptr;
-    g_RexBoneData = nullptr;
-}
-
-void ProcessNodes(float _aniTime, const MESH_NODE* _node,
-    const DirectX::XMFLOAT4X4& _parentTrans,
-    const DirectX::XMFLOAT4X4& _glbInvTrans,
-    const ANIMATION_INFO* const _aniInfo)
-{
-    std::string nodeName = _node->mNodeName;
-    DirectX::XMMATRIX nodeTrans = DirectX::XMLoadFloat4x4(
-        &_node->mThisToParent);
-    nodeTrans = DirectX::XMMatrixTranspose(nodeTrans);
-    SUBMESH_BONE_DATA* bone = nullptr;
-    for (auto& b : *g_RexBoneData)
-    {
-        if (b.mBoneName == nodeName) { bone = &b; break; }
-    }
-    const ANIMATION_CHANNEL* nodeAct = nullptr;
-    for (auto& act : _aniInfo->mNodeActions)
-    {
-        if (nodeName == act.mNodeName) { nodeAct = &act; break; }
-    }
-
-    if (nodeAct)
-    {
-        DirectX::XMVECTOR sca = {};
-        CalcSca(sca, _aniTime, nodeAct);
-        DirectX::XMVECTOR rot = {};
-        CalcRot(rot, _aniTime, nodeAct);
-        DirectX::XMVECTOR pos = {};
-        CalcPos(pos, _aniTime, nodeAct);
-
-        DirectX::XMVECTOR zero = DirectX::XMVectorSet(0.f, 0.f, 0.f, 1.f);
-        nodeTrans = DirectX::XMMatrixAffineTransformation(sca, zero, rot, pos);
-    }
-
-    DirectX::XMMATRIX parentGlb = DirectX::XMLoadFloat4x4(&_parentTrans);
-    DirectX::XMMATRIX glbTrans = nodeTrans * parentGlb;
-    DirectX::XMFLOAT4X4 thisGlbTrans = {};
-    DirectX::XMStoreFloat4x4(&thisGlbTrans, glbTrans);
-
-    if (bone)
-    {
-        DirectX::XMMATRIX boneSpace = DirectX::XMLoadFloat4x4(
-            &bone->mLocalToBone);
-        boneSpace = DirectX::XMMatrixTranspose(boneSpace);
-        DirectX::XMMATRIX glbInv = DirectX::XMLoadFloat4x4(&_glbInvTrans);
-        DirectX::XMMATRIX finalTrans = boneSpace * glbTrans/* * glbInv*/;
-        DirectX::XMStoreFloat4x4(&bone->mBoneTransform, finalTrans);
-    }
-
-    for (auto child : _node->mChildren)
-    {
-        ProcessNodes(_aniTime, child, thisGlbTrans, _glbInvTrans, _aniInfo);
-    }
-}
-
-void CalcPos(DirectX::XMVECTOR& _result, float _aniTime,
-    const ANIMATION_CHANNEL* const _aniInfo)
-{
-    auto size = _aniInfo->mPositionKeys.size();
-    assert(size > 0);
-    if (size == 1)
-    {
-        _result = DirectX::XMLoadFloat3(&(_aniInfo->mPositionKeys[0].second));
-        return;
-    }
-
-    size_t baseIndex = 0;
-    size_t nextIndex = 0;
-    for (size_t i = 0; i < (size - 1); i++)
-    {
-        if (_aniTime < _aniInfo->mPositionKeys[i + 1].first)
-        {
-            baseIndex = i;
-            nextIndex = baseIndex + 1;
-            assert(nextIndex < size);
-            break;
-        }
-    }
-
-    float startTime = _aniInfo->mPositionKeys[baseIndex].first;
-    float deltaTime = _aniInfo->mPositionKeys[nextIndex].first - startTime;
-    float factor = (_aniTime - startTime) / deltaTime;
-    assert(factor >= 0.0f && factor <= 1.0f);
-    DirectX::XMVECTOR basePos = DirectX::XMLoadFloat3(
-        &_aniInfo->mPositionKeys[baseIndex].second);
-    DirectX::XMVECTOR nextPos = DirectX::XMLoadFloat3(
-        &_aniInfo->mPositionKeys[nextIndex].second);
-    _result = DirectX::XMVectorLerp(basePos, nextPos, factor);
-}
-
-void CalcRot(DirectX::XMVECTOR& _result, float _aniTime,
-    const ANIMATION_CHANNEL* const _aniInfo)
-{
-    auto size = _aniInfo->mRotationKeys.size();
-    assert(size > 0);
-    if (size == 1)
-    {
-        _result = DirectX::XMLoadFloat4(
-            &_aniInfo->mRotationKeys[0].second);
-        _result = DirectX::XMQuaternionNormalize(_result);
-        return;
-    }
-
-    size_t baseIndex = 0;
-    size_t nextIndex = 0;
-    for (size_t i = 0; i < (size - 1); i++)
-    {
-        if (_aniTime < _aniInfo->mRotationKeys[i + 1].first)
-        {
-            baseIndex = i;
-            nextIndex = baseIndex + 1;
-            assert(nextIndex < size);
-            break;
-        }
-    }
-
-    float startTime = _aniInfo->mRotationKeys[baseIndex].first;
-    float deltaTime = _aniInfo->mRotationKeys[nextIndex].first - startTime;
-    float factor = (_aniTime - startTime) / deltaTime;
-    assert(factor >= 0.0f && factor <= 1.0f);
-    DirectX::XMVECTOR baseRot = DirectX::XMLoadFloat4(
-        &_aniInfo->mRotationKeys[baseIndex].second);
-    baseRot = DirectX::XMQuaternionNormalize(baseRot);
-    DirectX::XMVECTOR nextRot = DirectX::XMLoadFloat4(
-        &_aniInfo->mRotationKeys[nextIndex].second);
-    nextRot = DirectX::XMQuaternionNormalize(nextRot);
-    _result = DirectX::XMQuaternionSlerp(baseRot, nextRot, factor);
-    _result = DirectX::XMQuaternionNormalize(_result);
-}
-
-void CalcSca(DirectX::XMVECTOR& _result, float _aniTime,
-    const ANIMATION_CHANNEL* const _aniInfo)
-{
-    auto size = _aniInfo->mScalingKeys.size();
-    assert(size > 0);
-    if (size == 1)
-    {
-        _result = DirectX::XMLoadFloat3(&(_aniInfo->mScalingKeys[0].second));
-        return;
-    }
-
-    size_t baseIndex = 0;
-    size_t nextIndex = 0;
-    for (size_t i = 0; i < (size - 1); i++)
-    {
-        if (_aniTime < _aniInfo->mScalingKeys[i + 1].first)
-        {
-            baseIndex = i;
-            nextIndex = baseIndex + 1;
-            assert(nextIndex < size);
-            break;
-        }
-    }
-
-    float startTime = _aniInfo->mScalingKeys[baseIndex].first;
-    float deltaTime = _aniInfo->mScalingKeys[nextIndex].first - startTime;
-    float factor = (_aniTime - startTime) / deltaTime;
-    assert(factor >= 0.0f && factor <= 1.0f);
-    DirectX::XMVECTOR baseSca = DirectX::XMLoadFloat3(
-        &_aniInfo->mScalingKeys[baseIndex].second);
-    DirectX::XMVECTOR nextSca = DirectX::XMLoadFloat3(
-        &_aniInfo->mScalingKeys[nextIndex].second);
-    _result = DirectX::XMVectorLerp(baseSca, nextSca, factor);
 }
