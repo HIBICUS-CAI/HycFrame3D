@@ -128,7 +128,8 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
         std::string forceNormal = "";
         std::string loadMode = "";
         RS_SUBMESH_DATA meshData = {};
-        SUBMESH_BONES bonesData = {};
+        static SUBMESH_BONES bonesData = {};
+        bonesData.clear();
         MESH_ANIMATION_DATA* animationData = nullptr;
         for (UINT i = 0; i < modelSize; i++)
         {
