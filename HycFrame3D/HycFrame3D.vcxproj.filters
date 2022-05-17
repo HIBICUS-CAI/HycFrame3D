@@ -193,6 +193,9 @@
     <ClCompile Include="03_ScriptFuncs\SPInput.cpp">
       <Filter>03_ScriptFuncs</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\AAnimateComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -353,6 +356,9 @@
     </ClInclude>
     <ClInclude Include="03_ScriptFuncs\SPInput.h">
       <Filter>03_ScriptFuncs</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\AAnimateComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

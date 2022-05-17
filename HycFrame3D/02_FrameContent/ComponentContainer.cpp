@@ -9,6 +9,7 @@
 #include "ALightComponent.h"
 #include "AAudioComponent.h"
 #include "AParticleComponent.h"
+#include "AAnimateComponent.h"
 #include "UTransformComponent.h"
 #include "USpriteComponent.h"
 #include "UAnimateComponent.h"
@@ -23,7 +24,8 @@ ComponentContainer::ComponentContainer(SceneNode& _sceneNode) :
     mATransformCompVector({}), mAInputCompVector({}),
     mAInteractCompVector({}), mATimerCompVector({}),
     mACollisionCompVector({}), mAMeshCompVector({}),
-    mALightCompVector({}), mAAudioCompVector({}), mAParticleCompVector({}),
+    mALightCompVector({}), mAAudioCompVector({}),
+    mAParticleCompVector({}), mAAnimateCompVector({}),
     mUTransformCompVector({}), mUSpriteCompVector({}),
     mUAnimateCompVector({}), mUTimerCompVector({}),
     mUInputCompVector({}), mUInteractCompVector({}),
@@ -39,6 +41,7 @@ ComponentContainer::ComponentContainer(SceneNode& _sceneNode) :
     mALightCompVector.reserve(1024);
     mAAudioCompVector.reserve(1024);
     mAParticleCompVector.reserve(1024);
+    mAAnimateCompVector.reserve(1024);
     mUTransformCompVector.reserve(1024);
     mUSpriteCompVector.reserve(1024);
     mUAnimateCompVector.reserve(1024);
@@ -143,6 +146,12 @@ void ComponentContainer::AddComponent(COMP_TYPE _type, Component& _comp)
             mCompMap.insert(
                 { mAParticleCompVector.back().GetCompName(),
                 &(mAParticleCompVector.back()) });
+            break;
+        case COMP_TYPE::A_ANIMATE:
+            mAAnimateCompVector.emplace_back((AAnimateComponent&)_comp);
+            mCompMap.insert(
+                { mAAnimateCompVector.back().GetCompName(),
+                &(mAAnimateCompVector.back()) });
             break;
         case COMP_TYPE::U_TRANSFORM:
             mUTransformCompVector.emplace_back((UTransformComponent&)_comp);
@@ -292,6 +301,16 @@ void ComponentContainer::AddComponent(COMP_TYPE _type, Component& _comp)
             mCompMap.insert(
                 { mAParticleCompVector[index].GetCompName(),
                 &(mAParticleCompVector[index]) });
+            break;
+        case COMP_TYPE::A_ANIMATE:
+            memcpy_s(
+                &mAAnimateCompVector[index],
+                sizeof(mAAnimateCompVector[index]),
+                &(AAnimateComponent&)_comp,
+                sizeof((AAnimateComponent&)_comp));
+            mCompMap.insert(
+                { mAAnimateCompVector[index].GetCompName(),
+                &(mAAnimateCompVector[index]) });
             break;
         case COMP_TYPE::U_TRANSFORM:
             memcpy_s(
@@ -458,6 +477,13 @@ void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string&& _compNam
         offset = (UINT)voffset;
         break;
     }
+    case COMP_TYPE::A_ANIMATE:
+    {
+        std::vector<AAnimateComponent>::size_type voffset =
+            (AAnimateComponent*)dele - &mAAnimateCompVector[0];
+        offset = (UINT)voffset;
+        break;
+    }
     case COMP_TYPE::U_TRANSFORM:
     {
         std::vector<UTransformComponent>::size_type voffset =
@@ -605,6 +631,13 @@ void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string& _compName
         offset = (UINT)voffset;
         break;
     }
+    case COMP_TYPE::A_ANIMATE:
+    {
+        std::vector<AAnimateComponent>::size_type voffset =
+            (AAnimateComponent*)dele - &mAAnimateCompVector[0];
+        offset = (UINT)voffset;
+        break;
+    }
     case COMP_TYPE::U_TRANSFORM:
     {
         std::vector<UTransformComponent>::size_type voffset =
@@ -684,6 +717,7 @@ void ComponentContainer::DeleteAllComponent()
     mALightCompVector.clear();
     mAAudioCompVector.clear();
     mAParticleCompVector.clear();
+    mAAnimateCompVector.clear();
     mUTransformCompVector.clear();
     mUSpriteCompVector.clear();
     mUAnimateCompVector.clear();
@@ -721,6 +755,8 @@ void* ComponentContainer::GetCompVecPtr(COMP_TYPE _type) const
         return (void*)&mAAudioCompVector;
     case COMP_TYPE::A_PARTICLE:
         return (void*)&mAParticleCompVector;
+    case COMP_TYPE::A_ANIMATE:
+        return (void*)&mAAnimateCompVector;
     case COMP_TYPE::U_TRANSFORM:
         return (void*)&mUTransformCompVector;
     case COMP_TYPE::U_SPRITE:

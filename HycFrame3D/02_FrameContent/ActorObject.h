@@ -31,6 +31,7 @@ public:
         case COMP_TYPE::A_LIGHT: name += "-light"; break;
         case COMP_TYPE::A_AUDIO: name += "-audio"; break;
         case COMP_TYPE::A_PARTICLE: name += "-particle"; break;
+        case COMP_TYPE::A_ANIMATE: name += "-animate"; break;
         default: break;
         }
 

@@ -30,6 +30,7 @@ enum class COMP_TYPE
     //A_PHYSICS,
     A_AUDIO,
     A_PARTICLE,
+    A_ANIMATE,
     U_TRANSFORM,
     U_SPRITE,
     U_ANIMATE,
