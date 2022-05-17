@@ -11,6 +11,7 @@
 #include "AudioSystem.h"
 #include "TimerSystem.h"
 #include "ButtonSystem.h"
+#include "AnimationSystem.h"
 
 SystemExecutive::SystemExecutive() :
     mSceneManagerPtr(nullptr), mSystemsVec({}), mCurrentSceneNode(nullptr) {}
@@ -43,6 +44,8 @@ bool SystemExecutive::StartUp(SceneManager* _sceneManager)
     sys = new TimerSystem(this); if (!sys) { return false; }
     mSystemsVec.push_back(sys);
     sys = new AudioSystem(this); if (!sys) { return false; }
+    mSystemsVec.push_back(sys);
+    sys = new AnimationSystem(this); if (!sys) { return false; }
     mSystemsVec.push_back(sys);
     sys = new RenderSystem(this); if (!sys) { return false; }
     mSystemsVec.push_back(sys);

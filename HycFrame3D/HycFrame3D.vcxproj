@@ -164,6 +164,7 @@
     <ClCompile Include="02_FrameContent\AInteractComponent.cpp" />
     <ClCompile Include="02_FrameContent\ALightComponent.cpp" />
     <ClCompile Include="02_FrameContent\AMeshComponent.cpp" />
+    <ClCompile Include="02_FrameContent\AnimationSystem.cpp" />
     <ClCompile Include="02_FrameContent\AParticleComponent.cpp" />
     <ClCompile Include="02_FrameContent\AssetsPool.cpp" />
     <ClCompile Include="02_FrameContent\ATimerComponent.cpp" />
@@ -218,6 +219,7 @@
     <ClInclude Include="02_FrameContent\AInteractComponent.h" />
     <ClInclude Include="02_FrameContent\ALightComponent.h" />
     <ClInclude Include="02_FrameContent\AMeshComponent.h" />
+    <ClInclude Include="02_FrameContent\AnimationSystem.h" />
     <ClInclude Include="02_FrameContent\AParticleComponent.h" />
     <ClInclude Include="02_FrameContent\AssetsPool.h" />
     <ClInclude Include="02_FrameContent\ATimerComponent.h" />
