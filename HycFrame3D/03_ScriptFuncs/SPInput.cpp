@@ -340,12 +340,12 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
     }
     else if (InputInterface::IsKeyPushedInSingle(KB_UP))
     {
-        g_AniSpdFactor += 50.f;
+        g_AniSpdFactor += 10.f;
         g_Aanc->SetSpeedFactor(g_AniSpdFactor);
     }
     else if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
     {
-        g_AniSpdFactor -= 50.f;
+        g_AniSpdFactor -= 10.f;
         g_Aanc->SetSpeedFactor(g_AniSpdFactor);
     }
 }

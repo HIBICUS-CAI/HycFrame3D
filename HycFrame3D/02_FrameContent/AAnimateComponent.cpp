@@ -135,15 +135,15 @@ void AAnimateComponent::Update(Timer& _timer)
     }
     else
     {
-        mTotalTime += _timer.FloatDeltaTime() / 1000.f;
+        mTotalTime += _timer.FloatDeltaTime() / 1000.f * mAnimationSpeedFactor;
     }
 
     float aniTime = 0.f;
     {
-        float ticks = mTotalTime * mCurrentAnimationInfo->
-            mTicksPerSecond * mAnimationSpeedFactor;
+        float ticks = mTotalTime * mCurrentAnimationInfo->mTicksPerSecond;
         float duration = mCurrentAnimationInfo->mDuration;
         aniTime = fmodf(ticks, duration);
+        if (aniTime < 0.f) { aniTime = duration + aniTime; }
     }
 
     DirectX::XMFLOAT4X4 identity = {};
