@@ -120,6 +120,29 @@
                 "model-file": "rex_ani.gltf.meshdata",
                 "file-type": "binary"
             }
+        },
+        {
+            "mesh-name": "fenghuang",
+            "load-mode": "model-file",
+            "force-diffuse": "cloud.png",
+            "material-info": {
+                "albedo": [
+                    0.8,
+                    0.8,
+                    0.8,
+                    0.8
+                ],
+                "fresnel": [
+                    0.1,
+                    0.3,
+                    0.1
+                ],
+                "shininess": 0.5
+            },
+            "load-info": {
+                "model-file": "fly.fbx.json",
+                "file-type": "json"
+            }
         }
     ],
     "audio-assets": [
@@ -414,9 +437,9 @@
                         0.0
                     ],
                     "init-scale": [
-                        15.0,
-                        15.0,
-                        15.0
+                        5.0,
+                        5.0,
+                        5.0
                     ]
                 },
                 {
@@ -438,6 +461,38 @@
                     "init-func-name": "AniInit",
                     "update-func-name": "AniUpdate",
                     "destory-func-name": "AniDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "sp-fenghuang-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        5.0,
+                        50.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        0.02,
+                        0.02,
+                        0.02
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "fenghuang",
+                            "mesh-offset": null
+                        }
+                    ]
                 }
             ]
         }
