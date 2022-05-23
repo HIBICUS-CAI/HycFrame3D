@@ -29,5 +29,6 @@ private:
 private:
     friend class AAnimateComponent;
     std::vector<std::string> mMeshesName;
+    std::vector<std::string> mSubMeshesName;
     std::vector<DirectX::XMFLOAT3> mOffsetPosition;
 };

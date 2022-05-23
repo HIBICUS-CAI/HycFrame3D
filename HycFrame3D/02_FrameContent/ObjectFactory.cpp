@@ -134,6 +134,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
         for (UINT i = 0; i < modelSize; i++)
         {
             meshName = "";
+            int subIndex = 0;
             staticMatName = "copper";
             forceMat = false;
             matInfo = {};
@@ -222,14 +223,12 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
                     jsonPath + "/load-info/model-file")->GetString();
                 std::string fileType = GetJsonNode(_json,
                     jsonPath + "/load-info/file-type")->GetString();
-                int subIndex = 0;
                 auto subIndexNode = GetJsonNode(_json,
                     jsonPath + "/load-info/sub-mesh-index");
-                if (subIndexNode&&!subIndexNode->IsNull())
+                if (subIndexNode && !subIndexNode->IsNull())
                 {
                     subIndex = subIndexNode->GetInt();
                 }
-                //meshName += std::to_string(subIndex);
                 MODEL_FILE_TYPE type = MODEL_FILE_TYPE::BIN;
                 if (fileType == "binary")
                 {
@@ -361,7 +360,8 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
             }
 
             _node->GetAssetsPool()->
-                InsertNewSubMesh(meshName, meshData, MESH_TYPE::OPACITY,
+                InsertNewIndexedMesh(meshName, meshData,
+                    MESH_TYPE::OPACITY, subIndex,
                     &bonesData, animationData);
         }
     }

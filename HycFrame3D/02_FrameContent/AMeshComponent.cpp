@@ -8,14 +8,16 @@
 
 AMeshComponent::AMeshComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mMeshesName({}), mOffsetPosition({})
+    ActorComponent(_compName, _actorOwner), mSubMeshesName({}),
+    mMeshesName({}), mOffsetPosition({})
 {
 
 }
 
 AMeshComponent::AMeshComponent(std::string& _compName,
     ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mMeshesName({}), mOffsetPosition({})
+    ActorComponent(_compName, _actorOwner), mSubMeshesName({}),
+    mMeshesName({}), mOffsetPosition({})
 {
 
 }
@@ -27,7 +29,35 @@ AMeshComponent::~AMeshComponent()
 
 bool AMeshComponent::Init()
 {
+    int meshIndex = 0;
+    std::vector<DirectX::XMFLOAT3>* tempOffset = new std::vector<DirectX::XMFLOAT3>;
+    if (!tempOffset) { return false; }
+    tempOffset->reserve(256);
     for (auto& meshName : mMeshesName)
+    {
+        auto subVec = GetActorOwner()->GetSceneNode().GetAssetsPool()->
+            GetMeshIfExisted(meshName);
+#ifdef _DEBUG
+        assert(subVec);
+#endif // _DEBUG
+        auto subSize = subVec->size();
+        for (size_t i = 0; i < subSize; i++)
+        {
+            mSubMeshesName.push_back((*subVec)[i]);
+            tempOffset->push_back(mOffsetPosition[meshIndex]);
+        }
+        ++meshIndex;
+    }
+    auto allOffset = tempOffset->size();
+    mOffsetPosition.clear(); mOffsetPosition.resize(allOffset);
+    for (size_t i = 0; i < allOffset; i++)
+    {
+        mOffsetPosition[i] = tempOffset->at(i);
+    }
+    tempOffset->clear();
+    delete tempOffset;
+
+    for (auto& meshName : mSubMeshesName)
     {
         if (!BindInstanceToAssetsPool(meshName)) { return false; }
     }
@@ -42,7 +72,7 @@ void AMeshComponent::Update(Timer& _timer)
 
 void AMeshComponent::Destory()
 {
-    for (auto& meshName : mMeshesName)
+    for (auto& meshName : mSubMeshesName)
     {
         SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
             GetSubMeshIfExisted(meshName);
@@ -88,9 +118,9 @@ void AMeshComponent::SyncTransformDataToInstance()
     size_t index = 0;
     std::set<std::string> hasChecked = {};
 
-    for (auto& meshName : mMeshesName)
+    for (auto& meshName : mSubMeshesName)
     {
-        if (hasChecked.find(meshName) != hasChecked.end()) { ++index; continue; }
+        if (hasChecked.find(meshName) != hasChecked.end()) { continue; }
 
         auto& ins_map = GetActorOwner()->GetSceneNode().GetAssetsPool()->
             GetSubMeshIfExisted(meshName)->mInstanceMap;

@@ -45,7 +45,7 @@ bool AAnimateComponent::Init()
     if (!mMeshAnimationDataPtr) { return false; }
 
     auto mesh = GetActorOwner()->GetSceneNode().
-        GetAssetsPool()->GetSubMeshIfExisted(meshName);
+        GetAssetsPool()->GetSubMeshIfExisted(meshName + std::to_string(0));
 #ifdef _DEBUG
     assert(mesh);
 #endif // _DEBUG

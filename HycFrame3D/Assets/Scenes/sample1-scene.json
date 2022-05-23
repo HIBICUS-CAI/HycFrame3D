@@ -122,7 +122,7 @@
             }
         },
         {
-            "mesh-name": "fenghuang0",
+            "mesh-name": "fenghuang",
             "load-mode": "model-file",
             "force-diffuse": "cloud.png",
             "material-info": {
@@ -146,7 +146,7 @@
             }
         },
         {
-            "mesh-name": "fenghuang1",
+            "mesh-name": "fenghuang",
             "load-mode": "model-file",
             "force-diffuse": "cloud.png",
             "material-info": {
@@ -514,11 +514,7 @@
                     "type": "mesh",
                     "meshes": [
                         {
-                            "mesh-name": "fenghuang0",
-                            "mesh-offset": null
-                        },
-                        {
-                            "mesh-name": "fenghuang1",
+                            "mesh-name": "fenghuang",
                             "mesh-offset": null
                         }
                     ]

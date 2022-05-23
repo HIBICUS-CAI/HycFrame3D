@@ -40,6 +40,10 @@ public:
 
     SUBMESH_DATA* GetSubMeshIfExisted(std::string&& _meshName);
     SUBMESH_DATA* GetSubMeshIfExisted(std::string& _meshName);
+    SUBMESH_NAME_VEC* GetMeshIfExisted(std::string&& _meshName);
+    SUBMESH_NAME_VEC* GetMeshIfExisted(std::string& _meshName);
+    MESH_ANIMATION_DATA* GetAnimationIfExistedSub(std::string&& _aniName);
+    MESH_ANIMATION_DATA* GetAnimationIfExistedSub(std::string& _aniName);
     MESH_ANIMATION_DATA* GetAnimationIfExisted(std::string&& _aniName);
     MESH_ANIMATION_DATA* GetAnimationIfExisted(std::string& _aniName);
     SOUND_HANDLE GetSoundIfExisted(std::string&& _soundName);
@@ -53,6 +57,14 @@ public:
         RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
         SUBMESH_BONES* _bonesData = nullptr,
         MESH_ANIMATION_DATA* _animationData = nullptr);
+    void InsertNewIndexedMesh(std::string&& _meshName,
+        RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
+        int _subIndex, SUBMESH_BONES* _bonesData = nullptr,
+        MESH_ANIMATION_DATA* _animationData = nullptr);
+    void InsertNewIndexedMesh(std::string& _meshName,
+        RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
+        int _subIndex, SUBMESH_BONES* _bonesData = nullptr,
+        MESH_ANIMATION_DATA* _animationData = nullptr);
     void InsertNewSound(std::string&& _soundName);
     void InsertNewSound(std::string& _soundName);
 
@@ -62,6 +74,8 @@ private:
     const class SceneNode& mSceneNodeOwner;
 
     std::unordered_map<std::string, SUBMESH_DATA> mSubMeshPool;
+    std::unordered_map<std::string, std::string> mSubMeshToMesh;
+    std::unordered_map<std::string, SUBMESH_NAME_VEC> mMeshPool;
     std::unordered_map<std::string, MESH_ANIMATION_DATA*> mMeshAnimationsPool;
     std::unordered_map<std::string, SOUND_HANDLE> mSoundPool;
 };
