@@ -23,10 +23,6 @@ public:
 
     void ResetTimeStamp();
     void SetSpeedFactor(float _factor);
-    SUBMESH_BONES* GetBonesData()
-    {
-        return mSubMeshBoneDataPtr;
-    }
 
 private:
     void ProcessNodes(float _aniTime, const MESH_NODE* _node,
@@ -43,7 +39,8 @@ private:
 
 private:
     MESH_ANIMATION_DATA* mMeshAnimationDataPtr;
-    SUBMESH_BONES* mSubMeshBoneDataPtr;
+    std::vector<SUBMESH_BONES*> mSubMeshBoneDataPtrVec;
+    bool mShareBoneData;
     std::vector<std::string> mAnimationNames;
     
     ANIMATION_INFO* mCurrentAnimationInfo;

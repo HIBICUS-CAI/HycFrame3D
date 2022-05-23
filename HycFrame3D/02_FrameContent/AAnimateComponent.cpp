@@ -7,10 +7,10 @@
 AAnimateComponent::AAnimateComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
-    mMeshAnimationDataPtr(nullptr), mSubMeshBoneDataPtr(nullptr),
+    mMeshAnimationDataPtr(nullptr), mSubMeshBoneDataPtrVec({}),
     mAnimationNames({}), mCurrentAnimationInfo(nullptr),
     mCurrentAnimationName(""), mNextAnimationName(""),
-    mResetTimeStampFlag(false),
+    mResetTimeStampFlag(false), mShareBoneData(true),
     mTotalTime(0.f), mAnimationSpeedFactor(1.f)
 {
 
@@ -19,10 +19,10 @@ AAnimateComponent::AAnimateComponent(std::string&& _compName,
 AAnimateComponent::AAnimateComponent(std::string& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
-    mMeshAnimationDataPtr(nullptr), mSubMeshBoneDataPtr(nullptr),
+    mMeshAnimationDataPtr(nullptr), mSubMeshBoneDataPtrVec({}),
     mAnimationNames({}), mCurrentAnimationInfo(nullptr),
     mCurrentAnimationName(""), mNextAnimationName(""),
-    mResetTimeStampFlag(false),
+    mResetTimeStampFlag(false), mShareBoneData(true),
     mTotalTime(0.f), mAnimationSpeedFactor(1.f)
 {
 
@@ -44,19 +44,42 @@ bool AAnimateComponent::Init()
         GetAssetsPool()->GetAnimationIfExisted(meshName);
     if (!mMeshAnimationDataPtr) { return false; }
 
-    auto mesh = GetActorOwner()->GetSceneNode().
-        GetAssetsPool()->GetSubMeshIfExisted(meshName + std::to_string(0));
+    auto subVec = GetActorOwner()->GetSceneNode().
+        GetAssetsPool()->GetMeshIfExisted(meshName);
 #ifdef _DEBUG
-    assert(mesh);
+    assert(subVec);
 #endif // _DEBUG
-    if (!mesh->mMeshData.mWithAnimation)
+    for (auto& subMeshName : *subVec)
     {
-        P_LOG(LOG_ERROR, "this mesh doesn't have animation info : %s\n",
-            meshName);
-        return false;
+        auto mesh = GetActorOwner()->GetSceneNode().
+            GetAssetsPool()->GetSubMeshIfExisted(subMeshName);
+#ifdef _DEBUG
+        assert(mesh);
+#endif // _DEBUG
+        if (!mesh->mMeshData.mWithAnimation)
+        {
+            P_LOG(LOG_ERROR, "this mesh doesn't have animation info : %s\n",
+                meshName);
+            return false;
+        }
+        mSubMeshBoneDataPtrVec.push_back(&(mesh->mBoneData));
     }
-    mSubMeshBoneDataPtr = &(mesh->mBoneData);
-    if (!mSubMeshBoneDataPtr) { return false; }
+
+    auto subMeshSize = mSubMeshBoneDataPtrVec.size();
+    if (!subMeshSize) { return false; }
+    auto boneSize = mSubMeshBoneDataPtrVec[0]->size();
+    if (subMeshSize > 1)
+    {
+        for (size_t i = 0; i < boneSize; i++)
+        {
+            if (mSubMeshBoneDataPtrVec[0]->at(i).mBoneName !=
+                mSubMeshBoneDataPtrVec[1]->at(i).mBoneName)
+            {
+                mShareBoneData = false;
+                break;
+            }
+        }
+    }
 
     auto aniSize = mMeshAnimationDataPtr->mAllAnimations.size();
     if (!aniSize) { return false; }
@@ -161,6 +184,20 @@ void AAnimateComponent::Update(Timer& _timer)
 
     ProcessNodes(aniTime, mMeshAnimationDataPtr->mRootNode, identity,
         glbInv, mCurrentAnimationInfo);
+
+    if (mSubMeshBoneDataPtrVec.size() != 1 && mShareBoneData)
+    {
+        auto boneSize = mSubMeshBoneDataPtrVec[0]->size();
+        auto submSize = mSubMeshBoneDataPtrVec.size();
+        for (size_t mIndex = 1; mIndex < submSize; mIndex++)
+        {
+            for (size_t bIndex = 0; bIndex < boneSize; bIndex++)
+            {
+                mSubMeshBoneDataPtrVec[mIndex]->at(bIndex).mBoneTransform =
+                    mSubMeshBoneDataPtrVec[0]->at(bIndex).mBoneTransform;
+            }
+        }
+    }
 }
 
 void AAnimateComponent::Destory()
@@ -209,9 +246,13 @@ void AAnimateComponent::ProcessNodes(float _aniTime, const MESH_NODE* _node,
         &_node->mThisToParent);
     nodeTrans = DirectX::XMMatrixTranspose(nodeTrans);
     SUBMESH_BONE_DATA* bone = nullptr;
-    for (auto& b : *mSubMeshBoneDataPtr)
+    for (auto& mb : mSubMeshBoneDataPtrVec)
     {
-        if (b.mBoneName == nodeName) { bone = &b; break; }
+        for (auto& b : *mb)
+        {
+            if (b.mBoneName == nodeName) { bone = &b; break; }
+        }
+        if (bone) { break; }
     }
     const ANIMATION_CHANNEL* nodeAct = nullptr;
     for (auto& act : _aniInfo->mNodeActions)
