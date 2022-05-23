@@ -82,7 +82,7 @@ void RenderSystem::Run(Timer& _timer)
 #endif // _DEBUG
 
     static RS_DRAWCALL_DATA drawCall = {};
-    auto& meshPool = mAssetsPool->mMeshPool;
+    auto& meshPool = mAssetsPool->mSubMeshPool;
     RS_DRAWCALL_DATA btnSelectFlg = {};
     bool hasBtnSelect = false;
     for (auto& mesh : meshPool)

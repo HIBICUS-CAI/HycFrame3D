@@ -64,17 +64,17 @@ void ALightComponent::CreateLight()
 
     if (mIsBloom)
     {
-        MESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetMeshIfExisted(BOX_BLOOM_MESH_NAME);
+        SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
+            GetSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
         if (!mesh)
         {
             RS_SUBMESH_DATA boxBloom = GetRSRoot_DX11_Singleton()->
                 MeshHelper()->GeoGenerate()->
                 CreateBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
-            GetActorOwner()->GetSceneNode().GetAssetsPool()->InsertNewMesh(
+            GetActorOwner()->GetSceneNode().GetAssetsPool()->InsertNewSubMesh(
                 BOX_BLOOM_MESH_NAME, boxBloom, MESH_TYPE::LIGHT);
             mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-                GetMeshIfExisted(BOX_BLOOM_MESH_NAME);
+                GetSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
         }
         mRSLightPtr->SetLightBloom(mesh->mMeshData);
     }

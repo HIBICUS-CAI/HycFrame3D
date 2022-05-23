@@ -18,7 +18,7 @@ enum class MESH_TYPE
     SIZE
 };
 
-struct MESH_DATA
+struct SUBMESH_DATA
 {
     RS_SUBMESH_DATA mMeshData = {};
     MESH_TYPE mMeshType = MESH_TYPE::SIZE;
@@ -28,6 +28,8 @@ struct MESH_DATA
     SUBMESH_BONES mBoneData = {};
 };
 
+using SUBMESH_NAME_VEC = std::vector<std::string>;
+
 class AssetsPool
 {
     friend class RenderSystem;
@@ -36,18 +38,18 @@ public:
     AssetsPool(class SceneNode& _sceneNode);
     ~AssetsPool();
 
-    MESH_DATA* GetMeshIfExisted(std::string&& _meshName);
-    MESH_DATA* GetMeshIfExisted(std::string& _meshName);
+    SUBMESH_DATA* GetSubMeshIfExisted(std::string&& _meshName);
+    SUBMESH_DATA* GetSubMeshIfExisted(std::string& _meshName);
     MESH_ANIMATION_DATA* GetAnimationIfExisted(std::string&& _aniName);
     MESH_ANIMATION_DATA* GetAnimationIfExisted(std::string& _aniName);
     SOUND_HANDLE GetSoundIfExisted(std::string&& _soundName);
     SOUND_HANDLE GetSoundIfExisted(std::string& _soundName);
 
-    void InsertNewMesh(std::string&& _meshName,
+    void InsertNewSubMesh(std::string&& _meshName,
         RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
         SUBMESH_BONES* _bonesData = nullptr,
         MESH_ANIMATION_DATA* _animationData = nullptr);
-    void InsertNewMesh(std::string& _meshName,
+    void InsertNewSubMesh(std::string& _meshName,
         RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
         SUBMESH_BONES* _bonesData = nullptr,
         MESH_ANIMATION_DATA* _animationData = nullptr);
@@ -59,7 +61,7 @@ public:
 private:
     const class SceneNode& mSceneNodeOwner;
 
-    std::unordered_map<std::string, MESH_DATA> mMeshPool;
+    std::unordered_map<std::string, SUBMESH_DATA> mSubMeshPool;
     std::unordered_map<std::string, MESH_ANIMATION_DATA*> mMeshAnimationsPool;
     std::unordered_map<std::string, SOUND_HANDLE> mSoundPool;
 };

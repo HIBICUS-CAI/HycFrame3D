@@ -44,8 +44,8 @@ void AMeshComponent::Destory()
 {
     for (auto& meshName : mMeshesName)
     {
-        MESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetMeshIfExisted(meshName);
+        SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
+            GetSubMeshIfExisted(meshName);
         if (mesh) { mesh->mInstanceMap.erase(GetCompName()); }
     }
 }
@@ -64,8 +64,8 @@ void AMeshComponent::AddMeshInfo(std::string& _meshName, DirectX::XMFLOAT3 _offs
 
 bool AMeshComponent::BindInstanceToAssetsPool(std::string& _meshName)
 {
-    MESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-        GetMeshIfExisted(_meshName);
+    SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
+        GetSubMeshIfExisted(_meshName);
     if (!mesh) { return false; }
 
     RS_INSTANCE_DATA id = {};
@@ -93,7 +93,7 @@ void AMeshComponent::SyncTransformDataToInstance()
         if (hasChecked.find(meshName) != hasChecked.end()) { ++index; continue; }
 
         auto& ins_map = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetMeshIfExisted(meshName)->mInstanceMap;
+            GetSubMeshIfExisted(meshName)->mInstanceMap;
         std::pair<
             std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator,
             std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator>

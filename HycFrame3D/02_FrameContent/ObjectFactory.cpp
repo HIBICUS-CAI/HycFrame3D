@@ -361,7 +361,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
             }
 
             _node->GetAssetsPool()->
-                InsertNewMesh(meshName, meshData, MESH_TYPE::OPACITY,
+                InsertNewSubMesh(meshName, meshData, MESH_TYPE::OPACITY,
                     &bonesData, animationData);
         }
     }

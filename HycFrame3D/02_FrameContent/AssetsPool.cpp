@@ -5,10 +5,10 @@
 #include "UButtonComponent.h"
 
 AssetsPool::AssetsPool(SceneNode& _sceneNode) :
-    mSceneNodeOwner(_sceneNode), mMeshPool({}), mSoundPool({}),
+    mSceneNodeOwner(_sceneNode), mSubMeshPool({}), mSoundPool({}),
     mMeshAnimationsPool({})
 {
-    mMeshPool.reserve(256);
+    mSubMeshPool.reserve(256);
 }
 
 AssetsPool::~AssetsPool()
@@ -16,10 +16,10 @@ AssetsPool::~AssetsPool()
 
 }
 
-MESH_DATA* AssetsPool::GetMeshIfExisted(std::string&& _meshName)
+SUBMESH_DATA* AssetsPool::GetSubMeshIfExisted(std::string&& _meshName)
 {
-    auto found = mMeshPool.find(_meshName);
-    if (found != mMeshPool.end())
+    auto found = mSubMeshPool.find(_meshName);
+    if (found != mSubMeshPool.end())
     {
         return &(found->second);
     }
@@ -30,10 +30,10 @@ MESH_DATA* AssetsPool::GetMeshIfExisted(std::string&& _meshName)
     }
 }
 
-MESH_DATA* AssetsPool::GetMeshIfExisted(std::string& _meshName)
+SUBMESH_DATA* AssetsPool::GetSubMeshIfExisted(std::string& _meshName)
 {
-    auto found = mMeshPool.find(_meshName);
-    if (found != mMeshPool.end())
+    auto found = mSubMeshPool.find(_meshName);
+    if (found != mSubMeshPool.end())
     {
         return &(found->second);
     }
@@ -106,16 +106,16 @@ SOUND_HANDLE AssetsPool::GetSoundIfExisted(std::string& _soundName)
     }
 }
 
-void AssetsPool::InsertNewMesh(std::string&& _meshName,
+void AssetsPool::InsertNewSubMesh(std::string&& _meshName,
     RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
     SUBMESH_BONES* _bonesData, MESH_ANIMATION_DATA* _animationData)
 {
-    MESH_DATA md = {};
-    mMeshPool.insert({ _meshName,md });
-    mMeshPool[_meshName].mMeshData = _meshData;
-    mMeshPool[_meshName].mMeshType = _meshType;
-    if (_bonesData) { mMeshPool[_meshName].mBoneData = *_bonesData; }
-    mMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
+    SUBMESH_DATA md = {};
+    mSubMeshPool.insert({ _meshName,md });
+    mSubMeshPool[_meshName].mMeshData = _meshData;
+    mSubMeshPool[_meshName].mMeshType = _meshType;
+    if (_bonesData) { mSubMeshPool[_meshName].mBoneData = *_bonesData; }
+    mSubMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
     if (_meshData.mWithAnimation && _animationData)
     {
@@ -124,16 +124,16 @@ void AssetsPool::InsertNewMesh(std::string&& _meshName,
     }
 }
 
-void AssetsPool::InsertNewMesh(std::string& _meshName,
+void AssetsPool::InsertNewSubMesh(std::string& _meshName,
     RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
     SUBMESH_BONES* _bonesData, MESH_ANIMATION_DATA* _animationData)
 {
-    MESH_DATA md = {};
-    mMeshPool.insert({ _meshName,md });
-    mMeshPool[_meshName].mMeshData = _meshData;
-    mMeshPool[_meshName].mMeshType = _meshType;
-    if (_bonesData) { mMeshPool[_meshName].mBoneData = *_bonesData; }
-    mMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
+    SUBMESH_DATA md = {};
+    mSubMeshPool.insert({ _meshName,md });
+    mSubMeshPool[_meshName].mMeshData = _meshData;
+    mSubMeshPool[_meshName].mMeshType = _meshType;
+    if (_bonesData) { mSubMeshPool[_meshName].mBoneData = *_bonesData; }
+    mSubMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
     if (_meshData.mWithAnimation && _animationData)
     {
@@ -162,7 +162,7 @@ void AssetsPool::InsertNewSound(std::string& _soundName)
 
 void AssetsPool::DeleteAllAssets()
 {
-    for (auto& mesh_data : mMeshPool)
+    for (auto& mesh_data : mSubMeshPool)
     {
         if (mesh_data.first.find("-sprite") != std::string::npos)
         {
@@ -176,7 +176,7 @@ void AssetsPool::DeleteAllAssets()
         GetRSRoot_DX11_Singleton()->MeshHelper()->
             ReleaseSubMesh(mesh_data.second.mMeshData);
     }
-    mMeshPool.clear();
+    mSubMeshPool.clear();
 
     for (auto& mesh_ani_data : mMeshAnimationsPool)
     {

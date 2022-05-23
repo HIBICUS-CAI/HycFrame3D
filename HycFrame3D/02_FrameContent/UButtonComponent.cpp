@@ -13,7 +13,7 @@ static UButtonComponent* g_SelectedBtnCompPtr = nullptr;
 static bool g_CanThisFrameProcessSelect = true;
 static bool g_ShouleUseMouseSelect = false;
 
-static MESH_DATA* g_SelectTexMeshPtr = nullptr;
+static SUBMESH_DATA* g_SelectTexMeshPtr = nullptr;
 
 static DirectX::XMFLOAT2 g_ScreenSpaceCursorPosition = { 0.f,0.f };
 
@@ -51,8 +51,8 @@ bool UButtonComponent::Init()
 
     if (mIsSelected) { g_SelectedBtnCompPtr = this; }
 
-    MESH_DATA* mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
+    SUBMESH_DATA* mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
+        GetSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
     if (!mesh)
     {
         if (g_SelectFlagTexture == "")
@@ -73,10 +73,10 @@ bool UButtonComponent::Init()
         RS_SUBMESH_DATA btnSelect = GetRSRoot_DX11_Singleton()->
             MeshHelper()->GeoGenerate()->CreateSpriteRect(
                 LAYOUT_TYPE::NORMAL_TANGENT_TEX, g_SelectFlagTexture);
-        GetUiOwner()->GetSceneNode().GetAssetsPool()->InsertNewMesh(
+        GetUiOwner()->GetSceneNode().GetAssetsPool()->InsertNewSubMesh(
             SELECTED_BTN_SPRITE_NAME, btnSelect, MESH_TYPE::UI_SPRITE);
         mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-            GetMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
+            GetSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
 
         RS_INSTANCE_DATA id = {};
         id.mCustomizedData1 = { 1.f,1.f,1.f,1.f };
@@ -386,7 +386,7 @@ void UButtonComponent::SyncDataFromTransform()
     DirectX::XMFLOAT3 scale = utc->GetProcessingScaling();
 
     auto& map = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetMeshIfExisted(SELECTED_BTN_SPRITE_NAME)->mInstanceMap;
+        GetSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME)->mInstanceMap;
 
     for (auto& ins : map)
     {

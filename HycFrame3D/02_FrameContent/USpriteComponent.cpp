@@ -49,8 +49,8 @@ void USpriteComponent::Update(Timer& _timer)
 
 void USpriteComponent::Destory()
 {
-    MESH_DATA* mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetMeshIfExisted(mMeshesName);
+    SUBMESH_DATA* mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
+        GetSubMeshIfExisted(mMeshesName);
     if (mesh) { mesh->mInstanceMap.erase(GetCompName()); }
 }
 
@@ -64,11 +64,11 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
         CreateSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
 
     mMeshesName = GetCompName();
-    _scene->GetAssetsPool()->InsertNewMesh(mMeshesName, sprite,
+    _scene->GetAssetsPool()->InsertNewSubMesh(mMeshesName, sprite,
         MESH_TYPE::UI_SPRITE);
 
-    MESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        GetMeshIfExisted(mMeshesName);
+    SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
+        GetSubMeshIfExisted(mMeshesName);
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
@@ -91,11 +91,11 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
         CreateSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
 
     mMeshesName = GetCompName();
-    _scene->GetAssetsPool()->InsertNewMesh(mMeshesName, sprite,
+    _scene->GetAssetsPool()->InsertNewSubMesh(mMeshesName, sprite,
         MESH_TYPE::UI_SPRITE);
 
-    MESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        GetMeshIfExisted(mMeshesName);
+    SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
+        GetSubMeshIfExisted(mMeshesName);
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
@@ -137,7 +137,7 @@ void USpriteComponent::SyncTransformDataToInstance()
 
     std::string compName = GetCompName();
     auto& map = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetMeshIfExisted(compName)->mInstanceMap;
+        GetSubMeshIfExisted(compName)->mInstanceMap;
 
     for (auto& ins : map)
     {
@@ -160,7 +160,7 @@ void USpriteComponent::ResetTexture()
 {
     std::string compName = GetCompName();
     auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetMeshIfExisted(compName);
+        GetSubMeshIfExisted(compName);
 
     mesh->mMeshData.mTextures[0] = mOriginTextureName;
 

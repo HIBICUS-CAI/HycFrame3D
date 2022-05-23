@@ -203,7 +203,7 @@ void UAnimateComponent::SyncAniInfoToSprite()
     std::string uscName = GetUiOwner()->
         GetUComponent<USpriteComponent>(COMP_TYPE::U_SPRITE)->GetCompName();
     auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetMeshIfExisted(uscName);
+        GetSubMeshIfExisted(uscName);
 
     mesh->mMeshData.mTextures[0] = mCurrentAnimate->mTexName;
 
