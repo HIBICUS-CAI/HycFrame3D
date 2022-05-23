@@ -16,14 +16,14 @@
 #include "RSResourceManager.h"
 
 void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
-    SUBMESH_BONES* _boneData,
+    int _subMeshIndex, SUBMESH_BONES* _boneData,
     MESH_ANIMATION_DATA** _animData);
 void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
-    SUBMESH_BONES* _boneData,
+    int _subMeshIndex, SUBMESH_BONES* _boneData,
     MESH_ANIMATION_DATA** _animData);
 
 void LoadModelFile(const std::string _filePath, MODEL_FILE_TYPE _type,
-    RS_SUBMESH_DATA* _result,
+    int _subMeshIndex, RS_SUBMESH_DATA* _result,
     SUBMESH_BONES* _boneData, MESH_ANIMATION_DATA** _animData)
 {
     static std::string path = "";
@@ -32,16 +32,16 @@ void LoadModelFile(const std::string _filePath, MODEL_FILE_TYPE _type,
     switch (_type)
     {
     case MODEL_FILE_TYPE::BIN:
-        LoadByBinary(path, _result, _boneData, _animData); break;
+        LoadByBinary(path, _result, _subMeshIndex, _boneData, _animData); break;
     case MODEL_FILE_TYPE::JSON:
-        LoadByJson(path, _result, _boneData, _animData); break;
+        LoadByJson(path, _result, _subMeshIndex, _boneData, _animData); break;
     default:
         break;
     }
 }
 
 void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
-    SUBMESH_BONES* _boneData,
+    int _subMeshIndex, SUBMESH_BONES* _boneData,
     MESH_ANIMATION_DATA** _animData)
 {
     std::ifstream inFile(_filePath, std::ios::in | std::ios::binary);
@@ -83,7 +83,7 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
     int subSize = 0;
     inFile.read((char*)&subSize, sizeof(subSize));
 #ifdef _DEBUG
-    assert(subSize == 1);
+    assert(subSize > _subMeshIndex);
 #endif // _DEBUG
 
     std::vector<UINT> index = {};
@@ -220,6 +220,7 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
         }
 
         // each-sub-bone
+        if (animated)
         {
             int boneSize = 0;
             inFile.read((char*)(&boneSize), sizeof(int));
@@ -249,6 +250,8 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
                     DirectX::XMMatrixIdentity());
             }
         }
+
+        if (i == _subMeshIndex) { break; }
     }
 
     SUBMESH_INFO si = {};
@@ -439,7 +442,7 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
 }
 
 void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
-    SUBMESH_BONES* _boneData,
+    int _subMeshIndex, SUBMESH_BONES* _boneData,
     MESH_ANIMATION_DATA** _animData)
 {
     std::FILE* fp = std::fopen(_filePath.c_str(), "rb");
@@ -469,7 +472,7 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
 
     UINT subSize = doc["sub-model-size"].GetUint();
 #ifdef _DEBUG
-    assert(subSize == 1);
+    assert(subSize > (UINT)_subMeshIndex);
 #endif // _DEBUG
     UINT subArraySize = doc["sub-model"].Size();
 #ifdef _DEBUG
@@ -482,6 +485,8 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
     std::vector<MODEL_TEXTURE_INFO> texture = {};
     for (UINT i = 0; i < subSize; i++)
     {
+        if (i != _subMeshIndex) { continue; }
+
         index.clear();
         vertex.clear();
         texture.clear();

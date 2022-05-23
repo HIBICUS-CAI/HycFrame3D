@@ -79,7 +79,7 @@ struct MESH_ANIMATION_DATA
 };
 
 void LoadModelFile(const std::string _filePath, MODEL_FILE_TYPE _type,
-    RS_SUBMESH_DATA* _result,
+    int _subMeshIndex, RS_SUBMESH_DATA* _result,
     SUBMESH_BONES* _boneData = nullptr,
     MESH_ANIMATION_DATA** _animData = nullptr);
 

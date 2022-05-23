@@ -222,6 +222,14 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
                     jsonPath + "/load-info/model-file")->GetString();
                 std::string fileType = GetJsonNode(_json,
                     jsonPath + "/load-info/file-type")->GetString();
+                int subIndex = 0;
+                auto subIndexNode = GetJsonNode(_json,
+                    jsonPath + "/load-info/sub-mesh-index");
+                if (subIndexNode&&!subIndexNode->IsNull())
+                {
+                    subIndex = subIndexNode->GetInt();
+                }
+                //meshName += std::to_string(subIndex);
                 MODEL_FILE_TYPE type = MODEL_FILE_TYPE::BIN;
                 if (fileType == "binary")
                 {
@@ -237,8 +245,8 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
                         fileType.c_str());
                     return;
                 }
-                LoadModelFile(fileName, type, &meshData, &bonesData,
-                    &animationData);
+                LoadModelFile(fileName, type, subIndex, &meshData,
+                    &bonesData, &animationData);
             }
             else if (loadMode == "program-box")
             {
