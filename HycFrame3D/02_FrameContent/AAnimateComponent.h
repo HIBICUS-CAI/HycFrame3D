@@ -39,6 +39,7 @@ private:
 
 private:
     MESH_ANIMATION_DATA* mMeshAnimationDataPtr;
+    std::vector<std::string> mSubMeshNameVec;
     std::vector<SUBMESH_BONES*> mSubMeshBoneDataPtrVec;
     bool mShareBoneData;
     std::vector<std::string> mAnimationNames;

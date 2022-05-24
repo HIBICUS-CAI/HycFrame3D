@@ -11,7 +11,8 @@ AAnimateComponent::AAnimateComponent(std::string&& _compName,
     mAnimationNames({}), mCurrentAnimationInfo(nullptr),
     mCurrentAnimationName(""), mNextAnimationName(""),
     mResetTimeStampFlag(false), mShareBoneData(true),
-    mTotalTime(0.f), mAnimationSpeedFactor(1.f)
+    mTotalTime(0.f), mAnimationSpeedFactor(1.f),
+    mSubMeshNameVec({})
 {
 
 }
@@ -23,7 +24,8 @@ AAnimateComponent::AAnimateComponent(std::string& _compName,
     mAnimationNames({}), mCurrentAnimationInfo(nullptr),
     mCurrentAnimationName(""), mNextAnimationName(""),
     mResetTimeStampFlag(false), mShareBoneData(true),
-    mTotalTime(0.f), mAnimationSpeedFactor(1.f)
+    mTotalTime(0.f), mAnimationSpeedFactor(1.f),
+    mSubMeshNameVec({})
 {
 
 }
@@ -64,6 +66,7 @@ bool AAnimateComponent::Init()
         }
         mesh->mBonesMap.insert({ GetCompName(),mesh->mOriginBoneData });
         mSubMeshBoneDataPtrVec.push_back(&(mesh->mBonesMap[GetCompName()]));
+        mSubMeshNameVec.push_back(subMeshName);
     }
 
     auto subMeshSize = mSubMeshBoneDataPtrVec.size();
@@ -203,16 +206,14 @@ void AAnimateComponent::Update(Timer& _timer)
 
 void AAnimateComponent::Destory()
 {
-    auto amc = GetActorOwner()->
-        GetAComponent<AMeshComponent>(COMP_TYPE::A_MESH);
-    if (!amc) { return; }
-
-    for (auto& meshName : amc->mSubMeshesName)
+    for (auto& subMeshName : mSubMeshNameVec)
     {
         SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetSubMeshIfExisted(meshName);
+            GetSubMeshIfExisted(subMeshName);
         if (mesh) { mesh->mBonesMap.erase(GetCompName()); }
     }
+    mSubMeshBoneDataPtrVec.clear();
+    mSubMeshNameVec.clear();
 }
 
 void AAnimateComponent::ChangeAnimationTo(std::string& _aniName)
