@@ -246,6 +246,10 @@ void AssetsPool::InsertNewIndexedMesh(std::string&& _meshName,
         // TODO shoule be able to process mutiply submesh data
         mMeshAnimationsPool.insert({ _meshName,_animationData });
     }
+    else
+    {
+        if (_animationData) { delete _animationData; }
+    }
 }
 
 void AssetsPool::InsertNewIndexedMesh(std::string& _meshName,
@@ -269,6 +273,10 @@ void AssetsPool::InsertNewIndexedMesh(std::string& _meshName,
     {
         // TODO shoule be able to process mutiply submesh data
         mMeshAnimationsPool.insert({ _meshName,_animationData });
+    }
+    else
+    {
+        if (_animationData) { delete _animationData; }
     }
 }
 
