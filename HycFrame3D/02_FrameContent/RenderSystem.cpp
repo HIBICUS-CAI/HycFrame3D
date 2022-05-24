@@ -94,6 +94,12 @@ void RenderSystem::Run(Timer& _timer)
         }
         if (!mesh.second.mInstanceVector.size()) { continue; }
 
+        mesh.second.mBonesVector.clear();
+        for (auto& bone : mesh.second.mBonesMap)
+        {
+            mesh.second.mBonesVector.emplace_back(bone.second);
+        }
+
         auto drawCallPool = mRenderSystemRoot->DrawCallsPool();
         DRAWCALL_TYPE dType = DRAWCALL_TYPE::MAX;
         MESH_TYPE mType = mesh.second.mMeshType;
@@ -112,7 +118,7 @@ void RenderSystem::Run(Timer& _timer)
         drawCall.mMeshData.mIndexBuffer = mesh.second.mMeshData.mIndexBuffer;
         drawCall.mMeshData.mIndexCount = mesh.second.mMeshData.mIndexCount;
         drawCall.mInstanceData.mDataPtr = &(mesh.second.mInstanceVector);
-        drawCall.mInstanceData.mBonesDataPtr = &(mesh.second.mBoneData);
+        drawCall.mInstanceData.mBonesDataPtr = &(mesh.second.mBonesVector);
         drawCall.mTextureDatas[0].mUse = true;
         drawCall.mTextureDatas[0].mSrv = mRenderSystemRoot->ResourceManager()->
             GetMeshSrv(mesh.second.mMeshData.mTextures[0]);

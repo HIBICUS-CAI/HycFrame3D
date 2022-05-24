@@ -25,7 +25,9 @@ struct SUBMESH_DATA
     std::unordered_multimap<std::string, RS_INSTANCE_DATA> mInstanceMap = {};
     std::vector<RS_INSTANCE_DATA> mInstanceVector = {};
     // TODO shoule be able to process mutiply instance data
-    SUBMESH_BONES mBoneData = {};
+    SUBMESH_BONES mOriginBoneData = {};
+    std::unordered_map<std::string, SUBMESH_BONES> mBonesMap = {};
+    std::vector<SUBMESH_BONES> mBonesVector = {};
 };
 
 using SUBMESH_NAME_VEC = std::vector<std::string>;

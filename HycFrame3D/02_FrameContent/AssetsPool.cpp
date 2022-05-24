@@ -196,7 +196,7 @@ void AssetsPool::InsertNewSubMesh(std::string&& _meshName,
     mSubMeshPool.insert({ _meshName,md });
     mSubMeshPool[_meshName].mMeshData = _meshData;
     mSubMeshPool[_meshName].mMeshType = _meshType;
-    if (_bonesData) { mSubMeshPool[_meshName].mBoneData = *_bonesData; }
+    if (_bonesData) { mSubMeshPool[_meshName].mOriginBoneData = *_bonesData; }
     mSubMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
     if (_meshData.mWithAnimation && _animationData)
@@ -214,7 +214,7 @@ void AssetsPool::InsertNewSubMesh(std::string& _meshName,
     mSubMeshPool.insert({ _meshName,md });
     mSubMeshPool[_meshName].mMeshData = _meshData;
     mSubMeshPool[_meshName].mMeshType = _meshType;
-    if (_bonesData) { mSubMeshPool[_meshName].mBoneData = *_bonesData; }
+    if (_bonesData) { mSubMeshPool[_meshName].mOriginBoneData = *_bonesData; }
     mSubMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
     if (_meshData.mWithAnimation && _animationData)
@@ -237,7 +237,7 @@ void AssetsPool::InsertNewIndexedMesh(std::string&& _meshName,
     mSubMeshPool.insert({ subMeshName,md });
     mSubMeshPool[subMeshName].mMeshData = _meshData;
     mSubMeshPool[subMeshName].mMeshType = _meshType;
-    if (_bonesData) { mSubMeshPool[subMeshName].mBoneData = *_bonesData; }
+    if (_bonesData) { mSubMeshPool[subMeshName].mOriginBoneData = *_bonesData; }
     mSubMeshPool[subMeshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
     if (_meshData.mWithAnimation && _animationData &&
@@ -265,7 +265,7 @@ void AssetsPool::InsertNewIndexedMesh(std::string& _meshName,
     mSubMeshPool.insert({ subMeshName,md });
     mSubMeshPool[subMeshName].mMeshData = _meshData;
     mSubMeshPool[subMeshName].mMeshType = _meshType;
-    if (_bonesData) { mSubMeshPool[subMeshName].mBoneData = *_bonesData; }
+    if (_bonesData) { mSubMeshPool[subMeshName].mOriginBoneData = *_bonesData; }
     mSubMeshPool[subMeshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
     if (_meshData.mWithAnimation && _animationData &&

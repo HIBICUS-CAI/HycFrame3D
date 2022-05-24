@@ -230,7 +230,7 @@ struct RS_SUBMESH_BONE_DATA
 struct RS_INSTANCE_DRAWCALL_DATA
 {
     std::vector<RS_INSTANCE_DATA>* mDataPtr = nullptr;
-    void* mBonesDataPtr = nullptr;  // std::vector<RS_SUBMESH_BONE_DATA>*
+    void* mBonesDataPtr = nullptr;  // std::vector<std::vector<RS_SUBMESH_BONE_DATA>>*
 };
 
 constexpr UINT MESH_TEX_MAX = 10;

@@ -677,14 +677,17 @@ void RSPass_MRT::ExecuatePass()
                 D3D11_MAP_WRITE_DISCARD, 0, &msr);
             DirectX::XMFLOAT4X4* b_data = (DirectX::XMFLOAT4X4*)msr.pData;
             void* boneData = call.mInstanceData.mBonesDataPtr;
-            std::vector<RS_SUBMESH_BONE_DATA>* bones = nullptr;
+            std::vector<std::vector<RS_SUBMESH_BONE_DATA>>* bones = nullptr;
             bones = static_cast<decltype(bones)>(boneData);
+            // TEMP-----------------------
+            auto aindex = bones->size() - 1;
+            // TEMP-----------------------
             for (size_t i = 0; i < MAX_STRUCTURED_BUFFER_SIZE; i++)
             {
-                if (i < bones->size())
+                if (i < (*bones)[aindex].size())
                 {
                     DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
-                        &((*bones)[i].mBoneTransform));
+                        &((*bones)[aindex][i].mBoneTransform));
                     trans = DirectX::XMMatrixTranspose(trans);
                     DirectX::XMStoreFloat4x4(b_data + i, trans);
                 }
@@ -2062,14 +2065,17 @@ void RSPass_Shadow::ExecuatePass()
                     D3D11_MAP_WRITE_DISCARD, 0, &msr);
                 DirectX::XMFLOAT4X4* b_data = (DirectX::XMFLOAT4X4*)msr.pData;
                 void* boneData = call.mInstanceData.mBonesDataPtr;
-                std::vector<RS_SUBMESH_BONE_DATA>* bones = nullptr;
+                std::vector<std::vector<RS_SUBMESH_BONE_DATA>>* bones = nullptr;
                 bones = static_cast<decltype(bones)>(boneData);
+                // TEMP-----------------------
+                auto aindex = bones->size() - 1;
+                // TEMP-----------------------
                 for (size_t i = 0; i < MAX_STRUCTURED_BUFFER_SIZE; i++)
                 {
-                    if (i < bones->size())
+                    if (i < (*bones)[aindex].size())
                     {
                         DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
-                            &((*bones)[i].mBoneTransform));
+                            &((*bones)[aindex][i].mBoneTransform));
                         trans = DirectX::XMMatrixTranspose(trans);
                         DirectX::XMStoreFloat4x4(b_data + i, trans);
                     }
