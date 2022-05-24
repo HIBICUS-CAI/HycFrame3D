@@ -86,189 +86,6 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
     assert(subSize > _subMeshIndex);
 #endif // _DEBUG
 
-    std::vector<UINT> index = {};
-    std::vector<VertexType::TangentVertex> vertex = {};
-    std::vector<VertexType::AnimationVertex> aniVertex = {};
-    std::vector<MODEL_TEXTURE_INFO> texture = {};
-    int indexSize = 0;
-    int vertexSize = 0;
-    int textureSize = 0;
-    for (int i = 0; i < subSize; i++)
-    {
-        index.clear();
-        vertex.clear();
-        texture.clear();
-
-        // each-sub-sizes
-        inFile.read((char*)&indexSize, sizeof(indexSize));
-        inFile.read((char*)&vertexSize, sizeof(vertexSize));
-        inFile.read((char*)&textureSize, sizeof(textureSize));
-
-        // each-sub-index
-        UINT ind = 0;
-        VertexType::TangentVertex ver = {};
-        VertexType::AnimationVertex aniVer = {};
-        MODEL_TEXTURE_INFO tex = {};
-        for (int j = 0; j < indexSize; j++)
-        {
-            inFile.read((char*)&ind, sizeof(ind));
-            index.push_back(ind);
-        }
-
-        // each-sub-vertex
-        if (!animated)
-        {
-            double temp = 0.0;
-            for (int j = 0; j < vertexSize; j++)
-            {
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.Position.x = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.Position.y = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.Position.z = (float)temp;
-
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.Normal.x = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.Normal.y = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.Normal.z = (float)temp;
-
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.Tangent.x = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.Tangent.y = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.Tangent.z = (float)temp;
-
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.TexCoord.x = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                ver.TexCoord.y = (float)temp;
-
-                vertex.push_back(ver);
-            }
-        }
-        else
-        {
-            double temp = 0.0;
-            UINT tempUI = 0;
-            for (int j = 0; j < vertexSize; j++)
-            {
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Position.x = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Position.y = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Position.z = (float)temp;
-
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Normal.x = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Normal.y = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Normal.z = (float)temp;
-
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Tangent.x = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Tangent.y = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Tangent.z = (float)temp;
-
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.TexCoord.x = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.TexCoord.y = (float)temp;
-
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Weight.x = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Weight.y = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Weight.z = (float)temp;
-                inFile.read((char*)(&temp), sizeof(double));
-                aniVer.Weight.w = (float)temp;
-
-                inFile.read((char*)(&tempUI), sizeof(UINT));
-                aniVer.BoneID.x = tempUI;
-                inFile.read((char*)(&tempUI), sizeof(UINT));
-                aniVer.BoneID.y = tempUI;
-                inFile.read((char*)(&tempUI), sizeof(UINT));
-                aniVer.BoneID.z = tempUI;
-                inFile.read((char*)(&tempUI), sizeof(UINT));
-                aniVer.BoneID.w = tempUI;
-
-                aniVertex.push_back(aniVer);
-            }
-        }
-
-        // each-sub-texture
-        for (int j = 0; j < textureSize; j++)
-        {
-            int len = 0;
-            char str[1024] = "";
-            inFile.read((char*)(&len), sizeof(len));
-            inFile.read(str, len);
-            tex.mType = str;
-            std::strcpy(str, "");
-            inFile.read((char*)(&len), sizeof(len));
-            inFile.read(str, len);
-            tex.mPath = str;
-            texture.push_back(tex);
-        }
-
-        // each-sub-bone
-        if (animated)
-        {
-            int boneSize = 0;
-            inFile.read((char*)(&boneSize), sizeof(int));
-            _boneData->resize(boneSize);
-            for (int i = 0; i < boneSize; i++)
-            {
-                auto& bone = (*_boneData)[i];
-                int len = 0;
-                char boneName[1024] = "";
-                inFile.read((char*)(&len), sizeof(len));
-                inFile.read(boneName, len);
-                bone.mBoneName = boneName;
-                float mat[4][4] = {};
-                for (UINT j = 0; j < 16; j++)
-                {
-                    double tempD = 0.0;
-                    inFile.read((char*)(&tempD), sizeof(double));
-                    int fir = j / 4, sec = j % 4;
-                    mat[fir][sec] = (float)tempD;
-                }
-                bone.mLocalToBone = DirectX::XMFLOAT4X4(
-                    mat[0][0], mat[0][1], mat[0][2], mat[0][3],
-                    mat[1][0], mat[1][1], mat[1][2], mat[1][3],
-                    mat[2][0], mat[2][1], mat[2][2], mat[2][3],
-                    mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
-                DirectX::XMStoreFloat4x4(&bone.mBoneTransform,
-                    DirectX::XMMatrixIdentity());
-            }
-        }
-
-        if (i == _subMeshIndex) { break; }
-    }
-
-    SUBMESH_INFO si = {};
-    si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-    si.mIndeices = &index;
-    si.mVerteices = animated ? (void*)(&aniVertex) : (void*)(&vertex);
-    std::vector<std::string> t = {};
-    for (auto& tex : texture) { t.emplace_back(tex.mPath); }
-    si.mTextures = &t;
-    si.mStaticMaterial = "copper";
-    si.mWithAnimation = animated;
-    LAYOUT_TYPE layoutType = animated ?
-        LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE :
-        LAYOUT_TYPE::NORMAL_TANGENT_TEX;
-    GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
-        &si, layoutType);
-
     if (animated)
     {
         *_animData = new MESH_ANIMATION_DATA;
@@ -437,6 +254,190 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
             }
         }
     }
+
+    std::vector<UINT> index = {};
+    std::vector<VertexType::TangentVertex> vertex = {};
+    std::vector<VertexType::AnimationVertex> aniVertex = {};
+    std::vector<MODEL_TEXTURE_INFO> texture = {};
+    int indexSize = 0;
+    int vertexSize = 0;
+    int textureSize = 0;
+    for (int i = 0; i < subSize; i++)
+    {
+        index.clear();
+        vertex.clear();
+        aniVertex.clear();
+        texture.clear();
+
+        // each-sub-sizes
+        inFile.read((char*)&indexSize, sizeof(indexSize));
+        inFile.read((char*)&vertexSize, sizeof(vertexSize));
+        inFile.read((char*)&textureSize, sizeof(textureSize));
+
+        // each-sub-index
+        UINT ind = 0;
+        VertexType::TangentVertex ver = {};
+        VertexType::AnimationVertex aniVer = {};
+        MODEL_TEXTURE_INFO tex = {};
+        for (int j = 0; j < indexSize; j++)
+        {
+            inFile.read((char*)&ind, sizeof(ind));
+            index.push_back(ind);
+        }
+
+        // each-sub-vertex
+        if (!animated)
+        {
+            double temp = 0.0;
+            for (int j = 0; j < vertexSize; j++)
+            {
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Position.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Position.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Position.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Normal.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Normal.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Normal.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Tangent.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Tangent.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.Tangent.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.TexCoord.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                ver.TexCoord.y = (float)temp;
+
+                vertex.push_back(ver);
+            }
+        }
+        else
+        {
+            double temp = 0.0;
+            UINT tempUI = 0;
+            for (int j = 0; j < vertexSize; j++)
+            {
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Position.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Position.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Position.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Normal.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Normal.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Normal.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Tangent.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Tangent.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Tangent.z = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.TexCoord.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.TexCoord.y = (float)temp;
+
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Weight.x = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Weight.y = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Weight.z = (float)temp;
+                inFile.read((char*)(&temp), sizeof(double));
+                aniVer.Weight.w = (float)temp;
+
+                inFile.read((char*)(&tempUI), sizeof(UINT));
+                aniVer.BoneID.x = tempUI;
+                inFile.read((char*)(&tempUI), sizeof(UINT));
+                aniVer.BoneID.y = tempUI;
+                inFile.read((char*)(&tempUI), sizeof(UINT));
+                aniVer.BoneID.z = tempUI;
+                inFile.read((char*)(&tempUI), sizeof(UINT));
+                aniVer.BoneID.w = tempUI;
+
+                aniVertex.push_back(aniVer);
+            }
+        }
+
+        // each-sub-texture
+        for (int j = 0; j < textureSize; j++)
+        {
+            int len = 0;
+            char str[1024] = "";
+            inFile.read((char*)(&len), sizeof(len));
+            inFile.read(str, len);
+            tex.mType = str;
+            std::strcpy(str, "");
+            inFile.read((char*)(&len), sizeof(len));
+            inFile.read(str, len);
+            tex.mPath = str;
+            texture.push_back(tex);
+        }
+
+        // each-sub-bone
+        if (animated)
+        {
+            int boneSize = 0;
+            inFile.read((char*)(&boneSize), sizeof(int));
+            _boneData->resize(boneSize);
+            for (int j = 0; j < boneSize; j++)
+            {
+                auto& bone = (*_boneData)[j];
+                int len = 0;
+                char boneName[1024] = "";
+                inFile.read((char*)(&len), sizeof(len));
+                inFile.read(boneName, len);
+                bone.mBoneName = boneName;
+                float mat[4][4] = {};
+                for (UINT k = 0; k < 16; k++)
+                {
+                    double tempD = 0.0;
+                    inFile.read((char*)(&tempD), sizeof(double));
+                    int fir = k / 4, sec = k % 4;
+                    mat[fir][sec] = (float)tempD;
+                }
+                bone.mLocalToBone = DirectX::XMFLOAT4X4(
+                    mat[0][0], mat[0][1], mat[0][2], mat[0][3],
+                    mat[1][0], mat[1][1], mat[1][2], mat[1][3],
+                    mat[2][0], mat[2][1], mat[2][2], mat[2][3],
+                    mat[3][0], mat[3][1], mat[3][2], mat[3][3]);
+                DirectX::XMStoreFloat4x4(&bone.mBoneTransform,
+                    DirectX::XMMatrixIdentity());
+            }
+        }
+
+        if (i == _subMeshIndex) { break; }
+    }
+
+    SUBMESH_INFO si = {};
+    si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    si.mIndeices = &index;
+    si.mVerteices = animated ? (void*)(&aniVertex) : (void*)(&vertex);
+    std::vector<std::string> t = {};
+    for (auto& tex : texture) { t.emplace_back(tex.mPath); }
+    si.mTextures = &t;
+    si.mStaticMaterial = "copper";
+    si.mWithAnimation = animated;
+    LAYOUT_TYPE layoutType = animated ?
+        LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE :
+        LAYOUT_TYPE::NORMAL_TANGENT_TEX;
+    GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
+        &si, layoutType);
 
     inFile.close();
 }

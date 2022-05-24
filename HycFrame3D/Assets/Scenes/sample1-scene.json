@@ -140,8 +140,8 @@
                 "shininess": 0.5
             },
             "load-info": {
-                "model-file": "fly_ani.fbx.json",
-                "file-type": "json",
+                "model-file": "fly_ani.fbx.meshdata",
+                "file-type": "binary",
                 "sub-mesh-index": 0
             }
         },
@@ -164,8 +164,8 @@
                 "shininess": 0.5
             },
             "load-info": {
-                "model-file": "fly_ani.fbx.json",
-                "file-type": "json",
+                "model-file": "fly_ani.fbx.meshdata",
+                "file-type": "binary",
                 "sub-mesh-index": 1
             }
         }
