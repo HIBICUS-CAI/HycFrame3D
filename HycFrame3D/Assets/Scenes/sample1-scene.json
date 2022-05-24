@@ -447,43 +447,6 @@
             ]
         },
         {
-            "actor-name": "sp-rex-actor-1",
-            "components": [
-                {
-                    "type": "transform",
-                    "init-position": [
-                        20.0,
-                        -20.0,
-                        60.0
-                    ],
-                    "init-angle": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "init-scale": [
-                        5.0,
-                        5.0,
-                        5.0
-                    ]
-                },
-                {
-                    "type": "mesh",
-                    "meshes": [
-                        {
-                            "mesh-name": "bonetest",
-                            "mesh-offset": null
-                        }
-                    ]
-                },
-                {
-                    "type": "animate",
-                    "init-animation": "run",
-                    "speed-factor": 50.0
-                }
-            ]
-        },
-        {
             "actor-name": "sp-rex-actor",
             "components": [
                 {
@@ -523,6 +486,43 @@
                     "init-func-name": "AniInit",
                     "update-func-name": "AniUpdate",
                     "destory-func-name": "AniDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "sp-rex-actor-1",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        20.0,
+                        -20.0,
+                        60.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        5.0,
+                        5.0,
+                        5.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "bonetest",
+                            "mesh-offset": null
+                        }
+                    ]
+                },
+                {
+                    "type": "animate",
+                    "init-animation": "bite",
+                    "speed-factor": 50.0
                 }
             ]
         },

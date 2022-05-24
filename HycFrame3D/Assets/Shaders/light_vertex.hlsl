@@ -70,10 +70,10 @@ VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
     float3 normalL = float3(0.0f, 0.0f, 0.0f);
     float3 tangentL = float3(0.0f, 0.0f, 0.0f);
 
-    uint boneID0 = _in.BoneID.x;
-    uint boneID1 = _in.BoneID.y;
-    uint boneID2 = _in.BoneID.z;
-    uint boneID3 = _in.BoneID.w;
+    uint boneID0 = _in.BoneID.x + _instanceID * 256;
+    uint boneID1 = _in.BoneID.y + _instanceID * 256;
+    uint boneID2 = _in.BoneID.z + _instanceID * 256;
+    uint boneID3 = _in.BoneID.w + _instanceID * 256;
     float weight0 = _in.Weight.x;
     float weight1 = _in.Weight.y;
     float weight2 = _in.Weight.z;

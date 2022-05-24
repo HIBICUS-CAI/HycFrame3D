@@ -680,21 +680,27 @@ void RSPass_MRT::ExecuatePass()
             std::vector<std::vector<RS_SUBMESH_BONE_DATA>>* bones = nullptr;
             bones = static_cast<decltype(bones)>(boneData);
             // TEMP-----------------------
-            auto aindex = bones->size() - 1;
+            auto boneInsSize = bones->size();
             // TEMP-----------------------
-            for (size_t i = 0; i < MAX_STRUCTURED_BUFFER_SIZE; i++)
+            for (size_t i = 0; i < boneInsSize; i++)
             {
-                if (i < (*bones)[aindex].size())
+                for (size_t j = 0; j < MAX_STRUCTURED_BUFFER_SIZE; j++)
                 {
-                    DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
-                        &((*bones)[aindex][i].mBoneTransform));
-                    trans = DirectX::XMMatrixTranspose(trans);
-                    DirectX::XMStoreFloat4x4(b_data + i, trans);
-                }
-                else
-                {
-                    DirectX::XMStoreFloat4x4(b_data + i,
-                        DirectX::XMMatrixIdentity());
+                    if (j < (*bones)[i].size())
+                    {
+                        DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
+                            &((*bones)[i][j].mBoneTransform));
+                        trans = DirectX::XMMatrixTranspose(trans);
+                        DirectX::XMStoreFloat4x4(
+                            b_data + i * MAX_STRUCTURED_BUFFER_SIZE + j,
+                            trans);
+                    }
+                    else
+                    {
+                        DirectX::XMStoreFloat4x4(
+                            b_data + i * MAX_STRUCTURED_BUFFER_SIZE + j,
+                            DirectX::XMMatrixIdentity());
+                    }
                 }
             }
             STContext()->Unmap(mBonesStructedBuffer, 0);
@@ -831,8 +837,8 @@ bool RSPass_MRT::CreateBuffers()
     hr = Device()->CreateBuffer(&bdc, nullptr, &mInstanceStructedBuffer);
     if (FAILED(hr)) { return false; }
 
-    bdc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE *
-        sizeof(DirectX::XMFLOAT4X4);
+    bdc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE *
+        (UINT)sizeof(DirectX::XMFLOAT4X4);
     bdc.StructureByteStride = sizeof(DirectX::XMFLOAT4X4);
     hr = Device()->CreateBuffer(&bdc, nullptr, &mBonesStructedBuffer);
 
@@ -862,7 +868,7 @@ bool RSPass_MRT::CreateViews()
         &srvDesc, &mInstanceStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
-    srvDesc.Buffer.ElementWidth = MAX_STRUCTURED_BUFFER_SIZE;
+    srvDesc.Buffer.ElementWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE;
     hr = Device()->CreateShaderResourceView(
         mBonesStructedBuffer,
         &srvDesc, &mBonesStructedBufferSrv);
@@ -2068,21 +2074,27 @@ void RSPass_Shadow::ExecuatePass()
                 std::vector<std::vector<RS_SUBMESH_BONE_DATA>>* bones = nullptr;
                 bones = static_cast<decltype(bones)>(boneData);
                 // TEMP-----------------------
-                auto aindex = bones->size() - 1;
+                auto boneInsSize = bones->size();
                 // TEMP-----------------------
-                for (size_t i = 0; i < MAX_STRUCTURED_BUFFER_SIZE; i++)
+                for (size_t i = 0; i < boneInsSize; i++)
                 {
-                    if (i < (*bones)[aindex].size())
+                    for (size_t j = 0; j < MAX_STRUCTURED_BUFFER_SIZE; j++)
                     {
-                        DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
-                            &((*bones)[aindex][i].mBoneTransform));
-                        trans = DirectX::XMMatrixTranspose(trans);
-                        DirectX::XMStoreFloat4x4(b_data + i, trans);
-                    }
-                    else
-                    {
-                        DirectX::XMStoreFloat4x4(b_data + i,
-                            DirectX::XMMatrixIdentity());
+                        if (j < (*bones)[i].size())
+                        {
+                            DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
+                                &((*bones)[i][j].mBoneTransform));
+                            trans = DirectX::XMMatrixTranspose(trans);
+                            DirectX::XMStoreFloat4x4(
+                                b_data + i * MAX_STRUCTURED_BUFFER_SIZE + j,
+                                trans);
+                        }
+                        else
+                        {
+                            DirectX::XMStoreFloat4x4(
+                                b_data + i * MAX_STRUCTURED_BUFFER_SIZE + j,
+                                DirectX::XMMatrixIdentity());
+                        }
                     }
                 }
                 STContext()->Unmap(mBonesStructedBuffer, 0);
@@ -2225,7 +2237,7 @@ bool RSPass_Shadow::CreateBuffers()
         &bdc, nullptr, &mInstanceStructedBuffer);
     if (FAILED(hr)) { return false; }
 
-    bdc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE * sizeof(DirectX::XMFLOAT4X4);
+    bdc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE * (UINT)sizeof(DirectX::XMFLOAT4X4);
     bdc.StructureByteStride = sizeof(DirectX::XMFLOAT4X4);
     hr = Device()->CreateBuffer(&bdc, nullptr, &mBonesStructedBuffer);
     if (FAILED(hr)) { return false; }
@@ -2318,7 +2330,7 @@ bool RSPass_Shadow::CreateViews()
         &desSRV, &mInstanceStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
-    desSRV.Buffer.ElementWidth = MAX_STRUCTURED_BUFFER_SIZE;
+    desSRV.Buffer.ElementWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE;
     hr = Device()->CreateShaderResourceView(
         mBonesStructedBuffer,
         &desSRV, &mBonesStructedBufferSrv);

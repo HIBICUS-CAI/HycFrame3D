@@ -201,7 +201,6 @@ void AssetsPool::InsertNewSubMesh(std::string&& _meshName,
 
     if (_meshData.mWithAnimation && _animationData)
     {
-        // TODO shoule be able to process mutiply submesh data
         mMeshAnimationsPool.insert({ _meshName,_animationData });
     }
 }
@@ -219,7 +218,6 @@ void AssetsPool::InsertNewSubMesh(std::string& _meshName,
 
     if (_meshData.mWithAnimation && _animationData)
     {
-        // TODO shoule be able to process mutiply submesh data
         mMeshAnimationsPool.insert({ _meshName,_animationData });
     }
 }
@@ -243,7 +241,6 @@ void AssetsPool::InsertNewIndexedMesh(std::string&& _meshName,
     if (_meshData.mWithAnimation && _animationData &&
         mMeshAnimationsPool.find(_meshName) == mMeshAnimationsPool.end())
     {
-        // TODO shoule be able to process mutiply submesh data
         mMeshAnimationsPool.insert({ _meshName,_animationData });
     }
     else
@@ -271,7 +268,6 @@ void AssetsPool::InsertNewIndexedMesh(std::string& _meshName,
     if (_meshData.mWithAnimation && _animationData &&
         mMeshAnimationsPool.find(_meshName) == mMeshAnimationsPool.end())
     {
-        // TODO shoule be able to process mutiply submesh data
         mMeshAnimationsPool.insert({ _meshName,_animationData });
     }
     else
