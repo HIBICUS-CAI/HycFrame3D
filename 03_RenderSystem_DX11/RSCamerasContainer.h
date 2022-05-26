@@ -29,6 +29,8 @@ public:
 private:
     class RSRoot_DX11* mRootPtr;
 
+    CRITICAL_SECTION mDataLock;
+
     std::unordered_map<std::string, class RSCamera*> mCameraMap;
 };
 

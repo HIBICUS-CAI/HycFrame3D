@@ -11,8 +11,11 @@
 #include "RSRoot_DX11.h"
 #include "RSCamera.h"
 
+#define LOCK EnterCriticalSection(&mDataLock)
+#define UNLOCK LeaveCriticalSection(&mDataLock)
+
 RSCamerasContainer::RSCamerasContainer() :
-    mRootPtr(nullptr), mCameraMap({})
+    mRootPtr(nullptr), mCameraMap({}), mDataLock({})
 {
 
 }
@@ -27,6 +30,7 @@ bool RSCamerasContainer::StartUp(RSRoot_DX11* _root)
     if (!_root) { return false; }
 
     mRootPtr = _root;
+    InitializeCriticalSection(&mDataLock);
 
     return true;
 }
@@ -38,6 +42,7 @@ void RSCamerasContainer::CleanAndStop()
         delete cam.second;
     }
     mCameraMap.clear();
+    DeleteCriticalSection(&mDataLock);
 }
 
 RSCamera* RSCamerasContainer::CreateRSCamera(
@@ -45,24 +50,31 @@ RSCamera* RSCamerasContainer::CreateRSCamera(
 {
     if (!_info) { return nullptr; }
 
+    LOCK;
     if (mCameraMap.find(_name) == mCameraMap.end())
     {
         RSCamera* cam = new RSCamera(_info);
         mCameraMap.insert({ _name,cam });
     }
+    auto cam = mCameraMap[_name];
+    UNLOCK;
 
-    return mCameraMap[_name];
+    return cam;
 }
 
 RSCamera* RSCamerasContainer::GetRSCamera(std::string& _name)
 {
+    LOCK;
     auto found = mCameraMap.find(_name);
     if (found != mCameraMap.end())
     {
-        return found->second;
+        auto cam = found->second;
+        UNLOCK;
+        return cam;
     }
     else
     {
+        UNLOCK;
         return nullptr;
     }
 }
@@ -70,23 +82,29 @@ RSCamera* RSCamerasContainer::GetRSCamera(std::string& _name)
 RS_CAM_INFO* RSCamerasContainer::GetRSCameraInfo(
     std::string& _name)
 {
+    LOCK;
     auto found = mCameraMap.find(_name);
     if (found != mCameraMap.end())
     {
-        return found->second->GetRSCameraInfo();
+        auto cam = found->second;
+        UNLOCK;
+        return cam->GetRSCameraInfo();
     }
     else
     {
+        UNLOCK;
         return nullptr;
     }
 }
 
 void RSCamerasContainer::DeleteRSCamera(std::string& _name)
 {
+    LOCK;
     auto found = mCameraMap.find(_name);
     if (found != mCameraMap.end())
     {
         delete found->second;
         mCameraMap.erase(found);
     }
+    UNLOCK;
 }
