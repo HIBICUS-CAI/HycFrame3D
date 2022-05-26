@@ -6,6 +6,8 @@
 using SOUND_HANDLE = IXAudio2SourceVoice*;
 using LOAD_HANDLE = std::string;
 
+bool SoundHasInited();
+
 bool InitSound();
 
 void UninitSound();

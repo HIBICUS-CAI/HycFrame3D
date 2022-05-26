@@ -3,11 +3,21 @@
 #include <Windows.h>
 #include "PrintLog.h"
 
+static bool g_SoundSystemHasInited = false;
 static IXAudio2* gp_XAudio2 = nullptr;
 static IXAudio2MasteringVoice* gp_MasteringVoice = nullptr;
 std::unordered_map<std::string, DWORD> g_SoundLengthPool;
 std::unordered_map<std::string, BYTE*> g_SoundDataPool;
 std::unordered_map<std::string, SOUND_HANDLE> g_SoundPool;
+
+static CRITICAL_SECTION g_SoundLock = {};
+#define LOCK EnterCriticalSection(&g_SoundLock)
+#define UNLOCK LeaveCriticalSection(&g_SoundLock)
+
+bool SoundHasInited()
+{
+    return g_SoundSystemHasInited;
+}
 
 HRESULT CheckChunk(HANDLE hFile, DWORD format,
     DWORD* pChunkSize, DWORD* pChunkDataPosition)
@@ -118,6 +128,8 @@ void SplitByRomSymbolSound(const std::string& s,
 
 bool InitSound()
 {
+    InitializeCriticalSection(&g_SoundLock);
+
     HRESULT hr;
 
     hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
@@ -155,6 +167,8 @@ bool InitSound()
         return false;
     }
 
+    g_SoundSystemHasInited = true;
+
     return true;
 }
 
@@ -172,6 +186,10 @@ void UninitSound()
     }
 
     CoUninitialize();
+
+    g_SoundSystemHasInited = false;
+
+    DeleteCriticalSection(&g_SoundLock);
 }
 
 void UpdateSound()
@@ -210,10 +228,13 @@ void LoadSound(std::string name, LOAD_HANDLE path)
     WAVEFORMATEXTENSIBLE wfx;
     XAUDIO2_BUFFER buffer;
 
+    LOCK;
     if (g_SoundPool.find(name) != g_SoundPool.end())
     {
+        UNLOCK;
         return;
     }
+    UNLOCK;
 
     path = ".\\Assets\\Sounds\\" + path;
 
@@ -285,7 +306,9 @@ void LoadSound(std::string name, LOAD_HANDLE path)
             "failed to read wav file by CheckChunk\n");
         return;
     }
+    LOCK;
     g_SoundLengthPool.insert(std::make_pair(name, size));
+    UNLOCK;
     BYTE* pData = new BYTE[size];
     hr = ReadChunkData(hFile, pData,
         size, dwChunkPosition);
@@ -294,10 +317,14 @@ void LoadSound(std::string name, LOAD_HANDLE path)
         P_LOG(LOG_ERROR,
             "failed to read wav file by ReadChunkData\n");
         delete[] pData;
+        LOCK;
         g_SoundLengthPool.erase(name);
+        UNLOCK;
         return;
     }
+    LOCK;
     g_SoundDataPool.insert(std::make_pair(name, pData));
+    UNLOCK;
 
     SOUND_HANDLE soundHandle = nullptr;
     hr = gp_XAudio2->CreateSourceVoice(
@@ -306,24 +333,31 @@ void LoadSound(std::string name, LOAD_HANDLE path)
     {
         P_LOG(LOG_ERROR,
             "failed to create source wav file\n");
+        LOCK;
         g_SoundLengthPool.erase(name);
         delete[] pData;
         g_SoundDataPool.erase(name);
+        UNLOCK;
         return;
     }
     soundHandle->SetVolume(0.2f);
+    LOCK;
     g_SoundPool.insert(std::make_pair(name, soundHandle));
+    UNLOCK;
 }
 
 void PlayBGM(std::string soundName)
 {
+    LOCK;
     if (g_SoundPool.find(soundName) == g_SoundPool.end())
     {
+        UNLOCK;
         P_LOG(LOG_ERROR,
             "you haven't loaded this sound : [ %s ]\n",
             soundName.c_str());
         return;
     }
+    UNLOCK;
     auto soundSize = g_SoundLengthPool[soundName];
     auto soundData = g_SoundDataPool[soundName];
     auto sound = g_SoundPool[soundName];
@@ -350,13 +384,16 @@ void PlayBGM(std::string soundName)
 
 void StopBGM(std::string soundName)
 {
+    LOCK;
     if (g_SoundPool.find(soundName) == g_SoundPool.end())
     {
+        UNLOCK;
         P_LOG(LOG_ERROR,
             "you haven't loaded this sound : [ %s ]\n",
             soundName.c_str());
         return;
     }
+    UNLOCK;
     auto sound = g_SoundPool[soundName];
     XAUDIO2_VOICE_STATE xa2state;
 
@@ -372,6 +409,7 @@ void StopBGM()
 {
     XAUDIO2_VOICE_STATE xa2state;
 
+    LOCK;
     for (auto& sound : g_SoundPool)
     {
         sound.second->GetState(&xa2state);
@@ -381,25 +419,31 @@ void StopBGM()
             sound.second->FlushSourceBuffers();
         }
     }
+    UNLOCK;
 }
 
 void SetVolume(std::string soundName, float volume)
 {
+    LOCK;
     if (g_SoundPool.find(soundName) == g_SoundPool.end())
     {
+        UNLOCK;
         P_LOG(LOG_ERROR,
             "you haven't loaded this sound : [ %s ]\n",
             soundName.c_str());
         return;
     }
     auto sound = g_SoundPool[soundName];
+    UNLOCK;
     sound->SetVolume(volume);
 }
 
 void PlaySE(std::string soundName)
 {
+    LOCK;
     if (g_SoundPool.find(soundName) == g_SoundPool.end())
     {
+        UNLOCK;
         P_LOG(LOG_ERROR,
             "you haven't loaded this sound : [ %s ]\n",
             soundName.c_str());
@@ -408,6 +452,7 @@ void PlaySE(std::string soundName)
     auto soundSize = g_SoundLengthPool[soundName];
     auto soundData = g_SoundDataPool[soundName];
     auto sound = g_SoundPool[soundName];
+    UNLOCK;
 
     XAUDIO2_VOICE_STATE xa2state;
     XAUDIO2_BUFFER buffer;
@@ -431,24 +476,32 @@ void PlaySE(std::string soundName)
 
 SOUND_HANDLE GetSoundHandle(std::string&& soundName)
 {
+    LOCK;
     if (g_SoundPool.find(soundName) == g_SoundPool.end())
     {
+        UNLOCK;
         P_LOG(LOG_ERROR,
             "you haven't loaded this sound : [ %s ]\n",
             soundName.c_str());
         return nullptr;
     }
-    return g_SoundPool[soundName];
+    SOUND_HANDLE hnd = g_SoundPool[soundName];
+    UNLOCK;
+    return hnd;
 }
 
 SOUND_HANDLE GetSoundHandle(std::string& soundName)
 {
+    LOCK;
     if (g_SoundPool.find(soundName) == g_SoundPool.end())
     {
+        UNLOCK;
         P_LOG(LOG_ERROR,
             "you haven't loaded this sound : [ %s ]\n",
             soundName.c_str());
         return nullptr;
     }
-    return g_SoundPool[soundName];
+    SOUND_HANDLE hnd = g_SoundPool[soundName];
+    UNLOCK;
+    return hnd;
 }
