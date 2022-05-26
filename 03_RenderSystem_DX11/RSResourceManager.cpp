@@ -10,8 +10,14 @@
 #include "RSResourceManager.h"
 #include "RSRoot_DX11.h"
 
+#define R_LOCK EnterCriticalSection(&mResDataLock)
+#define R_UNLOCK LeaveCriticalSection(&mResDataLock)
+#define M_LOCK EnterCriticalSection(&mMesDataLock)
+#define M_UNLOCK LeaveCriticalSection(&mMesDataLock)
+
 RSResourceManager::RSResourceManager() :
-    mRootPtr(nullptr), mResourceMap({}), mMeshSrvMap({})
+    mRootPtr(nullptr), mResourceMap({}), mMeshSrvMap({}),
+    mResDataLock({}), mMesDataLock({})
 {
 
 }
@@ -26,6 +32,9 @@ bool RSResourceManager::StartUp(RSRoot_DX11* _root)
     if (!_root) { return false; }
 
     mRootPtr = _root;
+
+    InitializeCriticalSection(&mResDataLock);
+    InitializeCriticalSection(&mMesDataLock);
 
     return true;
 }
@@ -67,36 +76,47 @@ void RSResourceManager::CleanAndStop()
     }
     mMeshSrvMap.clear();
     mResourceMap.clear();
+
+    DeleteCriticalSection(&mResDataLock);
+    DeleteCriticalSection(&mMesDataLock);
 }
 
 void RSResourceManager::AddResource(
     std::string& _name, RS_RESOURCE_INFO& _resource)
 {
+    R_LOCK;
     if (mResourceMap.find(_name) == mResourceMap.end())
     {
         mResourceMap.insert({ _name,_resource });
     }
+    R_UNLOCK;
 }
 
 void RSResourceManager::AddMeshSrv(
     std::string& _name, ID3D11ShaderResourceView* _srv)
 {
+    M_LOCK;
     if (mMeshSrvMap.find(_name) == mMeshSrvMap.end())
     {
         mMeshSrvMap.insert({ _name,_srv });
     }
+    M_UNLOCK;
 }
 
 RS_RESOURCE_INFO* RSResourceManager::GetResourceInfo(
     std::string& _name)
 {
+    R_LOCK;
     auto found = mResourceMap.find(_name);
     if (found != mResourceMap.end())
     {
-        return &(found->second);
+        auto res = &(found->second);
+        R_UNLOCK;
+        return res;
     }
     else
     {
+        R_UNLOCK;
         return nullptr;
     }
 }
@@ -104,19 +124,24 @@ RS_RESOURCE_INFO* RSResourceManager::GetResourceInfo(
 ID3D11ShaderResourceView* RSResourceManager::GetMeshSrv(
     std::string& _name)
 {
+    M_LOCK;
     auto found = mMeshSrvMap.find(_name);
     if (found != mMeshSrvMap.end())
     {
-        return found->second;
+        auto srv = found->second;
+        M_UNLOCK;
+        return srv;
     }
     else
     {
+        M_UNLOCK;
         return nullptr;
     }
 }
 
 void RSResourceManager::DeleteResource(std::string& _name)
 {
+    R_LOCK;
     auto found = mResourceMap.find(_name);
     if (found != mResourceMap.end())
     {
@@ -148,20 +173,24 @@ void RSResourceManager::DeleteResource(std::string& _name)
         }
         mResourceMap.erase(found);
     }
+    R_UNLOCK;
 }
 
 void RSResourceManager::DeleteMeshSrv(std::string& _name)
 {
+    M_LOCK;
     auto found = mMeshSrvMap.find(_name);
     if (found != mMeshSrvMap.end())
     {
         SAFE_RELEASE(found->second);
         mMeshSrvMap.erase(found);
     }
+    M_UNLOCK;
 }
 
 void RSResourceManager::ClearResources()
 {
+    R_LOCK;
     for (auto& resource : mResourceMap)
     {
         SAFE_RELEASE(resource.second.mUav);
@@ -192,13 +221,16 @@ void RSResourceManager::ClearResources()
         }
     }
     mResourceMap.clear();
+    R_UNLOCK;
 }
 
 void RSResourceManager::ClearMeshSrvs()
 {
+    M_LOCK;
     for (auto& meshSrv : mMeshSrvMap)
     {
         SAFE_RELEASE(meshSrv.second);
     }
     mMeshSrvMap.clear();
+    M_UNLOCK;
 }

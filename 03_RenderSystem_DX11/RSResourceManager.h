@@ -38,4 +38,7 @@ private:
         mResourceMap;
     std::unordered_map<std::string, ID3D11ShaderResourceView*>
         mMeshSrvMap;
+
+    CRITICAL_SECTION mResDataLock;
+    CRITICAL_SECTION mMesDataLock;
 };
