@@ -11,9 +11,12 @@
 #include "RSRoot_DX11.h"
 #include "RSPipeline.h"
 
+#define LOCK EnterCriticalSection(&mDataLock)
+#define UNLOCK LeaveCriticalSection(&mDataLock)
+
 RSPipelinesManager::RSPipelinesManager() :
     mRootPtr(nullptr), mCurrentPipeline(nullptr),
-    mNextPipeline(nullptr), mPipelineMap({})
+    mNextPipeline(nullptr), mPipelineMap({}), mDataLock({})
 {
 
 }
@@ -28,6 +31,7 @@ bool RSPipelinesManager::StartUp(RSRoot_DX11* _root)
     if (!_root) { return false; }
 
     mRootPtr = _root;
+    InitializeCriticalSection(&mDataLock);
 
     return true;
 }
@@ -42,38 +46,47 @@ void RSPipelinesManager::CleanAndStop()
         delete pipeline.second;
     }
     mPipelineMap.clear();
+    DeleteCriticalSection(&mDataLock);
 }
 
 void RSPipelinesManager::AddPipeline(
     std::string& _name, RSPipeline* _pipeline)
 {
+    LOCK;
     if (mPipelineMap.find(_name) == mPipelineMap.end())
     {
         mPipelineMap.insert({ _name,_pipeline });
     }
+    UNLOCK;
 }
 
 RSPipeline* RSPipelinesManager::GetPipeline(
-    std::string& _name) const
+    std::string& _name)
 {
+    LOCK;
     auto found = mPipelineMap.find(_name);
     if (found != mPipelineMap.end())
     {
-        return found->second;
+        auto pipeline = found->second;
+        UNLOCK;
+        return pipeline;
     }
     else
     {
+        UNLOCK;
         return nullptr;
     }
 }
 
 void RSPipelinesManager::SetPipeline(std::string& _name)
 {
+    LOCK;
     auto found = mPipelineMap.find(_name);
     if (found != mPipelineMap.end())
     {
         mNextPipeline = (*found).second;
     }
+    UNLOCK;
 }
 
 void RSPipelinesManager::SetPipeline(RSPipeline* _pipeline)

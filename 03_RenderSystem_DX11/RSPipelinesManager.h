@@ -23,7 +23,7 @@ public:
 
     void AddPipeline(
         std::string& _name, class RSPipeline* _pipeline);
-    class RSPipeline* GetPipeline(std::string& _name) const;
+    class RSPipeline* GetPipeline(std::string& _name);
 
     void SetPipeline(std::string& _name);
     void SetPipeline(class RSPipeline* _pipeline);
@@ -37,4 +37,5 @@ private:
     class RSPipeline* mCurrentPipeline;
     class RSPipeline* mNextPipeline;
     std::unordered_map<std::string, class RSPipeline*> mPipelineMap;
+    CRITICAL_SECTION mDataLock;
 };
