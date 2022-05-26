@@ -13,10 +13,14 @@
 #include "RSLight.h"
 #include <algorithm>
 
+#define LOCK EnterCriticalSection(&mDataLock)
+#define UNLOCK LeaveCriticalSection(&mDataLock)
+
 RSLightsContainer::RSLightsContainer() :
     mRootPtr(nullptr), mLightMap({}), mShadowLights({}),
     mShadowLightIndeices({}),
-    mAmbientLights({}), mCurrentAmbient({ 0.f,0.f,0.f,0.f })
+    mAmbientLights({}), mCurrentAmbient({ 0.f,0.f,0.f,0.f }),
+    mDataLock({})
 {
 
 }
@@ -31,6 +35,7 @@ bool RSLightsContainer::StartUp(RSRoot_DX11* _root)
     if (!_root) { return false; }
 
     mRootPtr = _root;
+    InitializeCriticalSection(&mDataLock);
 
     return true;
 }
@@ -46,6 +51,7 @@ void RSLightsContainer::CleanAndStop()
     mShadowLights.clear();
     mShadowLightIndeices.clear();
     mAmbientLights.clear();
+    DeleteCriticalSection(&mDataLock);
 }
 
 bool LightLessCompare(RSLight* a, RSLight* b)
@@ -58,9 +64,12 @@ RSLight* RSLightsContainer::CreateRSLight(
 {
     if (!_info) { return nullptr; }
 
+    LOCK;
     if (mLightMap.find(_name) == mLightMap.end())
     {
+        UNLOCK;
         RSLight* light = new RSLight(_info);
+        LOCK;
         mLightMap.insert({ _name,light });
         mLights.emplace_back(light);
         std::sort(mLights.begin(), mLights.end(),
@@ -72,19 +81,25 @@ RSLight* RSLightsContainer::CreateRSLight(
                 (UINT)(mShadowLights.size() - 1));
         }
     }
+    auto light = mLightMap[_name];
+    UNLOCK;
 
-    return mLightMap[_name];
+    return light;
 }
 
 RSLight* RSLightsContainer::GetRSLight(std::string& _name)
 {
+    LOCK;
     auto found = mLightMap.find(_name);
     if (found != mLightMap.end())
     {
-        return found->second;
+        auto light = found->second;
+        UNLOCK;
+        return light;
     }
     else
     {
+        UNLOCK;
         return nullptr;
     }
 }
@@ -92,13 +107,17 @@ RSLight* RSLightsContainer::GetRSLight(std::string& _name)
 RS_LIGHT_INFO* RSLightsContainer::GetRSLightInfo(
     std::string& _name)
 {
+    LOCK;
     auto found = mLightMap.find(_name);
     if (found != mLightMap.end())
     {
-        return found->second->GetRSLightInfo();
+        auto light = found->second;
+        UNLOCK;
+        return light->GetRSLightInfo();
     }
     else
     {
+        UNLOCK;
         return nullptr;
     }
 }
@@ -106,6 +125,7 @@ RS_LIGHT_INFO* RSLightsContainer::GetRSLightInfo(
 void RSLightsContainer::DeleteRSLight(std::string& _name,
     bool _bloomDeleteByFrame)
 {
+    LOCK;
     auto found = mLightMap.find(_name);
     if (found != mLightMap.end())
     {
@@ -169,15 +189,19 @@ void RSLightsContainer::DeleteRSLight(std::string& _name,
         delete found->second;
         mLightMap.erase(found);
     }
+    UNLOCK;
 }
 
 bool RSLightsContainer::CreateLightCameraFor(
     std::string& _name, CAM_INFO* _info)
 {
+    LOCK;
     auto found = mLightMap.find(_name);
     if (found != mLightMap.end())
     {
-        auto cam = found->second->CreateLightCamera(
+        auto light = found->second;
+        UNLOCK;
+        auto cam = light->CreateLightCamera(
             _name, _info, mRootPtr->CamerasContainer());
         if (cam)
         {
@@ -190,6 +214,7 @@ bool RSLightsContainer::CreateLightCameraFor(
     }
     else
     {
+        UNLOCK;
         return false;
     }
 }
@@ -212,33 +237,39 @@ std::vector<INT>* RSLightsContainer::GetShadowLightIndeices()
 void RSLightsContainer::InsertAmbientLight(std::string&& _name,
     DirectX::XMFLOAT4&& _light)
 {
+    LOCK;
     auto found = mAmbientLights.find(_name);
     if (found == mAmbientLights.end())
     {
         mAmbientLights.insert({ _name,_light });
     }
+    UNLOCK;
 }
 
 void RSLightsContainer::EraseAmbientLight(std::string&& _name)
 {
+    LOCK;
     auto found = mAmbientLights.find(_name);
     if (found != mAmbientLights.end())
     {
         mAmbientLights.erase(_name);
     }
+    UNLOCK;
 }
 
 DirectX::XMFLOAT4& RSLightsContainer::GetAmbientLight(
     std::string& _name)
 {
+    LOCK;
     auto found = mAmbientLights.find(_name);
     static DirectX::XMFLOAT4 ambient = {};
-    ambient = { 0.f,0.f,0.f,0.f };
     if (found != mAmbientLights.end())
     {
-        ambient = mAmbientLights[_name];
+        DirectX::XMFLOAT4& refAmb = mAmbientLights[_name];
+        UNLOCK;
+        return refAmb;
     }
-
+    UNLOCK;
     return ambient;
 }
 
@@ -264,10 +295,12 @@ DirectX::XMFLOAT4& RSLightsContainer::GetCurrentAmbientLight()
 
 void RSLightsContainer::UploadLightBloomDrawCall()
 {
+    LOCK;
     for (auto& light : mLights)
     {
         light->UploadLightDrawCall();
     }
+    UNLOCK;
 }
 
 void RSLightsContainer::CreateLightBloom(std::string&& _name,

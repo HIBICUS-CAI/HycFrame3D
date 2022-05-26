@@ -60,5 +60,7 @@ private:
     std::vector<class RSLight*> mLights;
     std::vector<class RSLight*> mShadowLights;
     std::vector<INT> mShadowLightIndeices;
+
+    CRITICAL_SECTION mDataLock;
 };
 
