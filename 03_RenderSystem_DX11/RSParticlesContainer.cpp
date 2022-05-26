@@ -10,9 +10,13 @@
 #include "RSParticlesContainer.h"
 #include "RSRoot_DX11.h"
 
+#define LOCK EnterCriticalSection(&mDataLock)
+#define UNLOCK LeaveCriticalSection(&mDataLock)
+
 RSParticlesContainer::RSParticlesContainer() :
     mRootPtr(nullptr), mResetFlg(true),
-    mParticleEmitterVec({}), mParticleEmitterMap({})
+    mParticleEmitterVec({}), mParticleEmitterMap({}),
+    mDataLock({})
 {
 
 }
@@ -27,6 +31,8 @@ bool RSParticlesContainer::StartUp(RSRoot_DX11* _root)
     if (!_root) { return false; }
     mRootPtr = _root;
 
+    InitializeCriticalSection(&mDataLock);
+
     mParticleEmitterVec.reserve(MAX_INSTANCE_SIZE);
 
     return true;
@@ -36,6 +42,8 @@ void RSParticlesContainer::CleanAndStop()
 {
     mParticleEmitterMap.clear();
     mParticleEmitterVec.clear();
+
+    DeleteCriticalSection(&mDataLock);
 }
 
 bool RSParticlesContainer::GetResetFlg()
@@ -59,8 +67,10 @@ RSParticleEmitter* RSParticlesContainer::CreateRSParticleEmitter(
 {
     auto size = mParticleEmitterVec.size();
     RSParticleEmitter* emitter = new RSParticleEmitter(_info);
+    LOCK;
     mParticleEmitterVec.push_back(emitter);
     mParticleEmitterMap.insert({ _name,emitter });
+    UNLOCK;
 
     return emitter;
 }
@@ -68,6 +78,7 @@ RSParticleEmitter* RSParticlesContainer::CreateRSParticleEmitter(
 void RSParticlesContainer::DeleteRSParticleEmitter(
     std::string& _name)
 {
+    LOCK;
     auto found = mParticleEmitterMap.find(_name);
     if (found != mParticleEmitterMap.end())
     {
@@ -84,18 +95,23 @@ void RSParticlesContainer::DeleteRSParticleEmitter(
             }
         }
     }
+    UNLOCK;
 }
 
 RSParticleEmitter* RSParticlesContainer::GetRSParticleEmitter(
     std::string& _name)
 {
+    LOCK;
     auto found = mParticleEmitterMap.find(_name);
     if (found != mParticleEmitterMap.end())
     {
-        return found->second;
+        auto emt = found->second;
+        UNLOCK;
+        return emt;
     }
     else
     {
+        UNLOCK;
         return nullptr;
     }
 }
@@ -109,19 +125,23 @@ RSParticlesContainer::GetAllParticleEmitters()
 void RSParticlesContainer::StartRSParticleEmitter(
     std::string& _name)
 {
+    LOCK;
     auto found = mParticleEmitterMap.find(_name);
     if (found != mParticleEmitterMap.end())
     {
         found->second->StartParticleEmitter();
     }
+    UNLOCK;
 }
 
 void RSParticlesContainer::PauseRSParticleEmitter(
     std::string& _name)
 {
+    LOCK;
     auto found = mParticleEmitterMap.find(_name);
     if (found != mParticleEmitterMap.end())
     {
         found->second->PauseParticleEmitter();
     }
+    UNLOCK;
 }

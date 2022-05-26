@@ -41,6 +41,8 @@ private:
 
     bool mResetFlg;
 
+    CRITICAL_SECTION mDataLock;
+
     std::vector<RSParticleEmitter*> mParticleEmitterVec;
     std::unordered_map<std::string, RSParticleEmitter*>
         mParticleEmitterMap;
