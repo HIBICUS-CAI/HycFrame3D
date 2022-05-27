@@ -3,6 +3,7 @@
 #include "SceneNode.h"
 #include "ObjectContainer.h"
 #include "JsonHelper.h"
+#include <thread>
 
 SceneManager::SceneManager() :
     mObjectFactoryPtr(nullptr), mLoadingScenePtr(nullptr),
@@ -92,7 +93,10 @@ void SceneManager::CheckLoadStatus()
             mCurrentScenePtr = mLoadingScenePtr;
         }
 
-        LoadNextScene();
+        //LoadNextScene();
+        std::thread loadThread(
+            &SceneManager::LoadNextScene, this);
+        loadThread.detach();
     }
 
     if (mCurrentScenePtr == mLoadingScenePtr && mNextScenePtr)

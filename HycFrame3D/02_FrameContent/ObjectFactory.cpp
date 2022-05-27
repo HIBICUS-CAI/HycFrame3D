@@ -1033,6 +1033,13 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
                 repeatFlg, switchTime);
         }
 
+        JsonNode initNode = GetJsonNode(_json,
+            _jsonPath + "/init-ani");
+        if (initNode && !initNode->IsNull())
+        {
+            uamc.ChangeAnimateTo(initNode->GetString());
+        }
+
         COMP_TYPE type = COMP_TYPE::U_ANIMATE;
         _ui->AddUComponent(type);
         _node->GetComponentContainer()->AddComponent(type, uamc);

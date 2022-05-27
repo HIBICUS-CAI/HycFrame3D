@@ -13,6 +13,115 @@
             "audio-file": "bgm-success.wav"
         }
     ],
+    "actor":[
+        {
+            "actor-name": "sp-point-light-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        30.0,
+                        0.0,
+                        50.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.9,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 2.0
+                }
+            ]
+        },
+        {
+            "actor-name": "sp-particle-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        30.0,
+                        5.0,
+                        50.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "emit-per-second": 800.0,
+                    "velocity": [
+                        0.0,
+                        36.0,
+                        0.0
+                    ],
+                    "pos-variance": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "vel-variance": 0.5,
+                    "acceleration": [
+                        0.0,
+                        -360.0,
+                        0.0
+                    ],
+                    "particle-mass": 0.3,
+                    "life-span": 2.0,
+                    "start-end-size": [
+                        0.5,
+                        0.0
+                    ],
+                    "start-color": [
+                        0.2,
+                        0.2,
+                        1.0,
+                        1.0
+                    ],
+                    "end-color": [
+                        0.5,
+                        0.5,
+                        1.0,
+                        1.0
+                    ],
+                    "streak-flag": true,
+                    "texture-name": "circle"
+                }
+            ]
+        }
+    ],
     "ui": [
         {
             "ui-name": "move-ui",
@@ -70,7 +179,8 @@
                             "switch-time": 0.1,
                             "repeat-flag": true
                         }
-                    ]
+                    ],
+                    "init-ani": null
                 },
                 {
                     "type": "input",
