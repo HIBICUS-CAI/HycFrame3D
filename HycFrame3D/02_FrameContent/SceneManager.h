@@ -26,7 +26,7 @@ private:
     bool LoadLoadingScene();
     void ReleaseLoadingScene();
 
-    void LoadNextScene();
+    void LoadNextScene(class SceneNode* _relScene = nullptr);
 
 private:
     class ObjectFactory* mObjectFactoryPtr;

@@ -86,20 +86,19 @@ void SceneManager::CheckLoadStatus()
     {
         mLoadSceneFlg = false;
         mSceneSwitchFlg = true;
+        SceneNode* needRelScene = nullptr;
         if (mCurrentScenePtr != mLoadingScenePtr)
         {
-            mCurrentScenePtr->ReleaseScene();
-            delete mCurrentScenePtr;
+            needRelScene = mCurrentScenePtr;
             mCurrentScenePtr = mLoadingScenePtr;
         }
 
-        //LoadNextScene();
-        std::thread loadThread(
-            &SceneManager::LoadNextScene, this);
+        std::thread loadThread(&SceneManager::LoadNextScene,
+            this, needRelScene);
         loadThread.detach();
     }
 
-    if (mCurrentScenePtr == mLoadingScenePtr && mNextScenePtr)
+    if (mNextScenePtr && (mCurrentScenePtr == mLoadingScenePtr))
     {
         mSceneSwitchFlg = true;
         mCurrentScenePtr = mNextScenePtr;
@@ -133,8 +132,14 @@ void SceneManager::ReleaseLoadingScene()
     delete mLoadingScenePtr;
 }
 
-void SceneManager::LoadNextScene()
+void SceneManager::LoadNextScene(SceneNode* _relScene)
 {
+    if (_relScene)
+    {
+        _relScene->ReleaseScene();
+        delete _relScene;
+    }
+
     mNextScenePtr = mObjectFactoryPtr->CreateSceneNode(
         mLoadSceneInfo[0], mLoadSceneInfo[1]);
 }
