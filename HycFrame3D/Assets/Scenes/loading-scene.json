@@ -1,0 +1,46 @@
+{
+    "scene-name": "loading-scene",
+    "ambient-light": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "model-assets": [],
+    "audio-assets": [],
+    "ui": [
+        {
+            "ui-name": "loading-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "runman.png"
+                }
+            ]
+        }
+    ]
+}

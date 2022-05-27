@@ -22,11 +22,29 @@ bool SceneManager::StartUp(ObjectFactory* _objectFactory)
 
     mObjectFactoryPtr = _objectFactory;
 
-    return LoadLoadingScene();
+    mLoadingScenePtr = new SceneNode("temp-loading-scene", this);
+
+    if (!mLoadingScenePtr)
+    {
+        P_LOG(LOG_ERROR, "fail to create temp loading scene\n");
+        return false;
+    }
+
+    mCurrentScenePtr = mLoadingScenePtr;
+
+    return true;
 }
 
 bool SceneManager::DeferedStartUp()
 {
+    mLoadingScenePtr->ReleaseScene();
+    delete mLoadingScenePtr;
+    if (!LoadLoadingScene())
+    {
+        P_LOG(LOG_ERROR, "failed to load loading scene\n");
+        return false;
+    }
+
     JsonFile entryInfo = {};
     LoadJsonFile(&entryInfo, ".\\Assets\\Configs\\scene-entry-config.json");
     if (entryInfo.HasParseError())
@@ -97,7 +115,9 @@ SceneNode* SceneManager::GetCurrentSceneNode() const
 
 bool SceneManager::LoadLoadingScene()
 {
-    mLoadingScenePtr = new SceneNode("loading-scene", this);
+    mLoadingScenePtr = mObjectFactoryPtr->CreateSceneNode(
+        "loading-scene",
+        ".\\Assets\\Scenes\\loading-scene.json");
     mCurrentScenePtr = mLoadingScenePtr;
 
     return (mLoadingScenePtr ? true : false);

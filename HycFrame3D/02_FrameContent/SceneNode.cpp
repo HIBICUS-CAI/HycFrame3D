@@ -18,7 +18,7 @@ SceneNode::SceneNode(std::string&& _sceneName, SceneManager* _sceneManager) :
     mCompContainerPtr = new ComponentContainer(*this);
     mAssetsPoolPtr = new AssetsPool(*this);
     mPhysicsWorldPtr = new PhysicsWorld(*this);
-    if (_sceneName != "loading-scene")
+    if (_sceneName != "temp-loading-scene")
     {
         std::string cam = "temp-cam";
         mCameraAmbientInfo.mRSCameraPtr = GetRSRoot_DX11_Singleton()->
@@ -39,7 +39,7 @@ SceneNode::SceneNode(std::string& _sceneName, SceneManager* _sceneManager) :
     mCompContainerPtr = new ComponentContainer(*this);
     mAssetsPoolPtr = new AssetsPool(*this);
     mPhysicsWorldPtr = new PhysicsWorld(*this);
-    if (_sceneName != "loading-scene")
+    if (_sceneName != "temp-loading-scene")
     {
         std::string cam = "temp-cam";
         mCameraAmbientInfo.mRSCameraPtr = GetRSRoot_DX11_Singleton()->
