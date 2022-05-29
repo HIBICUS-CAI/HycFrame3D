@@ -18,14 +18,15 @@
 RSLight::RSLight(LIGHT_INFO* _info) :
     mLightType(_info->mType),
     mWithShadow(_info->mWithShadow),
-    mLightStrength(_info->mStrength),
+    mIntensity(_info->mTempIntensity),
+    mLightStrength(_info->mAlbedo),
     mLightDirection(_info->mDirection),
     mLightPosition(_info->mPosition),
     mLightFallOffStart(_info->mFalloffStart),
     mLightFallOffEnd(_info->mFalloffEnd),
     mLightSpotPower(_info->mSpotPower),
     mRSLightInfo({
-        mLightStrength, mLightFallOffStart, mLightDirection,
+        mIntensity, mLightStrength, mLightFallOffStart, mLightDirection,
         mLightFallOffEnd, mLightPosition, mLightSpotPower
         }),
     mRSLightCamera(nullptr), mBloomLightFlg(false),
@@ -53,7 +54,8 @@ LIGHT_TYPE RSLight::GetRSLightType()
 void RSLight::ResetRSLight(LIGHT_INFO* _info)
 {
     mLightType = _info->mType;
-    SetRSLightStrength(_info->mStrength);
+    SetRSLightIntensity(_info->mTempIntensity);
+    SetRSLightStrength(_info->mAlbedo);
     SetRSLightDirection(_info->mDirection);
     SetRSLightPosition(_info->mPosition);
     SetRSLightFallOff(_info->mFalloffStart, _info->mFalloffEnd);
@@ -63,7 +65,7 @@ void RSLight::ResetRSLight(LIGHT_INFO* _info)
 void RSLight::SetRSLightStrength(DirectX::XMFLOAT3 _strength)
 {
     mLightStrength = _strength;
-    mRSLightInfo.mStrength = _strength;
+    mRSLightInfo.mAlbedo = _strength;
 }
 
 void RSLight::SetRSLightDirection(DirectX::XMFLOAT3 _direction)
@@ -102,6 +104,12 @@ void RSLight::SetRSLightSpotPower(float _power)
 {
     mLightSpotPower = _power;
     mRSLightInfo.mSpotPower = _power;
+}
+
+void RSLight::SetRSLightIntensity(float _power)
+{
+    mIntensity = _power;
+    mRSLightInfo.mTempIntensity = _power;
 }
 
 RSCamera* RSLight::CreateLightCamera(std::string& _lightName,

@@ -88,7 +88,10 @@ struct LIGHT_INFO
 {
     LIGHT_TYPE mType = LIGHT_TYPE::DIRECT;
     bool mWithShadow = false;
-    DirectX::XMFLOAT3 mStrength = {};
+    // TODO change to physically based radiometry with lumen in future
+    // now it's just a factor to scale light strength
+    float mTempIntensity = 1.f;
+    DirectX::XMFLOAT3 mAlbedo = {};
     float mFalloffStart = 0.f;
     DirectX::XMFLOAT3 mDirection = {};
     float mFalloffEnd = 0.f;
@@ -98,7 +101,8 @@ struct LIGHT_INFO
 
 struct RS_LIGHT_INFO
 {
-    DirectX::XMFLOAT3 mStrength = {};
+    float mTempIntensity = 1.f;
+    DirectX::XMFLOAT3 mAlbedo = {};
     float mFalloffStart = 0.f;
     DirectX::XMFLOAT3 mDirection = {};
     float mFalloffEnd = 0.f;

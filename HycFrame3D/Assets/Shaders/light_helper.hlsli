@@ -6,7 +6,8 @@
 // 相关含义查看对应的cpp声明
 struct LIGHT
 {
-    float3 gStrength;
+    float gTempIntensity;
+    float3 gAlbedo;
     float gFalloffStart;
     float3 gDirection;
     float gFalloffEnd;
@@ -55,7 +56,7 @@ float3 ComputeDirectionalLight(LIGHT l, MATERIAL mat, float3 normal, float3 toEy
 {
     float3 lightVec = -l.gDirection;
     float ndotl = max(dot(lightVec, normal), 0.0f);
-    float3 lightStr = l.gStrength * ndotl;
+    float3 lightStr = l.gAlbedo * l.gTempIntensity * ndotl;
 
     return BlinnPhong(lightStr, lightVec, normal, toEye, mat);
 }
@@ -73,7 +74,7 @@ float3 ComputePointLight(LIGHT l, MATERIAL mat, float3 pos, float3 normal, float
 
     lightVec /= d;
     float ndotl = max(dot(lightVec, normal), 0.0f);
-    float3 lightStr = l.gStrength * ndotl;
+    float3 lightStr = l.gAlbedo * l.gTempIntensity * ndotl;
     float att = CalcAttenuation(d, l.gFalloffStart, l.gFalloffEnd);
     lightStr *= att;
 
@@ -93,7 +94,7 @@ float3 ComputeSpotLight(LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3
 
     lightVec /= d;
     float ndotl = max(dot(lightVec, normal), 0.0f);
-    float3 lightStr = l.gStrength * ndotl;
+    float3 lightStr = l.gAlbedo * l.gTempIntensity * ndotl;
     float att = CalcAttenuation(d, l.gFalloffStart, l.gFalloffEnd);
     lightStr *= att;
     float spotFactor = pow(max(dot(-lightVec, l.gDirection), 0.0f), l.gSpotPower);

@@ -680,12 +680,14 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             _jsonPath + "/direction/1")->GetFloat();
         li.mDirection.z = GetJsonNode(_json,
             _jsonPath + "/direction/2")->GetFloat();
-        li.mStrength.x = GetJsonNode(_json,
-            _jsonPath + "/strength/0")->GetFloat();
-        li.mStrength.y = GetJsonNode(_json,
-            _jsonPath + "/strength/1")->GetFloat();
-        li.mStrength.z = GetJsonNode(_json,
-            _jsonPath + "/strength/2")->GetFloat();
+        li.mTempIntensity = GetJsonNode(_json,
+            _jsonPath + "/intensity")->GetFloat();
+        li.mAlbedo.x = GetJsonNode(_json,
+            _jsonPath + "/albedo/0")->GetFloat();
+        li.mAlbedo.y = GetJsonNode(_json,
+            _jsonPath + "/albedo/1")->GetFloat();
+        li.mAlbedo.z = GetJsonNode(_json,
+            _jsonPath + "/albedo/2")->GetFloat();
         li.mFalloffStart = GetJsonNode(_json,
             _jsonPath + "/fall-off-start-end/0")->GetFloat();
         li.mFalloffEnd = GetJsonNode(_json,

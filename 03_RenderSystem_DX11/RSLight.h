@@ -32,6 +32,7 @@ public:
     void SetRSLightPosition(DirectX::XMFLOAT3 _position);
     void SetRSLightFallOff(float _start, float _end);
     void SetRSLightSpotPower(float _power);
+    void SetRSLightIntensity(float _power);
 
     void SetLightBloom(RS_SUBMESH_DATA& _meshData);
     void UploadLightDrawCall();
@@ -43,6 +44,7 @@ private:
 
     bool mWithShadow;
 
+    float mIntensity;
     DirectX::XMFLOAT3 mLightStrength;
     DirectX::XMFLOAT3 mLightDirection;
     DirectX::XMFLOAT3 mLightPosition;
