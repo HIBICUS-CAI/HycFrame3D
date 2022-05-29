@@ -1,0 +1,226 @@
+{
+    "scene-name": "material-scene",
+    "ambient-light": [
+        0.2,
+        0.2,
+        0.2,
+        1.0
+    ],
+    "model-assets": [
+        {
+            "mesh-name": "grid",
+            "static-material": null,
+            "load-mode": "program-grid",
+            "load-info": {
+                "tex-file": "white.jpg",
+                "grid-size": [
+                    150.0,
+                    150.0
+                ],
+                "row-col-count": [
+                    2,
+                    2
+                ]
+            }
+        },
+        {
+            "mesh-name": "mat-ball",
+            "load-mode": "model-file",
+            "force-diffuse": "white.jpg",
+            "material-info": {
+                "albedo": [
+                    0.8,
+                    0.8,
+                    0.8,
+                    0.8
+                ],
+                "fresnel": [
+                    0.1,
+                    0.3,
+                    0.1
+                ],
+                "shininess": 0.5
+            },
+            "load-info": {
+                "model-file": "mat_ball.gltf.meshdata",
+                "file-type": "binary"
+            }
+        }
+    ],
+    "audio-assets": [],
+    "actor": [
+        {
+            "actor-name": "mat-ball-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        100.0
+                    ],
+                    "init-angle": [
+                        1.57,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        2.5,
+                        2.5,
+                        2.5
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "mat-ball",
+                            "mesh-offset": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "grid-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -30.0,
+                        100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        2.5,
+                        2.5,
+                        2.5
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "grid",
+                            "mesh-offset": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "direct-light-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        15.0,
+                        30.0,
+                        -30.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "direct",
+                    "with-shadow": true,
+                    "with-bloom": false,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        -0.5,
+                        -1.0,
+                        1.0
+                    ],
+                    "fall-off-start-end": [
+                        5.0,
+                        15.0
+                    ],
+                    "spot-power": 2.0,
+                    "cam-up-vec": [
+                        -0.5,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        50.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.9,
+                        0.0,
+                        0.9
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 2.0
+                }
+            ]
+        },
+        {
+            "actor-name": "global-mat-editor-actor",
+            "components": [
+                {
+                    "type": "input",
+                    "func-name": "MatEditorInput"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "MatEditorInit",
+                    "update-func-name": "MatEditorUpdate",
+                    "destory-func-name": "MatEditorDestory"
+                }
+            ]
+        }
+    ],
+    "ui": []
+}

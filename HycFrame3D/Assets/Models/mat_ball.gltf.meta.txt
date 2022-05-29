@@ -1,0 +1,11 @@
+----------------------------------------------
+directory : [[.\scene.gltf]]
+----------------------------------------------
+sub mesh size : [[1]]
+	------------------------------------------
+	index size : [[140448]]		vertex size : [[24672]]
+	texture_diffuse : [[textures/lambert3SG_baseColor.png]]
+	texture_diffuse : [[textures/lambert3SG_baseColor.png]]
+----------------------------------------------
+animated : [[No]]
+----------------------------------------------
