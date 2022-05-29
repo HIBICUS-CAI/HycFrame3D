@@ -26,7 +26,8 @@
         {
             "mesh-name": "mat-ball",
             "load-mode": "model-file",
-            "force-diffuse": "white.jpg",
+            "force-diffuse": "matball_diffuse.png",
+            "force-normal": "matball_normal.png",
             "material-info": {
                 "albedo": [
                     0.8,
