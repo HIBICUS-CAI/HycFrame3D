@@ -56,7 +56,7 @@ float3 BlinnPhong(float3 lightStr, float3 lightVec, float3 normal, float3 toEye,
     float3 specAlbedo = fresnelFactor * roughnessFactor;
     specAlbedo = specAlbedo / (specAlbedo + 1.0f);
 
-    return (float3(0.5f, 0.5f, 0.5f) + specAlbedo) * lightStr;
+    return (float3(0.8f, 0.8f, 0.8f) + specAlbedo) * lightStr;
 }
 
 // 平行光源计算

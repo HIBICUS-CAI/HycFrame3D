@@ -1,4 +1,4 @@
-#include "light_helper.hlsli"
+#include "light_blinn_phong.hlsli"
 
 struct VS_OUTPUT
 {
@@ -102,7 +102,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     float3 toEyeW = normalize(gLightInfo[0].gCameraPos - _in.PosW);
     _in.SsaoPosH /= _in.SsaoPosH.w;
     float access = gSsaoMap.SampleLevel(gSampler, _in.SsaoPosH.xy, 0.0f).r;
-    float4 ambientL = gAmbient[0].gAmbient * float4(0.5f, 0.5f, 0.5f, 1.f) * access;
+    float4 ambientL = gAmbient[0].gAmbient * float4(0.8f, 0.8f, 0.8f, 1.f) * access;
     
     float4 directL = (float4)0.0f;
     float4 tempL = (float4)0.0f;

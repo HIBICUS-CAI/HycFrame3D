@@ -1,4 +1,4 @@
-#include "light_helper.hlsli"
+#include "light_blinn_phong.hlsli"
 
 struct VS_OUTPUT
 {

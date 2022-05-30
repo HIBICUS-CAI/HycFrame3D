@@ -159,44 +159,89 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
                 jsonPath + "/material-info");
             if (matInfoNode && !matInfoNode->IsNull())
             {
-                JsonNode albedoNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/albedo");
-                JsonNode fresnelNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/fresnel");
-                JsonNode shininessNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/shininess");
-                if (!(albedoNode && fresnelNode && shininessNode))
+                JsonNode fresnelNodeX = GetJsonNode(_json,
+                    jsonPath + "/material-info/fresnel-r0/0");
+                JsonNode fresnelNodeY = GetJsonNode(_json,
+                    jsonPath + "/material-info/fresnel-r0/1");
+                JsonNode fresnelNodeZ = GetJsonNode(_json,
+                    jsonPath + "/material-info/fresnel-r0/2");
+                JsonNode subSurfNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/sub-surface");
+                JsonNode metalNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/metallic");
+                JsonNode specNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/specular");
+                JsonNode specTintNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/specular-tint");
+                JsonNode roughNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/roughness");
+                JsonNode anisoNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/anisotropic");
+                JsonNode sheenNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/sheen");
+                JsonNode sheenTintNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/sheen-tint");
+                JsonNode clearcoatNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/clearcoat");
+                JsonNode clearcoatGlossNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/clearcoat-gloss");
+
+                if (fresnelNodeX && fresnelNodeY && fresnelNodeZ)
                 {
-                    P_LOG(LOG_ERROR,
-                        "invalid material info in %s\n",
-                        jsonPath.c_str());
-                    return;
+                    matInfo.mFresnelR0.x = fresnelNodeX->GetFloat();
+                    matInfo.mFresnelR0.y = fresnelNodeY->GetFloat();
+                    matInfo.mFresnelR0.z = fresnelNodeZ->GetFloat();
                 }
-                DirectX::XMFLOAT4 albedo =
+
+                if (subSurfNode)
                 {
-                    GetJsonNode(_json,
-                    jsonPath + "/material-info/albedo/0")->GetFloat(),
-                    GetJsonNode(_json,
-                    jsonPath + "/material-info/albedo/1")->GetFloat(),
-                    GetJsonNode(_json,
-                    jsonPath + "/material-info/albedo/2")->GetFloat(),
-                    GetJsonNode(_json,
-                    jsonPath + "/material-info/albedo/3")->GetFloat()
-                };
-                DirectX::XMFLOAT3 fresnel =
+                    matInfo.mSubSruface = subSurfNode->GetFloat();
+                }
+
+                if (metalNode)
                 {
-                    GetJsonNode(_json,
-                    jsonPath + "/material-info/fresnel/0")->GetFloat(),
-                    GetJsonNode(_json,
-                    jsonPath + "/material-info/fresnel/1")->GetFloat(),
-                    GetJsonNode(_json,
-                    jsonPath + "/material-info/fresnel/2")->GetFloat()
-                };
-                float shininess = GetJsonNode(_json,
-                    jsonPath + "/material-info/shininess")->GetFloat();
-                //matInfo.mDiffuseAlbedo = albedo;
-                //matInfo.mFresnelR0 = fresnel;
-                //matInfo.mShininess = shininess;
+                    matInfo.mMetallic = metalNode->GetFloat();
+                }
+
+                if (specNode)
+                {
+                    matInfo.mSpecular = specNode->GetFloat();
+                }
+
+                if (specTintNode)
+                {
+                    matInfo.mSpecularTint = specTintNode->GetFloat();
+                }
+
+                if (roughNode)
+                {
+                    matInfo.mRoughness = roughNode->GetFloat();
+                }
+
+                if (anisoNode)
+                {
+                    matInfo.mAnisotropic = anisoNode->GetFloat();
+                }
+
+                if (sheenNode)
+                {
+                    matInfo.mSheen = sheenNode->GetFloat();
+                }
+
+                if (sheenTintNode)
+                {
+                    matInfo.mSheenTint = sheenTintNode->GetFloat();
+                }
+
+                if (clearcoatNode)
+                {
+                    matInfo.mClearcoat = clearcoatNode->GetFloat();
+                }
+
+                if (clearcoatGlossNode)
+                {
+                    matInfo.mClearcoatGloss = clearcoatGlossNode->GetFloat();
+                }
                 forceMat = true;
             }
 
