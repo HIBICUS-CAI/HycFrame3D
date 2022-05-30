@@ -307,9 +307,8 @@ void RSMeshHelper::CreateSubMeshMaterial(
     assert(_info);
 
     RS_MATERIAL_INFO* material = &(_result->mMaterial);
-    material->mDiffuseAlbedo = _info->mDiffuseAlbedo;
-    material->mFresnelR0 = _info->mFresnelR0;
-    material->mShininess = _info->mShininess;
+    memcpy_s(material, sizeof(RS_MATERIAL_INFO),
+        _info, sizeof(MATERIAL_INFO));
 }
 
 void RSMeshHelper::RefStaticMaterial(
@@ -320,9 +319,7 @@ void RSMeshHelper::RefStaticMaterial(
         GetStaticMaterial(_materialName);
     assert(material);
 
-    _result->mMaterial.mDiffuseAlbedo = material->mDiffuseAlbedo;
-    _result->mMaterial.mFresnelR0 = material->mFresnelR0;
-    _result->mMaterial.mShininess = material->mShininess;
+    _result->mMaterial = *material;
 }
 
 void RSMeshHelper::ReleaseSubMesh(RS_SUBMESH_DATA& _result)

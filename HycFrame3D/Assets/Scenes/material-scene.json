@@ -9,7 +9,7 @@
     "model-assets": [
         {
             "mesh-name": "grid",
-            "static-material": null,
+            "static-material": "copper",
             "load-mode": "program-grid",
             "load-info": {
                 "tex-file": "white.jpg",
@@ -28,20 +28,7 @@
             "load-mode": "model-file",
             "force-diffuse": "matball_diffuse.png",
             "force-normal": "matball_normal.png",
-            "material-info": {
-                "albedo": [
-                    0.8,
-                    0.8,
-                    0.8,
-                    0.8
-                ],
-                "fresnel": [
-                    0.1,
-                    0.3,
-                    0.1
-                ],
-                "shininess": 0.5
-            },
+            "static-material": "copper",
             "load-info": {
                 "model-file": "mat_ball.gltf.meshdata",
                 "file-type": "binary"

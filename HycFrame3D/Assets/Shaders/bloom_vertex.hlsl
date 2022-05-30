@@ -19,9 +19,17 @@ struct VIEWPROJ
 
 struct MATERIAL
 {
-    float4 gDiffuseAlbedo;
-    float3 gFresnelR0;
-    float gShininess;
+    float3 mFresnelR0;
+    float mSubSruface;
+    float mMetallic;
+    float mSpecular;
+    float mSpecularTint;
+    float mRoughness;
+    float mAnisotropic;
+    float mSheen;
+    float mSheenTint;
+    float mClearcoat;
+    float mClearcoatGloss;
 };
 
 struct INSTANCE_DATA

@@ -92,11 +92,10 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     float4 diffuse = gDiffuse.Sample(gSamLinearWrap, _in.TexCoordL);
     float access = gSsao.SampleLevel(gSamLinearWrap, _in.TexCoordL, 0.0f).r;
     MATERIAL mat = (MATERIAL)0.0f;
-    mat.gDiffuseAlbedo = albedo;
-    mat.gFresnelR0 = fresnel;
-    mat.gShininess = shiniese;
+    mat.mFresnelR0 = fresnel;
+    mat.mRoughness = 1.f - shiniese;
 
-    float4 ambientL = gAmbient[0].gAmbient * mat.gDiffuseAlbedo * access;
+    float4 ambientL = gAmbient[0].gAmbient * albedo * access;
 
     float4 directL = (float4)0.0f;
     float4 tempL = (float4)0.0f;

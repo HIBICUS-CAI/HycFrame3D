@@ -160,16 +160,32 @@ struct RS_PARTICLE_EMITTER_INFO
 
 struct MATERIAL_INFO
 {
-    DirectX::XMFLOAT4 mDiffuseAlbedo = {};
     DirectX::XMFLOAT3 mFresnelR0 = {};
-    float mShininess = 0.f;
+    float mSubSruface = 0.f;
+    float mMetallic = 0.f;
+    float mSpecular = 0.f;
+    float mSpecularTint = 0.f;
+    float mRoughness = 0.f;
+    float mAnisotropic = 0.f;
+    float mSheen = 0.f;
+    float mSheenTint = 0.f;
+    float mClearcoat = 0.f;
+    float mClearcoatGloss = 0.f;
 };
 
 struct RS_MATERIAL_INFO
 {
-    DirectX::XMFLOAT4 mDiffuseAlbedo = {};
     DirectX::XMFLOAT3 mFresnelR0 = {};
-    float mShininess = 0.f;
+    float mSubSruface = 0.f;
+    float mMetallic = 0.f;
+    float mSpecular = 0.f;
+    float mSpecularTint = 0.f;
+    float mRoughness = 0.f;
+    float mAnisotropic = 0.f;
+    float mSheen = 0.f;
+    float mSheenTint = 0.f;
+    float mClearcoat = 0.f;
+    float mClearcoatGloss = 0.f;
 };
 
 enum class TOPOLOGY_TYPE

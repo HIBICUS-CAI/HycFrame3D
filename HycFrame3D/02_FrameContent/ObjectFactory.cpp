@@ -194,9 +194,9 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
                 };
                 float shininess = GetJsonNode(_json,
                     jsonPath + "/material-info/shininess")->GetFloat();
-                matInfo.mDiffuseAlbedo = albedo;
-                matInfo.mFresnelR0 = fresnel;
-                matInfo.mShininess = shininess;
+                //matInfo.mDiffuseAlbedo = albedo;
+                //matInfo.mFresnelR0 = fresnel;
+                //matInfo.mShininess = shininess;
                 forceMat = true;
             }
 

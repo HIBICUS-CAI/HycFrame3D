@@ -30,9 +30,17 @@ struct VIEWPROJ
 
 struct MATERIAL
 {
-    float4 gDiffuseAlbedo;
-    float3 gFresnelR0;
-    float gShininess;
+    float3 mFresnelR0;
+    float mSubSruface;
+    float mMetallic;
+    float mSpecular;
+    float mSpecularTint;
+    float mRoughness;
+    float mAnisotropic;
+    float mSheen;
+    float mSheenTint;
+    float mClearcoat;
+    float mClearcoatGloss;
 };
 
 struct INSTANCE_DATA
@@ -92,8 +100,8 @@ VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
 
     _out.PosH = mul(_out.PosH, gInstances[_instanceID].gWorld);
     _out.PosW = _out.PosH.xyz;
-    _out.DiffuseAlbedo = gInstances[_instanceID].gMaterial.gDiffuseAlbedo;
-    _out.FresnelShiniese = float4(gInstances[_instanceID].gMaterial.gFresnelR0, gInstances[_instanceID].gMaterial.gShininess);
+    _out.DiffuseAlbedo = float4(0.5f, 0.5f, 0.5f, 1.f);
+    _out.FresnelShiniese = float4(gInstances[_instanceID].gMaterial.mFresnelR0, 1.f - gInstances[_instanceID].gMaterial.mRoughness);
     _out.NormalW = mul(_out.NormalW, (float3x3)gInstances[_instanceID].gWorld);
     _out.TangentW = mul(_out.TangentW, (float3x3)gInstances[_instanceID].gWorld);
     _out.PosH = mul(_out.PosH, gViewProj[0].gView);

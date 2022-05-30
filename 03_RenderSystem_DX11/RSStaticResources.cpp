@@ -344,9 +344,17 @@ bool RSStaticResources::BuildStaticMaterials()
     RS_MATERIAL_INFO rmi = {};
 
     name = "copper";
-    rmi.mDiffuseAlbedo = { 0.5f,0.5f,0.5f,1.f };
     rmi.mFresnelR0 = { 0.95f,0.64f,0.54f };
-    rmi.mShininess = 0.875f;
+    rmi.mSubSruface = 0.f;
+    rmi.mMetallic = 0.8f;
+    rmi.mSpecular = 0.8f;
+    rmi.mSpecularTint = 0.f;
+    rmi.mRoughness = 0.125f;
+    rmi.mAnisotropic = 0.f;
+    rmi.mSheen = 0.f;
+    rmi.mSheenTint = 0.f;
+    rmi.mClearcoat = 0.f;
+    rmi.mClearcoatGloss = 0.f;
     mMaterialMap.insert({ name,rmi });
 
     return true;

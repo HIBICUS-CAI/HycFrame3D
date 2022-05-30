@@ -17,9 +17,17 @@ struct LIGHT
 
 struct MATERIAL
 {
-    float4 gDiffuseAlbedo;
-    float3 gFresnelR0;
-    float gShininess;
+    float3 mFresnelR0;
+    float mSubSruface;
+    float mMetallic;
+    float mSpecular;
+    float mSpecularTint;
+    float mRoughness;
+    float mAnisotropic;
+    float mSheen;
+    float mSheenTint;
+    float mClearcoat;
+    float mClearcoatGloss;
 };
 
 // 线性衰减因子计算
@@ -41,14 +49,14 @@ float3 SchlickFresnel(float3 R0, float3 normal, float3 lightVec)
 // 镜面光照与漫反射光照总和计算
 float3 BlinnPhong(float3 lightStr, float3 lightVec, float3 normal, float3 toEye, MATERIAL mat)
 {
-    const float m = mat.gShininess * 256.0f;
+    const float m = (1.f - mat.mRoughness) * 256.0f;
     float3 halfVec = normalize(toEye + lightVec);
     float roughnessFactor = (m + 8.0f) * pow(max(dot(halfVec, normal), 0.0f), m) / 8.0f;
-    float3 fresnelFactor = SchlickFresnel(mat.gFresnelR0, halfVec, lightVec);
+    float3 fresnelFactor = SchlickFresnel(mat.mFresnelR0, halfVec, lightVec);
     float3 specAlbedo = fresnelFactor * roughnessFactor;
     specAlbedo = specAlbedo / (specAlbedo + 1.0f);
 
-    return (mat.gDiffuseAlbedo.rgb + specAlbedo) * lightStr;
+    return (float3(0.5f, 0.5f, 0.5f) + specAlbedo) * lightStr;
 }
 
 // 平行光源计算
