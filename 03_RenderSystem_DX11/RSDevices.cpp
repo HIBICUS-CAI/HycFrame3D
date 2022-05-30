@@ -12,7 +12,7 @@
 #include "RSDevices.h"
 #include "RSRoot_DX11.h"
 #include <fstream>
-#include "..\HycFrame3D\01_MiddleTools\JsonHelper.h"
+#include "RSUtilityFunctions.h"
 
 RSDevices::RSDevices() :
     mRootPtr(nullptr), mRenderDeivceConfig({}),
@@ -39,6 +39,7 @@ bool RSDevices::StartUp(RSRoot_DX11* _root, HWND _wnd)
 
     mRootPtr = _root;
 
+    using namespace Tool::Json;
     JsonFile config = {};
     LoadJsonFile(&config, ".\\Assets\\Configs\\render-device-config.json");
     if (config.HasParseError()) { return false; }
