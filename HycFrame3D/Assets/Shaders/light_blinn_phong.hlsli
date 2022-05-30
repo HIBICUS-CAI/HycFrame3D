@@ -49,7 +49,7 @@ float3 SchlickFresnel(float3 R0, float3 normal, float3 lightVec)
 // 镜面光照与漫反射光照总和计算
 float3 BlinnPhong(float3 lightStr, float3 lightVec, float3 normal, float3 toEye, MATERIAL mat)
 {
-    const float m = (1.f - mat.mRoughness) * 256.0f;
+    const float m = (1.f - mat.mRoughness + 0.0001f) * 256.0f;
     float3 halfVec = normalize(toEye + lightVec);
     float roughnessFactor = (m + 8.0f) * pow(max(dot(halfVec, normal), 0.0f), m) / 8.0f;
     float3 fresnelFactor = SchlickFresnel(mat.mFresnelR0, halfVec, lightVec);
