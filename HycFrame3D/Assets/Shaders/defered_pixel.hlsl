@@ -94,7 +94,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     MATERIAL mat = (MATERIAL)0.0f;
     mat.mFresnelR0 = fresnel;
     mat.mRoughness = 1.f - shiniese;
-    mat.mMetallic = 0.8f;
+    mat.mMetallic = 0.95f;
     mat.mSpecular = 0.8f;
 
     float4 ambientL = gAmbient[0].gAmbient * albedo * access;

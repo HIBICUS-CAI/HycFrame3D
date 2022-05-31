@@ -1,9 +1,9 @@
 {
     "scene-name": "material-scene",
     "ambient-light": [
-        0.2,
-        0.2,
-        0.2,
+        0.1,
+        0.1,
+        0.1,
         1.0
     ],
     "model-assets": [
@@ -42,7 +42,7 @@
         {
             "mesh-name": "mat-ball",
             "load-mode": "model-file",
-            "force-diffuse": "matball_diffuse.png",
+            "force-diffuse": "copper.png",
             "force-normal": "matball_normal.png",
             "material-info": {
                 "fresnel-r0": [
@@ -51,7 +51,7 @@
                     0.54
                 ],
                 "sub-surface": 0.0,
-                "metallic": 0.8,
+                "metallic": 0.95,
                 "specular": 0.8,
                 "specular-tint": 0.0,
                 "roughness": 0.125,
