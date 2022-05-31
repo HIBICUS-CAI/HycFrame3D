@@ -51,7 +51,7 @@ void HMain(int3 groupThreadId : SV_GroupThreadID,
         {
             blur += gBlurWeight[i + 2] * gSsaoCache[texIndex];
             totalWeight += gBlurWeight[i + 2];
-        }        
+        }
     }
 
     blur /= totalWeight;

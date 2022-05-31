@@ -46,15 +46,15 @@
             "force-normal": "matball_normal.png",
             "material-info": {
                 "fresnel-r0": [
-                    0.04,
-                    0.04,
-                    0.04
+                    0.95,
+                    0.64,
+                    0.54
                 ],
                 "sub-surface": 0.0,
-                "metallic": 0.2,
-                "specular": 0.2,
+                "metallic": 0.8,
+                "specular": 0.8,
                 "specular-tint": 0.0,
-                "roughness": 1.0,
+                "roughness": 0.125,
                 "anisotropic": 0.0,
                 "sheen": 0.0,
                 "sheen-tint": 0.0,
@@ -159,7 +159,7 @@
                     "light-type": "direct",
                     "with-shadow": true,
                     "with-bloom": false,
-                    "intensity": 1.0,
+                    "intensity": 3.0,
                     "albedo": [
                         0.8,
                         0.8,
@@ -221,7 +221,7 @@
                         0.0
                     ],
                     "fall-off-start-end": [
-                        30.0,
+                        0.0,
                         80.0
                     ],
                     "spot-power": 2.0

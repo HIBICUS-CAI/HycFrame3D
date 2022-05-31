@@ -1,4 +1,4 @@
-#include "light_blinn_phong.hlsli"
+#include "light_disney_pbr.hlsli"
 
 struct VS_OUTPUT
 {
@@ -94,6 +94,8 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     MATERIAL mat = (MATERIAL)0.0f;
     mat.mFresnelR0 = fresnel;
     mat.mRoughness = 1.f - shiniese;
+    mat.mMetallic = 0.8f;
+    mat.mSpecular = 0.8f;
 
     float4 ambientL = gAmbient[0].gAmbient * albedo * access;
 
@@ -109,7 +111,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
 
     for (i = 0; i < dNum; ++i)
     {
-        tempL = float4(ComputeDirectionalLight(gLights[i], mat, normalW, toEye), 0.0f);
+        tempL = float4(ComputeDirectionalLight(diffuse.rgb, gLights[i], mat, normalW, toEye), 0.0f);
         if (i == gLightInfo[0].gShadowLightIndex[0])
         {
             shadowPosH = mul(float4(positionW, 1.0f), gShadowInfo[0].gShadowViewMat);
@@ -143,12 +145,12 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
 
     for (i = dNum; i < dNum + pNum; ++i)
     {
-        directL += float4(ComputePointLight(gLights[i], mat, positionW, normalW, toEye), 0.0f);
+        directL += float4(ComputePointLight(diffuse.rgb, gLights[i], mat, positionW, normalW, toEye), 0.0f);
     }
 
     for (i = dNum + pNum; i < dNum + pNum + sNum; ++i)
     {
-        tempL = float4(ComputeSpotLight(gLights[i], mat, positionW, normalW, toEye), 0.0f);
+        tempL = float4(ComputeSpotLight(diffuse.rgb, gLights[i], mat, positionW, normalW, toEye), 0.0f);
         if (i == gLightInfo[0].gShadowLightIndex[0])
         {
             shadowPosH = mul(float4(positionW, 1.0f), gShadowInfo[0].gShadowViewMat);
@@ -180,8 +182,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
         directL += tempL;
     }
 
-    float4 litColor = ambientL + directL;
-    litColor *= diffuse;
+    float4 litColor = ambientL * diffuse + directL;
     litColor.a = diffuse.a;
 
     return litColor;
