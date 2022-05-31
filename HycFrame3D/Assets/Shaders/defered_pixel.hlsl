@@ -45,6 +45,7 @@ Texture2D gDiffuseAlbedo : register(t7);
 Texture2D gFresnelShiniese : register(t8);
 Texture2D gSsao : register(t9);
 Texture2DArray<float> gShadowMap : register(t10);
+TextureCube gCubeMap : register(t11);
 
 float CalcShadowFactor(float4 _shadowPosH, float _slice)
 {
@@ -181,6 +182,24 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
         }
         directL += tempL;
     }
+
+    // TEMP SIMPLY IBL
+    float skyBoxEdgeLength = 10000.f;
+    float3 boxExtents = (float3)skyBoxEdgeLength;
+    float3 p = positionW - gLightInfo[0].gCameraPos;
+    float3 unitRayDir = normalize(reflect(p, normalW));
+    float3 t1 = (-p + boxExtents) / unitRayDir;
+    float3 t2 = (-p - boxExtents) / unitRayDir;
+    float3 tmax = max(t1, t2);
+    float t = min(min(tmax.x, tmax.y), tmax.z);
+    float3 lookBoxVec = p + t * unitRayDir;
+    float4 boxColor = gCubeMap.Sample(gSamLinearWrap, lookBoxVec);
+    float metalFactor = lerp(0.2f, 1.f, mat.mMetallic);
+    float f0 = 1.f - saturate(dot(normalW, unitRayDir));
+    f0 = Pow5(f0);
+    float3 frsnFactor = fresnel + (1.f - fresnel) * f0;
+    directL += boxColor * metalFactor * diffuse * (1.f - mat.mRoughness) * float4(frsnFactor, 0.f);
+    // TEMP SIMPLY IBL
 
     float4 litColor = ambientL * diffuse + directL;
     litColor.a = diffuse.a;

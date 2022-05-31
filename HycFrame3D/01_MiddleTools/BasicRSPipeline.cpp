@@ -2558,6 +2558,7 @@ void RSPass_Defered::ExecuatePass()
     DirectX::XMStoreFloat4x4(&s_data[0].mSSAOMat, mat);
     STContext()->Unmap(mShadowStructedBuffer, 0);
 
+    static std::string skyBoxName = "snow-cube.dds";
     static ID3D11ShaderResourceView* srvs[] =
     {
         mAmbientStructedBufferSrv,
@@ -2566,9 +2567,11 @@ void RSPass_Defered::ExecuatePass()
         mShadowStructedBufferSrv,
         mWorldPosSrv, mNormalSrv, mDiffuseSrv,
         mDiffuseAlbedoSrv, mFresenlShineseSrv,
-        mSsaoSrv, mShadowDepthSrv
+        mSsaoSrv, mShadowDepthSrv,
+        GetRSRoot_DX11_Singleton()->ResourceManager()->
+            GetMeshSrv(skyBoxName)
     };
-    STContext()->PSSetShaderResources(0, 11, srvs);
+    STContext()->PSSetShaderResources(0, 12, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
