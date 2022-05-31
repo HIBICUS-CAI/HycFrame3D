@@ -128,8 +128,8 @@ float3 Disney_BRDF(float3 _L, float3 _V, float3 _N, float3 _LStr, float3 _baseCo
     return _LStr * ((1.f / PI) *
         lerp(fD, ss, _material.mSubSruface) * cDLin) *
         (1.f - _material.mMetallic) +
-        gS * fS * dS +
-        0.25f * _material.mClearcoat * gR * fR * dR;
+        _LStr * gS * fS * dS +
+        _LStr * 0.25f * _material.mClearcoat * gR * fR * dR;
 }
 
 float3 ComputeDirectionalLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 normal, float3 toEye)

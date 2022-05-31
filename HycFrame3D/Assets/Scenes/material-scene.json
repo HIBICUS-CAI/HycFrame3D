@@ -159,7 +159,7 @@
                     "light-type": "direct",
                     "with-shadow": true,
                     "with-bloom": false,
-                    "intensity": 3.0,
+                    "intensity": 1.0,
                     "albedo": [
                         0.8,
                         0.8,
