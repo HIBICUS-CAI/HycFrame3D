@@ -106,6 +106,15 @@ void CreateBullet(DirectX::XMFLOAT3 _startPos, SceneNode& _scene)
     }
 
     {
+        ACollisionComponent acc(actorName + "-collision", nullptr);
+        acc.CreateCollisionShape(COLLISION_SHAPE::SPHERE,
+            { 1.6f,0.f,0.f });
+        bulletActor.AddAComponent(COMP_TYPE::A_COLLISION);
+        _scene.GetComponentContainer()->AddComponent(
+            COMP_TYPE::A_COLLISION, acc);
+    }
+
+    {
         ATimerComponent atmc(actorName + "-timer", nullptr);
         atmc.AddTimer("age");
         bulletActor.AddAComponent(COMP_TYPE::A_TIMER);
@@ -150,6 +159,34 @@ void BulletUpdate(AInteractComponent* _aitc, Timer& _timer)
     auto atc = _aitc->GetActorOwner()->
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
     atc->TranslateZAsix(0.1f * _timer.FloatDeltaTime());
+
+    auto acc = _aitc->GetActorOwner()->
+        GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION);
+    auto e0 = _aitc->GetActorOwner()->
+        GetSceneNode().GetActorObject("enemy01-actor");
+    auto e1 = _aitc->GetActorOwner()->
+        GetSceneNode().GetActorObject("enemy02-actor");
+
+    if (e0 && acc->CheckCollisionWith("enemy01-actor"))
+    {
+        _aitc->GetActorOwner()->SetObjectStatus(STATUS::NEED_DESTORY);
+        _aitc->GetActorOwner()->GetSceneNode().GetObjectContainer()->
+            DeleteActorObject(const_cast<std::string&>(_aitc->
+                GetActorOwner()->GetObjectName()));
+        e0->SetObjectStatus(STATUS::NEED_DESTORY);
+        e0->GetSceneNode().GetObjectContainer()->
+            DeleteActorObject(const_cast<std::string&>(e0->GetObjectName()));
+    }
+    else if (e1 && acc->CheckCollisionWith("enemy02-actor"))
+    {
+        _aitc->GetActorOwner()->SetObjectStatus(STATUS::NEED_DESTORY);
+        _aitc->GetActorOwner()->GetSceneNode().GetObjectContainer()->
+            DeleteActorObject(const_cast<std::string&>(_aitc->
+                GetActorOwner()->GetObjectName()));
+        e1->SetObjectStatus(STATUS::NEED_DESTORY);
+        e1->GetSceneNode().GetObjectContainer()->
+            DeleteActorObject(const_cast<std::string&>(e1->GetObjectName()));
+    }
 }
 
 void BulletDestory(AInteractComponent* _aitc)

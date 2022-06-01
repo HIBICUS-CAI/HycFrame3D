@@ -127,6 +127,15 @@
                     "type": "animate",
                     "init-animation": "roar",
                     "speed-factor": 50.0
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        8.0,
+                        24.0,
+                        8.0
+                    ]
                 }
             ]
         },
@@ -164,6 +173,15 @@
                     "type": "animate",
                     "init-animation": "idle",
                     "speed-factor": 50.0
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        8.0,
+                        24.0,
+                        8.0
+                    ]
                 }
             ]
         },
