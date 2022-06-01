@@ -13,6 +13,16 @@ public:
     AInteractComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AInteractComponent();
 
+    AInteractComponent& operator=(const AInteractComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mInitProcessFunctionPtr = _source.mInitProcessFunctionPtr;
+        mUpdateProcessFunctionPtr = _source.mUpdateProcessFunctionPtr;
+        mDestoryProcessFunctionPtr = _source.mDestoryProcessFunctionPtr;
+        ActorComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

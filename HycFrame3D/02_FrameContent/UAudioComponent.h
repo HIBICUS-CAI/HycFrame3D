@@ -11,6 +11,14 @@ public:
     UAudioComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UAudioComponent();
 
+    UAudioComponent& operator=(const UAudioComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mAudioMap = _source.mAudioMap;
+        UiComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

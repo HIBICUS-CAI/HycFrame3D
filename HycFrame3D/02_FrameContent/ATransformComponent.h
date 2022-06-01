@@ -10,6 +10,22 @@ public:
     ATransformComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ATransformComponent();
 
+    ATransformComponent& operator=(const ATransformComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mPosition = _source.mPosition;
+        mProcessingPosition = _source.mProcessingPosition;
+        mPositionDirtyFlg = _source.mPositionDirtyFlg;
+        mRotation = _source.mRotation;
+        mProcessingRotation = _source.mProcessingRotation;
+        mRotationDirtyFlg = _source.mRotationDirtyFlg;
+        mScaling = _source.mScaling;
+        mProcessingScaling = _source.mProcessingScaling;
+        mScalingDirtyFlg = _source.mScalingDirtyFlg;
+        ActorComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

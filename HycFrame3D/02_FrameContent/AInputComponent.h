@@ -11,6 +11,14 @@ public:
     AInputComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AInputComponent();
 
+    AInputComponent& operator=(const AInputComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mInputPrecessFunctionPtr = _source.mInputPrecessFunctionPtr;
+        ActorComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

@@ -20,6 +20,18 @@ public:
     UAnimateComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UAnimateComponent();
 
+    UAnimateComponent& operator=(const UAnimateComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mAnimateMap = _source.mAnimateMap;
+        mCurrentAnimateCut = _source.mCurrentAnimateCut;
+        mCurrentAnimate = _source.mCurrentAnimate;
+        mAnimateChangedFlg = _source.mAnimateChangedFlg;
+        mTimeCounter = _source.mTimeCounter;
+        UiComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

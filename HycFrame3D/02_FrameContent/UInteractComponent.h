@@ -13,6 +13,16 @@ public:
     UInteractComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UInteractComponent();
 
+    UInteractComponent& operator=(const UInteractComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mInitProcessFunctionPtr = _source.mInitProcessFunctionPtr;
+        mUpdateProcessFunctionPtr = _source.mUpdateProcessFunctionPtr;
+        mDestoryProcessFunctionPtr = _source.mDestoryProcessFunctionPtr;
+        UiComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

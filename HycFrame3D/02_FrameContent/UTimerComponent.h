@@ -19,6 +19,14 @@ public:
     UTimerComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UTimerComponent();
 
+    UTimerComponent& operator=(const UTimerComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mTimerMap = _source.mTimerMap;
+        UiComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

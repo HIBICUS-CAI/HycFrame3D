@@ -9,6 +9,14 @@ public:
     UiComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UiComponent();
 
+    UiComponent& operator=(const UiComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mUiOwner = _source.mUiOwner;
+        Component::operator=(_source);
+        return *this;
+    }
+
     class UiObject* GetUiOwner() const;
     void ResetUiOwner(class UiObject* _owner);
 

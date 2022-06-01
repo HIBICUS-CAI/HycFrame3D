@@ -11,6 +11,24 @@ public:
     AAnimateComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AAnimateComponent();
 
+    AAnimateComponent& operator=(const AAnimateComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mMeshAnimationDataPtr = _source.mMeshAnimationDataPtr;
+        mSubMeshNameVec = _source.mSubMeshNameVec;
+        mSubMeshBoneDataPtrVec = _source.mSubMeshBoneDataPtrVec;
+        mShareBoneData = _source.mShareBoneData;
+        mAnimationNames = _source.mAnimationNames;
+        mCurrentAnimationInfo = _source.mCurrentAnimationInfo;
+        mCurrentAnimationName = _source.mCurrentAnimationName;
+        mNextAnimationName = _source.mNextAnimationName;
+        mResetTimeStampFlag = _source.mResetTimeStampFlag;
+        mTotalTime = _source.mTotalTime;
+        mAnimationSpeedFactor = _source.mAnimationSpeedFactor;
+        ActorComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

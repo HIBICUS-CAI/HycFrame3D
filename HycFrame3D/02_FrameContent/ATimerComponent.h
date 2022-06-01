@@ -19,6 +19,14 @@ public:
     ATimerComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ATimerComponent();
 
+    ATimerComponent& operator=(const ATimerComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mTimerMap = _source.mTimerMap;
+        ActorComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

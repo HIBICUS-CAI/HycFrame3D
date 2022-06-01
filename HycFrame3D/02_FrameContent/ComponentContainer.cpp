@@ -213,181 +213,109 @@ void ComponentContainer::AddComponent(COMP_TYPE _type, Component& _comp)
         switch (_type)
         {
         case COMP_TYPE::A_TRANSFORM:
-            memcpy_s(
-                &mATransformCompVector[index],
-                sizeof(mATransformCompVector[index]),
-                &(ATransformComponent&)_comp,
-                sizeof((ATransformComponent&)_comp));
+            mATransformCompVector[index] = (ATransformComponent&)_comp;
             mCompMap.insert(
                 { mATransformCompVector[index].GetCompName(),
                 &(mATransformCompVector[index]) });
             break;
         case COMP_TYPE::A_INPUT:
-            memcpy_s(
-                &mAInputCompVector[index],
-                sizeof(mAInputCompVector[index]),
-                &(AInputComponent&)_comp,
-                sizeof((AInputComponent&)_comp));
+            mAInputCompVector[index] = (AInputComponent&)_comp;
             mCompMap.insert(
                 { mAInputCompVector[index].GetCompName(),
                 &(mAInputCompVector[index]) });
             break;
         case COMP_TYPE::A_INTERACT:
-            memcpy_s(
-                &mAInteractCompVector[index],
-                sizeof(mAInteractCompVector[index]),
-                &(AInteractComponent&)_comp,
-                sizeof((AInteractComponent&)_comp));
+            mAInteractCompVector[index] = (AInteractComponent&)_comp;
             mCompMap.insert(
                 { mAInteractCompVector[index].GetCompName(),
                 &(mAInteractCompVector[index]) });
             break;
         case COMP_TYPE::A_TIMER:
-            memcpy_s(
-                &mATimerCompVector[index],
-                sizeof(mATimerCompVector[index]),
-                &(ATimerComponent&)_comp,
-                sizeof((ATimerComponent&)_comp));
+            mATimerCompVector[index] = (ATimerComponent&)_comp;
             mCompMap.insert(
                 { mATimerCompVector[index].GetCompName(),
                 &(mATimerCompVector[index]) });
             break;
         case COMP_TYPE::A_COLLISION:
-            memcpy_s(
-                &mACollisionCompVector[index],
-                sizeof(mACollisionCompVector[index]),
-                &(ACollisionComponent&)_comp,
-                sizeof((ACollisionComponent&)_comp));
+            mACollisionCompVector[index] = (ACollisionComponent&)_comp;
             mCompMap.insert(
                 { mACollisionCompVector[index].GetCompName(),
                 &(mACollisionCompVector[index]) });
             break;
         case COMP_TYPE::A_MESH:
-            memcpy_s(
-                &mAMeshCompVector[index],
-                sizeof(mAMeshCompVector[index]),
-                &(AMeshComponent&)_comp,
-                sizeof((AMeshComponent&)_comp));
+            mAMeshCompVector[index] = (AMeshComponent&)_comp;
             mCompMap.insert(
                 { mAMeshCompVector[index].GetCompName(),
                 &(mAMeshCompVector[index]) });
             break;
         case COMP_TYPE::A_LIGHT:
-            memcpy_s(
-                &mALightCompVector[index],
-                sizeof(mALightCompVector[index]),
-                &(ALightComponent&)_comp,
-                sizeof((ALightComponent&)_comp));
+            mALightCompVector[index] = (ALightComponent&)_comp;
             mCompMap.insert(
                 { mALightCompVector[index].GetCompName(),
                 &(mALightCompVector[index]) });
             break;
         case COMP_TYPE::A_AUDIO:
-            memcpy_s(
-                &mAAudioCompVector[index],
-                sizeof(mAAudioCompVector[index]),
-                &(AAudioComponent&)_comp,
-                sizeof((AAudioComponent&)_comp));
+            mAAudioCompVector[index] = (AAudioComponent&)_comp;
             mCompMap.insert(
                 { mAAudioCompVector[index].GetCompName(),
                 &(mAAudioCompVector[index]) });
             break;
         case COMP_TYPE::A_PARTICLE:
-            memcpy_s(
-                &mAParticleCompVector[index],
-                sizeof(mAParticleCompVector[index]),
-                &(AParticleComponent&)_comp,
-                sizeof((AParticleComponent&)_comp));
+            mAParticleCompVector[index] = (AParticleComponent&)_comp;
             mCompMap.insert(
                 { mAParticleCompVector[index].GetCompName(),
                 &(mAParticleCompVector[index]) });
             break;
         case COMP_TYPE::A_ANIMATE:
-            memcpy_s(
-                &mAAnimateCompVector[index],
-                sizeof(mAAnimateCompVector[index]),
-                &(AAnimateComponent&)_comp,
-                sizeof((AAnimateComponent&)_comp));
+            mAAnimateCompVector[index] = (AAnimateComponent&)_comp;
             mCompMap.insert(
                 { mAAnimateCompVector[index].GetCompName(),
                 &(mAAnimateCompVector[index]) });
             break;
         case COMP_TYPE::U_TRANSFORM:
-            memcpy_s(
-                &mUTransformCompVector[index],
-                sizeof(mUTransformCompVector[index]),
-                &(UTransformComponent&)_comp,
-                sizeof((UTransformComponent&)_comp));
+            mUTransformCompVector[index] = (UTransformComponent&)_comp;
             mCompMap.insert(
                 { mUTransformCompVector[index].GetCompName(),
                 &(mUTransformCompVector[index]) });
             break;
         case COMP_TYPE::U_SPRITE:
-            memcpy_s(
-                &mUSpriteCompVector[index],
-                sizeof(mUSpriteCompVector[index]),
-                &(USpriteComponent&)_comp,
-                sizeof((USpriteComponent&)_comp));
+            mUSpriteCompVector[index] = (USpriteComponent&)_comp;
             mCompMap.insert(
                 { mUSpriteCompVector[index].GetCompName(),
                 &(mUSpriteCompVector[index]) });
             break;
         case COMP_TYPE::U_ANIMATE:
-            memcpy_s(
-                &mUAnimateCompVector[index],
-                sizeof(mUAnimateCompVector[index]),
-                &(UAnimateComponent&)_comp,
-                sizeof((UAnimateComponent&)_comp));
+            mUAnimateCompVector[index] = (UAnimateComponent&)_comp;
             mCompMap.insert(
                 { mUAnimateCompVector[index].GetCompName(),
                 &(mUAnimateCompVector[index]) });
             break;
         case COMP_TYPE::U_TIMER:
-            memcpy_s(
-                &mUTimerCompVector[index],
-                sizeof(mUTimerCompVector[index]),
-                &(UTimerComponent&)_comp,
-                sizeof((UTimerComponent&)_comp));
+            mUTimerCompVector[index] = (UTimerComponent&)_comp;
             mCompMap.insert(
                 { mUTimerCompVector[index].GetCompName(),
                 &(mUTimerCompVector[index]) });
             break;
         case COMP_TYPE::U_INPUT:
-            memcpy_s(
-                &mUInputCompVector[index],
-                sizeof(mUInputCompVector[index]),
-                &(UInputComponent&)_comp,
-                sizeof((UInputComponent&)_comp));
+            mUInputCompVector[index] = (UInputComponent&)_comp;
             mCompMap.insert(
                 { mUInputCompVector[index].GetCompName(),
                 &(mUInputCompVector[index]) });
             break;
         case COMP_TYPE::U_INTERACT:
-            memcpy_s(
-                &mUInteractCompVector[index],
-                sizeof(mUInteractCompVector[index]),
-                &(UInteractComponent&)_comp,
-                sizeof((UInteractComponent&)_comp));
+            mUInteractCompVector[index] = (UInteractComponent&)_comp;
             mCompMap.insert(
                 { mUInteractCompVector[index].GetCompName(),
                 &(mUInteractCompVector[index]) });
             break;
         case COMP_TYPE::U_BUTTON:
-            memcpy_s(
-                &mUButtonCompVector[index],
-                sizeof(mUButtonCompVector[index]),
-                &(UButtonComponent&)_comp,
-                sizeof((UButtonComponent&)_comp));
+            mUButtonCompVector[index] = (UButtonComponent&)_comp;
             mCompMap.insert(
                 { mUButtonCompVector[index].GetCompName(),
                 &(mUButtonCompVector[index]) });
             break;
         case COMP_TYPE::U_AUDIO:
-            memcpy_s(
-                &mUAudioCompVector[index],
-                sizeof(mUAudioCompVector[index]),
-                &(UAudioComponent&)_comp,
-                sizeof((UAudioComponent&)_comp));
+            mUAudioCompVector[index] = (UAudioComponent&)_comp;
             mCompMap.insert(
                 { mUAudioCompVector[index].GetCompName(),
                 &(mUAudioCompVector[index]) });
