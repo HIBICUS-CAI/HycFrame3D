@@ -11,6 +11,8 @@
             "mesh-name": "grid",
             "static-material": null,
             "load-mode": "program-grid",
+            "force-diffuse": "tile.dds",
+            "force-normal": "tile_nmap.dds",
             "load-info": {
                 "tex-file": "white.jpg",
                 "grid-size": [
@@ -27,7 +29,7 @@
             "mesh-name": "sphere",
             "load-mode": "program-sphere",
             "load-info": {
-                "tex-file": "cloud.png",
+                "tex-file": "white.jpg",
                 "radius": 8.0,
                 "slice-stack-count": [
                     8,
@@ -229,6 +231,316 @@
                     "init-func-name": "PlayerInit",
                     "update-func-name": "PlayerUpdate",
                     "destory-func-name": "PlayerDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "direct-light-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        30.0,
+                        -30.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "direct",
+                    "with-shadow": true,
+                    "with-bloom": false,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        1.0
+                    ],
+                    "fall-off-start-end": [
+                        5.0,
+                        15.0
+                    ],
+                    "spot-power": 2.0,
+                    "cam-up-vec": [
+                        0.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        60.0,
+                        -10.0,
+                        150.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.9,
+                        0.0,
+                        0.9
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 2.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -10.0,
+                        150.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.9,
+                        0.9
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 2.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -60.0,
+                        -10.0,
+                        150.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.9,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 2.0
+                }
+            ]
+        }
+    ],
+    "ui": [
+        {
+            "ui-name": "light-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -550.0,
+                        200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        150.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "light_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": true,
+                    "down-btn": "reload-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "ButtonInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "reload-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -550.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        150.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "reload_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "down-btn": "exit-ui",
+                    "up-btn": "light-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "ButtonInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "exit-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -550.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        150.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "exit_btn.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "up-btn": "reload-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "ButtonInput"
                 }
             ]
         }

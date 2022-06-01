@@ -13,3 +13,5 @@ void PlayerDestory(AInteractComponent*);
 bool BulletInit(AInteractComponent*);
 void BulletUpdate(AInteractComponent*, Timer&);
 void BulletDestory(AInteractComponent*);
+
+void ButtonInput(UInputComponent*, Timer&);

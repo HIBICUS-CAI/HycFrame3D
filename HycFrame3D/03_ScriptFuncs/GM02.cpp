@@ -1,4 +1,6 @@
 #include "GM02.h"
+#include "RSRoot_DX11.h"
+#include "RSPipelinesManager.h"
 #include "RSCamera.h"
 
 void RegisterGM02(ObjectFactory* _factory)
@@ -20,6 +22,8 @@ void RegisterGM02(ObjectFactory* _factory)
         { FUNC_NAME(BulletUpdate),BulletUpdate });
     _factory->GetADestoryMapPtr()->insert(
         { FUNC_NAME(BulletDestory),BulletDestory });
+    _factory->GetUInputMapPtr()->insert(
+        { FUNC_NAME(ButtonInput),ButtonInput });
 }
 
 static ATransformComponent* g_PlayerAtc = nullptr;
@@ -59,6 +63,7 @@ bool PlayerInit(AInteractComponent* _aitc)
     if (!g_PlayerAtc) { return false; }
     g_Cam = _aitc->GetActorOwner()->GetSceneNode().GetMainCamera();
     if (!g_Cam) { return false; }
+    g_Cam->ChangeRSCameraPosition({ 0.f,0.f,0.f });
 
     return true;
 }
@@ -192,4 +197,78 @@ void BulletUpdate(AInteractComponent* _aitc, Timer& _timer)
 void BulletDestory(AInteractComponent* _aitc)
 {
 
+}
+
+void ButtonInput(UInputComponent* _uic, Timer& _timer)
+{
+    auto ubc = _uic->GetUiOwner()->
+        GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+    if (!ubc) { return; }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_UP))
+    {
+        ubc->SelectUpBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_LEFT))
+    {
+        ubc->SelectLeftBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
+    {
+        ubc->SelectDownBtn();
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_RIGHT))
+    {
+        ubc->SelectRightBtn();
+    }
+
+    static bool simp = true;
+    static std::string basic = "light-pipeline";
+    static std::string simple = "simple-pipeline";
+
+    if (ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN))
+    {
+        auto& btnName = ubc->GetCompName();
+        if (btnName == "light-ui-button")
+        {
+            std::string target = "";
+            if (simp) { target = basic; }
+            else { target = simple; }
+            simp = !simp;
+            GetRSRoot_DX11_Singleton()->PipelinesManager()->
+                SetPipeline(target);
+        }
+        else if (btnName == "reload-ui-button")
+        {
+            _uic->GetUiOwner()->GetSceneNode().GetSceneManager()->
+                LoadSceneNode("gm02-scene", "gm02-scene.json");
+        }
+        else if (btnName == "exit-ui-button")
+        {
+            PostQuitMessage(0);
+        }
+    }
+    else if (InputInterface::IsKeyPushedInSingle(KB_RETURN) &&
+        ubc->IsBeingSelected())
+    {
+        auto& btnName = ubc->GetCompName();
+        if (btnName == "light-ui-button")
+        {
+            std::string target = "";
+            if (simp) { target = basic; }
+            else { target = simple; }
+            simp = !simp;
+            GetRSRoot_DX11_Singleton()->PipelinesManager()->
+                SetPipeline(target);
+        }
+        else if (btnName == "reload-ui-button")
+        {
+            _uic->GetUiOwner()->GetSceneNode().GetSceneManager()->
+                LoadSceneNode("gm02-scene", "gm02-scene.json");
+        }
+        else if (btnName == "exit-ui-button")
+        {
+            PostQuitMessage(0);
+        }
+    }
 }
