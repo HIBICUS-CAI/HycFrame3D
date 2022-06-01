@@ -199,6 +199,7 @@
     <ClCompile Include="02_FrameContent\UTimerComponent.cpp" />
     <ClCompile Include="02_FrameContent\UTransformComponent.cpp" />
     <ClCompile Include="03_ScriptFuncs\00_FunctionRegister.cpp" />
+    <ClCompile Include="03_ScriptFuncs\GM02.cpp" />
     <ClCompile Include="03_ScriptFuncs\SPInput.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -257,6 +258,7 @@
     <ClInclude Include="02_FrameContent\UTimerComponent.h" />
     <ClInclude Include="02_FrameContent\UTransformComponent.h" />
     <ClInclude Include="03_ScriptFuncs\00_FunctionRegister.h" />
+    <ClInclude Include="03_ScriptFuncs\GM02.h" />
     <ClInclude Include="03_ScriptFuncs\SPInput.h" />
   </ItemGroup>
   <ItemGroup>

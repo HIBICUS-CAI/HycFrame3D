@@ -1,0 +1,218 @@
+{
+    "scene-name": "gm02-scene",
+    "ambient-light": [
+        0.2,
+        0.2,
+        0.2,
+        1.0
+    ],
+    "model-assets": [
+        {
+            "mesh-name": "grid",
+            "static-material": null,
+            "load-mode": "program-grid",
+            "load-info": {
+                "tex-file": "white.jpg",
+                "grid-size": [
+                    180.0,
+                    180.0
+                ],
+                "row-col-count": [
+                    2,
+                    2
+                ]
+            }
+        },
+        {
+            "mesh-name": "sphere",
+            "load-mode": "program-sphere",
+            "load-info": {
+                "tex-file": "cloud.png",
+                "radius": 8.0,
+                "slice-stack-count": [
+                    8,
+                    8
+                ]
+            }
+        },
+        {
+            "mesh-name": "rex",
+            "load-mode": "model-file",
+            "force-diffuse": "rex_diffuse.png",
+            "material-info": {
+                "albedo": [
+                    0.8,
+                    0.8,
+                    0.8,
+                    0.8
+                ],
+                "fresnel": [
+                    0.1,
+                    0.3,
+                    0.1
+                ],
+                "shininess": 0.5
+            },
+            "load-info": {
+                "model-file": "rex_ani.gltf.meshdata",
+                "file-type": "binary"
+            }
+        }
+    ],
+    "audio-assets": [],
+    "actor": [
+        {
+            "actor-name": "grid-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -20.0,
+                        100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "grid",
+                            "mesh-offset": null
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "enemy01-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -30.0,
+                        -20.0,
+                        150.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        15.0,
+                        15.0,
+                        15.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "rex",
+                            "mesh-offset": null
+                        }
+                    ]
+                },
+                {
+                    "type": "animate",
+                    "init-animation": "roar",
+                    "speed-factor": 50.0
+                }
+            ]
+        },
+        {
+            "actor-name": "enemy02-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        30.0,
+                        -20.0,
+                        150.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        15.0,
+                        15.0,
+                        15.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "rex",
+                            "mesh-offset": null
+                        }
+                    ]
+                },
+                {
+                    "type": "animate",
+                    "init-animation": "idle",
+                    "speed-factor": 50.0
+                }
+            ]
+        },
+        {
+            "actor-name": "player-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -20.0,
+                        50.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        3.14,
+                        0.0
+                    ],
+                    "init-scale": [
+                        10.0,
+                        10.0,
+                        10.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "rex",
+                            "mesh-offset": null
+                        }
+                    ]
+                },
+                {
+                    "type": "animate",
+                    "init-animation": "run",
+                    "speed-factor": 50.0
+                },
+                {
+                    "type": "input",
+                    "func-name": "PlayerInput"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "PlayerInit",
+                    "update-func-name": "PlayerUpdate",
+                    "destory-func-name": "PlayerDestory"
+                }
+            ]
+        }
+    ]
+}
