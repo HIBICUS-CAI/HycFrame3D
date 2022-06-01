@@ -80,11 +80,11 @@
                             "name": "loading-snail",
                             "tex-file": "loading_snail.png",
                             "u-v-stride": [
-                                0.111111111111111,
-                                0.111111111111111
+                                0.5,
+                                0.5
                             ],
-                            "max-count": 76,
-                            "switch-time": 0.01,
+                            "max-count": 4,
+                            "switch-time": 0.05,
                             "repeat-flag": true
                         }
                     ],
