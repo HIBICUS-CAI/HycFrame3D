@@ -10,6 +10,8 @@
 #include "RSPipelinesManager.h"
 #include "RSRoot_DX11.h"
 #include "RSPipeline.h"
+#include "RSLightsContainer.h"
+#include "RSParticlesContainer.h"
 
 #define LOCK EnterCriticalSection(&mDataLock)
 #define UNLOCK LeaveCriticalSection(&mDataLock)
@@ -102,7 +104,11 @@ void RSPipelinesManager::ClearCurrentPipelineState()
 
 void RSPipelinesManager::ExecuateCurrentPipeline()
 {
+    mRootPtr->LightsContainer()->LockContainer();
+    mRootPtr->ParticlesContainer()->LockContainer();
     mCurrentPipeline->ExecuatePipeline();
+    mRootPtr->LightsContainer()->UnlockContainer();
+    mRootPtr->ParticlesContainer()->UnlockContainer();
 }
 
 void RSPipelinesManager::ProcessNextPipeline()
