@@ -10,6 +10,22 @@ public:
     UTransformComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UTransformComponent();
 
+    UTransformComponent& operator=(const UTransformComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mPosition = _source.mPosition;
+        mRotation = _source.mRotation;
+        mScaling = _source.mScaling;
+        mProcessingPosition = _source.mProcessingPosition;
+        mProcessingRotation = _source.mProcessingRotation;
+        mProcessingScaling = _source.mProcessingScaling;
+        mPositionDirtyFlg = _source.mPositionDirtyFlg;
+        mRotationDirtyFlg = _source.mRotationDirtyFlg;
+        mScalingDirtyFlg = _source.mScalingDirtyFlg;
+        UiComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

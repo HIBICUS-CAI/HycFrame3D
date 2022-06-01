@@ -9,6 +9,14 @@ public:
     ActorComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ActorComponent();
 
+    ActorComponent& operator=(const ActorComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mActorOwner = _source.mActorOwner;
+        Component::operator=(_source);
+        return *this;
+    }
+
     class ActorObject* GetActorOwner() const;
     void ResetActorOwner(class ActorObject* _owner);
 

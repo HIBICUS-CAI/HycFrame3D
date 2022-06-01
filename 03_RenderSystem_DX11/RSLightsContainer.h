@@ -46,6 +46,16 @@ public:
         RS_SUBMESH_DATA&& _meshData);
     void UploadLightBloomDrawCall();
 
+    inline void LockContainer()
+    {
+        EnterCriticalSection(&mDataLock);
+    }
+
+    inline void UnlockContainer()
+    {
+        LeaveCriticalSection(&mDataLock);
+    }
+
 private:
     DirectX::XMFLOAT4& GetAmbientLight(std::string& _name);
 

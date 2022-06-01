@@ -19,6 +19,15 @@ public:
     ACollisionComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ACollisionComponent();
 
+    ACollisionComponent& operator=(const ACollisionComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mCollisionObject = _source.mCollisionObject;
+        mCollisionShape = _source.mCollisionShape;
+        ActorComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

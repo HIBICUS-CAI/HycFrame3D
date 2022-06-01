@@ -13,6 +13,18 @@ public:
     ALightComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~ALightComponent();
 
+    ALightComponent& operator=(const ALightComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mCanCreateLight = _source.mCanCreateLight;
+        mLightInfoForInit = _source.mLightInfoForInit;
+        mLightCamInfoForInit = _source.mLightCamInfoForInit;
+        mIsBloom = _source.mIsBloom;
+        mIsCamera = _source.mIsCamera;
+        ActorComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

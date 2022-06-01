@@ -9,6 +9,14 @@ public:
     AParticleComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AParticleComponent();
 
+    AParticleComponent& operator=(const AParticleComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mRSParticleEmitterPtr = _source.mRSParticleEmitterPtr;
+        ActorComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

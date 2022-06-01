@@ -36,6 +36,16 @@ public:
     void StartRSParticleEmitter(std::string& _name);
     void PauseRSParticleEmitter(std::string& _name);
 
+    inline void LockContainer()
+    {
+        EnterCriticalSection(&mDataLock);
+    }
+
+    inline void UnlockContainer()
+    {
+        LeaveCriticalSection(&mDataLock);
+    }
+
 private:
     class RSRoot_DX11* mRootPtr;
 
