@@ -11,6 +11,16 @@ public:
     AMeshComponent(std::string& _compName, class ActorObject* _actorOwner);
     virtual ~AMeshComponent();
 
+    AMeshComponent& operator=(const AMeshComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mMeshesName = _source.mMeshesName;
+        mSubMeshesName = _source.mSubMeshesName;
+        mOffsetPosition = _source.mOffsetPosition;
+        ActorComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

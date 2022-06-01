@@ -10,6 +10,14 @@ public:
     Component(std::string& _compName);
     virtual ~Component();
 
+    Component& operator=(const Component& _source)
+    {
+        if (this == &_source) { return *this; }
+        const_cast<std::string&>(mComponentName) = _source.mComponentName;
+        mComponentStatus = _source.mComponentStatus;
+        return *this;
+    }
+
     const std::string& GetCompName() const;
 
     STATUS GetCompStatus() const;

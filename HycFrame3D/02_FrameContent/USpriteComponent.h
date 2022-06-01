@@ -11,6 +11,16 @@ public:
     USpriteComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~USpriteComponent();
 
+    USpriteComponent& operator=(const USpriteComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mMeshesName = _source.mMeshesName;
+        mOriginTextureName = _source.mOriginTextureName;
+        mOffsetColor = _source.mOffsetColor;
+        UiComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

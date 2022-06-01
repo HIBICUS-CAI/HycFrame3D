@@ -18,6 +18,15 @@ public:
     UButtonComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UButtonComponent();
 
+    UButtonComponent& operator=(const UButtonComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mSurroundBtnObjectNames = _source.mSurroundBtnObjectNames;
+        mIsSelected = _source.mIsSelected;
+        UiComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);

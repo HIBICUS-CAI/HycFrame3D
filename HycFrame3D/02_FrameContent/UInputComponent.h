@@ -11,6 +11,14 @@ public:
     UInputComponent(std::string& _compName, class UiObject* _uiOwner);
     virtual ~UInputComponent();
 
+    UInputComponent& operator=(const UInputComponent& _source)
+    {
+        if (this == &_source) { return *this; }
+        mInputPrecessFunctionPtr = _source.mInputPrecessFunctionPtr;
+        UiComponent::operator=(_source);
+        return *this;
+    }
+
 public:
     virtual bool Init();
     virtual void Update(Timer& _timer);
