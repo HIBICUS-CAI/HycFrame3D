@@ -198,10 +198,11 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     float f0 = 1.f - saturate(dot(normalW, unitRayDir));
     f0 = Pow5(f0);
     float3 frsnFactor = fresnel + (1.f - fresnel) * f0;
-    directL += boxColor * metalFactor * diffuse * (1.f - mat.mRoughness) * float4(frsnFactor, 0.f);
+    directL += boxColor * metalFactor * float4(MonToLin(diffuse.rgb), 0.f) * (1.f - mat.mRoughness) * float4(frsnFactor, 0.f);
     // TEMP SIMPLY IBL
 
     float4 litColor = ambientL * diffuse + directL;
+    litColor.rgb = pow(litColor.rgb, float3(1.f / 2.2f, 1.f / 2.2f, 1.f / 2.2f));
     litColor.a = diffuse.a;
 
     return litColor;
