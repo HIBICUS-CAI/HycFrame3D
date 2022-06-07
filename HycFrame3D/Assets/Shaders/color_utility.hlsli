@@ -449,3 +449,25 @@ float3 ACESTonemapping(float3 aces)
 {
     return ODT_RGBmonitor_100nits_dim(RRT(aces));
 }
+
+#define SCALE_0 (1.f / 12.92f)
+#define SCALE_1 (1.f / 1.055f)
+#define OFFSET_1 (0.055f * SCALE_1)
+
+float LinearToSRGB_F(float color)
+{
+    color = clamp(color, 0.f, 1.f);
+    if(color < 0.0031308f)
+    {
+        return color * 12.92f;
+    }
+    return 1.055f * pow(color, 0.41666f) - 0.055f;
+}
+
+float3 LinearToSRGB(float3 color)
+{
+    return float3(
+        LinearToSRGB_F(color.x),
+        LinearToSRGB_F(color.y),
+        LinearToSRGB_F(color.z));
+}
