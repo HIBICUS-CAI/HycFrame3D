@@ -1,4 +1,5 @@
 #include "light_disney_pbr.hlsli"
+#include "color_utility.hlsli"
 
 struct VS_OUTPUT
 {
