@@ -143,7 +143,12 @@ float3 ComputeDirectionalLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 n
 
 float CalcAttenuation(float d, float falloffStart, float falloffEnd)
 {
-    return saturate((falloffEnd - d) / (falloffEnd - falloffStart));
+    float EPSILON = 0.01;
+  float att = 1.f / (d * d + EPSILON);
+  float smoothatt = 1.f - pow(d / falloffEnd, 4);
+  smoothatt = max(smoothatt, 0.f);
+  smoothatt =  smoothatt * smoothatt;
+  return att * smoothatt;
 }
 
 float3 ComputePointLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye)

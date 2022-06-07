@@ -209,7 +209,7 @@
                     "light-type": "point",
                     "with-shadow": false,
                     "with-bloom": true,
-                    "intensity": 1.0,
+                    "intensity": 3000.0,
                     "albedo": [
                         0.9,
                         0.0,
@@ -222,7 +222,7 @@
                     ],
                     "fall-off-start-end": [
                         0.0,
-                        80.0
+                        100.0
                     ],
                     "spot-power": 2.0
                 }
