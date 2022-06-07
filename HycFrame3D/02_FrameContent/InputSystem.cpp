@@ -72,7 +72,7 @@ void InputSystem::Run(Timer& _timer)
     }
 
     // TEMP----------------------------------
-    if (InputInterface::IsKeyDownInSingle(KB_LALT) &&
+    if (InputInterface::IsKeyDownInSingle(KB_RALT) &&
         InputInterface::IsKeyDownInSingle(KB_BACKSPACE))
     {
         PostQuitMessage(0);
