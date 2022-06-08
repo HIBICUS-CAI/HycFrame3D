@@ -39,6 +39,13 @@ static D3D11_VIEWPORT g_ViewPort = {};
 
 static float g_DeltaTimeInSecond = 0.f;
 
+// TEMP FOR IBL
+static ID3D11ShaderResourceView* g_IblBrdfSrv = nullptr;
+static ID3D11ShaderResourceView* g_EnviMapSrv = nullptr;
+static ID3D11ShaderResourceView* g_DiffMapSrv = nullptr;
+static ID3D11ShaderResourceView* g_SpecMapSrv = nullptr;
+// TEMP FOR IBL
+
 enum class SAMPLER_LEVEL
 {
     POINT = 0,
@@ -2558,7 +2565,6 @@ void RSPass_Defered::ExecuatePass()
     DirectX::XMStoreFloat4x4(&s_data[0].mSSAOMat, mat);
     STContext()->Unmap(mShadowStructedBuffer, 0);
 
-    static std::string skyBoxName = "snow-cube.dds";
     static ID3D11ShaderResourceView* srvs[] =
     {
         mAmbientStructedBufferSrv,
@@ -2567,9 +2573,7 @@ void RSPass_Defered::ExecuatePass()
         mShadowStructedBufferSrv,
         mWorldPosSrv, mNormalSrv, mDiffuseSrv,
         mDiffuseAlbedoSrv, mFresenlShineseSrv,
-        mSsaoSrv, mShadowDepthSrv,
-        GetRSRoot_DX11_Singleton()->ResourceManager()->
-            GetMeshSrv(skyBoxName)
+        mSsaoSrv, mShadowDepthSrv, g_EnviMapSrv
     };
     STContext()->PSSetShaderResources(0, 12, srvs);
 
@@ -2895,7 +2899,24 @@ bool RSPass_SkyShpere::InitPass()
     mSkySphereMesh = g_Root->MeshHelper()->GeoGenerate()->
         CreateGeometrySphere(10.f, 0,
             LAYOUT_TYPE::NORMAL_TANGENT_TEX, false,
-            {}, "snow-cube.dds");
+            {}, "winter_forest_env.dds");
+    std::string resName = "winter_forest_env.dds";
+    g_EnviMapSrv = g_Root->ResourceManager()->GetMeshSrv(resName);
+    HRESULT hr = DirectX::CreateDDSTextureFromFile(
+        g_Root->Devices()->GetDevice(),
+        L".\\Assets\\Textures\\winter_forest_diff.dds",
+        nullptr, &g_DiffMapSrv);
+    if (FAILED(hr)) { return false; }
+    hr = DirectX::CreateDDSTextureFromFile(
+        g_Root->Devices()->GetDevice(),
+        L".\\Assets\\Textures\\winter_forest_spec.dds",
+        nullptr, &g_SpecMapSrv);
+    if (FAILED(hr)) { return false; }
+    hr = DirectX::CreateDDSTextureFromFile(
+        g_Root->Devices()->GetDevice(),
+        L".\\Assets\\Textures\\ibl_brdf.dds",
+        nullptr, &g_IblBrdfSrv);
+    if (FAILED(hr)) { return false; }
 
     std::string name = "temp-cam";
     mRSCameraInfo = g_Root->CamerasContainer()->
