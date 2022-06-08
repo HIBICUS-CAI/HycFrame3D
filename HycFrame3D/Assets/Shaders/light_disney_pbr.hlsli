@@ -94,11 +94,12 @@ float3 Disney_BRDF(float3 _L, float3 _V, float3 _N, float3 _LStr, float3 _baseCo
     // float3 cSheen = lerp(float3(1.f), cTint, _material.mSheenTint);
 
     // Diffuse fresnel
+    float alpha = _material.mRoughness * _material.mRoughness;
     float fL = F_SchlickFresnel(NdotL);
     float fV = F_SchlickFresnel(NdotV);
-    float fD90 = 0.5f + 2.f * Sqr(LdotH) * _material.mRoughness;
+    float fD90 = 0.5f + 2.f * Sqr(LdotH) * alpha;
     float fD = lerp(1.f, fD90, fL) * lerp(1.f, fD90, fV);
-    float fSS90 = Sqr(LdotH) * _material.mRoughness;
+    float fSS90 = Sqr(LdotH) * alpha;
     float fSS = lerp(1.f, fSS90, fL) * lerp(1.f, fSS90, fV);
     float ss = 1.25f * (fSS * (1.f / (NdotL + NdotV) - 0.5f) + 0.5f);
 
@@ -106,11 +107,11 @@ float3 Disney_BRDF(float3 _L, float3 _V, float3 _N, float3 _LStr, float3 _baseCo
     // float aspect = sqrt(1.f - _material.mAnisotropic * 0.9f);
     // float ax = max(0.001f, Sqr(_material.mRoughness) / aspect);
     // float ay = max(0.001f, Sqr(_material.mRoughness) * aspect);
-    float dS = D_GTR2(NdotH, _material.mRoughness);
+    float dS = D_GTR2(NdotH, alpha);
     float fH = F_SchlickFresnel(LdotH);
     float3 fS = lerp(cSpec0, (float3)1.f, fH);
-    float gS = G_Smith_GGX(NdotL, _material.mRoughness) *
-        G_Smith_GGX(NdotV, _material.mRoughness);
+    float gS = G_Smith_GGX(NdotL, alpha) *
+        G_Smith_GGX(NdotV, alpha);
     
     // Sheen
     // float3 fSheen = fH * _material.mSheen * cSheen;
