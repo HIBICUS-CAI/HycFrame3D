@@ -1,47 +1,56 @@
-#define sRGB_2_AP0_MAT (float3x3(\
-    0.4397010f, 0.0897923f, 0.0175440f,\
-    0.3829780f, 0.8134230f, 0.1115440f,\
-    0.1773350f, 0.0967616f, 0.8707040f))
+static const float3x3 sRGB_2_AP0_MAT = {
+    0.4397010f, 0.0897923f, 0.0175440f,
+    0.3829780f, 0.8134230f, 0.1115440f,
+    0.1773350f, 0.0967616f, 0.8707040f
+};
 
-#define AP0_2_AP1_MAT (float3x3(\
-    1.4514393161f, -0.0765537734f, 0.0083161484f,\
-    -0.2365107469f, 1.1762296998f, -0.0060324498f,\
-    -0.2149285693f, -0.0996759264f, 0.9977163014f))
+static const float3x3 AP0_2_AP1_MAT = {
+    1.4514393161f, -0.0765537734f, 0.0083161484f,
+    -0.2365107469f, 1.1762296998f, -0.0060324498f,
+    -0.2149285693f, -0.0996759264f, 0.9977163014f
+};
 
-#define AP1_2_AP0_MAT (float3x3(\
-    0.6954522414f, 0.0447945634f, -0.0055258826f,\
-    0.1406786965f, 0.8596711185f, 0.0040252103f,\
-    0.1638690622f, 0.0955343182f, 1.0015006723f))
+static const float3x3 AP1_2_AP0_MAT = {
+    0.6954522414f, 0.0447945634f, -0.0055258826f,
+    0.1406786965f, 0.8596711185f, 0.0040252103f,
+    0.1638690622f, 0.0955343182f, 1.0015006723f
+};
 
-#define AP1_2_XYZ_MAT (float3x3(\
-    0.6624541811f, 0.2722287168f, -0.0055746495f,\
-    0.1340042065f, 0.6740817658f, 0.0040607335f,\
-    0.1561876870f, 0.0536895174f, 1.0103391003f))
+static const float3x3 AP1_2_XYZ_MAT = {
+    0.6624541811f, 0.2722287168f, -0.0055746495f,
+    0.1340042065f, 0.6740817658f, 0.0040607335f,
+    0.1561876870f, 0.0536895174f, 1.0103391003f
+};
 
-#define XYZ_2_AP1_MAT (float3x3(\
-    1.6410233797f, -0.6636628587f, 0.0117218943f,\
-    -0.3248032942f, 1.6153315917f, -0.0082844420f,\
-    -0.2364246952f, 0.0167563477f, 0.9883948585f))
+static const float3x3 XYZ_2_AP1_MAT = {
+    1.6410233797f, -0.6636628587f, 0.0117218943f,
+    -0.3248032942f, 1.6153315917f, -0.0082844420f,
+    -0.2364246952f, 0.0167563477f, 0.9883948585f
+};
 
-#define XYZ_2_REC709_MAT (float3x3(\
-    3.2409699419f, -0.9692436363f, 0.0556300797f,\
-    -1.5373831776f, 1.8759675015f, -0.2039769589f,\
-    -0.4986107603f, 0.0415550574f, 1.0569715142f))
+static const float3x3 XYZ_2_REC709_MAT = {
+    3.2409699419f, -0.9692436363f, 0.0556300797f,
+    -1.5373831776f, 1.8759675015f, -0.2039769589f,
+    -0.4986107603f, 0.0415550574f, 1.0569715142f
+};
 
-#define RRT_SAT_MAT (float3x3(\
-    0.9708890f, 0.0108892f, 0.0108892f,\
-    0.0269633f, 0.9869630f, 0.0269633f,\
-    0.00214758f, 0.00214758f, 0.96214800f))
+static const float3x3 RRT_SAT_MAT = {
+    0.9708890f, 0.0108892f, 0.0108892f,
+    0.0269633f, 0.9869630f, 0.0269633f,
+    0.00214758f, 0.00214758f, 0.96214800f
+};
 
-#define ODT_SAT_MAT (float3x3(\
-    0.949056f, 0.019056f, 0.019056f,\
-    0.0471857f, 0.9771860f, 0.0471857f,\
-    0.00375827f, 0.00375827f, 0.93375800f))
+static const float3x3 ODT_SAT_MAT = {
+    0.949056f, 0.019056f, 0.019056f,
+    0.0471857f, 0.9771860f, 0.0471857f,
+    0.00375827f, 0.00375827f, 0.93375800f
+};
 
-#define D60_2_D65_CAT (float3x3(\
-    0.98722400f, -0.00759836f, 0.00307257f,\
-    -0.00611327f, 1.00186000f, -0.00509595f,\
-    0.0159533f, 0.0053302f, 1.0816800f))
+static const float3x3 D60_2_D65_CAT = {
+    0.98722400f, -0.00759836f, 0.00307257f,
+    -0.00611327f, 1.00186000f, -0.00509595f,
+    0.0159533f, 0.0053302f, 1.0816800f
+};
 
 float log10(float x)
 {
@@ -191,10 +200,11 @@ float cubic_basis_shaper(float x, float w)
     return y * 3.f / 2.f;
 }
 
-#define M (float3x3(\
-    0.5f, -1.f, 0.5f,\
-    -1.f, 1.f, 0.5f,\
-    0.5f, 0.f, 0.f))
+static const float3x3 M = {
+    0.5f, -1.f, 0.5f,
+    -1.f, 1.f, 0.5f,
+    0.5f, 0.f, 0.f
+};
 
 float segmented_spline_c5_fwd(float x)
 {
@@ -298,16 +308,16 @@ float segmented_spline_c9_fwd(float x)
     return pow(10.f, logy);
 }
 
-#define RRT_GLOW_GAIN (0.05f)
-#define RRT_GLOW_MID (0.08f)
+static const float RRT_GLOW_GAIN = 0.05f;
+static const float RRT_GLOW_MID = 0.08f;
 
-#define RRT_RED_SCALE (0.82f)
-#define RRT_RED_PIVOT (0.03f)
-#define RRT_RED_HUE (0.f)
-#define RRT_RED_WIDTH (135.f)
+static const float RRT_RED_SCALE = 0.82f;
+static const float RRT_RED_PIVOT = 0.03f;
+static const float RRT_RED_HUE = 0.f;
+static const float RRT_RED_WIDTH = 135.f;
 
-#define RRT_SAT_FACTOR (0.96f)
-#define HALF_MAX (65504.f)
+static const float RRT_SAT_FACTOR = 0.96f;
+static const float HALF_MAX = 65504.f;
 
 float3 RRT(float3 aces)
 {
