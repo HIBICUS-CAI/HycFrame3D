@@ -2573,7 +2573,7 @@ void RSPass_Defered::ExecuatePass()
         mShadowStructedBufferSrv,
         mWorldPosSrv, mNormalSrv, mDiffuseSrv,
         mDiffuseAlbedoSrv, mFresenlShineseSrv,
-        mSsaoSrv, mShadowDepthSrv, g_EnviMapSrv
+        mSsaoSrv, mShadowDepthSrv, g_DiffMapSrv
     };
     STContext()->PSSetShaderResources(0, 12, srvs);
 

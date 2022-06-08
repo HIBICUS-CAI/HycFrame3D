@@ -46,7 +46,8 @@ Texture2D gDiffuseAlbedo : register(t7);
 Texture2D gFresnelShiniese : register(t8);
 Texture2D gSsao : register(t9);
 Texture2DArray<float> gShadowMap : register(t10);
-TextureCube gCubeMap : register(t11);
+TextureCube gDiffuseMap : register(t11);
+TextureCube gSpecularMap : register(t12);
 
 float CalcShadowFactor(float4 _shadowPosH, float _slice)
 {
@@ -82,6 +83,33 @@ float CalcShadowFactor(float4 _shadowPosH, float _slice)
     return percentLit / 9.0f;
 }
 
+float3 CalcSpecLookUpVec(float3 _lookUpOnOrigin, float3 _pos, float3 _normal)
+{
+    const float3 BOX_AABB_SIZE = float3(10000.f, 10000.f, 10000.f);
+    float3 p = _pos - gLightInfo[0].gCameraPos;
+    float3 unitRayDir = normalize(reflect(p, _normal));
+    float3 t1 = (-p + BOX_AABB_SIZE) / unitRayDir;
+    float3 t2 = (-p - BOX_AABB_SIZE) / unitRayDir;
+    float3 tmax = max(t1, t2);
+    float t = min(min(tmax.x, tmax.y), tmax.z);
+    float3 lookBoxVec = p + t * unitRayDir;
+
+    return lookBoxVec;
+}
+
+float3 FresnelSchlick_Roughness(float _cosTheta, float3 _f0, float _roughness)
+{
+    return _f0 + (max((float3)(1.f - _roughness), _f0) - _f0) * Pow5(1.f - _cosTheta);
+}
+
+float3 CalcEnvDiffuse(float3 _normal, MATERIAL _mat, float3 _view)
+{
+    float3 kS = FresnelSchlick_Roughness(max(dot(_normal, _view), 0.f), _mat.mFresnelR0, _mat.mRoughness);
+    float3 kD = 1.f - kS;
+    float3 irradiance = gDiffuseMap.Sample(gSamLinearWrap, _normal).rgb;
+    return (1.f - _mat.mMetallic) * kD * irradiance;
+}
+
 float4 main(VS_OUTPUT _in) : SV_TARGET
 {
     float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
@@ -100,7 +128,9 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     mat.mMetallic = 0.95f;
     mat.mSpecular = 0.8f;
 
-    float4 ambientL = gAmbient[0].gAmbient * albedo * access;
+    float3 envDiffuse = CalcEnvDiffuse(normalW, mat, toEye);
+    float4 ambientL = float4(envDiffuse * access, 0.f);
+    // ambientL = gAmbient[0].gAmbient * albedo * access;
 
     float4 directL = (float4)0.0f;
     float4 tempL = (float4)0.0f;
@@ -192,22 +222,22 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     }
 
     // TEMP SIMPLY IBL
-    float skyBoxEdgeLength = 10000.f;
-    float3 boxExtents = (float3)skyBoxEdgeLength;
-    float3 p = positionW - gLightInfo[0].gCameraPos;
-    float3 unitRayDir = normalize(reflect(p, normalW));
-    float3 t1 = (-p + boxExtents) / unitRayDir;
-    float3 t2 = (-p - boxExtents) / unitRayDir;
-    float3 tmax = max(t1, t2);
-    float t = min(min(tmax.x, tmax.y), tmax.z);
-    float3 lookBoxVec = p + t * unitRayDir;
-    float4 boxColor = gCubeMap.Sample(gSamLinearWrap, lookBoxVec);
-    boxColor.rgb = sRGBToACES(boxColor.rgb);
-    float metalFactor = lerp(0.2f, 1.f, mat.mMetallic);
-    float f0 = 1.f - saturate(dot(normalW, unitRayDir));
-    f0 = Pow5(f0);
-    float3 frsnFactor = fresnel + (1.f - fresnel) * f0;
-    directL += boxColor * metalFactor * float4(diffuse.rgb, 0.f) * (1.f - mat.mRoughness) * float4(frsnFactor, 0.f);
+    // float skyBoxEdgeLength = 10000.f;
+    // float3 boxExtents = (float3)skyBoxEdgeLength;
+    // float3 p = positionW - gLightInfo[0].gCameraPos;
+    // float3 unitRayDir = normalize(reflect(p, normalW));
+    // float3 t1 = (-p + boxExtents) / unitRayDir;
+    // float3 t2 = (-p - boxExtents) / unitRayDir;
+    // float3 tmax = max(t1, t2);
+    // float t = min(min(tmax.x, tmax.y), tmax.z);
+    // float3 lookBoxVec = p + t * unitRayDir;
+    // float4 boxColor = gCubeMap.Sample(gSamLinearWrap, lookBoxVec);
+    // boxColor.rgb = sRGBToACES(boxColor.rgb);
+    // float metalFactor = lerp(0.2f, 1.f, mat.mMetallic);
+    // float f0 = 1.f - saturate(dot(normalW, unitRayDir));
+    // f0 = Pow5(f0);
+    // float3 frsnFactor = fresnel + (1.f - fresnel) * f0;
+    // directL += boxColor * metalFactor * float4(diffuse.rgb, 0.f) * (1.f - mat.mRoughness) * float4(frsnFactor, 0.f);
     // TEMP SIMPLY IBL
 
     float4 litColor = ambientL * diffuse + directL;
