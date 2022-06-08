@@ -93,6 +93,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     float shiniese = fresshin.a;
     float4 diffuse = gDiffuse.Sample(gSamLinearWrap, _in.TexCoordL);
     float access = gSsao.SampleLevel(gSamLinearWrap, _in.TexCoordL, 0.0f).r;
+    diffuse.rgb = sRGBToACES(diffuse.rgb);
     MATERIAL mat = (MATERIAL)0.0f;
     mat.mFresnelR0 = fresnel;
     mat.mRoughness = 1.f - shiniese;
@@ -113,7 +114,9 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
 
     for (i = 0; i < dNum; ++i)
     {
-        tempL = float4(ComputeDirectionalLight(diffuse.rgb, gLights[i], mat, normalW, toEye), 0.0f);
+        LIGHT l = gLights[i];
+        l.gAlbedo = sRGBToACES(l.gAlbedo);
+        tempL = float4(ComputeDirectionalLight(diffuse.rgb, l, mat, normalW, toEye), 0.0f);
         if (i == gLightInfo[0].gShadowLightIndex[0])
         {
             shadowPosH = mul(float4(positionW, 1.0f), gShadowInfo[0].gShadowViewMat);
@@ -147,12 +150,16 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
 
     for (i = dNum; i < dNum + pNum; ++i)
     {
-        directL += float4(ComputePointLight(diffuse.rgb, gLights[i], mat, positionW, normalW, toEye), 0.0f);
+        LIGHT l = gLights[i];
+        l.gAlbedo = sRGBToACES(l.gAlbedo);
+        directL += float4(ComputePointLight(diffuse.rgb, l, mat, positionW, normalW, toEye), 0.0f);
     }
 
     for (i = dNum + pNum; i < dNum + pNum + sNum; ++i)
     {
-        tempL = float4(ComputeSpotLight(diffuse.rgb, gLights[i], mat, positionW, normalW, toEye), 0.0f);
+        LIGHT l = gLights[i];
+        l.gAlbedo = sRGBToACES(l.gAlbedo);
+        tempL = float4(ComputeSpotLight(diffuse.rgb, l, mat, positionW, normalW, toEye), 0.0f);
         if (i == gLightInfo[0].gShadowLightIndex[0])
         {
             shadowPosH = mul(float4(positionW, 1.0f), gShadowInfo[0].gShadowViewMat);
@@ -195,15 +202,19 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     float t = min(min(tmax.x, tmax.y), tmax.z);
     float3 lookBoxVec = p + t * unitRayDir;
     float4 boxColor = gCubeMap.Sample(gSamLinearWrap, lookBoxVec);
+    boxColor.rgb = sRGBToACES(boxColor.rgb);
     float metalFactor = lerp(0.2f, 1.f, mat.mMetallic);
     float f0 = 1.f - saturate(dot(normalW, unitRayDir));
     f0 = Pow5(f0);
     float3 frsnFactor = fresnel + (1.f - fresnel) * f0;
-    directL += boxColor * metalFactor * float4(MonToLin(diffuse.rgb), 0.f) * (1.f - mat.mRoughness) * float4(frsnFactor, 0.f);
+    directL += boxColor * metalFactor * float4(diffuse.rgb, 0.f) * (1.f - mat.mRoughness) * float4(frsnFactor, 0.f);
     // TEMP SIMPLY IBL
 
     float4 litColor = ambientL * diffuse + directL;
-    litColor.rgb = pow(litColor.rgb, float3(1.f / 2.2f, 1.f / 2.2f, 1.f / 2.2f));
+    // TEMP EXPOSURE
+    litColor *= 0.2f;
+    // TEMP EXPOSURE
+    litColor.rgb = LinearToSRGB(ACESTonemapping(litColor.rgb));
     litColor.a = diffuse.a;
 
     return litColor;

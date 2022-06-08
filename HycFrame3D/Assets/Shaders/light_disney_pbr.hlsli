@@ -72,11 +72,6 @@ float G_Smith_GGX(float _NdotV, float _alphaG)
     return 1.f / (_NdotV + sqrt(aG2 + NdotV2 - aG2 * NdotV2));
 }
 
-float3 MonToLin(float3 _v)
-{
-    return float3(pow(_v.x, 2.2), pow(_v.y, 2.2), pow(_v.z, 2.2));
-}
-
 float3 Disney_BRDF(float3 _L, float3 _V, float3 _N, float3 _LStr, float3 _baseColor, MATERIAL _material)
 {
     float NdotV = dot(_N, _V);
@@ -90,7 +85,7 @@ float3 Disney_BRDF(float3 _L, float3 _V, float3 _N, float3 _LStr, float3 _baseCo
     float NdotH = dot(_N, H);
     float LdotH = dot(_L, H);
 
-    float3 cDLin = MonToLin(_baseColor);
+    float3 cDLin = _baseColor;
     float cDLum = 0.3f * cDLin.x + 0.6f * cDLin.y + 0.1f * cDLin.z;
     float3 cTint = (cDLum > 0.f) ? (cDLin / cDLum) : (float3)1.f;
     float3 cSpec0 = lerp(_material.mSpecular * 0.08f *
@@ -144,11 +139,11 @@ float3 ComputeDirectionalLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 n
 float CalcAttenuation(float d, float falloffStart, float falloffEnd)
 {
     float EPSILON = 0.01;
-  float att = 1.f / (d * d + EPSILON);
-  float smoothatt = 1.f - pow(d / falloffEnd, 4);
-  smoothatt = max(smoothatt, 0.f);
-  smoothatt =  smoothatt * smoothatt;
-  return att * smoothatt;
+    float att = 1.f / (d * d + EPSILON);
+    float smoothatt = 1.f - pow(d / falloffEnd, 4);
+    smoothatt = max(smoothatt, 0.f);
+    smoothatt =  smoothatt * smoothatt;
+    return att * smoothatt;
 }
 
 float3 ComputePointLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye)
