@@ -139,7 +139,7 @@ void RSLight::SetLightBloom(RS_SUBMESH_DATA& _meshData)
         mLightStrength.y * 1.6f;
     mLightInstanceData[0].mCustomizedData1.z =
         mLightStrength.z * 1.6f;
-    mLightInstanceData[0].mCustomizedData1.w = 1.f;
+    mLightInstanceData[0].mCustomizedData1.w = mIntensity;
     static DirectX::XMMATRIX mat = {};
     mat = DirectX::XMMatrixTranslation(
         mLightPosition.x, mLightPosition.y, mLightPosition.z);
@@ -168,7 +168,7 @@ void RSLight::UpdateBloomColor()
             mLightStrength.y * 1.6f;
         mLightInstanceData[0].mCustomizedData1.z =
             mLightStrength.z * 1.6f;
-        mLightInstanceData[0].mCustomizedData1.w = 1.f;
+        mLightInstanceData[0].mCustomizedData1.w = mIntensity;
     }
 }
 
