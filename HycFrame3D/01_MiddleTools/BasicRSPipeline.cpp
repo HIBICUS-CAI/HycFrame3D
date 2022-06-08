@@ -2573,9 +2573,10 @@ void RSPass_Defered::ExecuatePass()
         mShadowStructedBufferSrv,
         mWorldPosSrv, mNormalSrv, mDiffuseSrv,
         mDiffuseAlbedoSrv, mFresenlShineseSrv,
-        mSsaoSrv, mShadowDepthSrv, g_DiffMapSrv
+        mSsaoSrv, mShadowDepthSrv,
+        g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv
     };
-    STContext()->PSSetShaderResources(0, 12, srvs);
+    STContext()->PSSetShaderResources(0, 14, srvs);
 
     static ID3D11SamplerState* samps[] =
     {

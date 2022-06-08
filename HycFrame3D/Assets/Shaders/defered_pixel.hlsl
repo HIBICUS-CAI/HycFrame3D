@@ -46,8 +46,9 @@ Texture2D gDiffuseAlbedo : register(t7);
 Texture2D gFresnelShiniese : register(t8);
 Texture2D gSsao : register(t9);
 Texture2DArray<float> gShadowMap : register(t10);
-TextureCube gDiffuseMap : register(t11);
-TextureCube gSpecularMap : register(t12);
+Texture2D gBRDFLUT : register(t11);
+TextureCube gDiffuseMap : register(t12);
+TextureCube gSpecularMap : register(t13);
 
 float CalcShadowFactor(float4 _shadowPosH, float _slice)
 {
@@ -83,7 +84,7 @@ float CalcShadowFactor(float4 _shadowPosH, float _slice)
     return percentLit / 9.0f;
 }
 
-float3 CalcSpecLookUpVec(float3 _lookUpOnOrigin, float3 _pos, float3 _normal)
+float3 CalcSpecLookUpVec(float3 _pos, float3 _normal)
 {
     const float3 BOX_AABB_SIZE = float3(10000.f, 10000.f, 10000.f);
     float3 p = _pos - gLightInfo[0].gCameraPos;
@@ -108,6 +109,20 @@ float3 CalcEnvDiffuse(float3 _normal, MATERIAL _mat, float3 _view)
     float3 kD = 1.f - kS;
     float3 irradiance = gDiffuseMap.Sample(gSamLinearWrap, _normal).rgb;
     return (1.f - _mat.mMetallic) * kD * irradiance;
+}
+
+float3 CalcEnvSpecular(float3 _pos, float3 _normal ,float3 _view, MATERIAL _mat)
+{
+    float3 lookUpVec = CalcSpecLookUpVec(_pos, _normal);
+    const float MAX_LOD = 9.f;
+    float3 preFilteredColor = gSpecularMap.SampleLevel(gSamLinearWrap, lookUpVec,
+        _mat.mRoughness * MAX_LOD).rgb;
+    float NdotV = max(dot(_normal, _view), 0.f);
+    float3 F = FresnelSchlick_Roughness(NdotV, _mat.mFresnelR0, _mat.mRoughness);
+    float2 envBRDF = gBRDFLUT.Sample(gSamLinearWrap, float2(NdotV, _mat.mRoughness)).rg;
+    float3 specular = preFilteredColor * (F + envBRDF.r + envBRDF.g);
+
+    return specular;
 }
 
 float4 main(VS_OUTPUT _in) : SV_TARGET
@@ -221,26 +236,11 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
         directL += tempL;
     }
 
-    // TEMP SIMPLY IBL
-    // float skyBoxEdgeLength = 10000.f;
-    // float3 boxExtents = (float3)skyBoxEdgeLength;
-    // float3 p = positionW - gLightInfo[0].gCameraPos;
-    // float3 unitRayDir = normalize(reflect(p, normalW));
-    // float3 t1 = (-p + boxExtents) / unitRayDir;
-    // float3 t2 = (-p - boxExtents) / unitRayDir;
-    // float3 tmax = max(t1, t2);
-    // float t = min(min(tmax.x, tmax.y), tmax.z);
-    // float3 lookBoxVec = p + t * unitRayDir;
-    // float4 boxColor = gCubeMap.Sample(gSamLinearWrap, lookBoxVec);
-    // boxColor.rgb = sRGBToACES(boxColor.rgb);
-    // float metalFactor = lerp(0.2f, 1.f, mat.mMetallic);
-    // float f0 = 1.f - saturate(dot(normalW, unitRayDir));
-    // f0 = Pow5(f0);
-    // float3 frsnFactor = fresnel + (1.f - fresnel) * f0;
-    // directL += boxColor * metalFactor * float4(diffuse.rgb, 0.f) * (1.f - mat.mRoughness) * float4(frsnFactor, 0.f);
-    // TEMP SIMPLY IBL
+    directL += lerp(0.1f, 1.f, mat.mMetallic) *
+        float4(CalcEnvSpecular(positionW, normalW, toEye, mat) * diffuse.rgb, 0.f);
 
     float4 litColor = ambientL * diffuse + directL;
+    
     // TEMP EXPOSURE
     litColor *= 0.2f;
     // TEMP EXPOSURE
