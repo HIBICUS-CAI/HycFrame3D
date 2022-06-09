@@ -19,7 +19,7 @@ void RegisterMaterialEditor(ObjectFactory* _factory)
 
 static ATransformComponent* g_PointLightAtc = nullptr;
 static ATransformComponent* g_MaterialBallAtc = nullptr;
-static SUBMESH_DATA* g_MatBallSubMesh = nullptr;
+static RS_MATERIAL_INFO* g_Material = nullptr;
 
 void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 {
@@ -82,9 +82,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         g_PointLightAtc->TranslateYAsix(-0.1f * deltatime);
     }
 
-    auto& insM = g_MatBallSubMesh->mInstanceMap;
-    auto& ballMat = insM.begin()->second.mMaterialData;
-    float& editValue = ballMat.mRoughness;
+    float& editValue = g_Material->mRoughness;
     if (InputInterface::IsKeyDownInSingle(KB_RIGHT))
     {
         editValue += deltatime / 1000.f;
@@ -115,10 +113,11 @@ bool MatEditorInit(AInteractComponent* _aitc)
     auto& submeshName = (*_aitc->GetActorOwner()->
         GetSceneNode().GetAssetsPool()->
         GetMeshIfExisted("mat-ball"))[0];
-    g_MatBallSubMesh = _aitc->GetActorOwner()->
+    g_Material = &(_aitc->GetActorOwner()->
         GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(submeshName);
-    if (!g_MatBallSubMesh) { return false; }
+        GetSubMeshIfExisted(submeshName)->
+        mInstanceMap.begin()->second.mMaterialData);
+    if (!g_Material) { return false; }
 
     return true;
 }
@@ -132,5 +131,5 @@ void MatEditorDestory(AInteractComponent* _aitc)
 {
     g_PointLightAtc = nullptr;
     g_MaterialBallAtc = nullptr;
-    g_MatBallSubMesh = nullptr;
+    g_Material = nullptr;
 }
