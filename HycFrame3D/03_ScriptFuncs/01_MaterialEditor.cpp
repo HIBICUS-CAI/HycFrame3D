@@ -1,7 +1,6 @@
 #include "01_MaterialEditor.h"
 #include "RSRoot_DX11.h"
 #include "RSPipelinesManager.h"
-#include "RSCommon.h"
 
 void RegisterMaterialEditor(ObjectFactory* _factory)
 {
@@ -20,6 +19,7 @@ void RegisterMaterialEditor(ObjectFactory* _factory)
 
 static ATransformComponent* g_PointLightAtc = nullptr;
 static ATransformComponent* g_MaterialBallAtc = nullptr;
+static SUBMESH_DATA* g_MatBallSubMesh = nullptr;
 
 void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 {
@@ -81,6 +81,20 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
     {
         g_PointLightAtc->TranslateYAsix(-0.1f * deltatime);
     }
+
+    auto& insM = g_MatBallSubMesh->mInstanceMap;
+    auto& ballMat = insM.begin()->second.mMaterialData;
+    float& editValue = ballMat.mRoughness;
+    if (InputInterface::IsKeyDownInSingle(KB_RIGHT))
+    {
+        editValue += deltatime / 1000.f;
+        if (editValue > 1.f) { editValue = 1.f; }
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_LEFT))
+    {
+        editValue -= deltatime / 1000.f;
+        if (editValue < 0.f) { editValue = 0.f; }
+    }
 }
 
 bool MatEditorInit(AInteractComponent* _aitc)
@@ -98,39 +112,25 @@ bool MatEditorInit(AInteractComponent* _aitc)
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
     if (!g_MaterialBallAtc) { return false; }
 
+    auto& submeshName = (*_aitc->GetActorOwner()->
+        GetSceneNode().GetAssetsPool()->
+        GetMeshIfExisted("mat-ball"))[0];
+    g_MatBallSubMesh = _aitc->GetActorOwner()->
+        GetSceneNode().GetAssetsPool()->
+        GetSubMeshIfExisted(submeshName);
+    if (!g_MatBallSubMesh) { return false; }
+
     return true;
 }
 
 void MatEditorUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
-    auto& submeshName = (*_aitc->GetActorOwner()->
-        GetSceneNode().GetAssetsPool()->
-        GetMeshIfExisted("mat-ball"))[0];
-    auto submesh = _aitc->GetActorOwner()->
-        GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(submeshName);
-    if (InputInterface::IsKeyDownInSingle(KB_RIGHT))
-    {
-        for (auto& ins : submesh->mInstanceMap)
-        {
-            auto& rough = ins.second.mMaterialData.mRoughness;
-            rough += _timer.FloatDeltaTime() / 1000.f;
-            if (rough > 1.f) { rough = 1.f; }
-        }
-    }
-    if (InputInterface::IsKeyDownInSingle(KB_LEFT))
-    {
-        for (auto& ins : submesh->mInstanceMap)
-        {
-            auto& rough = ins.second.mMaterialData.mRoughness;
-            rough -= _timer.FloatDeltaTime() / 1000.f;
-            if (rough < 0.f) { rough = 0.f; }
-        }
-    }
+
 }
 
 void MatEditorDestory(AInteractComponent* _aitc)
 {
     g_PointLightAtc = nullptr;
     g_MaterialBallAtc = nullptr;
+    g_MatBallSubMesh = nullptr;
 }
