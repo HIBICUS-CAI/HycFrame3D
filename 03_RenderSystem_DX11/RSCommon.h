@@ -176,7 +176,7 @@ struct MATERIAL_INFO
 struct RS_MATERIAL_INFO
 {
     DirectX::XMFLOAT3 mFresnelR0 = {};
-    float mSubSruface = 0.f;
+    float mSubSurface = 0.f;
     float mMetallic = 0.f;
     float mSpecular = 0.f;
     float mSpecularTint = 0.f;

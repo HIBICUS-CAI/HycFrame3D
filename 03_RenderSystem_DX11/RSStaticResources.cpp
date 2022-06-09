@@ -345,7 +345,7 @@ bool RSStaticResources::BuildStaticMaterials()
 
     name = "copper";
     rmi.mFresnelR0 = { 0.95f,0.64f,0.54f };
-    rmi.mSubSruface = 0.f;
+    rmi.mSubSurface = 0.f;
     rmi.mMetallic = 0.8f;
     rmi.mSpecular = 0.8f;
     rmi.mSpecularTint = 0.f;

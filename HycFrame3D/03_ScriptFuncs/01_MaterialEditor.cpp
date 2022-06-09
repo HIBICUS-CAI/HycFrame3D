@@ -21,6 +21,28 @@ static ATransformComponent* g_PointLightAtc = nullptr;
 static ATransformComponent* g_MaterialBallAtc = nullptr;
 static RS_MATERIAL_INFO* g_Material = nullptr;
 
+void OutputThisMaterialInfo()
+{
+    std::string matInfo = "Material Info\n";
+    matInfo += "===============================\n";
+    matInfo += "FresnelR0 :\t\t" + std::to_string(g_Material->mFresnelR0.x);
+    matInfo += ", " + std::to_string(g_Material->mFresnelR0.y);
+    matInfo += ", " + std::to_string(g_Material->mFresnelR0.z);
+    matInfo += "\n";
+    matInfo += "SubSurface :\t" + std::to_string(g_Material->mSubSurface) + ", \t";
+    matInfo += "Metallic :\t\t\t" + std::to_string(g_Material->mMetallic) + "\n";
+    matInfo += "Specular :\t\t" + std::to_string(g_Material->mSpecular) + ", \t";
+    matInfo += "SpecularTint :\t\t" + std::to_string(g_Material->mSpecularTint) + "\n";
+    matInfo += "Roughness :\t\t" + std::to_string(g_Material->mRoughness) + ", \t";
+    matInfo += "Anisotropic :\t\t" + std::to_string(g_Material->mAnisotropic) + "\n";
+    matInfo += "Sheen :\t\t\t" + std::to_string(g_Material->mSheen) + ", \t";
+    matInfo += "SheenTint :\t\t\t" + std::to_string(g_Material->mSheenTint) + "\n";
+    matInfo += "Clearcoat :\t\t" + std::to_string(g_Material->mClearcoat) + ", \t";
+    matInfo += "ClearcoatGloss :\t" + std::to_string(g_Material->mClearcoatGloss) + "\n";
+    matInfo += "===============================\n";
+    P_LOG(LOG_DEBUG, "%s", matInfo.c_str());
+}
+
 void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 {
     if (InputInterface::IsKeyPushedInSingle(KB_F5))
@@ -92,6 +114,11 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
     {
         editValue -= deltatime / 1000.f;
         if (editValue < 0.f) { editValue = 0.f; }
+    }
+
+    if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
+    {
+        OutputThisMaterialInfo();
     }
 }
 

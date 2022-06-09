@@ -195,7 +195,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
 
                 if (subSurfNode)
                 {
-                    matInfo.mSubSruface = subSurfNode->GetFloat();
+                    matInfo.mSubSurface = subSurfNode->GetFloat();
                 }
 
                 if (metalNode)
