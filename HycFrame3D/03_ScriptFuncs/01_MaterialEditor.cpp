@@ -1,6 +1,7 @@
 #include "01_MaterialEditor.h"
 #include "RSRoot_DX11.h"
 #include "RSPipelinesManager.h"
+#include "RSCommon.h"
 
 void RegisterMaterialEditor(ObjectFactory* _factory)
 {
@@ -102,7 +103,30 @@ bool MatEditorInit(AInteractComponent* _aitc)
 
 void MatEditorUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
-
+    auto& submeshName = (*_aitc->GetActorOwner()->
+        GetSceneNode().GetAssetsPool()->
+        GetMeshIfExisted("mat-ball"))[0];
+    auto submesh = _aitc->GetActorOwner()->
+        GetSceneNode().GetAssetsPool()->
+        GetSubMeshIfExisted(submeshName);
+    if (InputInterface::IsKeyDownInSingle(KB_RIGHT))
+    {
+        for (auto& ins : submesh->mInstanceMap)
+        {
+            auto& rough = ins.second.mMaterialData.mRoughness;
+            rough += _timer.FloatDeltaTime() / 1000.f;
+            if (rough > 1.f) { rough = 1.f; }
+        }
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_LEFT))
+    {
+        for (auto& ins : submesh->mInstanceMap)
+        {
+            auto& rough = ins.second.mMaterialData.mRoughness;
+            rough -= _timer.FloatDeltaTime() / 1000.f;
+            if (rough < 0.f) { rough = 0.f; }
+        }
+    }
 }
 
 void MatEditorDestory(AInteractComponent* _aitc)
