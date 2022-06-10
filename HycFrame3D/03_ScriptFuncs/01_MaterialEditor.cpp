@@ -17,9 +17,24 @@ void RegisterMaterialEditor(ObjectFactory* _factory)
         { FUNC_NAME(MatEditorDestory),MatEditorDestory });
 }
 
+enum class MAT_TYPE
+{
+    SUBSURFACE = KB_1,
+    METALLIC = KB_2,
+    SPECULAR = KB_3,
+    SPECULARTINT = KB_4,
+    ROUGHNESS = KB_5,
+    ANISOTROPIC = KB_6,
+    SHEEN = KB_7,
+    SHEENTINT = KB_8,
+    CLEARCOAT = KB_9,
+    CLEARCOATGLOSS = KB_0
+};
+
 static ATransformComponent* g_PointLightAtc = nullptr;
 static ATransformComponent* g_MaterialBallAtc = nullptr;
 static RS_MATERIAL_INFO* g_Material = nullptr;
+static MAT_TYPE g_EditingMatTerm = MAT_TYPE::ROUGHNESS;
 
 void OutputThisMaterialInfo()
 {
@@ -104,16 +119,135 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         g_PointLightAtc->TranslateYAsix(-0.1f * deltatime);
     }
 
-    float& editValue = g_Material->mRoughness;
+    UINT check = 0;
+    switch (MAT_TYPE::SUBSURFACE)
+    {
+    case MAT_TYPE::SUBSURFACE:
+        check = (UINT)MAT_TYPE::SUBSURFACE;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing subsurface\n");
+            break;
+        }
+    case MAT_TYPE::METALLIC:
+        check = (UINT)MAT_TYPE::METALLIC;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing metallic\n");
+            break;
+        }
+    case MAT_TYPE::SPECULAR:
+        check = (UINT)MAT_TYPE::SPECULAR;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing specular\n");
+            break;
+        }
+    case MAT_TYPE::SPECULARTINT:
+        check = (UINT)MAT_TYPE::SPECULARTINT;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing specular tint\n");
+            break;
+        }
+    case MAT_TYPE::ROUGHNESS:
+        check = (UINT)MAT_TYPE::ROUGHNESS;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing roughness\n");
+            break;
+        }
+    case MAT_TYPE::ANISOTROPIC:
+        check = (UINT)MAT_TYPE::ANISOTROPIC;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing anisotropic\n");
+            break;
+        }
+    case MAT_TYPE::SHEEN:
+        check = (UINT)MAT_TYPE::SHEEN;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing sheen\n");
+            break;
+        }
+    case MAT_TYPE::SHEENTINT:
+        check = (UINT)MAT_TYPE::SHEENTINT;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing sheen tint\n");
+            break;
+        }
+    case MAT_TYPE::CLEARCOAT:
+        check = (UINT)MAT_TYPE::CLEARCOAT;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing clearcoat\n");
+            break;
+        }
+    case MAT_TYPE::CLEARCOATGLOSS:
+        check = (UINT)MAT_TYPE::CLEARCOATGLOSS;
+        if (InputInterface::IsKeyPushedInSingle(check))
+        {
+            g_EditingMatTerm = (MAT_TYPE)check;
+            P_LOG(LOG_DEBUG, "editing clearcoat gloss\n");
+            break;
+        }
+    }
+
+    float* editValue = nullptr;
+    switch (g_EditingMatTerm)
+    {
+    case MAT_TYPE::SUBSURFACE:
+        editValue = &g_Material->mSubSurface;
+        break;
+    case MAT_TYPE::METALLIC:
+        editValue = &g_Material->mMetallic;
+        break;
+    case MAT_TYPE::SPECULAR:
+        editValue = &g_Material->mSpecular;
+        break;
+    case MAT_TYPE::SPECULARTINT:
+        editValue = &g_Material->mSpecularTint;
+        break;
+    case MAT_TYPE::ROUGHNESS:
+        editValue = &g_Material->mRoughness;
+        break;
+    case MAT_TYPE::ANISOTROPIC:
+        editValue = &g_Material->mAnisotropic;
+        break;
+    case MAT_TYPE::SHEEN:
+        editValue = &g_Material->mSheen;
+        break;
+    case MAT_TYPE::SHEENTINT:
+        editValue = &g_Material->mSheenTint;
+        break;
+    case MAT_TYPE::CLEARCOAT:
+        editValue = &g_Material->mClearcoat;
+        break;
+    case MAT_TYPE::CLEARCOATGLOSS:
+        editValue = &g_Material->mClearcoatGloss;
+        break;
+    }
+    assert(editValue);
     if (InputInterface::IsKeyDownInSingle(KB_RIGHT))
     {
-        editValue += deltatime / 1000.f;
-        if (editValue > 1.f) { editValue = 1.f; }
+        *editValue += deltatime / 1000.f;
+        if (*editValue > 1.f) { *editValue = 1.f; }
     }
     if (InputInterface::IsKeyDownInSingle(KB_LEFT))
     {
-        editValue -= deltatime / 1000.f;
-        if (editValue < 0.f) { editValue = 0.f; }
+        *editValue -= deltatime / 1000.f;
+        if (*editValue < 0.f) { *editValue = 0.f; }
     }
 
     if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
@@ -145,6 +279,8 @@ bool MatEditorInit(AInteractComponent* _aitc)
         GetSubMeshIfExisted(submeshName)->
         mInstanceMap.begin()->second.mMaterialData);
     if (!g_Material) { return false; }
+
+    g_EditingMatTerm = MAT_TYPE::ROUGHNESS;
 
     return true;
 }
