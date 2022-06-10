@@ -40,7 +40,7 @@ StructuredBuffer<LIGHT> gLights : register(t2);
 StructuredBuffer<SHADOW_INFO> gShadowInfo : register(t3);
 
 Texture2D gWorldPos : register(t4);
-Texture2D gNormal : register(t5);
+Texture2D<uint4> gNormal : register(t5);
 Texture2D gDiffuse : register(t6);
 Texture2D gDiffuseAlbedo : register(t7);
 Texture2D gFresnelShiniese : register(t8);
@@ -125,10 +125,59 @@ float3 CalcEnvSpecular(float3 _pos, float3 _normal ,float3 _view, MATERIAL _mat)
     return specular;
 }
 
+uint FloatToUint8(float v)
+{
+    return round((v + 1.f) / 2.f) * 255;
+}
+
+float Uint8ToFloat(uint v)
+{
+    return float(v) / 255.f * 2.f - 1.f;
+}
+
+uint3 FloatToUint8_V(float3 v)
+{
+    uint3 res;
+    res.x = FloatToUint8(v.x);
+    res.y = FloatToUint8(v.y);
+    res.z = FloatToUint8(v.z);
+    return res;
+}
+
+float3 Uint8ToFloat_V(uint3 v)
+{
+    float3 res;
+    res.x = Uint8ToFloat(v.x);
+    res.y = Uint8ToFloat(v.y);
+    res.z = Uint8ToFloat(v.z);
+    return res;
+}
+
+uint PackUint8To16(uint v1, uint v2)
+{
+    uint final = (v1 << 8) | (v2 & 0xff);
+    return final;
+}
+
+uint2 UnpackUint16To8(uint v)
+{
+    uint2 final;
+    final.x = v >> 8;
+    final.y = v & 0xff;
+    return final;
+}
+
+uint3 TempUnpack(uint3 packed)
+{
+    packed.xy = UnpackUint16To8(packed.x);
+    return packed;
+}
+
 float4 main(VS_OUTPUT _in) : SV_TARGET
 {
     float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
-    float3 normalW = normalize(gNormal.Sample(gSamPointClamp, _in.TexCoordL).rgb);
+    int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
+    float3 normalW = normalize(Uint8ToFloat_V(TempUnpack(gNormal.Load(tcInt).rgb)));
     float3 toEye = normalize(gLightInfo[0].gCameraPos - positionW);
     float4 albedo = gDiffuseAlbedo.Sample(gSamLinearWrap, _in.TexCoordL);
     float4 fresshin = gFresnelShiniese.Sample(gSamLinearWrap, _in.TexCoordL);

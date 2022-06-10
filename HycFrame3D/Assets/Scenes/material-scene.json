@@ -43,7 +43,6 @@
             "mesh-name": "mat-ball",
             "load-mode": "model-file",
             "force-diffuse": "copper.png",
-            "force-normal": "matball_normal.png",
             "material-info": {
                 "fresnel-r0": [
                     0.95,
