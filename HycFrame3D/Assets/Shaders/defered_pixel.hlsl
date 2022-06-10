@@ -173,11 +173,31 @@ uint3 TempUnpack(uint3 packed)
     return packed;
 }
 
+float2 EncodeNormalizeVec(float3 n)
+{
+    float f = sqrt(8.f * n.z + 8.f);
+    return n.xy / f + 0.5f;
+}
+
+float3 DecodeNormalizeVec(float2 enc)
+{
+    float2 fenc = enc * 4.f - 2.f;
+    float f = dot(fenc,fenc);
+    float g = sqrt(1.f -f / 4.f);
+    float3 n;
+    n.xy = fenc * g;
+    n.z = 1.f - f / 2.f;
+    return n;
+}
+
 float4 main(VS_OUTPUT _in) : SV_TARGET
 {
     float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
     int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
     float3 normalW = normalize(Uint8ToFloat_V(TempUnpack(gNormal.Load(tcInt).rgb)));
+    normalW.xy = EncodeNormalizeVec(normalW);
+    normalW.z = 0.f;
+    normalW = DecodeNormalizeVec(normalW.xy);
     float3 toEye = normalize(gLightInfo[0].gCameraPos - positionW);
     float4 albedo = gDiffuseAlbedo.Sample(gSamLinearWrap, _in.TexCoordL);
     float4 fresshin = gFresnelShiniese.Sample(gSamLinearWrap, _in.TexCoordL);
