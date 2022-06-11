@@ -40,7 +40,7 @@ StructuredBuffer<LIGHT> gLights : register(t2);
 StructuredBuffer<SHADOW_INFO> gShadowInfo : register(t3);
 
 Texture2D gWorldPos : register(t4);
-Texture2D<uint4> gNormal : register(t5);
+Texture2D gNormal : register(t5);
 Texture2D gDiffuse : register(t6);
 Texture2D gDiffuseAlbedo : register(t7);
 Texture2D gFresnelShiniese : register(t8);
@@ -210,11 +210,11 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
     float depth = gDepthMap.Sample(gSamPointClamp, _in.TexCoordL).r;
     positionW = DepthToWorldPos(_in.TexCoordL, depth);
-    int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
-    float3 normalW = normalize(Uint8ToFloat_V(TempUnpack(gNormal.Load(tcInt).rgb)));
-    normalW.xy = EncodeNormalizeVec(normalW);
-    normalW.z = 0.f;
-    normalW = DecodeNormalizeVec(normalW.xy);
+    // int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
+    float3 normalW = normalize(gNormal.Sample(gSamPointClamp, _in.TexCoordL).rgb);
+    // normalW.xy = EncodeNormalizeVec(normalW);
+    // normalW.z = 0.f;
+    // normalW = DecodeNormalizeVec(normalW.xy);
     float3 toEye = normalize(gLightInfo[0].gCameraPos - positionW);
     float4 albedo = gDiffuseAlbedo.Sample(gSamLinearWrap, _in.TexCoordL);
     float4 fresshin = gFresnelShiniese.Sample(gSamLinearWrap, _in.TexCoordL);

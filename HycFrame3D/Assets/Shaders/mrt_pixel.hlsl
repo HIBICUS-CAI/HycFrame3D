@@ -13,7 +13,7 @@ struct VS_OUTPUT
 struct PS_OUTPUT
 {
     float4 Diffuse : SV_TARGET0;
-    uint4 Normal : SV_TARGET1;
+    float4 Normal : SV_TARGET1;
     float4 WorldPos : SV_TARGET2;
     float4 DiffAlbe : SV_TARGET3;
     float4 FresShin : SV_TARGET4;
@@ -95,13 +95,13 @@ PS_OUTPUT main(VS_OUTPUT _input)
     }
 
     _input.NormalW = normalize(_input.NormalW);
-    uint3 norU = FloatToUint8_V(_input.NormalW);
-    norU.x = PackUint8To16(norU.x, norU.y);
-    norU.y = 0;
+    // uint3 norU = FloatToUint8_V(_input.NormalW);
+    // norU.x = PackUint8To16(norU.x, norU.y);
+    // norU.y = 0;
 
     PS_OUTPUT _out = (PS_OUTPUT)0;
     _out.WorldPos = float4(_input.PosW, 0.0f);
-    _out.Normal = uint4(norU, 0);
+    _out.Normal = float4(_input.NormalW, 0);
     _out.Diffuse = gDiffuse.Sample(gLinearSampler,_input.TexCoordL);
     _out.DiffAlbe = _input.DiffuseAlbedo;
     _out.FresShin = _input.FresnelShiniese;

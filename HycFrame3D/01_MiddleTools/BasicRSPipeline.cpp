@@ -944,18 +944,18 @@ bool RSPass_MRT::CreateViews()
     texDesc.Usage = D3D11_USAGE_DEFAULT;
     texDesc.CPUAccessFlags = 0;
     texDesc.MiscFlags = 0;
-    texDesc.Format = DXGI_FORMAT_R16G16B16A16_UINT;
+    texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
     hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
     if (FAILED(hr)) { return false; }
 
-    rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_UINT;
+    rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     rtvDesc.Texture2D.MipSlice = 0;
     rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
     hr = Device()->CreateRenderTargetView(texture, &rtvDesc, &mNormalRtv);
     if (FAILED(hr)) { return false; }
 
-    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_UINT;
+    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;

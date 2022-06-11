@@ -1,5 +1,5 @@
 RWTexture2D<unorm float4> SsaoTex : register(u0);
-Texture2D<uint4> NormalMap : register(t0);
+Texture2D NormalMap : register(t0);
 Texture2D DepthMap : register(t1);
 
 groupshared unorm float4 gSsaoCache[256 + 2 * 2];
@@ -68,7 +68,7 @@ void HMain(int3 groupThreadId : SV_GroupThreadID,
     {
         int x = max(dispatchThreadId.x - 2, 0);
         gSsaoCache[groupThreadId.x] = SsaoTex[int2(x, dispatchThreadId.y)];
-        gNormalCache[groupThreadId.x] = Uint8ToFloat_V(TempUnpack(NormalMap[int2(x * 2, dispatchThreadId.y * 2)]));
+        gNormalCache[groupThreadId.x] = ((NormalMap[int2(x * 2, dispatchThreadId.y * 2)]));
         gDepthCache[groupThreadId.x] = DepthMap[int2(x * 2, dispatchThreadId.y * 2)].r;
     }
     if (groupThreadId.x >= 256 - 2)
@@ -116,7 +116,7 @@ void VMain(int3 groupThreadId : SV_GroupThreadID,
     {
         int y = max(dispatchThreadId.y - 2, 0);
         gSsaoCache[groupThreadId.y] = SsaoTex[int2(dispatchThreadId.x, y)];
-        gNormalCache[groupThreadId.y] = Uint8ToFloat_V(TempUnpack(NormalMap[int2(dispatchThreadId.x * 2, y * 2)]));
+        gNormalCache[groupThreadId.y] = ((NormalMap[int2(dispatchThreadId.x * 2, y * 2)]));
         gDepthCache[groupThreadId.y] = DepthMap[int2(dispatchThreadId.x * 2, y * 2)].r;
     }
     if (groupThreadId.y >= 256 - 2)

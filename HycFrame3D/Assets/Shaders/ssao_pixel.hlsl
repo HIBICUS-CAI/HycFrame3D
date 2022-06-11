@@ -21,7 +21,7 @@ struct SSAO_INFO
 static const int gSampleCount = 14;
 
 StructuredBuffer<SSAO_INFO> gSsaoInfo : register(t0);
-Texture2D<uint4> gNormalMap : register(t1);
+Texture2D gNormalMap : register(t1);
 Texture2D gDepthMap : register(t2);
 Texture2D gRandomMap : register(t3);
 
@@ -97,8 +97,8 @@ uint3 TempUnpack(uint3 packed)
 
 float4 main(VS_OUTPUT _input) : SV_TARGET
 {
-    int3 tcInt = int3(_input.TexCoordL.x * 1280, _input.TexCoordL.y * 720, 0);
-    float3 n = normalize(Uint8ToFloat_V(TempUnpack(gNormalMap.Load(tcInt).xyz)));
+    // int3 tcInt = int3(_input.TexCoordL.x * 1280, _input.TexCoordL.y * 720, 0);
+    float3 n = normalize(gNormalMap.Sample(gSamPointClamp, _input.TexCoordL).xyz);
     n = normalize(mul(n, (float3x3)gSsaoInfo[0].gView));
     float pz = gDepthMap.SampleLevel(gSamDepthMap, _input.TexCoordL, 0.0f).r;
     pz = NdcDepthToViewDepth(pz);
