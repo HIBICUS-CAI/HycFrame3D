@@ -190,19 +190,16 @@ uint3 TempUnpack(uint3 packed)
 
 float2 EncodeNormalizeVec(float3 n)
 {
-    float f = sqrt(8.f * n.z + 8.f);
-    return n.xy / f + 0.5f;
+    return (float2(atan2(n.y,n.x)/3.1415926536f, n.z)+1.0)*0.5;
 }
 
 float3 DecodeNormalizeVec(float2 enc)
 {
-    float2 fenc = enc * 4.f - 2.f;
-    float f = dot(fenc,fenc);
-    float g = sqrt(1.f -f / 4.f);
-    float3 n;
-    n.xy = fenc * g;
-    n.z = 1.f - f / 2.f;
-    return n;
+    float2 ang = enc * 2.f - 1.f;
+    float2 scth;
+    sincos(ang.x * 3.1415926536f, scth.x, scth.y);
+    float2 scphi = float2(sqrt(1.f - ang.y * ang.y), ang.y);
+    return float3(scth.y * scphi.x, scth.x * scphi.x, scphi.y);
 }
 
 float4 main(VS_OUTPUT _in) : SV_TARGET
@@ -212,10 +209,9 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     positionW = DepthToWorldPos(_in.TexCoordL, depth);
     // int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
     float3 normalW = normalize(gNormal.Sample(gSamPointClamp, _in.TexCoordL).rgb);
-    // TODO find a better way to compress normal
-    // normalW.xy = EncodeNormalizeVec(normalW);
-    // normalW.z = 0.f;
-    // normalW = DecodeNormalizeVec(normalW.xy);
+    normalW.xy = EncodeNormalizeVec(normalW);
+    normalW.z = 0.f;
+    normalW = DecodeNormalizeVec(normalW.xy);
     float3 toEye = normalize(gLightInfo[0].gCameraPos - positionW);
     float4 albedo = gDiffuseAlbedo.Sample(gSamLinearWrap, _in.TexCoordL);
     float4 fresshin = gFresnelShiniese.Sample(gSamLinearWrap, _in.TexCoordL);
