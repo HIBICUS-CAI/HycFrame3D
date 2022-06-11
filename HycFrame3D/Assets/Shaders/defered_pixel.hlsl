@@ -49,6 +49,21 @@ Texture2DArray<float> gShadowMap : register(t10);
 Texture2D gBRDFLUT : register(t11);
 TextureCube gDiffuseMap : register(t12);
 TextureCube gSpecularMap : register(t13);
+Texture2D gDepthMap : register(t14);
+
+float3 DepthToWorldPos(float2 uv, float depth)
+{
+    matrix PM_INVERSE_VIEW_PROJECTION = matrix(
+        0.736379743f, 0.f, 0.f, 0.f,
+        0.f, 0.414213628f, 0.f, 0.f,
+        0.f, 0.f, 0.f, -0.998750031f,
+        0.f, 0.f, 1.f, 1.f
+    );
+	float4 ndc = float4(uv * 2.f - 1.f, depth, 1.f);
+	ndc.y *= -1.f;
+	float4 wp = mul(ndc, PM_INVERSE_VIEW_PROJECTION);
+	return (wp / wp.w).xyz;
+}
 
 float CalcShadowFactor(float4 _shadowPosH, float _slice)
 {
@@ -193,6 +208,8 @@ float3 DecodeNormalizeVec(float2 enc)
 float4 main(VS_OUTPUT _in) : SV_TARGET
 {
     float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
+    float depth = gDepthMap.Sample(gSamPointClamp, _in.TexCoordL).r;
+    positionW = DepthToWorldPos(_in.TexCoordL, depth);
     int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
     float3 normalW = normalize(Uint8ToFloat_V(TempUnpack(gNormal.Load(tcInt).rgb)));
     normalW.xy = EncodeNormalizeVec(normalW);

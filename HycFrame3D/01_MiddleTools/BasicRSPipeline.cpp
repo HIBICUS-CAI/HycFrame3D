@@ -2565,6 +2565,9 @@ void RSPass_Defered::ExecuatePass()
     DirectX::XMStoreFloat4x4(&s_data[0].mSSAOMat, mat);
     STContext()->Unmap(mShadowStructedBuffer, 0);
 
+    static std::string depthSrvName = "mrt-depth";
+    static auto depSrv = g_Root->ResourceManager()->
+        GetResourceInfo(depthSrvName)->mSrv;
     static ID3D11ShaderResourceView* srvs[] =
     {
         mAmbientStructedBufferSrv,
@@ -2574,9 +2577,10 @@ void RSPass_Defered::ExecuatePass()
         mWorldPosSrv, mNormalSrv, mDiffuseSrv,
         mDiffuseAlbedoSrv, mFresenlShineseSrv,
         mSsaoSrv, mShadowDepthSrv,
-        g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv
+        g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv,
+        depSrv
     };
-    STContext()->PSSetShaderResources(0, 14, srvs);
+    STContext()->PSSetShaderResources(0, 15, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
