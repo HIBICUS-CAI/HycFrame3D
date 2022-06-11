@@ -212,6 +212,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     positionW = DepthToWorldPos(_in.TexCoordL, depth);
     // int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
     float3 normalW = normalize(gNormal.Sample(gSamPointClamp, _in.TexCoordL).rgb);
+    // TODO find a better way to compress normal
     // normalW.xy = EncodeNormalizeVec(normalW);
     // normalW.z = 0.f;
     // normalW = DecodeNormalizeVec(normalW.xy);
