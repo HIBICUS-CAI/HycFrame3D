@@ -40,7 +40,7 @@ StructuredBuffer<LIGHT> gLights : register(t2);
 StructuredBuffer<SHADOW_INFO> gShadowInfo : register(t3);
 
 Texture2D gWorldPos : register(t4);
-Texture2D gNormal : register(t5);
+Texture2D<uint4> gNormal : register(t5);
 Texture2D gDiffuse : register(t6);
 Texture2D gDiffuseAlbedo : register(t7);
 Texture2D gFresnelShiniese : register(t8);
@@ -142,12 +142,12 @@ float3 CalcEnvSpecular(float3 _pos, float3 _normal ,float3 _view, MATERIAL _mat)
 
 uint FloatToUint8(float v)
 {
-    return round((v + 1.f) / 2.f) * 255;
+    return round((v + 1.f) / 2.f * 65535.f);
 }
 
 float Uint8ToFloat(uint v)
 {
-    return float(v) / 255.f * 2.f - 1.f;
+    return float(v) / 65535.f * 2.f - 1.f;
 }
 
 uint3 FloatToUint8_V(float3 v)
@@ -207,8 +207,8 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
     float depth = gDepthMap.Sample(gSamPointClamp, _in.TexCoordL).r;
     positionW = DepthToWorldPos(_in.TexCoordL, depth);
-    // int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
-    float3 normalW = normalize(gNormal.Sample(gSamPointClamp, _in.TexCoordL).rgb);
+    int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
+    float3 normalW = normalize(Uint8ToFloat_V(gNormal.Load(tcInt).xyz));
     normalW.xy = EncodeNormalizeVec(normalW);
     normalW.z = 0.f;
     normalW = DecodeNormalizeVec(normalW.xy);

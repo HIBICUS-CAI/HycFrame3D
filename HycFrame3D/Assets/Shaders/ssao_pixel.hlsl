@@ -21,7 +21,7 @@ struct SSAO_INFO
 static const int gSampleCount = 14;
 
 StructuredBuffer<SSAO_INFO> gSsaoInfo : register(t0);
-Texture2D gNormalMap : register(t1);
+Texture2D<uint4> gNormalMap : register(t1);
 Texture2D gDepthMap : register(t2);
 Texture2D gRandomMap : register(t3);
 
@@ -49,12 +49,12 @@ float Occlusion(float _deltaZ)
 
 uint FloatToUint8(float v)
 {
-    return round((v + 1.f) / 2.f) * 255;
+    return round((v + 1.f) / 2.f * 65535.f);
 }
 
 float Uint8ToFloat(uint v)
 {
-    return float(v) / 255.f * 2.f - 1.f;
+    return float(v) / 65535.f * 2.f - 1.f;
 }
 
 uint3 FloatToUint8_V(float3 v)
@@ -97,8 +97,8 @@ uint3 TempUnpack(uint3 packed)
 
 float4 main(VS_OUTPUT _input) : SV_TARGET
 {
-    // int3 tcInt = int3(_input.TexCoordL.x * 1280, _input.TexCoordL.y * 720, 0);
-    float3 n = normalize(gNormalMap.Sample(gSamPointClamp, _input.TexCoordL).xyz);
+    int3 tcInt = int3(_input.TexCoordL.x * 1280, _input.TexCoordL.y * 720, 0);
+    float3 n = normalize(Uint8ToFloat_V(gNormalMap.Load(tcInt).xyz));
     n = normalize(mul(n, (float3x3)gSsaoInfo[0].gView));
     float pz = gDepthMap.SampleLevel(gSamDepthMap, _input.TexCoordL, 0.0f).r;
     pz = NdcDepthToViewDepth(pz);

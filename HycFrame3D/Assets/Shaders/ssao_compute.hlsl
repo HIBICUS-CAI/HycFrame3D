@@ -1,5 +1,5 @@
 RWTexture2D<unorm float4> SsaoTex : register(u0);
-Texture2D NormalMap : register(t0);
+Texture2D<uint4> NormalMap : register(t0);
 Texture2D DepthMap : register(t1);
 
 groupshared unorm float4 gSsaoCache[256 + 2 * 2];
@@ -13,12 +13,12 @@ static const float gBlurWeight[5] =
 
 uint FloatToUint8(float v)
 {
-    return round((v + 1.f) / 2.f) * 255;
+    return round((v + 1.f) / 2.f * 65535.f);
 }
 
 float Uint8ToFloat(uint v)
 {
-    return float(v) / 255.f * 2.f - 1.f;
+    return float(v) / 65535.f * 2.f - 1.f;
 }
 
 uint3 FloatToUint8_V(float3 v)
@@ -68,7 +68,7 @@ void HMain(int3 groupThreadId : SV_GroupThreadID,
     {
         int x = max(dispatchThreadId.x - 2, 0);
         gSsaoCache[groupThreadId.x] = SsaoTex[int2(x, dispatchThreadId.y)];
-        gNormalCache[groupThreadId.x] = ((NormalMap[int2(x * 2, dispatchThreadId.y * 2)]));
+        gNormalCache[groupThreadId.x] = (Uint8ToFloat_V(NormalMap[int2(x * 2, dispatchThreadId.y * 2)]));
         gDepthCache[groupThreadId.x] = DepthMap[int2(x * 2, dispatchThreadId.y * 2)].r;
     }
     if (groupThreadId.x >= 256 - 2)
@@ -116,7 +116,7 @@ void VMain(int3 groupThreadId : SV_GroupThreadID,
     {
         int y = max(dispatchThreadId.y - 2, 0);
         gSsaoCache[groupThreadId.y] = SsaoTex[int2(dispatchThreadId.x, y)];
-        gNormalCache[groupThreadId.y] = ((NormalMap[int2(dispatchThreadId.x * 2, y * 2)]));
+        gNormalCache[groupThreadId.y] = (Uint8ToFloat_V(NormalMap[int2(dispatchThreadId.x * 2, y * 2)]));
         gDepthCache[groupThreadId.y] = DepthMap[int2(dispatchThreadId.x * 2, y * 2)].r;
     }
     if (groupThreadId.y >= 256 - 2)
