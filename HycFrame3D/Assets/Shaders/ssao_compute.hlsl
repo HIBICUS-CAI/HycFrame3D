@@ -1,5 +1,7 @@
+#include "gbuffer_utility.hlsli"
+
 RWTexture2D<unorm float4> SsaoTex : register(u0);
-Texture2D<uint4> NormalMap : register(t0);
+Texture2D<uint4> GeoBuffer : register(t0);
 Texture2D DepthMap : register(t1);
 
 groupshared unorm float4 gSsaoCache[256 + 2 * 2];
@@ -11,55 +13,6 @@ static const float gBlurWeight[5] =
     0.0545f, 0.2442f, 0.4026f, 0.2442f, 0.0545f
 };
 
-uint FloatToUint8(float v)
-{
-    return round((v + 1.f) / 2.f * 65535.f);
-}
-
-float Uint8ToFloat(uint v)
-{
-    return float(v) / 65535.f * 2.f - 1.f;
-}
-
-uint3 FloatToUint8_V(float3 v)
-{
-    uint3 res;
-    res.x = FloatToUint8(v.x);
-    res.y = FloatToUint8(v.y);
-    res.z = FloatToUint8(v.z);
-    return res;
-}
-
-float4 Uint8ToFloat_V(uint4 v)
-{
-    float4 res;
-    res.x = Uint8ToFloat(v.x);
-    res.y = Uint8ToFloat(v.y);
-    res.z = Uint8ToFloat(v.z);
-    res.w = Uint8ToFloat(v.w);
-    return res;
-}
-
-uint PackUint8To16(uint v1, uint v2)
-{
-    uint final = (v1 << 8) | (v2 & 0xff);
-    return final;
-}
-
-uint2 UnpackUint16To8(uint v)
-{
-    uint2 final;
-    final.x = v >> 8;
-    final.y = v & 0xff;
-    return final;
-}
-
-uint4 TempUnpack(uint4 packed)
-{
-    packed.xy = UnpackUint16To8(packed.x);
-    return packed;
-}
-
 [numthreads(256, 1, 1)]
 void HMain(int3 groupThreadId : SV_GroupThreadID,
     int3 dispatchThreadId : SV_DispatchThreadID)
@@ -68,18 +21,18 @@ void HMain(int3 groupThreadId : SV_GroupThreadID,
     {
         int x = max(dispatchThreadId.x - 2, 0);
         gSsaoCache[groupThreadId.x] = SsaoTex[int2(x, dispatchThreadId.y)];
-        gNormalCache[groupThreadId.x] = (Uint8ToFloat_V(NormalMap[int2(x * 2, dispatchThreadId.y * 2)]));
+        gNormalCache[groupThreadId.x] = float4(GetNormalFromGeoValue(GeoBuffer[int2(x * 2, dispatchThreadId.y * 2)].x), 0.f);
         gDepthCache[groupThreadId.x] = DepthMap[int2(x * 2, dispatchThreadId.y * 2)].r;
     }
     if (groupThreadId.x >= 256 - 2)
     {
         int x = min(dispatchThreadId.x + 2, 640 - 1);
         gSsaoCache[groupThreadId.x + 2 * 2] = SsaoTex[int2(x, dispatchThreadId.y)];
-        gNormalCache[groupThreadId.x + 2 * 2] = NormalMap[int2(x * 2, dispatchThreadId.y * 2)];
+        gNormalCache[groupThreadId.x + 2 * 2] = float4(GetNormalFromGeoValue(GeoBuffer[int2(x * 2, dispatchThreadId.y * 2)].x), 0.f);
         gDepthCache[groupThreadId.x + 2 * 2] = DepthMap[int2(x * 2, dispatchThreadId.y * 2)].r;
     }
     gSsaoCache[groupThreadId.x + 2] = SsaoTex[min(dispatchThreadId.xy, int2(640, 360) - 1)];
-    gNormalCache[groupThreadId.x + 2] = NormalMap[min(dispatchThreadId.xy * 2, int2(1280, 720) - 1)];
+    gNormalCache[groupThreadId.x + 2] = float4(GetNormalFromGeoValue(GeoBuffer[min(dispatchThreadId.xy * 2, int2(1280, 720) - 1)].x), 0.f);
     gDepthCache[groupThreadId.x + 2] = DepthMap[min(dispatchThreadId.xy * 2, int2(1280, 720) - 1)].r;
 
     GroupMemoryBarrierWithGroupSync();
@@ -116,18 +69,18 @@ void VMain(int3 groupThreadId : SV_GroupThreadID,
     {
         int y = max(dispatchThreadId.y - 2, 0);
         gSsaoCache[groupThreadId.y] = SsaoTex[int2(dispatchThreadId.x, y)];
-        gNormalCache[groupThreadId.y] = (Uint8ToFloat_V(NormalMap[int2(dispatchThreadId.x * 2, y * 2)]));
+        gNormalCache[groupThreadId.y] = float4(GetNormalFromGeoValue(GeoBuffer[int2(dispatchThreadId.x * 2, y * 2)].x), 0.f);
         gDepthCache[groupThreadId.y] = DepthMap[int2(dispatchThreadId.x * 2, y * 2)].r;
     }
     if (groupThreadId.y >= 256 - 2)
     {
         int y = min(dispatchThreadId.y + 2, 360 - 1);
         gSsaoCache[groupThreadId.y + 2 * 2] = SsaoTex[int2(dispatchThreadId.x, y)];
-        gNormalCache[groupThreadId.y + 2 * 2] = NormalMap[int2(dispatchThreadId.x * 2, y * 2)];
+        gNormalCache[groupThreadId.y + 2 * 2] = float4(GetNormalFromGeoValue(GeoBuffer[int2(dispatchThreadId.x * 2, y * 2)].x), 0.f);
         gDepthCache[groupThreadId.y + 2 * 2] = DepthMap[int2(dispatchThreadId.x * 2, y * 2)].r;
     }
     gSsaoCache[groupThreadId.y + 2] = SsaoTex[min(dispatchThreadId.xy, int2(640, 360) - 1)];
-    gNormalCache[groupThreadId.y + 2] = NormalMap[min(dispatchThreadId.xy * 2, int2(1280, 720) - 1)];
+    gNormalCache[groupThreadId.y + 2] = float4(GetNormalFromGeoValue(GeoBuffer[min(dispatchThreadId.xy * 2, int2(1280, 720) - 1)].x), 0.f);
     gDepthCache[groupThreadId.y + 2] = DepthMap[min(dispatchThreadId.xy * 2, int2(1280, 720) - 1)].r;
 
     GroupMemoryBarrierWithGroupSync();

@@ -637,6 +637,8 @@ void RSPass_MRT::ExecuatePass()
     STContext()->OMSetRenderTargets(6, mrt, mDepthDsv);
     STContext()->RSSetViewports(1, &g_ViewPort);
     STContext()->ClearRenderTargetView(
+        mGeoBufferRtv, DirectX::Colors::Transparent);
+    STContext()->ClearRenderTargetView(
         mDiffuseRtv, DirectX::Colors::DarkGreen);
     STContext()->ClearRenderTargetView(
         mNormalRtv, DirectX::Colors::Transparent);
@@ -1405,7 +1407,7 @@ void RSPass_Ssao::ExecuatePass()
     STContext()->PSSetShaderResources(
         0, 1, &mSsaoInfoStructedBufferSrv);
     STContext()->PSSetShaderResources(
-        1, 1, &mNormalMapSrv);
+        1, 1, &mGeoBufferSrv);
     STContext()->PSSetShaderResources(
         2, 1, &mDepthMapSrv);
     STContext()->PSSetShaderResources(
@@ -1891,7 +1893,7 @@ void RSPass_KBBlur::ExecuatePass()
 {
     ID3D11ShaderResourceView* srv[] =
     {
-        mNormalMapSrv, mDepthMapSrv
+        mGeoBufferSrv, mDepthMapSrv
     };
     static ID3D11UnorderedAccessView* nullUav = nullptr;
     static ID3D11ShaderResourceView* nullSrv[] =
@@ -5939,9 +5941,9 @@ void RSPass_SimpleLight::ExecuatePass()
 
     static ID3D11ShaderResourceView* srvs[] =
     {
-        mDiffuseSrv, mDiffuseAlbedoSrv, mSsaoSrv
+        mGeoBufferSrv, mSsaoSrv
     };
-    STContext()->PSSetShaderResources(0, 3, srvs);
+    STContext()->PSSetShaderResources(0, 2, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
@@ -5959,9 +5961,9 @@ void RSPass_SimpleLight::ExecuatePass()
     STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
     static ID3D11ShaderResourceView* nullsrvs[] =
     {
-        nullptr, nullptr, nullptr
+        nullptr, nullptr
     };
-    STContext()->PSSetShaderResources(0, 3, nullsrvs);
+    STContext()->PSSetShaderResources(0, 2, nullsrvs);
 }
 
 bool RSPass_SimpleLight::CreateShaders()

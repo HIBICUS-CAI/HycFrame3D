@@ -1,3 +1,5 @@
+#include "gbuffer_utility.hlsli"
+
 struct VS_OUTPUT
 {
     float4 PosH : SV_POSITION;
@@ -6,20 +8,19 @@ struct VS_OUTPUT
 
 SamplerState gSamLinearWrap : register(s0);
 
-Texture2D gDiffuse : register(t0);
-Texture2D gDiffuseAlbedo : register(t1);
-Texture2D gSsao : register(t2);
+Texture2D<uint4> gGeoBuffer : register(t0);
+Texture2D gSsao : register(t1);
 
 float4 main(VS_OUTPUT _in) : SV_TARGET
 {
-    float4 diffuse = gDiffuse.Sample(gSamLinearWrap, _in.TexCoordL);
-    float4 albedo = gDiffuseAlbedo.Sample(gSamLinearWrap, _in.TexCoordL);
+    int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
+    uint4 geoData = gGeoBuffer.Load(tcInt);
+    float4 geoAlbedo = float4(Uint8ToFloat_V4(UnpackUint32ToFourUint8(geoData.y)).rgb, 0.f);
     float access = gSsao.SampleLevel(gSamLinearWrap, _in.TexCoordL, 0.0f).r;
     access = access * access;
 
-    float4 final = access * albedo;
-    final *= diffuse;
-    final.a = diffuse.a;
+    float4 final = access * geoAlbedo;
+    final.a = 1.f;
 
     return final;
 }

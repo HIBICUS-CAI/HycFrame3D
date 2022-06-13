@@ -1,3 +1,5 @@
+#include "gbuffer_utility.hlsli"
+
 struct VS_OUTPUT
 {
     float4 PosH : SV_POSITION;
@@ -21,7 +23,7 @@ struct SSAO_INFO
 static const int gSampleCount = 14;
 
 StructuredBuffer<SSAO_INFO> gSsaoInfo : register(t0);
-Texture2D<uint4> gNormalMap : register(t1);
+Texture2D<uint4> gGeoBuffer : register(t1);
 Texture2D gDepthMap : register(t2);
 Texture2D gRandomMap : register(t3);
 
@@ -47,58 +49,10 @@ float Occlusion(float _deltaZ)
     return occlusion;
 }
 
-uint FloatToUint8(float v)
-{
-    return round((v + 1.f) / 2.f * 65535.f);
-}
-
-float Uint8ToFloat(uint v)
-{
-    return float(v) / 65535.f * 2.f - 1.f;
-}
-
-uint3 FloatToUint8_V(float3 v)
-{
-    uint3 res;
-    res.x = FloatToUint8(v.x);
-    res.y = FloatToUint8(v.y);
-    res.z = FloatToUint8(v.z);
-    return res;
-}
-
-float3 Uint8ToFloat_V(uint3 v)
-{
-    float3 res;
-    res.x = Uint8ToFloat(v.x);
-    res.y = Uint8ToFloat(v.y);
-    res.z = Uint8ToFloat(v.z);
-    return res;
-}
-
-uint PackUint8To16(uint v1, uint v2)
-{
-    uint final = (v1 << 8) | (v2 & 0xff);
-    return final;
-}
-
-uint2 UnpackUint16To8(uint v)
-{
-    uint2 final;
-    final.x = v >> 8;
-    final.y = v & 0xff;
-    return final;
-}
-
-uint3 TempUnpack(uint3 packed)
-{
-    packed.xy = UnpackUint16To8(packed.x);
-    return packed;
-}
-
 float4 main(VS_OUTPUT _input) : SV_TARGET
 {
     int3 tcInt = int3(_input.TexCoordL.x * 1280, _input.TexCoordL.y * 720, 0);
-    float3 n = normalize(Uint8ToFloat_V(gNormalMap.Load(tcInt).xyz));
+    float3 n = GetNormalFromGeoValue(gGeoBuffer.Load(tcInt).x);
     n = normalize(mul(n, (float3x3)gSsaoInfo[0].gView));
     float pz = gDepthMap.SampleLevel(gSamDepthMap, _input.TexCoordL, 0.0f).r;
     pz = NdcDepthToViewDepth(pz);
