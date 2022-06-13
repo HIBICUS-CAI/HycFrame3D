@@ -102,3 +102,9 @@ float3 DecodeNormalizeVec(float2 _v)
     float2 scphi = float2(sqrt(1.f - ang.y * ang.y), ang.y);
     return float3(scth.y * scphi.x, scth.x * scphi.x, scphi.y);
 }
+
+float3 GetNormalFromGeoValue(uint _v)
+{
+    float2 unpack = Uint16ToFloat_V2(UnpackUint32ToTwoUint16(_v));
+    return DecodeNormalizeVec(unpack);
+}
