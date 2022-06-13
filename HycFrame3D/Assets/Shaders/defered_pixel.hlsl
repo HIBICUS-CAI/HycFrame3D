@@ -1,5 +1,6 @@
 #include "light_disney_pbr.hlsli"
 #include "color_utility.hlsli"
+#include "gbuffer_utility.hlsli"
 
 struct VS_OUTPUT
 {
@@ -46,17 +47,18 @@ StructuredBuffer<LIGHT> gLights : register(t2);
 StructuredBuffer<SHADOW_INFO> gShadowInfo : register(t3);
 StructuredBuffer<VIEWPROJ> gInvCameraInfo : register(t4);
 
-Texture2D gWorldPos : register(t5);
-Texture2D<uint4> gNormal : register(t6);
-Texture2D gDiffuse : register(t7);
-Texture2D gDiffuseAlbedo : register(t8);
-Texture2D gFresnelShiniese : register(t9);
-Texture2D gSsao : register(t10);
-Texture2DArray<float> gShadowMap : register(t11);
-Texture2D gBRDFLUT : register(t12);
-TextureCube gDiffuseMap : register(t13);
-TextureCube gSpecularMap : register(t14);
-Texture2D gDepthMap : register(t15);
+Texture2D<uint4> gGeoBuffer : register(t5);
+Texture2D gWorldPos : register(t6);
+Texture2D<uint4> gNormal : register(t7);
+Texture2D gDiffuse : register(t8);
+Texture2D gDiffuseAlbedo : register(t9);
+Texture2D gFresnelShiniese : register(t10);
+Texture2D gSsao : register(t11);
+Texture2DArray<float> gShadowMap : register(t12);
+Texture2D gBRDFLUT : register(t13);
+TextureCube gDiffuseMap : register(t14);
+TextureCube gSpecularMap : register(t15);
+Texture2D gDepthMap : register(t16);
 
 float3 DepthToWorldPos(float2 uv, float depth)
 {
@@ -142,78 +144,14 @@ float3 CalcEnvSpecular(float3 _pos, float3 _normal ,float3 _view, MATERIAL _mat)
     return specular;
 }
 
-uint FloatToUint8(float v)
-{
-    return round((v + 1.f) / 2.f * 65535.f);
-}
-
-float Uint8ToFloat(uint v)
-{
-    return float(v) / 65535.f * 2.f - 1.f;
-}
-
-uint3 FloatToUint8_V(float3 v)
-{
-    uint3 res;
-    res.x = FloatToUint8(v.x);
-    res.y = FloatToUint8(v.y);
-    res.z = FloatToUint8(v.z);
-    return res;
-}
-
-float3 Uint8ToFloat_V(uint3 v)
-{
-    float3 res;
-    res.x = Uint8ToFloat(v.x);
-    res.y = Uint8ToFloat(v.y);
-    res.z = Uint8ToFloat(v.z);
-    return res;
-}
-
-uint PackUint8To16(uint v1, uint v2)
-{
-    uint final = (v1 << 8) | (v2 & 0xff);
-    return final;
-}
-
-uint2 UnpackUint16To8(uint v)
-{
-    uint2 final;
-    final.x = v >> 8;
-    final.y = v & 0xff;
-    return final;
-}
-
-uint3 TempUnpack(uint3 packed)
-{
-    packed.xy = UnpackUint16To8(packed.x);
-    return packed;
-}
-
-float2 EncodeNormalizeVec(float3 n)
-{
-    return (float2(atan2(n.y,n.x)/3.1415926536f, n.z)+1.0)*0.5;
-}
-
-float3 DecodeNormalizeVec(float2 enc)
-{
-    float2 ang = enc * 2.f - 1.f;
-    float2 scth;
-    sincos(ang.x * 3.1415926536f, scth.x, scth.y);
-    float2 scphi = float2(sqrt(1.f - ang.y * ang.y), ang.y);
-    return float3(scth.y * scphi.x, scth.x * scphi.x, scphi.y);
-}
-
 float4 main(VS_OUTPUT _in) : SV_TARGET
 {
     float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
     float depth = gDepthMap.Sample(gSamPointClamp, _in.TexCoordL).r;
     positionW = DepthToWorldPos(_in.TexCoordL, depth);
     int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
-    float3 normalW = normalize(Uint8ToFloat_V(gNormal.Load(tcInt).xyz));
-    normalW.xy = EncodeNormalizeVec(normalW);
-    normalW.z = 0.f;
-    normalW = DecodeNormalizeVec(normalW.xy);
+    uint4 geoData = gGeoBuffer.Load(tcInt);
+    float3 normalW = GetNormalFromGeoValue(geoData.x);
     float3 toEye = normalize(gLightInfo[0].gCameraPos - positionW);
     float4 albedo = gDiffuseAlbedo.Sample(gSamLinearWrap, _in.TexCoordL);
     float4 fresshin = gFresnelShiniese.Sample(gSamLinearWrap, _in.TexCoordL);

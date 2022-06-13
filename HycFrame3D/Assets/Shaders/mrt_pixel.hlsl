@@ -1,3 +1,5 @@
+#include "gbuffer_utility.hlsli"
+
 struct VS_OUTPUT
 {
     float4 PosH : SV_POSITION;
@@ -12,14 +14,15 @@ struct VS_OUTPUT
 
 struct PS_OUTPUT
 {
-    float4 Diffuse : SV_TARGET0;
-    uint4 Normal : SV_TARGET1;
-    float4 WorldPos : SV_TARGET2;
-    float4 DiffAlbe : SV_TARGET3;
-    float4 FresShin : SV_TARGET4;
+    uint4 GeoData : SV_Target0;
+    float4 Diffuse : SV_TARGET1;
+    uint4 Normal : SV_TARGET2;
+    float4 WorldPos : SV_TARGET3;
+    float4 DiffAlbe : SV_TARGET4;
+    float4 FresShin : SV_TARGET5;
 };
 
-Texture2D gDiffuse : register(t0);
+Texture2D gAlbedo : register(t0);
 Texture2D gBumped : register(t1);
 
 SamplerState gLinearSampler : register(s0);
@@ -36,54 +39,6 @@ float3 ClacBumpedNormal(float3 _normalMapSample,
     return mul(normalT, TBN);
 }
 
-uint FloatToUint8(float v)
-{
-    return round((v + 1.f) / 2.f * 65535.f);
-}
-
-float Uint8ToFloat(uint v)
-{
-    return float(v) / 65535.f * 2.f - 1.f;
-}
-
-uint3 FloatToUint8_V(float3 v)
-{
-    uint3 res;
-    res.x = FloatToUint8(v.x);
-    res.y = FloatToUint8(v.y);
-    res.z = FloatToUint8(v.z);
-    return res;
-}
-
-float3 Uint8ToFloat_V(uint3 v)
-{
-    float3 res;
-    res.x = Uint8ToFloat(v.x);
-    res.y = Uint8ToFloat(v.y);
-    res.z = Uint8ToFloat(v.z);
-    return res;
-}
-
-uint PackUint8To16(uint v1, uint v2)
-{
-    uint final = (v1 << 8) | (v2 & 0xff);
-    return final;
-}
-
-uint2 UnpackUint16To8(uint v)
-{
-    uint2 final;
-    final.x = v >> 8;
-    final.y = v & 0xff;
-    return final;
-}
-
-uint3 TempUnpack(uint3 packed)
-{
-    packed.xy = UnpackUint16To8(packed.x);
-    return packed;
-}
-
 PS_OUTPUT main(VS_OUTPUT _input)
 {
     float3 unitNormal = _input.NormalW;
@@ -95,14 +50,28 @@ PS_OUTPUT main(VS_OUTPUT _input)
     }
 
     _input.NormalW = normalize(_input.NormalW);
-    uint3 norU = FloatToUint8_V(_input.NormalW);
-    // norU.x = PackUint8To16(norU.x, norU.y);
-    // norU.y = 0;
+    
+    float2 encodeNormal = EncodeNormalizeVec(_input.NormalW);
+    uint2 encodeUNormal = FloatToUint16_V2(encodeNormal);
+    uint geoNormalData = PackTwoUint16ToUint32(encodeUNormal.x, encodeUNormal.y);
+    uint4 alFctUint = FloatToUint8_V4(
+        float4(gAlbedo.Sample(gLinearSampler,_input.TexCoordL).rgb, 0.f));
+    uint geoAlbeAndFactor = PackFourUint8ToUint32(alFctUint.x, alFctUint.y, alFctUint.z, alFctUint.w);
+    float roughness = 1.f - _input.FresnelShiniese.w;
+    float metallic = 0.95f;
+    uint4 matData = FloatToUint8_V4(float4(metallic, roughness, 0, 0));
+    uint geoMatData = PackFourUint8ToUint32(matData.x, matData.y, matData.z, matData.w);
+    uint geoEmiss = PackFourUint8ToUint32(0, 0, 0, 0);
+    uint3 norU;
+    norU.x = FloatToUint16_S(_input.NormalW.x);
+    norU.y = FloatToUint16_S(_input.NormalW.y);
+    norU.z = FloatToUint16_S(_input.NormalW.z);
 
     PS_OUTPUT _out = (PS_OUTPUT)0;
+    _out.GeoData = uint4(geoNormalData, geoAlbeAndFactor, geoMatData, geoEmiss);
     _out.WorldPos = float4(_input.PosW, 0.0f);
     _out.Normal = uint4(norU, 0);
-    _out.Diffuse = gDiffuse.Sample(gLinearSampler,_input.TexCoordL);
+    _out.Diffuse = gAlbedo.Sample(gLinearSampler,_input.TexCoordL);
     _out.DiffAlbe = _input.DiffuseAlbedo;
     _out.FresShin = _input.FresnelShiniese;
     

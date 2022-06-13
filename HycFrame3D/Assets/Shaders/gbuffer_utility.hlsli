@@ -41,16 +41,16 @@ float4 Uint8ToFloat_V4(uint4 _v)
 uint2 FloatToUint16_V2(float2 _v)
 {
     uint2 res;
-    res.x = FloatToUint8_S(_v.x);
-    res.y = FloatToUint8_S(_v.y);
+    res.x = FloatToUint16_S(_v.x);
+    res.y = FloatToUint16_S(_v.y);
     return res;
 }
 
 float2 Uint16ToFloat_V2(uint2 _v)
 {
     float2 res;
-    res.x = Uint8ToFloat_S(_v.x);
-    res.y = Uint8ToFloat_S(_v.y);
+    res.x = Uint16ToFloat_S(_v.x);
+    res.y = Uint16ToFloat_S(_v.y);
     return res;
 }
 

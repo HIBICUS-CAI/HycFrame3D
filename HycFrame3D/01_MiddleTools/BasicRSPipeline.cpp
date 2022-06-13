@@ -631,9 +631,10 @@ void RSPass_MRT::ReleasePass()
 void RSPass_MRT::ExecuatePass()
 {
     ID3D11RenderTargetView* rtvnull = nullptr;
-    static ID3D11RenderTargetView* mrt[] = { mDiffuseRtv,
+    static ID3D11RenderTargetView* mrt[] = { mGeoBufferRtv,
+        mDiffuseRtv,
         mNormalRtv,mWorldPosRtv,mDiffAlbeRtv,mFresShinRtv };
-    STContext()->OMSetRenderTargets(5, mrt, mDepthDsv);
+    STContext()->OMSetRenderTargets(6, mrt, mDepthDsv);
     STContext()->RSSetViewports(1, &g_ViewPort);
     STContext()->ClearRenderTargetView(
         mDiffuseRtv, DirectX::Colors::DarkGreen);
@@ -2642,13 +2643,14 @@ void RSPass_Defered::ExecuatePass()
         mLightStructedBufferSrv,
         mShadowStructedBufferSrv,
         mCameraStructedBufferSrv,
+        mGeoBufferSrv,
         mWorldPosSrv, mNormalSrv, mDiffuseSrv,
         mDiffuseAlbedoSrv, mFresenlShineseSrv,
         mSsaoSrv, mShadowDepthSrv,
         g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv,
         depSrv
     };
-    STContext()->PSSetShaderResources(0, 16, srvs);
+    STContext()->PSSetShaderResources(0, 17, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
@@ -2674,9 +2676,9 @@ void RSPass_Defered::ExecuatePass()
     {
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-        nullptr, nullptr, nullptr, nullptr
+        nullptr, nullptr, nullptr, nullptr, nullptr
     };
-    STContext()->PSSetShaderResources(0, 16, nullsrvs);
+    STContext()->PSSetShaderResources(0, 17, nullsrvs);
 }
 
 bool RSPass_Defered::CreateShaders()
