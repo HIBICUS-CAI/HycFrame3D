@@ -2421,6 +2421,8 @@ RSPass_Defered::RSPass_Defered(
     mAmbientStructedBufferSrv(nullptr),
     mShadowStructedBuffer(nullptr),
     mShadowStructedBufferSrv(nullptr),
+    mCameraStructedBuffer(nullptr),
+    mCameraStructedBufferSrv(nullptr),
     mSsaoSrv(nullptr),
     mVertexBuffer(nullptr), mIndexBuffer(nullptr),
     mWorldPosSrv(nullptr), mNormalSrv(nullptr), mDiffuseSrv(nullptr),
@@ -2447,6 +2449,8 @@ RSPass_Defered::RSPass_Defered(const RSPass_Defered& _source) :
     mAmbientStructedBufferSrv(_source.mAmbientStructedBufferSrv),
     mShadowStructedBuffer(_source.mShadowStructedBuffer),
     mShadowStructedBufferSrv(_source.mShadowStructedBufferSrv),
+    mCameraStructedBuffer(_source.mCameraStructedBuffer),
+    mCameraStructedBufferSrv(_source.mCameraStructedBufferSrv),
     mSsaoSrv(_source.mSsaoSrv),
     mVertexBuffer(_source.mVertexBuffer),
     mIndexBuffer(_source.mIndexBuffer),
@@ -2617,6 +2621,17 @@ void RSPass_Defered::ExecuatePass()
     DirectX::XMStoreFloat4x4(&s_data[0].mSSAOMat, mat);
     STContext()->Unmap(mShadowStructedBuffer, 0);
 
+    STContext()->Map(mCameraStructedBuffer, 0,
+        D3D11_MAP_WRITE_DISCARD, 0, &msr);
+    ViewProj* vp_data = (ViewProj*)msr.pData;
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvViewMat);
+    mat = DirectX::XMMatrixTranspose(mat);
+    DirectX::XMStoreFloat4x4(&vp_data[0].mViewMat, mat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvProjMat);
+    mat = DirectX::XMMatrixTranspose(mat);
+    DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
+    STContext()->Unmap(mCameraStructedBuffer, 0);
+
     static std::string depthSrvName = "mrt-depth";
     static auto depSrv = g_Root->ResourceManager()->
         GetResourceInfo(depthSrvName)->mSrv;
@@ -2626,13 +2641,14 @@ void RSPass_Defered::ExecuatePass()
         mLightInfoStructedBufferSrv,
         mLightStructedBufferSrv,
         mShadowStructedBufferSrv,
+        mCameraStructedBufferSrv,
         mWorldPosSrv, mNormalSrv, mDiffuseSrv,
         mDiffuseAlbedoSrv, mFresenlShineseSrv,
         mSsaoSrv, mShadowDepthSrv,
         g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv,
         depSrv
     };
-    STContext()->PSSetShaderResources(0, 15, srvs);
+    STContext()->PSSetShaderResources(0, 16, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
@@ -2658,9 +2674,9 @@ void RSPass_Defered::ExecuatePass()
     {
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-        nullptr, nullptr, nullptr
+        nullptr, nullptr, nullptr, nullptr
     };
-    STContext()->PSSetShaderResources(0, 15, nullsrvs);
+    STContext()->PSSetShaderResources(0, 16, nullsrvs);
 }
 
 bool RSPass_Defered::CreateShaders()
@@ -2781,6 +2797,12 @@ bool RSPass_Defered::CreateBuffers()
         &bufDesc, nullptr, &mShadowStructedBuffer);
     if (FAILED(hr)) { return false; }
 
+    bufDesc.ByteWidth = sizeof(ViewProj);
+    bufDesc.StructureByteStride = sizeof(ViewProj);
+    hr = Device()->CreateBuffer(
+        &bufDesc, nullptr, &mCameraStructedBuffer);
+    if (FAILED(hr)) { return false; }
+
     return true;
 }
 
@@ -2833,6 +2855,11 @@ bool RSPass_Defered::CreateViews()
     hr = Device()->CreateShaderResourceView(
         mAmbientStructedBuffer,
         &srvDesc, &mAmbientStructedBufferSrv);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateShaderResourceView(
+        mCameraStructedBuffer,
+        &srvDesc, &mCameraStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Buffer.ElementWidth = MAX_SHADOW_SIZE;

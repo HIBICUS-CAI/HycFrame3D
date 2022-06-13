@@ -362,6 +362,8 @@ private:
     ID3D11ShaderResourceView* mAmbientStructedBufferSrv;
     ID3D11Buffer* mShadowStructedBuffer;
     ID3D11ShaderResourceView* mShadowStructedBufferSrv;
+    ID3D11Buffer* mCameraStructedBuffer;
+    ID3D11ShaderResourceView* mCameraStructedBufferSrv;
     ID3D11ShaderResourceView* mWorldPosSrv;
     ID3D11ShaderResourceView* mNormalSrv;
     ID3D11ShaderResourceView* mDiffuseSrv;

@@ -30,6 +30,12 @@ struct SHADOW_INFO
     matrix gSSAOMat;
 };
 
+struct VIEWPROJ
+{
+    matrix gInvView;
+    matrix gInvProj;
+};
+
 SamplerState gSamPointClamp : register(s0);
 SamplerState gSamLinearWrap : register(s1);
 SamplerComparisonState gSamShadowCom : register(s2);
@@ -38,30 +44,26 @@ StructuredBuffer<AMBIENT> gAmbient : register(t0);
 StructuredBuffer<LIGHT_INFO> gLightInfo : register(t1);
 StructuredBuffer<LIGHT> gLights : register(t2);
 StructuredBuffer<SHADOW_INFO> gShadowInfo : register(t3);
+StructuredBuffer<VIEWPROJ> gInvCameraInfo : register(t4);
 
-Texture2D gWorldPos : register(t4);
-Texture2D<uint4> gNormal : register(t5);
-Texture2D gDiffuse : register(t6);
-Texture2D gDiffuseAlbedo : register(t7);
-Texture2D gFresnelShiniese : register(t8);
-Texture2D gSsao : register(t9);
-Texture2DArray<float> gShadowMap : register(t10);
-Texture2D gBRDFLUT : register(t11);
-TextureCube gDiffuseMap : register(t12);
-TextureCube gSpecularMap : register(t13);
-Texture2D gDepthMap : register(t14);
+Texture2D gWorldPos : register(t5);
+Texture2D<uint4> gNormal : register(t6);
+Texture2D gDiffuse : register(t7);
+Texture2D gDiffuseAlbedo : register(t8);
+Texture2D gFresnelShiniese : register(t9);
+Texture2D gSsao : register(t10);
+Texture2DArray<float> gShadowMap : register(t11);
+Texture2D gBRDFLUT : register(t12);
+TextureCube gDiffuseMap : register(t13);
+TextureCube gSpecularMap : register(t14);
+Texture2D gDepthMap : register(t15);
 
 float3 DepthToWorldPos(float2 uv, float depth)
 {
-    matrix PM_INVERSE_VIEW_PROJECTION = matrix(
-        0.736379743f, 0.f, 0.f, 0.f,
-        0.f, 0.414213628f, 0.f, 0.f,
-        0.f, 0.f, 0.f, -0.998750031f,
-        0.f, 0.f, 1.f, 1.f
-    );
-	float4 ndc = float4(uv * 2.f - 1.f, depth, 1.f);
+    float4 ndc = float4(uv * 2.f - 1.f, depth, 1.f);
 	ndc.y *= -1.f;
-	float4 wp = mul(ndc, PM_INVERSE_VIEW_PROJECTION);
+	float4 wp = mul(ndc, gInvCameraInfo[0].gInvProj);
+    wp = mul(wp, gInvCameraInfo[0].gInvView);
 	return (wp / wp.w).xyz;
 }
 
