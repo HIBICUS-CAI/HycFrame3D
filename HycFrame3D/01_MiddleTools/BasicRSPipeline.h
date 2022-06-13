@@ -202,6 +202,7 @@ private:
     ID3D11RenderTargetView* mWorldPosRtv;
     ID3D11RenderTargetView* mDiffAlbeRtv;
     ID3D11RenderTargetView* mFresShinRtv;
+    ID3D11RenderTargetView* mGeoBufferRtv;
     ID3D11DepthStencilView* mDepthDsv;
     RS_CAM_INFO* mRSCameraInfo;
 };
@@ -244,6 +245,7 @@ private:
     ID3D11SamplerState* mSampleLinearWrap;
     ID3D11Buffer* mSsaoInfoStructedBuffer;
     ID3D11ShaderResourceView* mSsaoInfoStructedBufferSrv;
+    ID3D11ShaderResourceView* mGeoBufferSrv;
     ID3D11ShaderResourceView* mNormalMapSrv;
     ID3D11ShaderResourceView* mDepthMapSrv;
     ID3D11ShaderResourceView* mRandomMapSrv;
@@ -278,6 +280,7 @@ private:
     ID3D11ComputeShader* mHoriBlurShader;
     ID3D11ComputeShader* mVertBlurShader;
     ID3D11UnorderedAccessView* mSsaoTexUav;
+    ID3D11ShaderResourceView* mGeoBufferSrv;
     ID3D11ShaderResourceView* mNormalMapSrv;
     ID3D11ShaderResourceView* mDepthMapSrv;
 };
@@ -364,6 +367,7 @@ private:
     ID3D11ShaderResourceView* mDiffuseSrv;
     ID3D11ShaderResourceView* mDiffuseAlbedoSrv;
     ID3D11ShaderResourceView* mFresenlShineseSrv;
+    ID3D11ShaderResourceView* mGeoBufferSrv;
     ID3D11ShaderResourceView* mSsaoSrv;
     ID3D11ShaderResourceView* mShadowDepthSrv;
     ID3D11Buffer* mVertexBuffer;
@@ -774,6 +778,7 @@ private:
     ID3D11SamplerState* mLinearWrapSampler;
     ID3D11ShaderResourceView* mDiffuseSrv;
     ID3D11ShaderResourceView* mDiffuseAlbedoSrv;
+    ID3D11ShaderResourceView* mGeoBufferSrv;
     ID3D11ShaderResourceView* mSsaoSrv;
     ID3D11Buffer* mVertexBuffer;
     ID3D11Buffer* mIndexBuffer;

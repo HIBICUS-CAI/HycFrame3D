@@ -522,7 +522,8 @@ RSPass_MRT::RSPass_MRT(std::string& _name, PASS_TYPE _type,
     mLinearSampler(nullptr), mDepthDsv(nullptr),
     mDiffuseRtv(nullptr), mNormalRtv(nullptr),
     mRSCameraInfo(nullptr), mWorldPosRtv(nullptr),
-    mDiffAlbeRtv(nullptr), mFresShinRtv(nullptr)
+    mDiffAlbeRtv(nullptr), mFresShinRtv(nullptr),
+    mGeoBufferRtv(nullptr)
 {
 
 }
@@ -548,7 +549,8 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
     mRSCameraInfo(_source.mRSCameraInfo),
     mWorldPosRtv(_source.mWorldPosRtv),
     mDiffAlbeRtv(_source.mDiffAlbeRtv),
-    mFresShinRtv(_source.mFresShinRtv)
+    mFresShinRtv(_source.mFresShinRtv),
+    mGeoBufferRtv(_source.mGeoBufferRtv)
 {
     if (mHasBeenInited)
     {
@@ -621,6 +623,8 @@ void RSPass_MRT::ReleasePass()
     name = "mrt-diffuse-albedo";
     g_Root->ResourceManager()->DeleteResource(name);
     name = "mrt-fresnel-shinese";
+    g_Root->ResourceManager()->DeleteResource(name);
+    name = "mrt-geo-buffer";
     g_Root->ResourceManager()->DeleteResource(name);
 }
 
@@ -970,6 +974,42 @@ bool RSPass_MRT::CreateViews()
     dti.mSrv = srv;
     g_Root->ResourceManager()->AddResource(name, dti);
 
+    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->
+        GetCurrWndWidth();
+    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->
+        GetCurrWndHeight();
+    texDesc.MipLevels = 1;
+    texDesc.ArraySize = 1;
+    texDesc.SampleDesc.Count = 1;
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+    texDesc.CPUAccessFlags = 0;
+    texDesc.MiscFlags = 0;
+    texDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
+    if (FAILED(hr)) { return false; }
+
+    rtvDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+    rtvDesc.Texture2D.MipSlice = 0;
+    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    hr = Device()->CreateRenderTargetView(texture, &rtvDesc, &mGeoBufferRtv);
+    if (FAILED(hr)) { return false; }
+
+    srvDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = 1;
+    hr = Device()->CreateShaderResourceView(texture, &srvDesc, &srv);
+    if (FAILED(hr)) { return false; }
+
+    dti = {};
+    name = "mrt-geo-buffer";
+    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
+    dti.mResource.mTexture2D = texture;
+    dti.mRtv = mGeoBufferRtv;
+    dti.mSrv = srv;
+    g_Root->ResourceManager()->AddResource(name, dti);
+
     texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
     texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
     texDesc.MipLevels = 1;
@@ -1154,6 +1194,7 @@ RSPass_Ssao::RSPass_Ssao(
     mRenderTargetView(nullptr),
     mSsaoInfoStructedBuffer(nullptr),
     mSsaoInfoStructedBufferSrv(nullptr),
+    mGeoBufferSrv(nullptr),
     mNormalMapSrv(nullptr),
     mDepthMapSrv(nullptr),
     mRandomMapSrv(nullptr),
@@ -1181,6 +1222,7 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao& _source) :
     mSampleLinearWrap(_source.mSampleLinearWrap),
     mSsaoInfoStructedBuffer(_source.mSsaoInfoStructedBuffer),
     mSsaoInfoStructedBufferSrv(_source.mSsaoInfoStructedBufferSrv),
+    mGeoBufferSrv(_source.mGeoBufferSrv),
     mNormalMapSrv(_source.mNormalMapSrv),
     mDepthMapSrv(_source.mDepthMapSrv),
     mRandomMapSrv(_source.mRandomMapSrv),
@@ -1703,6 +1745,9 @@ bool RSPass_Ssao::CreateViews()
     std::string name = "random-tex-ssao";
     mRandomMapSrv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mSrv;
+    name = "mrt-geo-buffer";
+    mGeoBufferSrv = g_Root->ResourceManager()->
+        GetResourceInfo(name)->mSrv;
     name = "mrt-normal";
     mNormalMapSrv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mSrv;
@@ -1790,6 +1835,7 @@ RSPass_KBBlur::RSPass_KBBlur(
     RSPass_Base(_name, _type, _root),
     mHoriBlurShader(nullptr), mVertBlurShader(nullptr),
     mSsaoTexUav(nullptr),
+    mGeoBufferSrv(nullptr),
     mNormalMapSrv(nullptr),
     mDepthMapSrv(nullptr)
 {
@@ -1801,6 +1847,7 @@ RSPass_KBBlur::RSPass_KBBlur(const RSPass_KBBlur& _source) :
     mHoriBlurShader(_source.mHoriBlurShader),
     mVertBlurShader(_source.mVertBlurShader),
     mSsaoTexUav(_source.mSsaoTexUav),
+    mGeoBufferSrv(_source.mGeoBufferSrv),
     mNormalMapSrv(_source.mNormalMapSrv),
     mDepthMapSrv(_source.mDepthMapSrv)
 {
@@ -1919,6 +1966,9 @@ bool RSPass_KBBlur::CreateViews()
 {
     std::string name = "mrt-normal";
     mNormalMapSrv = g_Root->ResourceManager()->
+        GetResourceInfo(name)->mSrv;
+    name = "mrt-geo-buffer";
+    mGeoBufferSrv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mSrv;
     name = "mrt-depth";
     mDepthMapSrv = g_Root->ResourceManager()->
@@ -2375,6 +2425,7 @@ RSPass_Defered::RSPass_Defered(
     mVertexBuffer(nullptr), mIndexBuffer(nullptr),
     mWorldPosSrv(nullptr), mNormalSrv(nullptr), mDiffuseSrv(nullptr),
     mDiffuseAlbedoSrv(nullptr), mFresenlShineseSrv(nullptr),
+    mGeoBufferSrv(nullptr),
     mRSCameraInfo(nullptr), mShadowDepthSrv(nullptr)
 {
 
@@ -2404,6 +2455,7 @@ RSPass_Defered::RSPass_Defered(const RSPass_Defered& _source) :
     mDiffuseSrv(_source.mDiffuseSrv),
     mDiffuseAlbedoSrv(_source.mDiffuseAlbedoSrv),
     mFresenlShineseSrv(_source.mFresenlShineseSrv),
+    mGeoBufferSrv(_source.mGeoBufferSrv),
     mRSCameraInfo(_source.mRSCameraInfo),
     mShadowDepthSrv(_source.mShadowDepthSrv)
 {
@@ -2750,6 +2802,9 @@ bool RSPass_Defered::CreateViews()
         GetResourceInfo(name)->mSrv;
     name = "mrt-fresnel-shinese";
     mFresenlShineseSrv = g_Root->ResourceManager()->
+        GetResourceInfo(name)->mSrv;
+    name = "mrt-geo-buffer";
+    mGeoBufferSrv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mSrv;
     name = "ssao-tex-compress-ssao";
     mSsaoSrv = g_Root->ResourceManager()->
@@ -5786,7 +5841,8 @@ RSPass_SimpleLight::RSPass_SimpleLight(
     mVertexShader(nullptr), mPixelShader(nullptr),
     mLinearWrapSampler(nullptr), mRenderTargetView(nullptr),
     mVertexBuffer(nullptr), mIndexBuffer(nullptr),
-    mSsaoSrv(nullptr), mDiffuseSrv(nullptr), mDiffuseAlbedoSrv(nullptr)
+    mSsaoSrv(nullptr), mDiffuseSrv(nullptr), mDiffuseAlbedoSrv(nullptr),
+    mGeoBufferSrv(nullptr)
 {
 
 }
@@ -5800,6 +5856,7 @@ RSPass_SimpleLight::RSPass_SimpleLight(const RSPass_SimpleLight& _source) :
     mSsaoSrv(_source.mSsaoSrv),
     mVertexBuffer(_source.mVertexBuffer),
     mIndexBuffer(_source.mIndexBuffer),
+    mGeoBufferSrv(_source.mGeoBufferSrv),
     mDiffuseSrv(_source.mDiffuseSrv),
     mDiffuseAlbedoSrv(_source.mDiffuseAlbedoSrv)
 {
@@ -5968,6 +6025,8 @@ bool RSPass_SimpleLight::CreateViews()
     mDiffuseSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
     name = "mrt-diffuse-albedo";
     mDiffuseAlbedoSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
+    name = "mrt-geo-buffer";
+    mGeoBufferSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
     name = "ssao-tex-compress-ssao";
     mSsaoSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
 
