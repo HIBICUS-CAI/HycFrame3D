@@ -2605,9 +2605,10 @@ void RSPass_Defered::ExecuatePass()
     static ID3D11ShaderResourceView* nullsrvs[] =
     {
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-        nullptr, nullptr, nullptr, nullptr, nullptr
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+        nullptr, nullptr, nullptr
     };
-    STContext()->PSSetShaderResources(0, 11, nullsrvs);
+    STContext()->PSSetShaderResources(0, 15, nullsrvs);
 }
 
 bool RSPass_Defered::CreateShaders()
