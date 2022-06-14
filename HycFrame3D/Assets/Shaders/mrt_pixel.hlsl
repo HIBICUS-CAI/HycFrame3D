@@ -1,10 +1,11 @@
 #include "gbuffer_utility.hlsli"
+#include "light_disney_pbr.hlsli"
 
 struct VS_OUTPUT
 {
     float4 PosH : SV_POSITION;
     float4 DiffuseAlbedo : COLOR0;
-    float4 FresnelShiniese : COLOR1;
+    uint3 MaterialIndexFactor : COLOR1;
     float3 PosW : POSITION;
     float3 NormalW : NORMAL;
     float3 TangentW : TANGENT;
@@ -22,8 +23,9 @@ struct PS_OUTPUT
     float4 FresShin : SV_TARGET5;
 };
 
-Texture2D gAlbedo : register(t0);
-Texture2D gBumped : register(t1);
+StructuredBuffer<MATERIAL> gAllMaterialInfo : register(t0);
+Texture2D gAlbedo : register(t1);
+Texture2D gBumped : register(t2);
 
 SamplerState gLinearSampler : register(s0);
 
@@ -54,13 +56,23 @@ PS_OUTPUT main(VS_OUTPUT _input)
     float2 encodeNormal = EncodeNormalizeVec(_input.NormalW);
     uint2 encodeUNormal = FloatToUint16_V2(encodeNormal);
     uint geoNormalData = PackTwoUint16ToUint32(encodeUNormal.x, encodeUNormal.y);
+    
     uint4 alFctUint = FloatToUint8_V4(
-        float4(gAlbedo.Sample(gLinearSampler,_input.TexCoordL).rgb, 0.f));
+        float4(gAlbedo.Sample(gLinearSampler,_input.TexCoordL).rgb,
+        asfloat(_input.MaterialIndexFactor.z)));
     uint geoAlbeAndFactor = PackFourUint8ToUint32(alFctUint.x, alFctUint.y, alFctUint.z, alFctUint.w);
-    float roughness = 1.f - _input.FresnelShiniese.w;
-    float metallic = 0.95f;
-    uint4 matData = uint4(FloatToUint8_V2(float2(metallic, roughness)), 0, 0);
+    
+    uint majorMatIndex = _input.MaterialIndexFactor.x;
+    uint minorMatIndex = _input.MaterialIndexFactor.y;
+    float factor = asfloat(_input.MaterialIndexFactor.z);
+    MATERIAL m1 = gAllMaterialInfo[majorMatIndex];
+    MATERIAL m2 = gAllMaterialInfo[minorMatIndex];
+    float roughness = lerp(m1.mRoughness, m2.mRoughness, factor);
+    float metallic = lerp(m1.mMetallic, m2.mMetallic, factor);
+    uint4 matData = uint4(FloatToUint8_V2(float2(metallic, roughness)),
+        majorMatIndex, minorMatIndex);
     uint geoMatData = PackFourUint8ToUint32(matData.x, matData.y, matData.z, matData.w);
+    
     uint geoEmiss = PackFourUint8ToUint32(0, 0, 0, 0);
     uint3 norU;
     norU.x = FloatToUint16_S(_input.NormalW.x);
@@ -73,7 +85,7 @@ PS_OUTPUT main(VS_OUTPUT _input)
     _out.Normal = uint4(norU, 0);
     _out.Diffuse = gAlbedo.Sample(gLinearSampler,_input.TexCoordL);
     _out.DiffAlbe = _input.DiffuseAlbedo;
-    _out.FresShin = _input.FresnelShiniese;
+    _out.FresShin = (float4)0;
     
     return _out;
 }

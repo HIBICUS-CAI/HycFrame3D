@@ -14,7 +14,7 @@ struct VS_OUTPUT
 {
     float4 PosH : SV_POSITION;
     float4 DiffuseAlbedo : COLOR0;
-    float4 FresnelShiniese : COLOR1;
+    uint3 MaterialIndexFactor : COLOR1;
     float3 PosW : POSITION;
     float3 NormalW : NORMAL;
     float3 TangentW : TANGENT;
@@ -93,7 +93,10 @@ VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
     _out.PosH = mul(_out.PosH, gInstances[_instanceID].gWorld);
     _out.PosW = _out.PosH.xyz;
     _out.DiffuseAlbedo = float4(0.8f, 0.8f, 0.8f, 1.f);
-    _out.FresnelShiniese = float4(0.95f, 0.64f, 0.54f, 0.95);
+    _out.MaterialIndexFactor = uint3(
+        gInstances[_instanceID].gMaterial.gMajorIndex,
+        gInstances[_instanceID].gMaterial.gMinorIndex,
+        asuint(gInstances[_instanceID].gMaterial.gFactor));
     _out.NormalW = mul(_out.NormalW, (float3x3)gInstances[_instanceID].gWorld);
     _out.TangentW = mul(_out.TangentW, (float3x3)gInstances[_instanceID].gWorld);
     _out.PosH = mul(_out.PosH, gViewProj[0].gView);

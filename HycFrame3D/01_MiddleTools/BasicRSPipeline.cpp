@@ -752,11 +752,13 @@ void RSPass_MRT::ExecuatePass()
         STContext()->IASetIndexBuffer(
             call.mMeshData.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
         STContext()->VSSetShaderResources(1, 1, &mInstanceStructedBufferSrv);
-        STContext()->PSSetShaderResources(0, 1, &(call.mTextureDatas[0].mSrv));
+        ID3D11ShaderResourceView* matSrv = g_Root->StaticResources()->GetMaterialSrv();
+        STContext()->PSSetShaderResources(0, 1, &matSrv);
+        STContext()->PSSetShaderResources(1, 1, &(call.mTextureDatas[0].mSrv));
         if (call.mTextureDatas[1].mUse)
         {
             STContext()->PSSetShaderResources(
-                1, 1, &(call.mTextureDatas[1].mSrv));
+                2, 1, &(call.mTextureDatas[1].mSrv));
         }
 
         STContext()->DrawIndexedInstanced(

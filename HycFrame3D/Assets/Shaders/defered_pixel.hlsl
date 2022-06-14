@@ -104,6 +104,24 @@ float CalcShadowFactor(float4 _shadowPosH, float _slice)
     return percentLit / 9.0f;
 }
 
+MATERIAL LerpMaterial(MATERIAL _m1, MATERIAL _m2, float _factor)
+{
+    MATERIAL final;
+    final.mFresnelR0 = _m1.mFresnelR0;
+    final.mSubSruface = lerp(_m1.mSubSruface, _m2.mSubSruface, _factor);
+    final.mMetallic = lerp(_m1.mMetallic, _m2.mMetallic, _factor);
+    final.mSpecular = lerp(_m1.mSpecular, _m2.mSpecular, _factor);
+    final.mSpecularTint = lerp(_m1.mSpecularTint, _m2.mSpecularTint, _factor);
+    final.mRoughness = lerp(_m1.mRoughness, _m2.mRoughness, _factor);
+    final.mAnisotropic = lerp(_m1.mAnisotropic, _m2.mAnisotropic, _factor);
+    final.mSheen = lerp(_m1.mSheen, _m2.mSheen, _factor);
+    final.mSheenTint = lerp(_m1.mSheenTint, _m2.mSheenTint, _factor);
+    final.mClearcoat = lerp(_m1.mClearcoat, _m2.mClearcoat, _factor);
+    final.mClearcoatGloss = lerp(_m1.mClearcoatGloss, _m2.mClearcoatGloss, _factor);
+
+    return final;
+}
+
 float3 CalcSpecLookUpVec(float3 _pos, float3 _normal)
 {
     const float3 BOX_AABB_SIZE = float3(10000.f, 10000.f, 10000.f);
@@ -153,21 +171,21 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
     uint4 geoData = gGeoBuffer.Load(tcInt);
     float3 normalW = GetNormalFromGeoValue(geoData.x);
+    float4 albedoAndMatFactor = Uint8ToFloat_V4(UnpackUint32ToFourUint8(geoData.y));
     uint4 matAbout = UnpackUint32ToFourUint8(geoData.z);
+    float2 metAndRou = Uint8ToFloat_V2(matAbout.xy);
     float3 toEye = normalize(gLightInfo[0].gCameraPos - positionW);
     float4 albedo = gDiffuseAlbedo.Sample(gSamLinearWrap, _in.TexCoordL);
     float4 fresshin = gFresnelShiniese.Sample(gSamLinearWrap, _in.TexCoordL);
     float3 fresnel = fresshin.rgb;
     float shiniese = fresshin.a;
-    float4 diffuse = gDiffuse.Sample(gSamLinearWrap, _in.TexCoordL);
+    float4 diffuse = float4(albedoAndMatFactor.rgb, 1.f);
     float access = gSsao.SampleLevel(gSamLinearWrap, _in.TexCoordL, 0.0f).r;
     diffuse.rgb = sRGBToACES(diffuse.rgb);
-    MATERIAL mat = (MATERIAL)0.0f;
-    mat.mFresnelR0 = fresnel;
-    mat.mRoughness = 1.f - shiniese;
-    mat.mMetallic = 0.95f;
-    mat.mSpecular = 0.8f;
-    mat = gAllMaterialInfo[matAbout.z];
+    MATERIAL mat = LerpMaterial(gAllMaterialInfo[matAbout.z],
+        gAllMaterialInfo[matAbout.w], albedoAndMatFactor.w);
+    mat.mRoughness = metAndRou.y;
+    mat.mMetallic = metAndRou.x;
 
     float3 envDiffuse = CalcEnvDiffuse(normalW, mat, toEye);
     float4 ambientL = float4(envDiffuse * access, 0.f);
