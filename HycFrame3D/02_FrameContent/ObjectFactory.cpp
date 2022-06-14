@@ -855,6 +855,14 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         _actor->AddAComponent(type);
         _node->GetComponentContainer()->AddComponent(type, aanc);
     }
+    else if (compType == "sprite")
+    {
+        ASpriteComponent asc(compName, nullptr);
+
+        COMP_TYPE type = COMP_TYPE::A_SPRITE;
+        _actor->AddAComponent(type);
+        _node->GetComponentContainer()->AddComponent(type, asc);
+    }
     else
     {
         P_LOG(LOG_ERROR, "invlaid comp type : %s\n", compType.c_str());

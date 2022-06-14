@@ -562,6 +562,32 @@
                     "speed-factor": 1.0
                 }
             ]
+        },
+        {
+            "actor-name": "sp-bill-board-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        10.0,
+                        5.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite"
+                }
+            ]
         }
     ],
     "ui": []
