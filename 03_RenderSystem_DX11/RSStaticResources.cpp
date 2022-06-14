@@ -143,7 +143,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
 
     {
         hr = Tool::CompileShaderFromFile(
-            L"RenderSystem_StaticResources\\InputLayoutForBasic.hlsl",
+            L"RenderSystem_StaticResources\\InputLayouts\\InputLayoutForBasic.hlsl",
             "main", "vs_5_0", &shaderBlob);
         FAIL_HR_RETURN(hr);
 
@@ -183,7 +183,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
 
     {
         hr = Tool::CompileShaderFromFile(
-            L"RenderSystem_StaticResources\\InputLayoutForColor.hlsl",
+            L"RenderSystem_StaticResources\\InputLayouts\\InputLayoutForColor.hlsl",
             "main", "vs_5_0", &shaderBlob);
         FAIL_HR_RETURN(hr);
 
@@ -223,7 +223,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
 
     {
         hr = Tool::CompileShaderFromFile(
-            L"RenderSystem_StaticResources\\InputLayoutForTangent.hlsl",
+            L"RenderSystem_StaticResources\\InputLayouts\\InputLayoutForTangent.hlsl",
             "main", "vs_5_0", &shaderBlob);
         FAIL_HR_RETURN(hr);
 
@@ -268,7 +268,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
 
     {
         hr = Tool::CompileShaderFromFile(
-            L"RenderSystem_StaticResources\\InputLayoutForAnimation.hlsl",
+            L"RenderSystem_StaticResources\\InputLayouts\\InputLayoutForAnimation.hlsl",
             "main", "vs_5_0", &shaderBlob);
         FAIL_HR_RETURN(hr);
 
