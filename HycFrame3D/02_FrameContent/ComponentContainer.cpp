@@ -10,6 +10,7 @@
 #include "AAudioComponent.h"
 #include "AParticleComponent.h"
 #include "AAnimateComponent.h"
+#include "ASpriteComponent.h"
 #include "UTransformComponent.h"
 #include "USpriteComponent.h"
 #include "UAnimateComponent.h"
@@ -26,6 +27,7 @@ ComponentContainer::ComponentContainer(SceneNode& _sceneNode) :
     mACollisionCompVector({}), mAMeshCompVector({}),
     mALightCompVector({}), mAAudioCompVector({}),
     mAParticleCompVector({}), mAAnimateCompVector({}),
+    mASpriteCompVector({}),
     mUTransformCompVector({}), mUSpriteCompVector({}),
     mUAnimateCompVector({}), mUTimerCompVector({}),
     mUInputCompVector({}), mUInteractCompVector({}),
@@ -42,6 +44,7 @@ ComponentContainer::ComponentContainer(SceneNode& _sceneNode) :
     mAAudioCompVector.reserve(1024);
     mAParticleCompVector.reserve(1024);
     mAAnimateCompVector.reserve(1024);
+    mASpriteCompVector.reserve(1024);
     mUTransformCompVector.reserve(1024);
     mUSpriteCompVector.reserve(1024);
     mUAnimateCompVector.reserve(1024);
@@ -152,6 +155,12 @@ void ComponentContainer::AddComponent(COMP_TYPE _type, Component& _comp)
             mCompMap.insert(
                 { mAAnimateCompVector.back().GetCompName(),
                 &(mAAnimateCompVector.back()) });
+            break;
+        case COMP_TYPE::A_SPRITE:
+            mASpriteCompVector.emplace_back((ASpriteComponent&)_comp);
+            mCompMap.insert(
+                { mASpriteCompVector.back().GetCompName(),
+                &(mASpriteCompVector.back()) });
             break;
         case COMP_TYPE::U_TRANSFORM:
             mUTransformCompVector.emplace_back((UTransformComponent&)_comp);
@@ -271,6 +280,12 @@ void ComponentContainer::AddComponent(COMP_TYPE _type, Component& _comp)
             mCompMap.insert(
                 { mAAnimateCompVector[index].GetCompName(),
                 &(mAAnimateCompVector[index]) });
+            break;
+        case COMP_TYPE::A_SPRITE:
+            mASpriteCompVector[index] = (ASpriteComponent&)_comp;
+            mCompMap.insert(
+                { mASpriteCompVector[index].GetCompName(),
+                &(mASpriteCompVector[index]) });
             break;
         case COMP_TYPE::U_TRANSFORM:
             mUTransformCompVector[index] = (UTransformComponent&)_comp;
@@ -409,6 +424,13 @@ void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string&& _compNam
     {
         std::vector<AAnimateComponent>::size_type voffset =
             (AAnimateComponent*)dele - &mAAnimateCompVector[0];
+        offset = (UINT)voffset;
+        break;
+    }
+    case COMP_TYPE::A_SPRITE:
+    {
+        std::vector<ASpriteComponent>::size_type voffset =
+            (ASpriteComponent*)dele - &mASpriteCompVector[0];
         offset = (UINT)voffset;
         break;
     }
@@ -566,6 +588,13 @@ void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string& _compName
         offset = (UINT)voffset;
         break;
     }
+    case COMP_TYPE::A_SPRITE:
+    {
+        std::vector<ASpriteComponent>::size_type voffset =
+            (ASpriteComponent*)dele - &mASpriteCompVector[0];
+        offset = (UINT)voffset;
+        break;
+    }
     case COMP_TYPE::U_TRANSFORM:
     {
         std::vector<UTransformComponent>::size_type voffset =
@@ -646,6 +675,7 @@ void ComponentContainer::DeleteAllComponent()
     mAAudioCompVector.clear();
     mAParticleCompVector.clear();
     mAAnimateCompVector.clear();
+    mASpriteCompVector.clear();
     mUTransformCompVector.clear();
     mUSpriteCompVector.clear();
     mUAnimateCompVector.clear();
@@ -685,6 +715,8 @@ void* ComponentContainer::GetCompVecPtr(COMP_TYPE _type) const
         return (void*)&mAParticleCompVector;
     case COMP_TYPE::A_ANIMATE:
         return (void*)&mAAnimateCompVector;
+    case COMP_TYPE::A_SPRITE:
+        return (void*)&mASpriteCompVector;
     case COMP_TYPE::U_TRANSFORM:
         return (void*)&mUTransformCompVector;
     case COMP_TYPE::U_SPRITE:

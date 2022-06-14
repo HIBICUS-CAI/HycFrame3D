@@ -19,6 +19,7 @@
 #include "ALightComponent.h"
 #include "AParticleComponent.h"
 #include "AAnimateComponent.h"
+#include "ASpriteComponent.h"
 #include "AAudioComponent.h"
 #include "RSCamera.h"
 #include "RSCamerasContainer.h"

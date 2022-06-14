@@ -20,6 +20,7 @@ private:
     std::vector<class AMeshComponent>* mAMeshVecPtr;
     std::vector<class ALightComponent>* mALightVecPtr;
     std::vector<class AParticleComponent>* mAParitcleVecPtr;
+    std::vector<class ASpriteComponent>* mASpriteVecPtr;
     std::vector<class USpriteComponent>* mUSpriteVecPtr;
     std::vector<class UAnimateComponent>* mUAnimateVecPtr;
 };

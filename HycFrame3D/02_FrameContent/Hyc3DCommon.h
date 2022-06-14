@@ -23,7 +23,7 @@ enum class COMP_TYPE
     A_INTERACT,
     A_TIMER,
     A_COLLISION,
-    //A_SPRITEANI,
+    A_SPRITE,
     A_MESH,
     A_LIGHT,
     //A_CAMERA,

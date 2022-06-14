@@ -199,6 +199,9 @@
     <ClCompile Include="02_FrameContent\AnimationSystem.cpp">
       <Filter>02_FrameContent\System</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\ASpriteComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="00_BasicFuncs\PrintLog.h">
@@ -365,6 +368,9 @@
     </ClInclude>
     <ClInclude Include="02_FrameContent\AnimationSystem.h">
       <Filter>02_FrameContent\System</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ASpriteComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
