@@ -2645,6 +2645,7 @@ void RSPass_Defered::ExecuatePass()
         mLightStructedBufferSrv,
         mShadowStructedBufferSrv,
         mCameraStructedBufferSrv,
+        g_Root->StaticResources()->GetMaterialSrv(),
         mGeoBufferSrv,
         mWorldPosSrv, mNormalSrv, mDiffuseSrv,
         mDiffuseAlbedoSrv, mFresenlShineseSrv,
@@ -2652,7 +2653,7 @@ void RSPass_Defered::ExecuatePass()
         g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv,
         depSrv
     };
-    STContext()->PSSetShaderResources(0, 17, srvs);
+    STContext()->PSSetShaderResources(0, 18, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
@@ -2678,9 +2679,9 @@ void RSPass_Defered::ExecuatePass()
     {
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-        nullptr, nullptr, nullptr, nullptr, nullptr
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
     };
-    STContext()->PSSetShaderResources(0, 17, nullsrvs);
+    STContext()->PSSetShaderResources(0, 18, nullsrvs);
 }
 
 bool RSPass_Defered::CreateShaders()

@@ -46,19 +46,20 @@ StructuredBuffer<LIGHT_INFO> gLightInfo : register(t1);
 StructuredBuffer<LIGHT> gLights : register(t2);
 StructuredBuffer<SHADOW_INFO> gShadowInfo : register(t3);
 StructuredBuffer<VIEWPROJ> gInvCameraInfo : register(t4);
+StructuredBuffer<MATERIAL> gAllMaterialInfo : register(t5);
 
-Texture2D<uint4> gGeoBuffer : register(t5);
-Texture2D gWorldPos : register(t6);
-Texture2D<uint4> gNormal : register(t7);
-Texture2D gDiffuse : register(t8);
-Texture2D gDiffuseAlbedo : register(t9);
-Texture2D gFresnelShiniese : register(t10);
-Texture2D gSsao : register(t11);
-Texture2DArray<float> gShadowMap : register(t12);
-Texture2D gBRDFLUT : register(t13);
-TextureCube gDiffuseMap : register(t14);
-TextureCube gSpecularMap : register(t15);
-Texture2D gDepthMap : register(t16);
+Texture2D<uint4> gGeoBuffer : register(t6);
+Texture2D gWorldPos : register(t7);
+Texture2D<uint4> gNormal : register(t8);
+Texture2D gDiffuse : register(t9);
+Texture2D gDiffuseAlbedo : register(t10);
+Texture2D gFresnelShiniese : register(t11);
+Texture2D gSsao : register(t12);
+Texture2DArray<float> gShadowMap : register(t13);
+Texture2D gBRDFLUT : register(t14);
+TextureCube gDiffuseMap : register(t15);
+TextureCube gSpecularMap : register(t16);
+Texture2D gDepthMap : register(t17);
 
 float3 DepthToWorldPos(float2 uv, float depth)
 {
@@ -152,6 +153,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
     uint4 geoData = gGeoBuffer.Load(tcInt);
     float3 normalW = GetNormalFromGeoValue(geoData.x);
+    uint4 matAbout = UnpackUint32ToFourUint8(geoData.z);
     float3 toEye = normalize(gLightInfo[0].gCameraPos - positionW);
     float4 albedo = gDiffuseAlbedo.Sample(gSamLinearWrap, _in.TexCoordL);
     float4 fresshin = gFresnelShiniese.Sample(gSamLinearWrap, _in.TexCoordL);
@@ -165,6 +167,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     mat.mRoughness = 1.f - shiniese;
     mat.mMetallic = 0.95f;
     mat.mSpecular = 0.8f;
+    mat = gAllMaterialInfo[matAbout.z];
 
     float3 envDiffuse = CalcEnvDiffuse(normalW, mat, toEye);
     float4 ambientL = float4(envDiffuse * access, 0.f);

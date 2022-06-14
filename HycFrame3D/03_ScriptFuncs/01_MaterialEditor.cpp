@@ -244,11 +244,13 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
     {
         *editValue += deltatime / 1000.f;
         if (*editValue > 1.f) { *editValue = 1.f; }
+        GetRSRoot_DX11_Singleton()->StaticResources()->MapMaterialData();
     }
     if (InputInterface::IsKeyDownInSingle(KB_LEFT))
     {
         *editValue -= deltatime / 1000.f;
         if (*editValue < 0.f) { *editValue = 0.f; }
+        GetRSRoot_DX11_Singleton()->StaticResources()->MapMaterialData();
     }
 
     if (InputInterface::IsKeyPushedInSingle(KB_RETURN))

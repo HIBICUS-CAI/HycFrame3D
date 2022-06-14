@@ -59,7 +59,7 @@ PS_OUTPUT main(VS_OUTPUT _input)
     uint geoAlbeAndFactor = PackFourUint8ToUint32(alFctUint.x, alFctUint.y, alFctUint.z, alFctUint.w);
     float roughness = 1.f - _input.FresnelShiniese.w;
     float metallic = 0.95f;
-    uint4 matData = FloatToUint8_V4(float4(metallic, roughness, 0, 0));
+    uint4 matData = uint4(FloatToUint8_V2(float2(metallic, roughness)), 0, 0);
     uint geoMatData = PackFourUint8ToUint32(matData.x, matData.y, matData.z, matData.w);
     uint geoEmiss = PackFourUint8ToUint32(0, 0, 0, 0);
     uint3 norU;

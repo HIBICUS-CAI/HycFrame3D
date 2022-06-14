@@ -22,7 +22,8 @@ RSStaticResources::RSStaticResources() :
     mRasterizerStateMap({}), mDepthStencilStateMap({}),
     mBlendStateMap({}), mSamplerMap({}), mInputLayoutMap({}),
     mStaticPipelineMap({}), mStaticTopicMap({}),
-    mMaterialVector({}), mMaterialIndexMap({})
+    mMaterialVector({}), mMaterialIndexMap({}),
+    mMaterialBuffer(nullptr), mMaterialBufferSrv(nullptr)
 {
 
 }
@@ -122,6 +123,8 @@ void RSStaticResources::CleanAndStop()
 
     mMaterialVector.clear();
     mMaterialIndexMap.clear();
+    SAFE_RELEASE(mMaterialBufferSrv);
+    SAFE_RELEASE(mMaterialBuffer)
 }
 
 bool RSStaticResources::CompileStaticShaders()
@@ -385,6 +388,31 @@ bool RSStaticResources::BuildStaticMaterials()
         mMaterialIndexMap.insert({ matName,i });
     }
 
+    HRESULT hr = S_OK;
+    D3D11_BUFFER_DESC bufDesc = {};
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    auto devicePtr = mRootPtr->Devices()->GetDevice();
+    ZeroMemory(&bufDesc, sizeof(bufDesc));
+    ZeroMemory(&srvDesc, sizeof(srvDesc));
+
+    bufDesc.Usage = D3D11_USAGE_DYNAMIC;
+    bufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    bufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    bufDesc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE * sizeof(RS_MATERIAL_DATA);
+    bufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+    bufDesc.StructureByteStride = sizeof(RS_MATERIAL_DATA);
+    hr = devicePtr->CreateBuffer(&bufDesc, nullptr, &mMaterialBuffer);
+    FAIL_HR_RETURN(hr);
+
+    srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+    srvDesc.Buffer.ElementWidth = MAX_STRUCTURED_BUFFER_SIZE;
+    hr = devicePtr->CreateShaderResourceView(
+        mMaterialBuffer, &srvDesc, &mMaterialBufferSrv);
+    FAIL_HR_RETURN(hr);
+
+    MapMaterialData();
+
     return true;
 }
 
@@ -547,4 +575,18 @@ UINT RSStaticResources::GetStaticMaterialIndex(std::string& _materialName)
     auto found = mMaterialIndexMap.find(_materialName);
     assert(found != mMaterialIndexMap.end());
     return found->second;
+}
+
+void RSStaticResources::MapMaterialData()
+{
+    auto contextPtr = mRootPtr->Devices()->GetSTContext();
+    D3D11_MAPPED_SUBRESOURCE msr = {};
+    contextPtr->Map(mMaterialBuffer, 0,
+        D3D11_MAP_WRITE_DISCARD, 0, &msr);
+    RS_MATERIAL_DATA* mat_data = (RS_MATERIAL_DATA*)msr.pData;
+    memcpy_s(mat_data,
+        mMaterialVector.size() * sizeof(RS_MATERIAL_DATA),
+        mMaterialVector.data(),
+        mMaterialVector.size() * sizeof(RS_MATERIAL_DATA));
+    contextPtr->Unmap(mMaterialBuffer, 0);
 }

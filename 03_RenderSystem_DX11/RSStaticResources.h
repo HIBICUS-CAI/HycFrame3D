@@ -45,6 +45,8 @@ public:
         std::string& _topicName);
     UINT GetStaticMaterialIndex(std::string& _materialName);
     RS_MATERIAL_DATA* GetMaterialDataPtrForTest() { return &mMaterialVector[0]; }
+    void MapMaterialData();
+    ID3D11ShaderResourceView* GetMaterialSrv() { return mMaterialBufferSrv; }
 
 private:
     bool CompileStaticShaders();
@@ -86,4 +88,6 @@ private:
 
     std::vector<RS_MATERIAL_DATA> mMaterialVector;
     std::unordered_map<std::string, UINT> mMaterialIndexMap;
+    ID3D11Buffer* mMaterialBuffer;
+    ID3D11ShaderResourceView* mMaterialBufferSrv;
 };
