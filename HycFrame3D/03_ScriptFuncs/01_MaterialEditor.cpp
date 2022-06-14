@@ -1,5 +1,6 @@
 #include "01_MaterialEditor.h"
 #include "RSRoot_DX11.h"
+#include "RSStaticResources.h"
 #include "RSPipelinesManager.h"
 
 void RegisterMaterialEditor(ObjectFactory* _factory)
@@ -33,7 +34,7 @@ enum class MAT_TYPE
 
 static ATransformComponent* g_PointLightAtc = nullptr;
 static ATransformComponent* g_MaterialBallAtc = nullptr;
-static RS_MATERIAL_INFO* g_Material = nullptr;
+static RS_MATERIAL_DATA* g_Material = nullptr;
 static MAT_TYPE g_EditingMatTerm = MAT_TYPE::ROUGHNESS;
 
 void OutputThisMaterialInfo()
@@ -274,10 +275,8 @@ bool MatEditorInit(AInteractComponent* _aitc)
     auto& submeshName = (*_aitc->GetActorOwner()->
         GetSceneNode().GetAssetsPool()->
         GetMeshIfExisted("mat-ball"))[0];
-    g_Material = &(_aitc->GetActorOwner()->
-        GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(submeshName)->
-        mInstanceMap.begin()->second.mMaterialData);
+    g_Material = GetRSRoot_DX11_Singleton()->StaticResources()->
+        GetMaterialDataPtrForTest();
     if (!g_Material) { return false; }
 
     g_EditingMatTerm = MAT_TYPE::ROUGHNESS;

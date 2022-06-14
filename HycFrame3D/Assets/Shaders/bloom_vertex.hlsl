@@ -17,25 +17,17 @@ struct VIEWPROJ
     matrix gProjection;
 };
 
-struct MATERIAL
+struct MATERIAL_INPUT
 {
-    float3 mFresnelR0;
-    float mSubSruface;
-    float mMetallic;
-    float mSpecular;
-    float mSpecularTint;
-    float mRoughness;
-    float mAnisotropic;
-    float mSheen;
-    float mSheenTint;
-    float mClearcoat;
-    float mClearcoatGloss;
+    uint gMajorIndex;
+    uint gMinorIndex;
+    float gFactor;
 };
 
 struct INSTANCE_DATA
 {
     matrix gWorld;
-    MATERIAL gMaterial;
+    MATERIAL_INPUT gMaterial;
     float4 gCustomizedData1;
     float4 gCustomizedData2;
 };

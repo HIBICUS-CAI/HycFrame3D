@@ -1,0 +1,40 @@
+{
+    "static-material": [
+        {
+            "name": "gloss-copper",
+            "fresnel-r0": [
+                0.95,
+                0.64,
+                0.54
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.99,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.05,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "dull-copper",
+            "fresnel-r0": [
+                0.95,
+                0.64,
+                0.54
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.99,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.95,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        }
+    ]
+}

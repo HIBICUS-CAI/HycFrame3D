@@ -121,8 +121,6 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
     {
         UINT modelSize = modelRoot->Size();
         std::string meshName = "";
-        std::string staticMatName = "copper";
-        bool forceMat = false;
         RS_MATERIAL_INFO matInfo = {};
         std::string forceDiffuse = "";
         std::string forceNormal = "";
@@ -135,8 +133,6 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
         {
             meshName = "";
             int subIndex = 0;
-            staticMatName = "copper";
-            forceMat = false;
             matInfo = {};
             forceDiffuse = "";
             forceNormal = "";
@@ -148,101 +144,34 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
             meshName = GetJsonNode(_json,
                 jsonPath + "/mesh-name")->GetString();
 
-            JsonNode staMatNode = GetJsonNode(_json,
-                jsonPath + "/static-material");
-            if (staMatNode && !staMatNode->IsNull())
-            {
-                staticMatName = staMatNode->GetString();
-            }
-
             JsonNode matInfoNode = GetJsonNode(_json,
                 jsonPath + "/material-info");
             if (matInfoNode && !matInfoNode->IsNull())
             {
-                JsonNode fresnelNodeX = GetJsonNode(_json,
-                    jsonPath + "/material-info/fresnel-r0/0");
-                JsonNode fresnelNodeY = GetJsonNode(_json,
-                    jsonPath + "/material-info/fresnel-r0/1");
-                JsonNode fresnelNodeZ = GetJsonNode(_json,
-                    jsonPath + "/material-info/fresnel-r0/2");
-                JsonNode subSurfNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/sub-surface");
-                JsonNode metalNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/metallic");
-                JsonNode specNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/specular");
-                JsonNode specTintNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/specular-tint");
-                JsonNode roughNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/roughness");
-                JsonNode anisoNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/anisotropic");
-                JsonNode sheenNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/sheen");
-                JsonNode sheenTintNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/sheen-tint");
-                JsonNode clearcoatNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/clearcoat");
-                JsonNode clearcoatGlossNode = GetJsonNode(_json,
-                    jsonPath + "/material-info/clearcoat-gloss");
+                JsonNode majorNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/major-material");
+                JsonNode minorNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/minor-material");
+                JsonNode factorNode = GetJsonNode(_json,
+                    jsonPath + "/material-info/interpolate-factor");
+                auto staticResPtr = GetRSRoot_DX11_Singleton()->
+                    StaticResources();
 
-                if (fresnelNodeX && fresnelNodeY && fresnelNodeZ)
-                {
-                    matInfo.mFresnelR0.x = fresnelNodeX->GetFloat();
-                    matInfo.mFresnelR0.y = fresnelNodeY->GetFloat();
-                    matInfo.mFresnelR0.z = fresnelNodeZ->GetFloat();
-                }
+                assert(staticResPtr && majorNode && minorNode && factorNode);
 
-                if (subSurfNode)
-                {
-                    matInfo.mSubSurface = subSurfNode->GetFloat();
-                }
-
-                if (metalNode)
-                {
-                    matInfo.mMetallic = metalNode->GetFloat();
-                }
-
-                if (specNode)
-                {
-                    matInfo.mSpecular = specNode->GetFloat();
-                }
-
-                if (specTintNode)
-                {
-                    matInfo.mSpecularTint = specTintNode->GetFloat();
-                }
-
-                if (roughNode)
-                {
-                    matInfo.mRoughness = roughNode->GetFloat();
-                }
-
-                if (anisoNode)
-                {
-                    matInfo.mAnisotropic = anisoNode->GetFloat();
-                }
-
-                if (sheenNode)
-                {
-                    matInfo.mSheen = sheenNode->GetFloat();
-                }
-
-                if (sheenTintNode)
-                {
-                    matInfo.mSheenTint = sheenTintNode->GetFloat();
-                }
-
-                if (clearcoatNode)
-                {
-                    matInfo.mClearcoat = clearcoatNode->GetFloat();
-                }
-
-                if (clearcoatGlossNode)
-                {
-                    matInfo.mClearcoatGloss = clearcoatGlossNode->GetFloat();
-                }
-                forceMat = true;
+                std::string majName = majorNode->GetString();
+                std::string minName = minorNode->GetString();
+                matInfo.mMajorMaterialID = staticResPtr->
+                    GetStaticMaterialIndex(majName);
+                matInfo.mMinorMaterialID = staticResPtr->
+                    GetStaticMaterialIndex(minName);
+                matInfo.mInterpolateFactor = factorNode->GetFloat();
+            }
+            else
+            {
+                P_LOG(LOG_ERROR,
+                    "mesh %s doesnt have material info\n",
+                    meshName.c_str());
             }
 
             JsonNode diffuseNode = GetJsonNode(_json,
@@ -376,15 +305,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
                 return;
             }
 
-            if (!forceMat)
-            {
-                meshData.mMaterial = *(GetRSRoot_DX11_Singleton()->
-                    StaticResources()->GetStaticMaterial(staticMatName));
-            }
-            else
-            {
-                meshData.mMaterial = matInfo;
-            }
+            meshData.mMaterial = matInfo;
 
             if (forceDiffuse != "")
             {

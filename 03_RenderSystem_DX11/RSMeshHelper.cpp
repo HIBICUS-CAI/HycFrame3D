@@ -102,10 +102,6 @@ void RSMeshHelper::ProcessSubMesh(
     {
         CreateSubMeshMaterial(_result, _info->mMaterial);
     }
-    else
-    {
-        RefStaticMaterial(_result, _info->mStaticMaterial);
-    }
 }
 
 ID3D11InputLayout* RSMeshHelper::RefStaticInputLayout(
@@ -309,17 +305,6 @@ void RSMeshHelper::CreateSubMeshMaterial(
     RS_MATERIAL_INFO* material = &(_result->mMaterial);
     memcpy_s(material, sizeof(RS_MATERIAL_INFO),
         _info, sizeof(MATERIAL_INFO));
-}
-
-void RSMeshHelper::RefStaticMaterial(
-    RS_SUBMESH_DATA* _result,
-    std::string& _materialName)
-{
-    auto material = mRootPtr->StaticResources()->
-        GetStaticMaterial(_materialName);
-    assert(material);
-
-    _result->mMaterial = *material;
 }
 
 void RSMeshHelper::ReleaseSubMesh(RS_SUBMESH_DATA& _result)

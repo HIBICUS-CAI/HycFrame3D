@@ -12,6 +12,7 @@
 #include "RSPipeline.h"
 #include "RSTopic.h"
 #include "RSShaderCompile.h"
+#include "RSUtilityFunctions.h"
 #include "RSDevices.h"
 
 RSStaticResources::RSStaticResources() :
@@ -20,7 +21,8 @@ RSStaticResources::RSStaticResources() :
     mPixelShaderMap({}), mComputeShaderMap({}),
     mRasterizerStateMap({}), mDepthStencilStateMap({}),
     mBlendStateMap({}), mSamplerMap({}), mInputLayoutMap({}),
-    mStaticPipelineMap({}), mStaticTopicMap({}), mMaterialMap({})
+    mStaticPipelineMap({}), mStaticTopicMap({}),
+    mMaterialVector({}), mMaterialIndexMap({})
 {
 
 }
@@ -118,7 +120,8 @@ void RSStaticResources::CleanAndStop()
     }
     mStaticTopicMap.clear();
 
-    mMaterialMap.clear();
+    mMaterialVector.clear();
+    mMaterialIndexMap.clear();
 }
 
 bool RSStaticResources::CompileStaticShaders()
@@ -340,22 +343,47 @@ bool RSStaticResources::BuildStaticPipelines()
 
 bool RSStaticResources::BuildStaticMaterials()
 {
-    std::string name = "";
-    RS_MATERIAL_INFO rmi = {};
+    Tool::Json::JsonFile matFile = {};
+    Tool::Json::LoadJsonFile(&matFile,
+        "RenderSystem_StaticResources\\Materials\\StaticMaterials.json");
+    if (matFile.HasParseError()) { return false; }
 
-    name = "copper";
-    rmi.mFresnelR0 = { 0.95f,0.64f,0.54f };
-    rmi.mSubSurface = 0.f;
-    rmi.mMetallic = 0.8f;
-    rmi.mSpecular = 0.8f;
-    rmi.mSpecularTint = 0.f;
-    rmi.mRoughness = 0.125f;
-    rmi.mAnisotropic = 0.f;
-    rmi.mSheen = 0.f;
-    rmi.mSheenTint = 0.f;
-    rmi.mClearcoat = 0.f;
-    rmi.mClearcoatGloss = 0.f;
-    mMaterialMap.insert({ name,rmi });
+    UINT matSize = matFile["static-material"].Size();
+    mMaterialVector.resize(matSize);
+    std::string matName = "";
+
+    for (UINT i = 0; i < matSize; i++)
+    {
+        mMaterialVector[i].mFresnelR0.x =
+            matFile["static-material"][i]["fresnel-r0"][0].GetFloat();
+        mMaterialVector[i].mFresnelR0.y =
+            matFile["static-material"][i]["fresnel-r0"][1].GetFloat();
+        mMaterialVector[i].mFresnelR0.z =
+            matFile["static-material"][i]["fresnel-r0"][2].GetFloat();
+        mMaterialVector[i].mSubSurface =
+            matFile["static-material"][i]["subsurface"].GetFloat();
+        mMaterialVector[i].mMetallic =
+            matFile["static-material"][i]["metallic"].GetFloat();
+        mMaterialVector[i].mSpecular =
+            matFile["static-material"][i]["specular"].GetFloat();
+        mMaterialVector[i].mSpecularTint =
+            matFile["static-material"][i]["specular-tint"].GetFloat();
+        mMaterialVector[i].mRoughness =
+            matFile["static-material"][i]["roughness"].GetFloat();
+        mMaterialVector[i].mAnisotropic =
+            matFile["static-material"][i]["anisotropic"].GetFloat();
+        mMaterialVector[i].mSheen =
+            matFile["static-material"][i]["sheen"].GetFloat();
+        mMaterialVector[i].mSheenTint =
+            matFile["static-material"][i]["sheen-tint"].GetFloat();
+        mMaterialVector[i].mClearcoat =
+            matFile["static-material"][i]["clearcoat"].GetFloat();
+        mMaterialVector[i].mClearcoatGloss =
+            matFile["static-material"][i]["clearcoat-gloss"].GetFloat();
+
+        matName = matFile["static-material"][i]["name"].GetString();
+        mMaterialIndexMap.insert({ matName,i });
+    }
 
     return true;
 }
@@ -514,16 +542,9 @@ const RSTopic* const RSStaticResources::GetStaticTopic(
     }
 }
 
-RS_MATERIAL_INFO* RSStaticResources::GetStaticMaterial(
-    std::string& _materialName)
+UINT RSStaticResources::GetStaticMaterialIndex(std::string& _materialName)
 {
-    auto found = mMaterialMap.find(_materialName);
-    if (found != mMaterialMap.end())
-    {
-        return &(found->second);
-    }
-    else
-    {
-        return nullptr;
-    }
+    auto found = mMaterialIndexMap.find(_materialName);
+    assert(found != mMaterialIndexMap.end());
+    return found->second;
 }

@@ -43,8 +43,8 @@ public:
         std::string& _pipelineName);
     const class RSTopic* const GetStaticTopic(
         std::string& _topicName);
-    RS_MATERIAL_INFO* GetStaticMaterial(
-        std::string& _materialName);
+    UINT GetStaticMaterialIndex(std::string& _materialName);
+    RS_MATERIAL_DATA* GetMaterialDataPtrForTest() { return &mMaterialVector[0]; }
 
 private:
     bool CompileStaticShaders();
@@ -84,6 +84,6 @@ private:
     std::unordered_map<std::string, class RSTopic*>
         mStaticTopicMap;
 
-    std::unordered_map<std::string, RS_MATERIAL_INFO>
-        mMaterialMap;
+    std::vector<RS_MATERIAL_DATA> mMaterialVector;
+    std::unordered_map<std::string, UINT> mMaterialIndexMap;
 };

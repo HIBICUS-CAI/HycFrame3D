@@ -40,8 +40,6 @@ private:
         const std::vector<std::string>* const _textures);
     void CreateSubMeshMaterial(RS_SUBMESH_DATA* _result,
         const MATERIAL_INFO* const _info);
-    void RefStaticMaterial(RS_SUBMESH_DATA* _result,
-        std::string& _materialName);
 
 private:
     class RSRoot_DX11* mRootPtr;

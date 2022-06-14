@@ -160,20 +160,19 @@ struct RS_PARTICLE_EMITTER_INFO
 
 struct MATERIAL_INFO
 {
-    DirectX::XMFLOAT3 mFresnelR0 = {};
-    float mSubSruface = 0.f;
-    float mMetallic = 0.f;
-    float mSpecular = 0.f;
-    float mSpecularTint = 0.f;
-    float mRoughness = 0.f;
-    float mAnisotropic = 0.f;
-    float mSheen = 0.f;
-    float mSheenTint = 0.f;
-    float mClearcoat = 0.f;
-    float mClearcoatGloss = 0.f;
+    UINT mMajorMaterialID = 0;
+    UINT mMinorMaterialID = 0;
+    float mInterpolateFactor = 0.f;
 };
 
 struct RS_MATERIAL_INFO
+{
+    UINT mMajorMaterialID = 0;
+    UINT mMinorMaterialID = 0;
+    float mInterpolateFactor = 0.f;
+};
+
+struct RS_MATERIAL_DATA
 {
     DirectX::XMFLOAT3 mFresnelR0 = {};
     float mSubSurface = 0.f;
@@ -205,7 +204,6 @@ struct SUBMESH_INFO
     void* mVerteices = nullptr;
     std::vector<std::string>* mTextures = nullptr;
     MATERIAL_INFO* mMaterial = nullptr;
-    std::string mStaticMaterial = "";
     bool mWithAnimation = false;
 };
 

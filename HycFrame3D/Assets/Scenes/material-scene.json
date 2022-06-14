@@ -10,21 +10,9 @@
         {
             "mesh-name": "grid",
             "material-info": {
-                "fresnel-r0": [
-                    0.04,
-                    0.04,
-                    0.04
-                ],
-                "sub-surface": 0.0,
-                "metallic": 0.2,
-                "specular": 0.2,
-                "specular-tint": 0.0,
-                "roughness": 1.0,
-                "anisotropic": 0.0,
-                "sheen": 0.0,
-                "sheen-tint": 0.0,
-                "clearcoat": 0.0,
-                "clearcoat-gloss": 0.0
+                "major-material": "gloss-copper",
+                "minor-material": "dull-copper",
+                "interpolate-factor": 0.0
             },
             "load-mode": "program-grid",
             "load-info": {
@@ -44,21 +32,9 @@
             "load-mode": "model-file",
             "force-diffuse": "copper.png",
             "material-info": {
-                "fresnel-r0": [
-                    0.95,
-                    0.64,
-                    0.54
-                ],
-                "sub-surface": 0.0,
-                "metallic": 0.95,
-                "specular": 0.8,
-                "specular-tint": 0.0,
-                "roughness": 0.1,
-                "anisotropic": 0.0,
-                "sheen": 0.0,
-                "sheen-tint": 0.0,
-                "clearcoat": 0.0,
-                "clearcoat-gloss": 0.0
+                "major-material": "gloss-copper",
+                "minor-material": "dull-copper",
+                "interpolate-factor": 0.0
             },
             "load-info": {
                 "model-file": "mat_ball.gltf.meshdata",
