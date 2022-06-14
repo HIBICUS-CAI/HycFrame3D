@@ -1,6 +1,7 @@
 #include "SPInput.h"
 #include "RSRoot_DX11.h"
 #include "RSPipelinesManager.h"
+#include "RSMeshHelper.h"
 
 void RegisterSPInput(ObjectFactory* _factory)
 {
@@ -100,6 +101,9 @@ bool TestASpInit(AInteractComponent* _aitc)
     _aitc->GetActorOwner()->
         GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
         StartTimer("timer1");
+
+    auto p = GetRSRoot_DX11_Singleton()->MeshHelper()->GeoGenerate()->
+        CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TEX);
 
     return true;
 }
