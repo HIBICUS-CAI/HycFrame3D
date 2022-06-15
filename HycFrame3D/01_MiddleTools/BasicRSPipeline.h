@@ -110,6 +110,14 @@ struct ViewProj
     DirectX::XMFLOAT4X4 mProjMat = {};
 };
 
+struct ViewProjCamUpPos
+{
+    DirectX::XMFLOAT4X4 mViewMat = {};
+    DirectX::XMFLOAT4X4 mProjMat = {};
+    DirectX::XMFLOAT3 mCamUpVec = {};
+    DirectX::XMFLOAT3 mCamPos = {};
+};
+
 struct Ambient
 {
     DirectX::XMFLOAT4 mAmbient = {};
@@ -799,6 +807,7 @@ public:
 private:
     bool CreateStates();
     bool CreateShaders();
+    bool CreateBuffers();
     bool CreateViews();
     bool CreateSamplers();
 
@@ -808,6 +817,7 @@ private:
     ID3D11PixelShader* mPixelShader;
     ID3D11BlendState* mBlendState;
     ID3D11RenderTargetView* mRenderTargetView;
+    ID3D11DepthStencilView* mDepthStencilView;
     ID3D11SamplerState* mLinearWrapSampler;
     ID3D11Buffer* mViewProjStructedBuffer;
     ID3D11ShaderResourceView* mViewProjStructedBufferSrv;
@@ -816,6 +826,7 @@ private:
     DRAWCALL_TYPE mDrawCallType;
     RSDrawCallsPipe* mDrawCallPipe;
     RS_CAM_INFO* mRSCameraInfo;
+    class RSCamera* mRSCamera;
 };
 
 void SetPipeLineDeltaTime(float _deltaMilliSecond);
