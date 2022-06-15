@@ -28,8 +28,10 @@ void RegisterGM02(ObjectFactory* _factory)
 
 static ATransformComponent* g_PlayerAtc = nullptr;
 static RSCamera* g_Cam = nullptr;
+static std::unordered_map<std::string, DirectX::XMFLOAT3> g_BulletDirMap = {};
 
-void CreateBullet(DirectX::XMFLOAT3 _startPos, SceneNode& _scene);
+void CreateBullet(DirectX::XMFLOAT3 _startPos, DirectX::XMFLOAT3 _dirVec,
+    SceneNode& _scene);
 
 void PlayerInput(AInputComponent* _aic, Timer& _timer)
 {
@@ -76,7 +78,12 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
 
     if (InputInterface::IsKeyPushedInSingle(KB_SPACE))
     {
-        CreateBullet(g_PlayerAtc->GetProcessingPosition(),
+        DirectX::XMFLOAT3 dirVec = g_PlayerAtc->GetProcessingRotation();
+        dirVec.y -= 3.14f;
+        dirVec.x = sinf(dirVec.y);
+        dirVec.z = cosf(dirVec.y);
+        dirVec.y = 0.f;
+        CreateBullet(g_PlayerAtc->GetProcessingPosition(), dirVec,
             _aic->GetActorOwner()->GetSceneNode());
     }
 }
@@ -119,9 +126,11 @@ void PlayerDestory(AInteractComponent* _aitc)
 {
     g_PlayerAtc = nullptr;
     g_Cam = nullptr;
+    g_BulletDirMap.clear();
 }
 
-void CreateBullet(DirectX::XMFLOAT3 _startPos, SceneNode& _scene)
+void CreateBullet(DirectX::XMFLOAT3 _startPos, DirectX::XMFLOAT3 _dirVec,
+    SceneNode& _scene)
 {
     static unsigned long long int index = 0;
     std::string actorName = "bullet-actor" + std::to_string(index++);
@@ -170,6 +179,7 @@ void CreateBullet(DirectX::XMFLOAT3 _startPos, SceneNode& _scene)
         bulletActor.AddAComponent(COMP_TYPE::A_INTERACT);
         _scene.GetComponentContainer()->AddComponent(
             COMP_TYPE::A_INTERACT, aitc);
+        g_BulletDirMap.insert({ aitc.GetCompName(),_dirVec });
     }
 
     _scene.AddActorObject(bulletActor);
@@ -198,7 +208,12 @@ void BulletUpdate(AInteractComponent* _aitc, Timer& _timer)
 
     auto atc = _aitc->GetActorOwner()->
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
-    atc->TranslateZAsix(0.1f * _timer.FloatDeltaTime());
+    using namespace DirectX;
+    XMFLOAT3 dir = g_BulletDirMap[_aitc->GetCompName()];
+    XMVECTOR dirVec = XMLoadFloat3(&dir);
+    dirVec = XMVector3Normalize(dirVec) * 0.1f;
+    DirectX::XMStoreFloat3(&dir, dirVec);
+    atc->Translate(dir);
 
     auto acc = _aitc->GetActorOwner()->
         GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION);
@@ -231,7 +246,7 @@ void BulletUpdate(AInteractComponent* _aitc, Timer& _timer)
 
 void BulletDestory(AInteractComponent* _aitc)
 {
-
+    g_BulletDirMap.erase(_aitc->GetCompName());
 }
 
 void ButtonInput(UInputComponent* _uic, Timer& _timer)
