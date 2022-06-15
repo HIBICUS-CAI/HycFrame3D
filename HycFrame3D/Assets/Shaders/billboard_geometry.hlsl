@@ -34,9 +34,10 @@ void main(point VS_OUTPUT _in[1], inout TriangleStream<GS_OUTPUT> _triStream)
 
     if (_in[0].IsBillboard)
     {
-        up = normalize(gViewProjCamUp[0].gCamUpVec);
         look = gViewProjCamUp[0].gCamPos - _in[0].CenterW;
         look = normalize(look);
+        up = normalize(normalize(gViewProjCamUp[0].gCamUpVec) -
+            (dot(normalize(gViewProjCamUp[0].gCamUpVec), look * -1.f) * look * -1.f));
         right = cross(up, look);
     }
     else

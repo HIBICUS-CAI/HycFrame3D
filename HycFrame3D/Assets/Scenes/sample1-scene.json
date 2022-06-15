@@ -570,7 +570,7 @@
                     "type": "transform",
                     "init-position": [
                         15.0,
-                        10.0,
+                        -7.0,
                         30.0
                     ],
                     "init-angle": [
@@ -606,6 +606,12 @@
                     "max-cut": 10,
                     "switch-time": 0.02,
                     "repeat-flag": true
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "BBInit",
+                    "update-func-name": "BBUpdate",
+                    "destory-func-name": "BBDestory"
                 }
             ]
         }

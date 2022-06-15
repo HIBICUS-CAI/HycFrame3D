@@ -38,6 +38,9 @@ void RegisterSPInput(ObjectFactory* _factory)
     _factory->GetAInitMapPtr()->insert({ FUNC_NAME(AniInit),AniInit });
     _factory->GetAUpdateMapPtr()->insert({ FUNC_NAME(AniUpdate),AniUpdate });
     _factory->GetADestoryMapPtr()->insert({ FUNC_NAME(AniDestory),AniDestory });
+    _factory->GetAInitMapPtr()->insert({ FUNC_NAME(BBInit),BBInit });
+    _factory->GetAUpdateMapPtr()->insert({ FUNC_NAME(BBUpdate),BBUpdate });
+    _factory->GetADestoryMapPtr()->insert({ FUNC_NAME(BBDestory),BBDestory });
 }
 
 void TestASpInput(AInputComponent* _aic, Timer& _timer)
@@ -355,4 +358,32 @@ void AniDestory(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate destory\n");
     g_Aanc = nullptr;
+}
+
+static ATransformComponent* g_BBAtc = nullptr;
+static float g_XFactor = 0.f;
+
+bool BBInit(AInteractComponent* _aitc)
+{
+    g_XFactor = -1.f;
+    g_BBAtc = _aitc->GetActorOwner()->
+        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+    if (!g_BBAtc) { return false; }
+
+    return true;
+}
+
+void BBUpdate(AInteractComponent* _aitc, Timer& _timer)
+{
+    g_BBAtc->TranslateXAsix(_timer.FloatDeltaTime() * g_XFactor * 0.01f);
+    if (fabsf(g_BBAtc->GetProcessingPosition().x) > 18.f)
+    {
+        g_BBAtc->RollBackPositionX();
+        g_XFactor *= -1.f;
+    }
+}
+
+void BBDestory(AInteractComponent* _aitc)
+{
+    g_BBAtc = nullptr;
 }
