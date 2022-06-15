@@ -42,7 +42,7 @@ bool ASpriteComponent::Init()
 
 void ASpriteComponent::Update(Timer& _timer)
 {
-    if (mTimeCounter > mSwitchTime)
+    if (mWithAnimation && mTimeCounter > mSwitchTime)
     {
         mTimeCounter = 0.f;
         ++mCurrentAnimateCut;
