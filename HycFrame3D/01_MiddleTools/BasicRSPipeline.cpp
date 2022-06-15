@@ -335,6 +335,18 @@ bool CreateBasicPipeline()
     sky_topic->SetExecuateOrder(5);
     sky_topic->FinishTopicAssembly();
 
+    name = "billboard-pass";
+    RSPass_Billboard* billboard = new RSPass_Billboard(
+        name, PASS_TYPE::RENDER, g_Root);
+    billboard->SetExecuateOrder(1);
+
+    name = "billboard-topic";
+    RSTopic* billboard_topic = new RSTopic(name);
+    billboard_topic->StartTopicAssembly();
+    billboard_topic->InsertPass(billboard);
+    billboard_topic->SetExecuateOrder(6);
+    billboard_topic->FinishTopicAssembly();
+
     name = "bloomdraw-pass";
     RSPass_Bloom* bloomdraw = new RSPass_Bloom(
         name, PASS_TYPE::RENDER, g_Root);
@@ -356,7 +368,7 @@ bool CreateBasicPipeline()
     bloom_topic->InsertPass(bloomdraw);
     bloom_topic->InsertPass(bloomblur);
     bloom_topic->InsertPass(bloomblend);
-    bloom_topic->SetExecuateOrder(6);
+    bloom_topic->SetExecuateOrder(7);
     bloom_topic->FinishTopicAssembly();
 
     RSTopic* particle_topic = nullptr;
@@ -383,7 +395,7 @@ bool CreateBasicPipeline()
         particle_topic->InsertPass(ptcsetup);
         particle_topic->InsertPass(ptcemitsimul);
         particle_topic->InsertPass(ptctile);
-        particle_topic->SetExecuateOrder(7);
+        particle_topic->SetExecuateOrder(8);
         particle_topic->FinishTopicAssembly();
     }
 
@@ -396,7 +408,7 @@ bool CreateBasicPipeline()
     RSTopic* sprite_topic = new RSTopic(name);
     sprite_topic->StartTopicAssembly();
     sprite_topic->InsertPass(sprite);
-    sprite_topic->SetExecuateOrder(8);
+    sprite_topic->SetExecuateOrder(9);
     sprite_topic->FinishTopicAssembly();
 
     name = "light-pipeline";
@@ -407,6 +419,7 @@ bool CreateBasicPipeline()
     g_BasicPipeline->InsertTopic(shadow_topic);
     g_BasicPipeline->InsertTopic(defered_topic);
     g_BasicPipeline->InsertTopic(sky_topic);
+    g_BasicPipeline->InsertTopic(billboard_topic);
     g_BasicPipeline->InsertTopic(bloom_topic);
     if (!g_RenderEffectConfig.mParticleOff)
     {
@@ -460,6 +473,17 @@ bool CreateBasicPipeline()
     simp_lit_topic->SetExecuateOrder(3);
     simp_lit_topic->FinishTopicAssembly();
 
+    name = "simp-billboard";
+    RSPass_Billboard* simp_bill = billboard->ClonePass();
+    simp_bill->SetExecuateOrder(1);
+
+    name = "simp-billboard-topic";
+    RSTopic* simp_bill_topic = new RSTopic(name);
+    simp_bill_topic->StartTopicAssembly();
+    simp_bill_topic->InsertPass(simp_bill);
+    simp_bill_topic->SetExecuateOrder(4);
+    simp_bill_topic->FinishTopicAssembly();
+
     name = "simp-sprite-ui";
     RSPass_Sprite* simp_sprite = sprite->ClonePass();
     simp_sprite->SetExecuateOrder(1);
@@ -468,7 +492,7 @@ bool CreateBasicPipeline()
     RSTopic* simp_sprite_topic = new RSTopic(name);
     simp_sprite_topic->StartTopicAssembly();
     simp_sprite_topic->InsertPass(simp_sprite);
-    simp_sprite_topic->SetExecuateOrder(4);
+    simp_sprite_topic->SetExecuateOrder(5);
     simp_sprite_topic->FinishTopicAssembly();
 
     name = "simple-pipeline";
@@ -477,6 +501,7 @@ bool CreateBasicPipeline()
     g_SimplePipeline->InsertTopic(simp_mrt_topic);
     g_SimplePipeline->InsertTopic(simp_ssao_topic);
     g_SimplePipeline->InsertTopic(simp_lit_topic);
+    g_SimplePipeline->InsertTopic(simp_bill_topic);
     g_SimplePipeline->InsertTopic(simp_sprite_topic);
     g_SimplePipeline->FinishPipelineAssembly();
 
@@ -5945,6 +5970,337 @@ bool RSPass_SimpleLight::CreateViews()
 }
 
 bool RSPass_SimpleLight::CreateSamplers()
+{
+    HRESULT hr = S_OK;
+    D3D11_SAMPLER_DESC sampDesc = {};
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+    auto filter = g_RenderEffectConfig.mSamplerLevel;
+    switch (filter)
+    {
+    case SAMPLER_LEVEL::POINT:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+        break;
+    case SAMPLER_LEVEL::BILINEAR:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        break;
+    case SAMPLER_LEVEL::ANISO_8X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 8;
+        break;
+    case SAMPLER_LEVEL::ANISO_16X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 16;
+        break;
+    default: return false;
+    }
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    hr = Device()->CreateSamplerState(
+        &sampDesc, &mLinearWrapSampler);
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+RSPass_Billboard::RSPass_Billboard(
+    std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
+    RSPass_Base(_name, _type, _root),
+    mVertexShader(nullptr), mGeometryShader(nullptr), mPixelShader(nullptr),
+    mLinearWrapSampler(nullptr), mRenderTargetView(nullptr),
+    mBlendState(nullptr), mDrawCallType(DRAWCALL_TYPE::TRANSPARENCY),
+    mDrawCallPipe(nullptr), mRSCameraInfo(nullptr),
+    mViewProjStructedBuffer(nullptr), mViewProjStructedBufferSrv(nullptr),
+    mInstanceStructedBuffer(nullptr), mInstanceStructedBufferSrv(nullptr),
+    mDepthStencilView(nullptr),mRSCamera(nullptr)
+{
+
+}
+
+RSPass_Billboard::RSPass_Billboard(const RSPass_Billboard& _source) :
+    RSPass_Base(_source),
+    mVertexShader(_source.mVertexShader),
+    mGeometryShader(_source.mGeometryShader),
+    mPixelShader(_source.mPixelShader),
+    mRenderTargetView(_source.mRenderTargetView),
+    mDepthStencilView(_source.mDepthStencilView),
+    mLinearWrapSampler(_source.mLinearWrapSampler),
+    mBlendState(_source.mBlendState),
+    mViewProjStructedBuffer(_source.mViewProjStructedBuffer),
+    mViewProjStructedBufferSrv(_source.mViewProjStructedBufferSrv),
+    mInstanceStructedBuffer(_source.mInstanceStructedBuffer),
+    mInstanceStructedBufferSrv(_source.mInstanceStructedBufferSrv),
+    mDrawCallType(_source.mDrawCallType),
+    mDrawCallPipe(_source.mDrawCallPipe),
+    mRSCameraInfo(_source.mRSCameraInfo),
+    mRSCamera(_source.mRSCamera)
+{
+    if (mHasBeenInited)
+    {
+        RS_ADD(mVertexShader);
+        RS_ADD(mGeometryShader);
+        RS_ADD(mPixelShader);
+        RS_ADD(mLinearWrapSampler);
+        RS_ADD(mBlendState);
+        RS_ADD(mViewProjStructedBuffer);
+        RS_ADD(mViewProjStructedBufferSrv);
+        RS_ADD(mInstanceStructedBuffer);
+        RS_ADD(mInstanceStructedBufferSrv);
+    }
+}
+
+RSPass_Billboard::~RSPass_Billboard()
+{
+
+}
+
+RSPass_Billboard* RSPass_Billboard::ClonePass()
+{
+    return new RSPass_Billboard(*this);
+}
+
+bool RSPass_Billboard::InitPass()
+{
+    if (mHasBeenInited) { return true; }
+
+    if (!CreateShaders()) { return false; }
+    if (!CreateStates()) { return false; }
+    if (!CreateBuffers()) { return false; }
+    if (!CreateViews()) { return false; }
+    if (!CreateSamplers()) { return false; }
+
+    mDrawCallType = DRAWCALL_TYPE::TRANSPARENCY;
+    mDrawCallPipe = g_Root->DrawCallsPool()->GetDrawCallsPipe(mDrawCallType);
+
+    std::string name = "temp-cam";
+    mRSCameraInfo = g_Root->CamerasContainer()->GetRSCameraInfo(name);
+    mRSCamera = g_Root->CamerasContainer()->GetRSCamera(name);
+
+    mHasBeenInited = true;
+
+    return true;
+}
+
+void RSPass_Billboard::ReleasePass()
+{
+    RS_RELEASE(mVertexShader);
+    RS_RELEASE(mGeometryShader);
+    RS_RELEASE(mPixelShader);
+    RS_RELEASE(mBlendState);
+    RS_RELEASE(mLinearWrapSampler);
+    RS_RELEASE(mViewProjStructedBuffer);
+    RS_RELEASE(mViewProjStructedBufferSrv);
+    RS_RELEASE(mInstanceStructedBuffer);
+    RS_RELEASE(mInstanceStructedBufferSrv);
+}
+
+void RSPass_Billboard::ExecuatePass()
+{
+    STContext()->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
+    STContext()->RSSetViewports(1, &g_ViewPort);
+    static float factor[4] = { 0.f,0.f,0.f,0.f };
+    STContext()->OMSetBlendState(mBlendState, factor, 0xFFFFFFFF);
+    STContext()->VSSetShader(mVertexShader, nullptr, 0);
+    STContext()->GSSetShader(mGeometryShader, nullptr, 0);
+    STContext()->PSSetShader(mPixelShader, nullptr, 0);
+    STContext()->PSSetSamplers(0, 1, &mLinearWrapSampler);
+
+    DirectX::XMMATRIX mat = {};
+    DirectX::XMFLOAT4X4 flt44 = {};
+    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT offset = 0;
+
+    D3D11_MAPPED_SUBRESOURCE msr = {};
+    STContext()->Map(mViewProjStructedBuffer, 0,
+        D3D11_MAP_WRITE_DISCARD, 0, &msr);
+    ViewProjCamUpPos* vp_data = (ViewProjCamUpPos*)msr.pData;
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+    mat = DirectX::XMMatrixTranspose(mat);
+    DirectX::XMStoreFloat4x4(&vp_data[0].mViewMat, mat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+    mat = DirectX::XMMatrixTranspose(mat);
+    DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
+    vp_data->mCamUpVec = mRSCamera->GetRSCameraUpVector();
+    vp_data->mCamPos = mRSCamera->GetRSCameraPosition();
+    STContext()->Unmap(mViewProjStructedBuffer, 0);
+
+    STContext()->GSSetShaderResources(0, 1, &mViewProjStructedBufferSrv);
+
+    for (auto& call : mDrawCallPipe->mDatas)
+    {
+        auto vecPtr = call.mInstanceData.mDataPtr;
+        auto size = vecPtr->size();
+        STContext()->Map(mInstanceStructedBuffer, 0,
+            D3D11_MAP_WRITE_DISCARD, 0, &msr);
+        RS_INSTANCE_DATA* ins_data = (RS_INSTANCE_DATA*)msr.pData;
+        for (size_t i = 0; i < size; i++)
+        {
+            mat = DirectX::XMLoadFloat4x4(
+                &(*vecPtr)[i].mWorldMat);
+            mat = DirectX::XMMatrixTranspose(mat);
+            DirectX::XMStoreFloat4x4(&ins_data[i].mWorldMat, mat);
+            ins_data[i].mMaterialData =
+                (*vecPtr)[i].mMaterialData;
+            ins_data[i].mCustomizedData1 =
+                (*vecPtr)[i].mCustomizedData1;
+            ins_data[i].mCustomizedData2 =
+                (*vecPtr)[i].mCustomizedData2;
+        }
+        STContext()->Unmap(mInstanceStructedBuffer, 0);
+
+        STContext()->IASetInputLayout(call.mMeshData.mLayout);
+        STContext()->IASetPrimitiveTopology(call.mMeshData.mTopologyType);
+        STContext()->IASetVertexBuffers(0, 1, &call.mMeshData.mVertexBuffer,
+            &stride, &offset);
+        STContext()->IASetIndexBuffer(
+            call.mMeshData.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        STContext()->VSSetShaderResources(0, 1, &mInstanceStructedBufferSrv);
+        STContext()->PSSetShaderResources(0, 1, &call.mTextureDatas[0].mSrv);
+
+        STContext()->DrawIndexedInstanced(
+            call.mMeshData.mIndexCount,
+            (UINT)call.mInstanceData.mDataPtr->size(), 0, 0, 0);
+    }
+
+    static ID3D11RenderTargetView* nullrtv[] = { nullptr };
+    static ID3D11ShaderResourceView* nullsrv[] = { nullptr };
+    STContext()->OMSetRenderTargets(1, nullrtv, nullptr);
+    STContext()->OMSetBlendState(nullptr, factor, 0xFFFFFFFF);
+    STContext()->GSSetShader(nullptr, nullptr, 0);
+    STContext()->VSSetShaderResources(0, 1, nullsrv);
+    STContext()->GSSetShaderResources(0, 1, nullsrv);
+    STContext()->PSSetShaderResources(0, 1, nullsrv);
+}
+
+bool RSPass_Billboard::CreateShaders()
+{
+    ID3DBlob* shaderBlob = nullptr;
+    HRESULT hr = S_OK;
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\billboard_vertex.hlsl",
+        "main", "vs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateVertexShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mVertexShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\billboard_geometry.hlsl",
+        "main", "gs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateGeometryShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mGeometryShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\billboard_pixel.hlsl",
+        "main", "ps_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreatePixelShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mPixelShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_Billboard::CreateStates()
+{
+    HRESULT hr = S_OK;
+
+    D3D11_BLEND_DESC bldDesc = {};
+    bldDesc.AlphaToCoverageEnable = FALSE;
+    bldDesc.IndependentBlendEnable = FALSE;
+    bldDesc.RenderTarget[0].BlendEnable = TRUE;
+    bldDesc.RenderTarget[0].RenderTargetWriteMask =
+        D3D11_COLOR_WRITE_ENABLE_ALL;
+    bldDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+    bldDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+    bldDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+    bldDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+    bldDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+    bldDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+    hr = Device()->CreateBlendState(&bldDesc, &mBlendState);
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_Billboard::CreateBuffers()
+{
+    HRESULT hr = S_OK;
+    D3D11_BUFFER_DESC bdc = {};
+
+    ZeroMemory(&bdc, sizeof(bdc));
+    bdc.Usage = D3D11_USAGE_DYNAMIC;
+    bdc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    bdc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    bdc.ByteWidth = MAX_INSTANCE_SIZE * sizeof(RS_INSTANCE_DATA);
+    bdc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+    bdc.StructureByteStride = sizeof(RS_INSTANCE_DATA);
+    hr = Device()->CreateBuffer(
+        &bdc, nullptr, &mInstanceStructedBuffer);
+    if (FAILED(hr)) { return false; }
+
+    bdc.ByteWidth = sizeof(ViewProjCamUpPos);
+    bdc.StructureByteStride = sizeof(ViewProjCamUpPos);
+    hr = Device()->CreateBuffer(
+        &bdc, nullptr, &mViewProjStructedBuffer);
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_Billboard::CreateViews()
+{
+    mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
+
+    std::string name = "";
+    name = "mrt-depth";
+    mDepthStencilView = g_Root->ResourceManager()->
+        GetResourceInfo(name)->mDsv;
+    if (!mDepthStencilView) { return false; }
+
+    HRESULT hr = S_OK;
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+
+    ZeroMemory(&srvDesc, sizeof(srvDesc));
+    srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+    srvDesc.Buffer.ElementWidth = MAX_INSTANCE_SIZE;
+    hr = Device()->CreateShaderResourceView(
+        mInstanceStructedBuffer,
+        &srvDesc, &mInstanceStructedBufferSrv);
+    if (FAILED(hr)) { return false; }
+
+    srvDesc.Buffer.ElementWidth = 1;
+    hr = Device()->CreateShaderResourceView(
+        mViewProjStructedBuffer,
+        &srvDesc, &mViewProjStructedBufferSrv);
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_Billboard::CreateSamplers()
 {
     HRESULT hr = S_OK;
     D3D11_SAMPLER_DESC sampDesc = {};

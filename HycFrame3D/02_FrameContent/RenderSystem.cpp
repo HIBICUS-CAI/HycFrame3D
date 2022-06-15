@@ -106,6 +106,7 @@ void RenderSystem::Run(Timer& _timer)
         switch (mType)
         {
         case MESH_TYPE::OPACITY: dType = DRAWCALL_TYPE::OPACITY; break;
+        case MESH_TYPE::TRANSPARENCY: dType = DRAWCALL_TYPE::TRANSPARENCY; break;
         case MESH_TYPE::LIGHT: dType = DRAWCALL_TYPE::LIGHT; break;
         case MESH_TYPE::UI_SPRITE: dType = DRAWCALL_TYPE::UI_SPRITE; break;
         default: break;

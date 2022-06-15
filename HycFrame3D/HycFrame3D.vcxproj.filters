@@ -199,6 +199,9 @@
     <ClCompile Include="02_FrameContent\AnimationSystem.cpp">
       <Filter>02_FrameContent\System</Filter>
     </ClCompile>
+    <ClCompile Include="02_FrameContent\ASpriteComponent.cpp">
+      <Filter>02_FrameContent\Component</Filter>
+    </ClCompile>
     <ClCompile Include="03_ScriptFuncs\GM02.cpp">
       <Filter>03_ScriptFuncs</Filter>
     </ClCompile>
@@ -368,6 +371,9 @@
     </ClInclude>
     <ClInclude Include="02_FrameContent\AnimationSystem.h">
       <Filter>02_FrameContent\System</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\ASpriteComponent.h">
+      <Filter>02_FrameContent\Component</Filter>
     </ClInclude>
     <ClInclude Include="03_ScriptFuncs\GM02.h">
       <Filter>03_ScriptFuncs</Filter>

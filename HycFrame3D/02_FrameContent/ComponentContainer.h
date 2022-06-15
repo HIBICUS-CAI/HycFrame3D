@@ -37,6 +37,7 @@ private:
     std::vector<class AAudioComponent> mAAudioCompVector;
     std::vector<class AParticleComponent> mAParticleCompVector;
     std::vector<class AAnimateComponent> mAAnimateCompVector;
+    std::vector<class ASpriteComponent> mASpriteCompVector;
 
     std::vector<class UTransformComponent> mUTransformCompVector;
     std::vector<class USpriteComponent> mUSpriteCompVector;

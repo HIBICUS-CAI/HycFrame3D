@@ -562,6 +562,58 @@
                     "speed-factor": 1.0
                 }
             ]
+        },
+        {
+            "actor-name": "sp-bill-board-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        15.0,
+                        -7.0,
+                        30.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "texture": "runman.png",
+                    "billboard": true,
+                    "size": [
+                        10.0,
+                        10.0
+                    ],
+                    "tex-coord": [
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0
+                    ],
+                    "with-animation": true,
+                    "stride": [
+                        0.2,
+                        0.5
+                    ],
+                    "max-cut": 10,
+                    "switch-time": 0.02,
+                    "repeat-flag": true
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "BBInit",
+                    "update-func-name": "BBUpdate",
+                    "destory-func-name": "BBDestory"
+                }
+            ]
         }
     ],
     "ui": []
