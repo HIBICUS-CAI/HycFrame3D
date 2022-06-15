@@ -38,25 +38,23 @@ void main(point VS_OUTPUT _in[1], inout TriangleStream<GS_OUTPUT> _triStream)
         look = normalize(look);
         up = normalize(normalize(gViewProjCamUp[0].gCamUpVec) -
             (dot(normalize(gViewProjCamUp[0].gCamUpVec), look * -1.f) * look * -1.f));
-        right = cross(up, look);
+        right = cross(look, up);
     }
     else
     {
-        up = normalize(gViewProjCamUp[0].gCamUpVec);
-        look = gViewProjCamUp[0].gCamPos - _in[0].CenterW;
-        look = normalize(look);
-        right = cross(up, look);
-        // TODO
+        look = normalize(_in[0].NormalW);
+        right = normalize(_in[0].TangentW);
+        up = cross(right, look);
     }
 
     float hWidth = 0.5f * _in[0].SizeW.x;
     float hHeight = 0.5f * _in[0].SizeW.y;
 
     float4 vertex[4];
-    vertex[0] = float4(_in[0].CenterW + hWidth * right - hHeight * up, 1.f);
-    vertex[1] = float4(_in[0].CenterW + hWidth * right + hHeight * up, 1.f);
-    vertex[2] = float4(_in[0].CenterW - hWidth * right - hHeight * up, 1.f);
-    vertex[3] = float4(_in[0].CenterW - hWidth * right + hHeight * up, 1.f);
+    vertex[0] = float4(_in[0].CenterW - hWidth * right - hHeight * up, 1.f);
+    vertex[1] = float4(_in[0].CenterW - hWidth * right + hHeight * up, 1.f);
+    vertex[2] = float4(_in[0].CenterW + hWidth * right - hHeight * up, 1.f);
+    vertex[3] = float4(_in[0].CenterW + hWidth * right + hHeight * up, 1.f);
 
     float2 texcd[4];
     {
