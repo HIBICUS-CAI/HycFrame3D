@@ -43,10 +43,22 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
     {
         g_PlayerAtc->TranslateXAsix(0.2f * deltatime);
     }
+    if (InputInterface::IsKeyDownInSingle(KB_W))
+    {
+        g_PlayerAtc->TranslateZAsix(0.2f * deltatime);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_S))
+    {
+        g_PlayerAtc->TranslateZAsix(-0.2f * deltatime);
+    }
 
     if (fabsf(g_PlayerAtc->GetProcessingPosition().x) > 80.f)
     {
         g_PlayerAtc->RollBackPositionX();
+    }
+    if (fabsf(g_PlayerAtc->GetProcessingPosition().z - 90.f) > 80.f)
+    {
+        g_PlayerAtc->RollBackPositionZ();
     }
 
     if (InputInterface::IsKeyPushedInSingle(KB_SPACE))
@@ -77,6 +89,7 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
         &g_PlayerAtc->GetPosition());
     XMFLOAT3 deltaPos = {};
     XMStoreFloat3(&deltaPos, origin - processing);
+    deltaPos.z *= -1.f;
     g_Cam->TranslateRSCamera(deltaPos);
 }
 
