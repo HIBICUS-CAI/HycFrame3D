@@ -14,4 +14,8 @@ bool BulletInit(AInteractComponent*);
 void BulletUpdate(AInteractComponent*, Timer&);
 void BulletDestory(AInteractComponent*);
 
+bool EffectInit(AInteractComponent*);
+void EffectUpdate(AInteractComponent*, Timer&);
+void EffectDestory(AInteractComponent*);
+
 void ButtonInput(UInputComponent*, Timer&);

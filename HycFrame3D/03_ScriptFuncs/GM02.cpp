@@ -22,6 +22,12 @@ void RegisterGM02(ObjectFactory* _factory)
         { FUNC_NAME(BulletUpdate),BulletUpdate });
     _factory->GetADestoryMapPtr()->insert(
         { FUNC_NAME(BulletDestory),BulletDestory });
+    _factory->GetAInitMapPtr()->insert(
+        { FUNC_NAME(EffectInit),EffectInit });
+    _factory->GetAUpdateMapPtr()->insert(
+        { FUNC_NAME(EffectUpdate),EffectUpdate });
+    _factory->GetADestoryMapPtr()->insert(
+        { FUNC_NAME(EffectDestory),EffectDestory });
     _factory->GetUInputMapPtr()->insert(
         { FUNC_NAME(ButtonInput),ButtonInput });
 }
@@ -32,6 +38,8 @@ static std::unordered_map<std::string, DirectX::XMFLOAT3> g_BulletDirMap = {};
 
 void CreateBullet(DirectX::XMFLOAT3 _startPos, DirectX::XMFLOAT3 _dirVec,
     SceneNode& _scene);
+
+void CreateBillboard(DirectX::XMFLOAT3 _startPos, SceneNode& _scene);
 
 void PlayerInput(AInputComponent* _aic, Timer& _timer)
 {
@@ -185,6 +193,52 @@ void CreateBullet(DirectX::XMFLOAT3 _startPos, DirectX::XMFLOAT3 _dirVec,
     _scene.AddActorObject(bulletActor);
 }
 
+void CreateBillboard(DirectX::XMFLOAT3 _startPos, SceneNode& _scene)
+{
+    static unsigned long long int index = 0;
+    std::string actorName = "billboard-actor" + std::to_string(index++);
+    ActorObject bbActor(actorName, _scene);
+
+    {
+        ATransformComponent atc(actorName + "-transform", nullptr);
+        atc.ForcePosition(_startPos);
+        atc.ForceScaling({ 1.f,1.f,1.f });
+        bbActor.AddAComponent(COMP_TYPE::A_TRANSFORM);
+        _scene.GetComponentContainer()->AddComponent(
+            COMP_TYPE::A_TRANSFORM, atc);
+    }
+
+    {
+        ASpriteComponent asc(actorName + "-sprite", nullptr);
+        asc.SetSpriteProperty({ 25.f,25.f }, {}, true);
+        asc.SetAnimationProperty({ 0.2f,0.2f }, 25, true, 0.05f);
+        asc.CreateGeoPointWithTexture(&_scene, "boom.png");
+        bbActor.AddAComponent(COMP_TYPE::A_SPRITE);
+        _scene.GetComponentContainer()->AddComponent(
+            COMP_TYPE::A_SPRITE, asc);
+    }
+
+    {
+        ATimerComponent atmc(actorName + "-timer", nullptr);
+        atmc.AddTimer("age");
+        bbActor.AddAComponent(COMP_TYPE::A_TIMER);
+        _scene.GetComponentContainer()->AddComponent(
+            COMP_TYPE::A_TIMER, atmc);
+    }
+
+    {
+        AInteractComponent aitc(actorName + "-interact", nullptr);
+        aitc.SetInitFunction(EffectInit);
+        aitc.SetUpdateFunction(EffectUpdate);
+        aitc.SetDestoryFunction(EffectDestory);
+        bbActor.AddAComponent(COMP_TYPE::A_INTERACT);
+        _scene.GetComponentContainer()->AddComponent(
+            COMP_TYPE::A_INTERACT, aitc);
+    }
+
+    _scene.AddActorObject(bbActor);
+}
+
 bool BulletInit(AInteractComponent* _aitc)
 {
     _aitc->GetActorOwner()->
@@ -222,8 +276,11 @@ void BulletUpdate(AInteractComponent* _aitc, Timer& _timer)
     auto e1 = _aitc->GetActorOwner()->
         GetSceneNode().GetActorObject("enemy02-actor");
 
-    if (e0 && acc->CheckCollisionWith("enemy01-actor"))
+    CONTACT_PONT_PAIR p = {};
+    if (e0 && acc->CheckCollisionWith("enemy01-actor", &p))
     {
+        auto effectPoint = ACollisionComponent::CalcCenterOfContact(p);
+        CreateBillboard(effectPoint, _aitc->GetActorOwner()->GetSceneNode());
         _aitc->GetActorOwner()->SetObjectStatus(STATUS::NEED_DESTORY);
         _aitc->GetActorOwner()->GetSceneNode().GetObjectContainer()->
             DeleteActorObject(const_cast<std::string&>(_aitc->
@@ -232,8 +289,10 @@ void BulletUpdate(AInteractComponent* _aitc, Timer& _timer)
         e0->GetSceneNode().GetObjectContainer()->
             DeleteActorObject(const_cast<std::string&>(e0->GetObjectName()));
     }
-    else if (e1 && acc->CheckCollisionWith("enemy02-actor"))
+    else if (e1 && acc->CheckCollisionWith("enemy02-actor", &p))
     {
+        auto effectPoint = ACollisionComponent::CalcCenterOfContact(p);
+        CreateBillboard(effectPoint, _aitc->GetActorOwner()->GetSceneNode());
         _aitc->GetActorOwner()->SetObjectStatus(STATUS::NEED_DESTORY);
         _aitc->GetActorOwner()->GetSceneNode().GetObjectContainer()->
             DeleteActorObject(const_cast<std::string&>(_aitc->
@@ -247,6 +306,32 @@ void BulletUpdate(AInteractComponent* _aitc, Timer& _timer)
 void BulletDestory(AInteractComponent* _aitc)
 {
     g_BulletDirMap.erase(_aitc->GetCompName());
+}
+
+bool EffectInit(AInteractComponent* _aitc)
+{
+    _aitc->GetActorOwner()->
+        GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
+        StartTimer("age");
+    return true;
+}
+
+void EffectUpdate(AInteractComponent* _aitc, Timer& _timer)
+{
+    if (_aitc->GetActorOwner()->
+        GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
+        GetTimer("age")->IsGreaterThan(1.f))
+    {
+        _aitc->GetActorOwner()->SetObjectStatus(STATUS::NEED_DESTORY);
+        _aitc->GetActorOwner()->GetSceneNode().GetObjectContainer()->
+            DeleteActorObject(const_cast<std::string&>(_aitc->
+                GetActorOwner()->GetObjectName()));
+    }
+}
+
+void EffectDestory(AInteractComponent* _aitc)
+{
+
 }
 
 void ButtonInput(UInputComponent* _uic, Timer& _timer)
