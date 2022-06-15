@@ -102,9 +102,6 @@ bool TestASpInit(AInteractComponent* _aitc)
         GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
         StartTimer("timer1");
 
-    auto p = GetRSRoot_DX11_Singleton()->MeshHelper()->GeoGenerate()->
-        CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TEX);
-
     return true;
 }
 void TestASpUpdate(AInteractComponent* _aitc, Timer&)

@@ -57,7 +57,7 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
 
     RS_SUBMESH_DATA point = GetRSRoot_DX11_Singleton()->
         MeshHelper()->GeoGenerate()->
-        CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TEX,
+        CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
             _texName.c_str());
     mGeoPointName = GetCompName();
     mTextureName = _texName;
@@ -84,7 +84,7 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
 
     RS_SUBMESH_DATA point = GetRSRoot_DX11_Singleton()->
         MeshHelper()->GeoGenerate()->
-        CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TEX,
+        CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
             _texName.c_str());
     mGeoPointName = GetCompName();
     mTextureName = _texName;

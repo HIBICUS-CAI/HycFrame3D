@@ -2353,7 +2353,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreatePointWithTexture(LAYOUT_TYPE _layout,
     SUBMESH_INFO si = {};
     MATERIAL_INFO mi = {};
     std::vector<UINT> indeices = {};
-    std::vector<VertexType::BasicVertex> basic = {};
+    std::vector<VertexType::TangentVertex> basic = {};
     std::vector<std::string> textures = {};
     std::string str = "";
 
@@ -2361,9 +2361,9 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreatePointWithTexture(LAYOUT_TYPE _layout,
 
     switch (_layout)
     {
-    case LAYOUT_TYPE::NORMAL_TEX:
-        basic.resize(24);
-        basic[0] = { { 0.f, 0.f, 0.f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f } };
+    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
+        basic.resize(1);
+        basic[0] = { { 0.f, 0.f, 0.f }, { 0.f, 0.f, -1.f }, {1.f, 0.f, 0.f}, {0.0f, 0.0f} };
 
         textures.emplace_back(_texName);
 
