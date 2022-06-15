@@ -12,6 +12,7 @@
 enum class MESH_TYPE
 {
     OPACITY,
+    TRANSPARENCY,
     LIGHT,
     UI_SPRITE,
 

@@ -585,7 +585,27 @@
                     ]
                 },
                 {
-                    "type": "sprite"
+                    "type": "sprite",
+                    "texture": "runman.png",
+                    "billboard": true,
+                    "size": [
+                        10.0,
+                        10.0
+                    ],
+                    "tex-coord": [
+                        0.0,
+                        0.0,
+                        1.0,
+                        1.0
+                    ],
+                    "with-animation": true,
+                    "stride": [
+                        0.2,
+                        0.5
+                    ],
+                    "max-cut": 10,
+                    "switch-time": 0.1,
+                    "repeat-flag": true
                 }
             ]
         }

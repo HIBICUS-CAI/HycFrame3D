@@ -859,6 +859,44 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         ASpriteComponent asc(compName, nullptr);
 
+        JsonNode texNameNode = GetJsonNode(_json, _jsonPath + "/texture");
+        JsonNode billFlgNode = GetJsonNode(_json, _jsonPath + "/billboard");
+        JsonNode sizeXNode = GetJsonNode(_json, _jsonPath + "/size/0");
+        JsonNode sizeYNode = GetJsonNode(_json, _jsonPath + "/size/1");
+        JsonNode texCUNode = GetJsonNode(_json, _jsonPath + "/tex-coord/0");
+        JsonNode texCVNode = GetJsonNode(_json, _jsonPath + "/tex-coord/1");
+        JsonNode texCULenNode = GetJsonNode(_json, _jsonPath + "/tex-coord/2");
+        JsonNode texCVLenNode = GetJsonNode(_json, _jsonPath + "/tex-coord/3");
+
+        assert(texNameNode && billFlgNode && sizeXNode && sizeYNode &&
+            texCUNode && texCVNode && texCULenNode && texCVLenNode);
+
+        asc.CreateGeoPointWithTexture(_node, texNameNode->GetString());
+        asc.SetSpriteProperty(
+            { sizeXNode->GetFloat(),sizeYNode->GetFloat() },
+            { texCUNode->GetFloat(),texCVNode->GetFloat(),
+            texCULenNode->GetFloat(),texCVLenNode->GetFloat() },
+            billFlgNode->GetBool());
+
+        JsonNode aniFlgNode = GetJsonNode(_json, _jsonPath + "/with-animation");
+        if (aniFlgNode && !aniFlgNode->IsNull() && aniFlgNode->GetBool())
+        {
+            JsonNode strideUNode = GetJsonNode(_json, _jsonPath + "/stride/0");
+            JsonNode strideVNode = GetJsonNode(_json, _jsonPath + "/stride/1");
+            JsonNode maxCutNode = GetJsonNode(_json, _jsonPath + "/max-cut");
+            JsonNode switchTimeNode = GetJsonNode(_json, _jsonPath + "/switch-time");
+            JsonNode repeatFlgNode = GetJsonNode(_json, _jsonPath + "/repeat-flag");
+
+            assert(strideUNode && strideVNode && maxCutNode &&
+                switchTimeNode && repeatFlgNode);
+
+            asc.SetAnimationProperty(
+                { strideUNode->GetFloat(),strideVNode->GetFloat() },
+                maxCutNode->GetUint(),
+                repeatFlgNode->GetBool(),
+                switchTimeNode->GetFloat());
+        }
+
         COMP_TYPE type = COMP_TYPE::A_SPRITE;
         _actor->AddAComponent(type);
         _node->GetComponentContainer()->AddComponent(type, asc);
