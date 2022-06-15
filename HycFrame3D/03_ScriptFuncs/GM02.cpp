@@ -35,21 +35,34 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
 {
     float deltatime = _timer.FloatDeltaTime();
 
+    if (InputInterface::IsKeyDownInSingle(KB_Q))
+    {
+        g_PlayerAtc->RotateYAsix(-0.005f * deltatime);
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_E))
+    {
+        g_PlayerAtc->RotateYAsix(0.005f * deltatime);
+    }
+    float angle = g_PlayerAtc->GetProcessingRotation().y - 3.14f;
     if (InputInterface::IsKeyDownInSingle(KB_A))
     {
-        g_PlayerAtc->TranslateXAsix(-0.2f * deltatime);
+        g_PlayerAtc->TranslateXAsix(-0.2f * deltatime * cosf(angle));
+        g_PlayerAtc->TranslateZAsix(0.2f * deltatime * sinf(angle));
     }
     if (InputInterface::IsKeyDownInSingle(KB_D))
     {
-        g_PlayerAtc->TranslateXAsix(0.2f * deltatime);
+        g_PlayerAtc->TranslateXAsix(0.2f * deltatime * cosf(angle));
+        g_PlayerAtc->TranslateZAsix(-0.2f * deltatime * sinf(angle));
     }
     if (InputInterface::IsKeyDownInSingle(KB_W))
     {
-        g_PlayerAtc->TranslateZAsix(0.2f * deltatime);
+        g_PlayerAtc->TranslateXAsix(0.2f * deltatime * sinf(angle));
+        g_PlayerAtc->TranslateZAsix(0.2f * deltatime * cosf(angle));
     }
     if (InputInterface::IsKeyDownInSingle(KB_S))
     {
-        g_PlayerAtc->TranslateZAsix(-0.2f * deltatime);
+        g_PlayerAtc->TranslateXAsix(-0.2f * deltatime * sinf(angle));
+        g_PlayerAtc->TranslateZAsix(-0.2f * deltatime * cosf(angle));
     }
 
     if (fabsf(g_PlayerAtc->GetProcessingPosition().x) > 80.f)
@@ -76,6 +89,7 @@ bool PlayerInit(AInteractComponent* _aitc)
     g_Cam = _aitc->GetActorOwner()->GetSceneNode().GetMainCamera();
     if (!g_Cam) { return false; }
     g_Cam->ChangeRSCameraPosition({ 0.f,0.f,0.f });
+    g_Cam->ResetRSCameraRotation({ 0.f,0.f,1.f }, { 0.f,1.f,0.f });
 
     return true;
 }
@@ -91,6 +105,14 @@ void PlayerUpdate(AInteractComponent* _aitc, Timer& _timer)
     XMStoreFloat3(&deltaPos, origin - processing);
     deltaPos.z *= -1.f;
     g_Cam->TranslateRSCamera(deltaPos);
+
+    float theta = g_PlayerAtc->GetProcessingRotation().y - 3.14f;
+    g_Cam->ResetRSCameraRotation(
+        { sinf(theta),0.f,cosf(theta) }, { 0.f,1.f,0.f });
+    float newX = -50.f * sinf(theta), newZ = -50.f * cosf(theta);
+    DirectX::XMFLOAT3 now = g_PlayerAtc->GetProcessingPosition();
+    now.x += newX; now.y = 0.f; now.z += newZ;
+    g_Cam->ChangeRSCameraPosition(now);
 }
 
 void PlayerDestory(AInteractComponent* _aitc)
