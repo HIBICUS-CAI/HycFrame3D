@@ -159,11 +159,6 @@ void RSCamera::ChangeRSCameraNearFarZ(float _near, float _far)
     CalcRSProjMat();
 }
 
-DirectX::XMFLOAT3 RSCamera::GetRSCameraPosition()
-{
-    return mCamPosition;
-}
-
 void RSCamera::ChangeRSCameraPosition(DirectX::XMFLOAT3& _position)
 {
     mCamPosition = _position;
