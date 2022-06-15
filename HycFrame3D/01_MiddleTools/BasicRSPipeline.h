@@ -779,4 +779,43 @@ private:
     ID3D11Buffer* mIndexBuffer;
 };
 
+class RSPass_Billboard :public RSPass_Base
+{
+public:
+    RSPass_Billboard(std::string& _name, PASS_TYPE _type,
+        class RSRoot_DX11* _root);
+    RSPass_Billboard(const RSPass_Billboard& _source);
+    virtual ~RSPass_Billboard();
+
+public:
+    virtual RSPass_Billboard* ClonePass() override;
+
+    virtual bool InitPass();
+
+    virtual void ReleasePass();
+
+    virtual void ExecuatePass();
+
+private:
+    bool CreateStates();
+    bool CreateShaders();
+    bool CreateViews();
+    bool CreateSamplers();
+
+private:
+    ID3D11VertexShader* mVertexShader;
+    ID3D11GeometryShader* mGeometryShader;
+    ID3D11PixelShader* mPixelShader;
+    ID3D11BlendState* mBlendState;
+    ID3D11RenderTargetView* mRenderTargetView;
+    ID3D11SamplerState* mLinearWrapSampler;
+    ID3D11Buffer* mViewProjStructedBuffer;
+    ID3D11ShaderResourceView* mViewProjStructedBufferSrv;
+    ID3D11Buffer* mInstanceStructedBuffer;
+    ID3D11ShaderResourceView* mInstanceStructedBufferSrv;
+    DRAWCALL_TYPE mDrawCallType;
+    RSDrawCallsPipe* mDrawCallPipe;
+    RS_CAM_INFO* mRSCameraInfo;
+};
+
 void SetPipeLineDeltaTime(float _deltaMilliSecond);

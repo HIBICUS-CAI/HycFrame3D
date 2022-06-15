@@ -14,6 +14,18 @@ public:
     ASpriteComponent& operator=(const ASpriteComponent& _source)
     {
         if (this == &_source) { return *this; }
+        mGeoPointName = _source.mGeoPointName;
+        mTextureName = _source.mTextureName;
+        mIsBillboard = _source.mIsBillboard;
+        mSize = _source.mSize;
+        mTexCoord = _source.mTexCoord;
+        mWithAnimation = _source.mWithAnimation;
+        mStride = _source.mStride;
+        mMaxCut = _source.mMaxCut;
+        mCurrentAnimateCut = _source.mCurrentAnimateCut;
+        mRepeatFlg = _source.mRepeatFlg;
+        mSwitchTime = _source.mSwitchTime;
+        mTimeCounter = _source.mTimeCounter;
         ActorComponent::operator=(_source);
         return *this;
     }
@@ -49,6 +61,8 @@ private:
     bool mWithAnimation;
     DirectX::XMFLOAT2 mStride;
     UINT mMaxCut;
+    UINT mCurrentAnimateCut;
     bool mRepeatFlg;
     float mSwitchTime;
+    float mTimeCounter;
 };

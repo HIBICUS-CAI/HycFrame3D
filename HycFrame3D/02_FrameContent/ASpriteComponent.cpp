@@ -12,7 +12,8 @@ ASpriteComponent::ASpriteComponent(std::string&& _compName,
     mGeoPointName(""), mTextureName(""), mIsBillboard(false),
     mSize({ 10.f,10.f }), mTexCoord({ 0.f,0.f,1.f,1.f }),
     mWithAnimation(false), mStride({ 0.f,0.f }), mMaxCut(0),
-    mRepeatFlg(false), mSwitchTime(0.f)
+    mRepeatFlg(false), mSwitchTime(0.f), mTimeCounter(0.f),
+    mCurrentAnimateCut(0)
 {
 
 }
@@ -23,7 +24,8 @@ ASpriteComponent::ASpriteComponent(std::string& _compName,
     mGeoPointName(""), mTextureName(""), mIsBillboard(false),
     mSize({ 10.f,10.f }), mTexCoord({ 0.f,0.f,1.f,1.f }),
     mWithAnimation(false), mStride({ 0.f,0.f }), mMaxCut(0),
-    mRepeatFlg(false), mSwitchTime(0.f)
+    mRepeatFlg(false), mSwitchTime(0.f), mTimeCounter(0.f),
+    mCurrentAnimateCut(0)
 {
 
 }
@@ -40,6 +42,25 @@ bool ASpriteComponent::Init()
 
 void ASpriteComponent::Update(Timer& _timer)
 {
+    if (mTimeCounter > mSwitchTime)
+    {
+        mTimeCounter = 0.f;
+        ++mCurrentAnimateCut;
+        if (mCurrentAnimateCut >= mMaxCut)
+        {
+            if (mRepeatFlg) { mCurrentAnimateCut = 0; }
+            else { --mCurrentAnimateCut; }
+        }
+        float startX = 0.f;
+        float startY = 0.f;
+        unsigned int maxX = (int)(1.f / mStride.x);
+        maxX = (((1.f / mStride.x) - maxX) > 0.5f) ? (maxX + 1) : maxX;
+        startX = (float)(mCurrentAnimateCut % maxX) * mStride.x;
+        startY = (float)(mCurrentAnimateCut / maxX) * mStride.y;
+        mTexCoord = { startX, startY, mStride.x, mStride.y };
+    }
+    mTimeCounter += _timer.FloatDeltaTime() / 1000.f;
+
     SyncTransformDataToInstance();
 }
 
@@ -120,6 +141,10 @@ void ASpriteComponent::SetAnimationProperty(DirectX::XMFLOAT2 _stride,
     mMaxCut = _maxCut;
     mSwitchTime = _switchTime;
     mRepeatFlg = _repeatFlg;
+    mCurrentAnimateCut = 0;
+    mTimeCounter = 0.f;
+    mTexCoord.z = mStride.x;
+    mTexCoord.w = mStride.y;
 }
 
 void ASpriteComponent::SyncTransformDataToInstance()
@@ -149,6 +174,8 @@ void ASpriteComponent::SyncTransformDataToInstance()
         mat = DirectX::XMMatrixMultiply(mat,
             DirectX::XMMatrixTranslation(world.x, world.y, world.z));
         DirectX::XMStoreFloat4x4(&(ins_data.mWorldMat), mat);
+
+        ins_data.mCustomizedData2 = mTexCoord;
 
         break;
     }

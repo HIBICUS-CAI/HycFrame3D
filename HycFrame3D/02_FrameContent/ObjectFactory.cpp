@@ -871,7 +871,6 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         assert(texNameNode && billFlgNode && sizeXNode && sizeYNode &&
             texCUNode && texCVNode && texCULenNode && texCVLenNode);
 
-        asc.CreateGeoPointWithTexture(_node, texNameNode->GetString());
         asc.SetSpriteProperty(
             { sizeXNode->GetFloat(),sizeYNode->GetFloat() },
             { texCUNode->GetFloat(),texCVNode->GetFloat(),
@@ -896,6 +895,8 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
                 repeatFlgNode->GetBool(),
                 switchTimeNode->GetFloat());
         }
+
+        asc.CreateGeoPointWithTexture(_node, texNameNode->GetString());
 
         COMP_TYPE type = COMP_TYPE::A_SPRITE;
         _actor->AddAComponent(type);
