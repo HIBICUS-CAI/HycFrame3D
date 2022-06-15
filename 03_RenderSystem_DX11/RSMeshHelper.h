@@ -90,6 +90,9 @@ public:
     RS_SUBMESH_DATA CreateSpriteRect(
         LAYOUT_TYPE _layout, std::string& _texPath);
 
+    RS_SUBMESH_DATA CreatePointWithTexture(LAYOUT_TYPE _layout,
+        std::string&& _texColorName = "");
+
 private:
     void SubDivide(LAYOUT_TYPE _layout, void* _vertexVec,
         std::vector<UINT>* _indexVec);

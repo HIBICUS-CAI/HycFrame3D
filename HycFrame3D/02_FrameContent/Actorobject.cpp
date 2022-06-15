@@ -36,6 +36,7 @@ void ActorObject::AddAComponent(COMP_TYPE _compType)
     case COMP_TYPE::A_AUDIO: compName += "-audio"; break;
     case COMP_TYPE::A_PARTICLE: compName += "-particle"; break;
     case COMP_TYPE::A_ANIMATE: compName += "-animate"; break;
+    case COMP_TYPE::A_SPRITE: compName += "-sprite"; break;
     default: break;
     }
 

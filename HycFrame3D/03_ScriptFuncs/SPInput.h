@@ -26,3 +26,7 @@ void TempToResult(AInputComponent*, Timer&);
 bool AniInit(AInteractComponent*);
 void AniUpdate(AInteractComponent*, Timer&);
 void AniDestory(AInteractComponent*);
+
+bool BBInit(AInteractComponent*);
+void BBUpdate(AInteractComponent*, Timer&);
+void BBDestory(AInteractComponent*);

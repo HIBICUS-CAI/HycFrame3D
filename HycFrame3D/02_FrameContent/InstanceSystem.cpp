@@ -8,14 +8,15 @@
 #include "AMeshComponent.h"
 #include "ALightComponent.h"
 #include "AParticleComponent.h"
+#include "ASpriteComponent.h"
 #include "USpriteComponent.h"
 #include "UAnimateComponent.h"
 
 InstanceSystem::InstanceSystem(SystemExecutive* _sysExecutive) :
     System("instance-system", _sysExecutive),
     mATransVecPtr(nullptr), mUTransVecPtr(nullptr), mAMeshVecPtr(nullptr),
-    mALightVecPtr(nullptr), mAParitcleVecPtr(nullptr), mUSpriteVecPtr(nullptr),
-    mUAnimateVecPtr(nullptr)
+    mALightVecPtr(nullptr), mAParitcleVecPtr(nullptr), mASpriteVecPtr(nullptr),
+    mUSpriteVecPtr(nullptr), mUAnimateVecPtr(nullptr)
 {
 
 }
@@ -46,6 +47,9 @@ bool InstanceSystem::Init()
     mAParitcleVecPtr = (std::vector<AParticleComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
         GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_PARTICLE);
+    mASpriteVecPtr = (std::vector<ASpriteComponent>*)GetSystemExecutive()->
+        GetSceneManager()->GetCurrentSceneNode()->
+        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_SPRITE);
     mUSpriteVecPtr = (std::vector<USpriteComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
         GetComponentContainer()->GetCompVecPtr(COMP_TYPE::U_SPRITE);
@@ -53,7 +57,7 @@ bool InstanceSystem::Init()
         GetSceneManager()->GetCurrentSceneNode()->
         GetComponentContainer()->GetCompVecPtr(COMP_TYPE::U_ANIMATE);
 
-    if (!(mATransVecPtr && mUTransVecPtr && mAMeshVecPtr &&
+    if (!(mATransVecPtr && mUTransVecPtr && mAMeshVecPtr && mASpriteVecPtr &&
         mALightVecPtr && mAParitcleVecPtr && mUSpriteVecPtr && mUAnimateVecPtr))
     {
         return false;
@@ -87,6 +91,11 @@ void InstanceSystem::Run(Timer& _timer)
     for (auto& apc : *mAParitcleVecPtr)
     {
         if (apc.GetCompStatus() == STATUS::ACTIVE) { apc.Update(_timer); }
+    }
+
+    for (auto& asc : *mASpriteVecPtr)
+    {
+        if (asc.GetCompStatus() == STATUS::ACTIVE) { asc.Update(_timer); }
     }
 
     for (auto& usc : *mUSpriteVecPtr)

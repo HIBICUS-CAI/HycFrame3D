@@ -2327,3 +2327,41 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
         assert(nullLayout);
     }
 }
+
+RS_SUBMESH_DATA RSGeometryGenerator::CreatePointWithTexture(LAYOUT_TYPE _layout,
+    std::string&& _texName)
+{
+    RS_SUBMESH_DATA rsd = {};
+    SUBMESH_INFO si = {};
+    MATERIAL_INFO mi = {};
+    std::vector<UINT> indeices = {};
+    std::vector<VertexType::TangentVertex> basic = {};
+    std::vector<std::string> textures = {};
+    std::string str = "";
+
+    indeices.push_back(0);
+
+    switch (_layout)
+    {
+    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
+        basic.resize(1);
+        basic[0] = { { 0.f, 0.f, 0.f }, { 0.f, 0.f, -1.f }, {1.f, 0.f, 0.f}, {0.0f, 0.0f} };
+
+        textures.emplace_back(_texName);
+
+        si.mTopologyType = TOPOLOGY_TYPE::POINTLIST;
+        si.mVerteices = &basic;
+        si.mIndeices = &indeices;
+        si.mTextures = &textures;
+        si.mMaterial = &mi;
+        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
+
+        break;
+
+    default:
+        bool unvalidLayout = false;
+        assert(unvalidLayout);
+    }
+
+    return rsd;
+}

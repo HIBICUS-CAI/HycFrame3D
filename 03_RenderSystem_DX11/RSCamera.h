@@ -26,7 +26,10 @@ public:
     void ChangeRSCameraFovY(float _angle);
     void ChangeRSCameraNearFarZ(float _near, float _far);
 
-    DirectX::XMFLOAT3 GetRSCameraPosition();
+    DirectX::XMFLOAT3 GetRSCameraPosition() { return mCamPosition; }
+    DirectX::XMFLOAT3 GetRSCameraUpVector() { return mCamUpVec; }
+    DirectX::XMFLOAT3 GetRSCameraLookDir() { return mCamLookAt; }
+
     void ChangeRSCameraPosition(DirectX::XMFLOAT3& _position);
     void ChangeRSCameraPosition(DirectX::XMFLOAT3&& _position);
 
