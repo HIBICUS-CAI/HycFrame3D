@@ -30,7 +30,10 @@
         {
             "mesh-name": "mat-ball",
             "load-mode": "model-file",
-            "force-diffuse": "copper.png",
+            "force-diffuse": "matball_diffuse.png",
+            "force-normal": "matball_normal.png",
+            "force-metallic": "matball_metallic.png",
+            "force-roughness": "matball_roughness.png",
             "material-info": {
                 "major-material": "gloss-copper",
                 "minor-material": "dull-copper",

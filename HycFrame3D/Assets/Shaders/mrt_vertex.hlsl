@@ -19,7 +19,7 @@ struct VS_OUTPUT
     float3 NormalW : NORMAL;
     float3 TangentW : TANGENT;
     float2 TexCoordL : TEXCOORD;
-    uint UseBumped : BLENDINDICES;
+    uint3 UsePBRTex : BLENDINDICES;
 };
 
 struct VIEWPROJ
@@ -104,11 +104,27 @@ VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
     _out.TexCoordL = _in.TexCoordL;
     if (gInstances[_instanceID].gCustomizedData1.x > 0.0f)
     {
-        _out.UseBumped = 1;
+        _out.UsePBRTex.x = 1;
     }
     else
     {
-        _out.UseBumped = 0;
+        _out.UsePBRTex.x = 0;
+    }
+    if (gInstances[_instanceID].gCustomizedData1.y > 0.0f)
+    {
+        _out.UsePBRTex.y = 1;
+    }
+    else
+    {
+        _out.UsePBRTex.y = 0;
+    }
+    if (gInstances[_instanceID].gCustomizedData1.z > 0.0f)
+    {
+        _out.UsePBRTex.z = 1;
+    }
+    else
+    {
+        _out.UsePBRTex.z = 0;
     }
 
     return _out;

@@ -10,7 +10,7 @@ struct VS_OUTPUT
     float3 NormalW : NORMAL;
     float3 TangentW : TANGENT;
     float2 TexCoordL : TEXCOORD;
-    uint UseBumped : BLENDINDICES;
+    uint3 UsePBRTex : BLENDINDICES;
 };
 
 struct PS_OUTPUT
@@ -47,7 +47,7 @@ PS_OUTPUT main(VS_OUTPUT _input)
 {
     float3 unitNormal = _input.NormalW;
     
-    if (_input.UseBumped == 1)
+    if (_input.UsePBRTex.x == 1)
     {
         float3 noramlSample = gBumped.Sample(gLinearSampler, _input.TexCoordL).rgb;
         _input.NormalW = ClacBumpedNormal(noramlSample, unitNormal, _input.TangentW);
@@ -71,6 +71,16 @@ PS_OUTPUT main(VS_OUTPUT _input)
     MATERIAL m2 = gAllMaterialInfo[minorMatIndex];
     float roughness = lerp(m1.mRoughness, m2.mRoughness, factor);
     float metallic = lerp(m1.mMetallic, m2.mMetallic, factor);
+
+    if (_input.UsePBRTex.y == 1)
+    {
+        metallic = gMetallic.Sample(gLinearSampler, _input.TexCoordL);
+    }
+    if (_input.UsePBRTex.z == 1)
+    {
+        roughness = gRoughness.Sample(gLinearSampler, _input.TexCoordL);
+    }
+
     uint4 matData = uint4(FloatToUint8_V2(float2(metallic, roughness)),
         majorMatIndex, minorMatIndex);
     uint geoMatData = PackFourUint8ToUint32(matData.x, matData.y, matData.z, matData.w);

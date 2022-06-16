@@ -124,6 +124,8 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
         RS_MATERIAL_INFO matInfo = {};
         std::string forceDiffuse = "";
         std::string forceNormal = "";
+        std::string forceMetal = "";
+        std::string forceRough = "";
         std::string loadMode = "";
         RS_SUBMESH_DATA meshData = {};
         static SUBMESH_BONES bonesData = {};
@@ -186,6 +188,20 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
             if (normalNode && !normalNode->IsNull())
             {
                 forceNormal = normalNode->GetString();
+            }
+
+            JsonNode metalNode = GetJsonNode(_json,
+                jsonPath + "/force-metallic");
+            if (metalNode && !metalNode->IsNull())
+            {
+                forceMetal = metalNode->GetString();
+            }
+
+            JsonNode roughNode = GetJsonNode(_json,
+                jsonPath + "/force-roughness");
+            if (roughNode && !roughNode->IsNull())
+            {
+                forceRough = roughNode->GetString();
             }
 
             loadMode = GetJsonNode(_json,
@@ -314,6 +330,14 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
             if (forceNormal != "")
             {
                 AddBumpedTexTo(&meshData, forceNormal);
+            }
+            if (forceMetal != "")
+            {
+                AddMetallicTexTo(&meshData, forceMetal);
+            }
+            if (forceRough != "")
+            {
+                AddRoughnessTexTo(&meshData, forceRough);
             }
 
             if (!meshData.mTextures.size())

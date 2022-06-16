@@ -935,3 +935,109 @@ void AddBumpedTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
 
     _result->mTextures[1] = _filePath;
 }
+
+void AddMetallicTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
+{
+    RSRoot_DX11* root = GetRSRoot_DX11_Singleton();
+
+    static std::wstring wstr = L"";
+    static std::string name = "";
+    static HRESULT hr = S_OK;
+    ID3D11ShaderResourceView* srv = nullptr;
+
+    wstr = std::wstring(_filePath.begin(), _filePath.end());
+    wstr = L".\\Assets\\Textures\\" + wstr;
+
+    if (root->ResourceManager()->GetMeshSrv(_filePath))
+    {
+        _result->mTextures[2] = _filePath;
+        return;
+    }
+
+    if (_filePath.find(".dds") != std::string::npos ||
+        _filePath.find(".DDS") != std::string::npos)
+    {
+        hr = DirectX::CreateDDSTextureFromFile(root->Devices()->GetDevice(),
+            wstr.c_str(), nullptr, &srv);
+        if (SUCCEEDED(hr))
+        {
+            name = _filePath;
+            root->ResourceManager()->AddMeshSrv(name, srv);
+        }
+        else
+        {
+            bool texture_load_fail = false;
+            assert(texture_load_fail);
+        }
+    }
+    else
+    {
+        hr = DirectX::CreateWICTextureFromFile(root->Devices()->GetDevice(),
+            wstr.c_str(), nullptr, &srv);
+        if (SUCCEEDED(hr))
+        {
+            name = _filePath;
+            root->ResourceManager()->AddMeshSrv(name, srv);
+        }
+        else
+        {
+            bool texture_load_fail = false;
+            assert(texture_load_fail);
+        }
+    }
+
+    _result->mTextures[2] = _filePath;
+}
+
+void AddRoughnessTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
+{
+    RSRoot_DX11* root = GetRSRoot_DX11_Singleton();
+
+    static std::wstring wstr = L"";
+    static std::string name = "";
+    static HRESULT hr = S_OK;
+    ID3D11ShaderResourceView* srv = nullptr;
+
+    wstr = std::wstring(_filePath.begin(), _filePath.end());
+    wstr = L".\\Assets\\Textures\\" + wstr;
+
+    if (root->ResourceManager()->GetMeshSrv(_filePath))
+    {
+        _result->mTextures[3] = _filePath;
+        return;
+    }
+
+    if (_filePath.find(".dds") != std::string::npos ||
+        _filePath.find(".DDS") != std::string::npos)
+    {
+        hr = DirectX::CreateDDSTextureFromFile(root->Devices()->GetDevice(),
+            wstr.c_str(), nullptr, &srv);
+        if (SUCCEEDED(hr))
+        {
+            name = _filePath;
+            root->ResourceManager()->AddMeshSrv(name, srv);
+        }
+        else
+        {
+            bool texture_load_fail = false;
+            assert(texture_load_fail);
+        }
+    }
+    else
+    {
+        hr = DirectX::CreateWICTextureFromFile(root->Devices()->GetDevice(),
+            wstr.c_str(), nullptr, &srv);
+        if (SUCCEEDED(hr))
+        {
+            name = _filePath;
+            root->ResourceManager()->AddMeshSrv(name, srv);
+        }
+        else
+        {
+            bool texture_load_fail = false;
+            assert(texture_load_fail);
+        }
+    }
+
+    _result->mTextures[3] = _filePath;
+}
