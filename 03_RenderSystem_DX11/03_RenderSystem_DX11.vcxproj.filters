@@ -154,4 +154,9 @@
       <Filter>Tool</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="StaticResources\Materials\StaticMaterials.json">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

@@ -65,6 +65,9 @@
     <ClCompile Include="RSUtilityFunctions.cpp" />
     <ClCompile Include="WICTextureLoader11.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="StaticResources\Materials\StaticMaterials.json" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
