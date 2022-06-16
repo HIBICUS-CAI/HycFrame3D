@@ -120,15 +120,16 @@ void RenderSystem::Run(Timer& _timer)
         drawCall.mMeshData.mIndexCount = mesh.second.mMeshData.mIndexCount;
         drawCall.mInstanceData.mDataPtr = &(mesh.second.mInstanceVector);
         drawCall.mInstanceData.mBonesDataPtr = &(mesh.second.mBonesVector);
-        drawCall.mTextureDatas[0].mUse = true;
-        drawCall.mTextureDatas[0].mSrv = mRenderSystemRoot->ResourceManager()->
-            GetMeshSrv(mesh.second.mMeshData.mTextures[0]);
-        if (mesh.second.mMeshData.mTextures.size() > 1)
+        auto texSize = mesh.second.mMeshData.mTextures.size();
+        auto& texArray = mesh.second.mMeshData.mTextures;
+        for (size_t i = 0; i < texSize; i++)
         {
-            drawCall.mTextureDatas[1].mUse = true;
-            drawCall.mTextureDatas[1].mSrv = mRenderSystemRoot->
-                ResourceManager()->
-                GetMeshSrv(mesh.second.mMeshData.mTextures[1]);
+            if (texArray[i] != "")
+            {
+                drawCall.mTextureDatas[i].mUse = true;
+                drawCall.mTextureDatas[i].mSrv = mRenderSystemRoot->
+                    ResourceManager()->GetMeshSrv(texArray[i]);
+            }
         }
 
         drawCallPool->AddDrawCallToPipe(dType, drawCall);

@@ -26,6 +26,8 @@ struct PS_OUTPUT
 StructuredBuffer<MATERIAL> gAllMaterialInfo : register(t0);
 Texture2D gAlbedo : register(t1);
 Texture2D gBumped : register(t2);
+Texture2D gMetallic : register(t3);
+Texture2D gRoughness : register(t4);
 
 SamplerState gLinearSampler : register(s0);
 

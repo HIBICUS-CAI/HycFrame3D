@@ -844,14 +844,7 @@ void AddDiffuseTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
 
     if (root->ResourceManager()->GetMeshSrv(_filePath))
     {
-        if (_result->mTextures.size())
-        {
-            _result->mTextures[0] = _filePath;
-        }
-        else
-        {
-            _result->mTextures.emplace_back(_filePath);
-        }
+        _result->mTextures[0] = _filePath;
         return;
     }
 
@@ -887,14 +880,7 @@ void AddDiffuseTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
         }
     }
 
-    if (_result->mTextures.size())
-    {
-        _result->mTextures[0] = _filePath;
-    }
-    else
-    {
-        _result->mTextures.emplace_back(_filePath);
-    }
+    _result->mTextures[0] = _filePath;
 }
 
 void AddBumpedTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
@@ -911,7 +897,7 @@ void AddBumpedTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
 
     if (root->ResourceManager()->GetMeshSrv(_filePath))
     {
-        _result->mTextures.emplace_back(_filePath);
+        _result->mTextures[1] = _filePath;
         return;
     }
 
@@ -947,5 +933,5 @@ void AddBumpedTexTo(RS_SUBMESH_DATA* _result, std::string _filePath)
         }
     }
 
-    _result->mTextures.emplace_back(name);
+    _result->mTextures[1] = _filePath;
 }

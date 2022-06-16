@@ -238,7 +238,7 @@ void RSMeshHelper::CreateTexSrv(
     RS_SUBMESH_DATA* _result,
     const std::vector<std::string>* const _textures)
 {
-    std::vector<std::string>* texVec = &(_result->mTextures);
+    auto& texVec = _result->mTextures;
     static std::wstring wstr = L"";
     static std::string name = "";
     static HRESULT hr = S_OK;
@@ -248,7 +248,7 @@ void RSMeshHelper::CreateTexSrv(
     {
         name = tex;
         auto existSrv = mTexManagerPtr->GetMeshSrv(name);
-        if (existSrv) { texVec->emplace_back(name); continue; }
+        if (existSrv) { texVec[0] = name; continue; }
 
         wstr = std::wstring(tex.begin(), tex.end());
         wstr = L".\\Assets\\Textures\\" + wstr;
@@ -262,7 +262,7 @@ void RSMeshHelper::CreateTexSrv(
             {
                 name = tex;
                 mTexManagerPtr->AddMeshSrv(name, srv);
-                texVec->emplace_back(name);
+                texVec[0] = name;
             }
             else
             {
@@ -282,7 +282,7 @@ void RSMeshHelper::CreateTexSrv(
             {
                 name = tex;
                 mTexManagerPtr->AddMeshSrv(name, srv);
-                texVec->emplace_back(name);
+                texVec[0] = name;
             }
             else
             {
@@ -1662,7 +1662,6 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         g_SpriteRectHasBuilt = true;
     }
 
-    g_SpriteData.mTextures.resize(1);
     static std::wstring wstr = L"";
     static std::string name = "";
     static HRESULT hr = S_OK;
@@ -1776,7 +1775,6 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         g_SpriteRectHasBuilt = true;
     }
 
-    g_SpriteData.mTextures.resize(1);
     static std::wstring wstr = L"";
     static std::string name = "";
     static HRESULT hr = S_OK;

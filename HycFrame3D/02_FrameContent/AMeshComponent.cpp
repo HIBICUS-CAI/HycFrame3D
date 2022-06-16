@@ -100,7 +100,7 @@ bool AMeshComponent::BindInstanceToAssetsPool(std::string& _meshName)
 
     RS_INSTANCE_DATA id = {};
     id.mMaterialData = mesh->mMeshData.mMaterial;
-    if (mesh->mMeshData.mTextures.size() > 1) { id.mCustomizedData1.x = 1.f; }
+    if (mesh->mMeshData.mTextures[1] != "") { id.mCustomizedData1.x = 1.f; }
     else { id.mCustomizedData1.x = -1.f; }
 
     mesh->mInstanceMap.insert({ GetCompName(),id });

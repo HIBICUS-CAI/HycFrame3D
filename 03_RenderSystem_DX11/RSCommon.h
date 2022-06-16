@@ -10,6 +10,7 @@
 #pragma once
 
 #include <vector>
+#include <array>
 #include <string>
 #include <d3d11_1.h>
 #include <DirectXMath.h>
@@ -207,6 +208,8 @@ struct SUBMESH_INFO
     bool mWithAnimation = false;
 };
 
+constexpr UINT MESH_TEX_MAX = 10;
+
 struct RS_SUBMESH_DATA
 {
     D3D_PRIMITIVE_TOPOLOGY mTopologyType =
@@ -215,7 +218,7 @@ struct RS_SUBMESH_DATA
     ID3D11Buffer* mIndexBuffer = nullptr;
     ID3D11Buffer* mVertexBuffer = nullptr;
     UINT mIndexCount = 0;
-    std::vector<std::string> mTextures = {};
+    std::array<std::string, MESH_TEX_MAX> mTextures = { "" };
     RS_MATERIAL_INFO mMaterial = {};
     bool mWithAnimation = false;
 };
@@ -250,8 +253,6 @@ struct RS_INSTANCE_DRAWCALL_DATA
     std::vector<RS_INSTANCE_DATA>* mDataPtr = nullptr;
     void* mBonesDataPtr = nullptr;  // std::vector<std::vector<RS_SUBMESH_BONE_DATA>>*
 };
-
-constexpr UINT MESH_TEX_MAX = 10;
 
 struct RS_MESH_TEXTURE_INFO
 {

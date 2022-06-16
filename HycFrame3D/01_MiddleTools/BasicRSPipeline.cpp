@@ -779,11 +779,13 @@ void RSPass_MRT::ExecuatePass()
         STContext()->VSSetShaderResources(1, 1, &mInstanceStructedBufferSrv);
         ID3D11ShaderResourceView* matSrv = g_Root->StaticResources()->GetMaterialSrv();
         STContext()->PSSetShaderResources(0, 1, &matSrv);
-        STContext()->PSSetShaderResources(1, 1, &(call.mTextureDatas[0].mSrv));
-        if (call.mTextureDatas[1].mUse)
+        for (UINT i = 0; i < MESH_TEX_MAX; i++)
         {
-            STContext()->PSSetShaderResources(
-                2, 1, &(call.mTextureDatas[1].mSrv));
+            if (call.mTextureDatas[i].mUse)
+            {
+                STContext()->PSSetShaderResources(
+                    i + 1, 1, &(call.mTextureDatas[i].mSrv));
+            }
         }
 
         STContext()->DrawIndexedInstanced(
@@ -6138,7 +6140,7 @@ RSPass_Billboard::RSPass_Billboard(
     mDrawCallPipe(nullptr), mRSCameraInfo(nullptr),
     mViewProjStructedBuffer(nullptr), mViewProjStructedBufferSrv(nullptr),
     mInstanceStructedBuffer(nullptr), mInstanceStructedBufferSrv(nullptr),
-    mDepthStencilView(nullptr),mRSCamera(nullptr)
+    mDepthStencilView(nullptr), mRSCamera(nullptr)
 {
 
 }
