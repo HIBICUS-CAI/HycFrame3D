@@ -110,7 +110,8 @@ MATERIAL LerpMaterial(MATERIAL _m1, MATERIAL _m2, float _factor)
     MATERIAL final;
     if (_m1.mMetallic < 0.5f && _m1.mFresnelR0.x > 0.1f && _m1.mFresnelR0.y > 0.1f && _m1.mFresnelR0.z > 0.1f)
     {
-        final.mFresnelR0 = lerp(_m1.mFresnelR0, float3(0.1f, 0.1f, 0.1f), 1.f - _m1.mMetallic * 2.f);
+        // final.mFresnelR0 = lerp(_m1.mFresnelR0, float3(0.1f, 0.1f, 0.1f), 1.f - _m1.mMetallic * 2.f);
+        final.mFresnelR0 = float3(0.1f, 0.1f, 0.1f);
     }
     else
     {
