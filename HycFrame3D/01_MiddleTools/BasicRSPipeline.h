@@ -211,6 +211,7 @@ private:
     ID3D11RenderTargetView* mDiffAlbeRtv;
     ID3D11RenderTargetView* mFresShinRtv;
     ID3D11RenderTargetView* mGeoBufferRtv;
+    ID3D11RenderTargetView* mAnisotropicRtv;
     ID3D11DepthStencilView* mDepthDsv;
     RS_CAM_INFO* mRSCameraInfo;
 };
@@ -378,6 +379,7 @@ private:
     ID3D11ShaderResourceView* mDiffuseAlbedoSrv;
     ID3D11ShaderResourceView* mFresenlShineseSrv;
     ID3D11ShaderResourceView* mGeoBufferSrv;
+    ID3D11ShaderResourceView* mAnisotropicSrv;
     ID3D11ShaderResourceView* mSsaoSrv;
     ID3D11ShaderResourceView* mShadowDepthSrv;
     ID3D11Buffer* mVertexBuffer;

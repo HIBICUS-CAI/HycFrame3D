@@ -16,11 +16,12 @@ struct VS_OUTPUT
 struct PS_OUTPUT
 {
     uint4 GeoData : SV_Target0;
-    float4 Diffuse : SV_TARGET1;
-    uint4 Normal : SV_TARGET2;
-    float4 WorldPos : SV_TARGET3;
-    float4 DiffAlbe : SV_TARGET4;
-    float4 FresShin : SV_TARGET5;
+    float4 AnisotropicData : SV_Target1;
+    float4 Diffuse : SV_TARGET2;
+    uint4 Normal : SV_TARGET3;
+    float4 WorldPos : SV_TARGET4;
+    float4 DiffAlbe : SV_TARGET5;
+    float4 FresShin : SV_TARGET6;
 };
 
 StructuredBuffer<MATERIAL> gAllMaterialInfo : register(t0);
@@ -93,6 +94,7 @@ PS_OUTPUT main(VS_OUTPUT _input)
 
     PS_OUTPUT _out = (PS_OUTPUT)0;
     _out.GeoData = uint4(geoNormalData, geoAlbeAndFactor, geoMatData, geoEmiss);
+    _out.AnisotropicData = float4(0.f, 0.5f, 0.5f, 1.f);
     _out.WorldPos = float4(_input.PosW, 0.0f);
     _out.Normal = uint4(norU, 0);
     _out.Diffuse = gAlbedo.Sample(gLinearSampler,_input.TexCoordL);

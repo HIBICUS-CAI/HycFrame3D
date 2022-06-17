@@ -49,17 +49,18 @@ StructuredBuffer<VIEWPROJ> gInvCameraInfo : register(t4);
 StructuredBuffer<MATERIAL> gAllMaterialInfo : register(t5);
 
 Texture2D<uint4> gGeoBuffer : register(t6);
-Texture2D gWorldPos : register(t7);
-Texture2D<uint4> gNormal : register(t8);
-Texture2D gDiffuse : register(t9);
-Texture2D gDiffuseAlbedo : register(t10);
-Texture2D gFresnelShiniese : register(t11);
-Texture2D gSsao : register(t12);
-Texture2DArray<float> gShadowMap : register(t13);
-Texture2D gBRDFLUT : register(t14);
-TextureCube gDiffuseMap : register(t15);
-TextureCube gSpecularMap : register(t16);
-Texture2D gDepthMap : register(t17);
+Texture2D gAnisotropic : register(t7);
+Texture2D gWorldPos : register(t8);
+Texture2D<uint4> gNormal : register(t9);
+Texture2D gDiffuse : register(t10);
+Texture2D gDiffuseAlbedo : register(t11);
+Texture2D gFresnelShiniese : register(t12);
+Texture2D gSsao : register(t13);
+Texture2DArray<float> gShadowMap : register(t14);
+Texture2D gBRDFLUT : register(t15);
+TextureCube gDiffuseMap : register(t16);
+TextureCube gSpecularMap : register(t17);
+Texture2D gDepthMap : register(t18);
 
 float3 DepthToWorldPos(float2 uv, float depth)
 {

@@ -548,7 +548,7 @@ RSPass_MRT::RSPass_MRT(std::string& _name, PASS_TYPE _type,
     mDiffuseRtv(nullptr), mNormalRtv(nullptr),
     mRSCameraInfo(nullptr), mWorldPosRtv(nullptr),
     mDiffAlbeRtv(nullptr), mFresShinRtv(nullptr),
-    mGeoBufferRtv(nullptr)
+    mGeoBufferRtv(nullptr), mAnisotropicRtv(nullptr)
 {
 
 }
@@ -575,7 +575,8 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
     mWorldPosRtv(_source.mWorldPosRtv),
     mDiffAlbeRtv(_source.mDiffAlbeRtv),
     mFresShinRtv(_source.mFresShinRtv),
-    mGeoBufferRtv(_source.mGeoBufferRtv)
+    mGeoBufferRtv(_source.mGeoBufferRtv),
+    mAnisotropicRtv(_source.mAnisotropicRtv)
 {
     if (mHasBeenInited)
     {
@@ -651,18 +652,22 @@ void RSPass_MRT::ReleasePass()
     g_Root->ResourceManager()->DeleteResource(name);
     name = "mrt-geo-buffer";
     g_Root->ResourceManager()->DeleteResource(name);
+    name = "mrt-anisotropic";
+    g_Root->ResourceManager()->DeleteResource(name);
 }
 
 void RSPass_MRT::ExecuatePass()
 {
     ID3D11RenderTargetView* rtvnull = nullptr;
     static ID3D11RenderTargetView* mrt[] = { mGeoBufferRtv,
-        mDiffuseRtv,
+        mAnisotropicRtv, mDiffuseRtv,
         mNormalRtv,mWorldPosRtv,mDiffAlbeRtv,mFresShinRtv };
-    STContext()->OMSetRenderTargets(6, mrt, mDepthDsv);
+    STContext()->OMSetRenderTargets(7, mrt, mDepthDsv);
     STContext()->RSSetViewports(1, &g_ViewPort);
     STContext()->ClearRenderTargetView(
         mGeoBufferRtv, DirectX::Colors::Transparent);
+    STContext()->ClearRenderTargetView(
+        mAnisotropicRtv, DirectX::Colors::Transparent);
     STContext()->ClearRenderTargetView(
         mDiffuseRtv, DirectX::Colors::DarkGreen);
     STContext()->ClearRenderTargetView(
@@ -1039,6 +1044,40 @@ bool RSPass_MRT::CreateViews()
     dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
     dti.mResource.mTexture2D = texture;
     dti.mRtv = mGeoBufferRtv;
+    dti.mSrv = srv;
+    g_Root->ResourceManager()->AddResource(name, dti);
+
+    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
+    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
+    texDesc.MipLevels = 1;
+    texDesc.ArraySize = 1;
+    texDesc.SampleDesc.Count = 1;
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+    texDesc.CPUAccessFlags = 0;
+    texDesc.MiscFlags = 0;
+    texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
+    if (FAILED(hr)) { return false; }
+
+    rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    rtvDesc.Texture2D.MipSlice = 0;
+    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    hr = Device()->CreateRenderTargetView(texture, &rtvDesc, &mAnisotropicRtv);
+    if (FAILED(hr)) { return false; }
+
+    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = 1;
+    hr = Device()->CreateShaderResourceView(texture, &srvDesc, &srv);
+    if (FAILED(hr)) { return false; }
+
+    dti = {};
+    name = "mrt-anisotropic";
+    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
+    dti.mResource.mTexture2D = texture;
+    dti.mRtv = mWorldPosRtv;
     dti.mSrv = srv;
     g_Root->ResourceManager()->AddResource(name, dti);
 
@@ -2460,6 +2499,7 @@ RSPass_Defered::RSPass_Defered(
     mWorldPosSrv(nullptr), mNormalSrv(nullptr), mDiffuseSrv(nullptr),
     mDiffuseAlbedoSrv(nullptr), mFresenlShineseSrv(nullptr),
     mGeoBufferSrv(nullptr),
+    mAnisotropicSrv(nullptr),
     mRSCameraInfo(nullptr), mShadowDepthSrv(nullptr)
 {
 
@@ -2492,6 +2532,7 @@ RSPass_Defered::RSPass_Defered(const RSPass_Defered& _source) :
     mDiffuseAlbedoSrv(_source.mDiffuseAlbedoSrv),
     mFresenlShineseSrv(_source.mFresenlShineseSrv),
     mGeoBufferSrv(_source.mGeoBufferSrv),
+    mAnisotropicSrv(_source.mAnisotropicSrv),
     mRSCameraInfo(_source.mRSCameraInfo),
     mShadowDepthSrv(_source.mShadowDepthSrv)
 {
@@ -2675,14 +2716,14 @@ void RSPass_Defered::ExecuatePass()
         mShadowStructedBufferSrv,
         mCameraStructedBufferSrv,
         g_Root->StaticResources()->GetMaterialSrv(),
-        mGeoBufferSrv,
+        mGeoBufferSrv, mAnisotropicSrv,
         mWorldPosSrv, mNormalSrv, mDiffuseSrv,
         mDiffuseAlbedoSrv, mFresenlShineseSrv,
         mSsaoSrv, mShadowDepthSrv,
         g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv,
         depSrv
     };
-    STContext()->PSSetShaderResources(0, 18, srvs);
+    STContext()->PSSetShaderResources(0, 19, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
@@ -2708,9 +2749,10 @@ void RSPass_Defered::ExecuatePass()
     {
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
+        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+        nullptr
     };
-    STContext()->PSSetShaderResources(0, 18, nullsrvs);
+    STContext()->PSSetShaderResources(0, 19, nullsrvs);
 }
 
 bool RSPass_Defered::CreateShaders()
@@ -2861,6 +2903,9 @@ bool RSPass_Defered::CreateViews()
         GetResourceInfo(name)->mSrv;
     name = "mrt-geo-buffer";
     mGeoBufferSrv = g_Root->ResourceManager()->
+        GetResourceInfo(name)->mSrv;
+    name = "mrt-anisotropic";
+    mAnisotropicSrv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mSrv;
     name = "ssao-tex-compress-ssao";
     mSsaoSrv = g_Root->ResourceManager()->
