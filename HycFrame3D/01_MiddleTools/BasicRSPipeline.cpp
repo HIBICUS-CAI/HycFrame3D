@@ -3021,17 +3021,17 @@ bool RSPass_SkyShpere::InitPass()
     mSkySphereMesh = g_Root->MeshHelper()->GeoGenerate()->
         CreateGeometrySphere(10.f, 0,
             LAYOUT_TYPE::NORMAL_TANGENT_TEX, false,
-            {}, "room_env.dds");
-    std::string resName = "room_env.dds";
+            {}, "winter_forest_env.dds");
+    std::string resName = "winter_forest_env.dds";
     g_EnviMapSrv = g_Root->ResourceManager()->GetMeshSrv(resName);
     HRESULT hr = DirectX::CreateDDSTextureFromFile(
         g_Root->Devices()->GetDevice(),
-        L".\\Assets\\Textures\\room_diff.dds",
+        L".\\Assets\\Textures\\winter_forest_diff.dds",
         nullptr, &g_DiffMapSrv);
     if (FAILED(hr)) { return false; }
     hr = DirectX::CreateDDSTextureFromFile(
         g_Root->Devices()->GetDevice(),
-        L".\\Assets\\Textures\\room_spec.dds",
+        L".\\Assets\\Textures\\winter_forest_spec.dds",
         nullptr, &g_SpecMapSrv);
     if (FAILED(hr)) { return false; }
     hr = DirectX::CreateDDSTextureFromFile(

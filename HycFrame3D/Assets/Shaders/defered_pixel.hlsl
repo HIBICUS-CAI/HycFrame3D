@@ -163,6 +163,15 @@ float3 CalcEnvSpecular(float3 _pos, float3 _normal ,float3 _view, MATERIAL _mat)
     return specular;
 }
 
+float3 FresnelR0Check(float _metallic, float3 _r0)
+{
+    if (_metallic < 0.5f && _r0.x > 0.1f && _r0.y > 0.1f && _r0.z > 0.1f)
+    {
+        _r0 = float3(0.1f, 0.1f, 0.1f);
+    }
+    return _r0;
+}
+
 float4 main(VS_OUTPUT _in) : SV_TARGET
 {
     float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
@@ -186,6 +195,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
         gAllMaterialInfo[matAbout.w], albedoAndMatFactor.w);
     mat.mRoughness = metAndRou.y;
     mat.mMetallic = metAndRou.x;
+    mat.mFresnelR0 = FresnelR0Check(mat.mMetallic, mat.mFresnelR0);
 
     float3 envDiffuse = CalcEnvDiffuse(normalW, mat, toEye);
     float4 ambientL = float4(envDiffuse * access, 0.f);
