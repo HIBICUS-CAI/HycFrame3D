@@ -48,6 +48,12 @@ PS_OUTPUT main(VS_OUTPUT _input)
 {
     float3 unitNormal = _input.NormalW;
     
+    float3 tangent = normalize(_input.TangentW);
+    float3 bitTangent = normalize(cross(normalize(unitNormal), tangent));
+    tangent = normalize(cross(bitTangent, normalize(unitNormal)));
+    float2 encodeTangent = EncodeNormalizeVec(tangent);
+    float2 encodeBitTangent = EncodeNormalizeVec(bitTangent);
+
     if (_input.UsePBRTex.x == 1)
     {
         float3 noramlSample = gBumped.Sample(gLinearSampler, _input.TexCoordL).rgb;
@@ -94,7 +100,7 @@ PS_OUTPUT main(VS_OUTPUT _input)
 
     PS_OUTPUT _out = (PS_OUTPUT)0;
     _out.GeoData = uint4(geoNormalData, geoAlbeAndFactor, geoMatData, geoEmiss);
-    _out.AnisotropicData = float4(0.f, 0.5f, 0.5f, 1.f);
+    _out.AnisotropicData = float4(encodeTangent, encodeBitTangent);
     _out.WorldPos = float4(_input.PosW, 0.0f);
     _out.Normal = uint4(norU, 0);
     _out.Diffuse = gAlbedo.Sample(gLinearSampler,_input.TexCoordL);

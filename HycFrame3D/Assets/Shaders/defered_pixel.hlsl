@@ -180,7 +180,11 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     positionW = DepthToWorldPos(_in.TexCoordL, depth);
     int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
     uint4 geoData = gGeoBuffer.Load(tcInt);
+    float4 anisoData = gAnisotropic.Sample(gSamPointClamp, _in.TexCoordL);
     float3 normalW = GetNormalFromGeoValue(geoData.x);
+    float3 anisoX = DecodeNormalizeVec(anisoData.xy);
+    float3 anisoY = DecodeNormalizeVec(anisoData.zw);
+    float3 foedebug = anisoX + anisoY;
     float4 albedoAndMatFactor = Uint8ToFloat_V4(UnpackUint32ToFourUint8(geoData.y));
     uint4 matAbout = UnpackUint32ToFourUint8(geoData.z);
     float2 metAndRou = Uint8ToFloat_V2(matAbout.xy);
