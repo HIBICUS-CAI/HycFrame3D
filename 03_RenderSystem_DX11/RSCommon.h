@@ -208,7 +208,15 @@ struct SUBMESH_INFO
     bool mWithAnimation = false;
 };
 
-constexpr UINT MESH_TEX_MAX = 10;
+enum class MESH_TEXTURE_TYPE
+{
+    ALBEDO,
+    NORMAL,
+    METALLIC,
+    ROUGHNESS,
+
+    SIZE
+};
 
 struct RS_SUBMESH_DATA
 {
@@ -218,7 +226,8 @@ struct RS_SUBMESH_DATA
     ID3D11Buffer* mIndexBuffer = nullptr;
     ID3D11Buffer* mVertexBuffer = nullptr;
     UINT mIndexCount = 0;
-    std::array<std::string, MESH_TEX_MAX> mTextures = { "" };
+    std::array<std::string,
+        (size_t)MESH_TEXTURE_TYPE::SIZE> mTextures = { "" };
     RS_MATERIAL_INFO mMaterial = {};
     bool mWithAnimation = false;
 };
@@ -272,7 +281,7 @@ struct RS_DRAWCALL_DATA
     RS_SUBMESH_DRAWCALL_DATA mMeshData = {};
     RS_INSTANCE_DRAWCALL_DATA mInstanceData = {};
     RS_MATERIAL_INFO mMaterialData = {};
-    RS_MESH_TEXTURE_INFO mTextureDatas[MESH_TEX_MAX] = { {} };
+    RS_MESH_TEXTURE_INFO mTextureDatas[(UINT)MESH_TEXTURE_TYPE::SIZE] = { {} };
     RS_MISC_INFO mMiscData = {};
 };
 

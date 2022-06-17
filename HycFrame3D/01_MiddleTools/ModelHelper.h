@@ -83,10 +83,5 @@ void LoadModelFile(const std::string _filePath, MODEL_FILE_TYPE _type,
     SUBMESH_BONES* _boneData = nullptr,
     MESH_ANIMATION_DATA** _animData = nullptr);
 
-void AddDiffuseTexTo(RS_SUBMESH_DATA* _result, std::string _filePath);
-
-void AddBumpedTexTo(RS_SUBMESH_DATA* _result, std::string _filePath);
-
-void AddMetallicTexTo(RS_SUBMESH_DATA* _result, std::string _filePath);
-
-void AddRoughnessTexTo(RS_SUBMESH_DATA* _result, std::string _filePath);
+void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
+    std::string _filePath, MESH_TEXTURE_TYPE _type);

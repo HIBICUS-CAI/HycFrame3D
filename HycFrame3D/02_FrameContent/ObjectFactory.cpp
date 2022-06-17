@@ -325,19 +325,23 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
 
             if (forceDiffuse != "")
             {
-                AddDiffuseTexTo(&meshData, forceDiffuse);
+                AddTextureToSubMesh(&meshData, forceDiffuse,
+                    MESH_TEXTURE_TYPE::ALBEDO);
             }
             if (forceNormal != "")
             {
-                AddBumpedTexTo(&meshData, forceNormal);
+                AddTextureToSubMesh(&meshData, forceNormal,
+                    MESH_TEXTURE_TYPE::NORMAL);
             }
             if (forceMetal != "")
             {
-                AddMetallicTexTo(&meshData, forceMetal);
+                AddTextureToSubMesh(&meshData, forceMetal,
+                    MESH_TEXTURE_TYPE::METALLIC);
             }
             if (forceRough != "")
             {
-                AddRoughnessTexTo(&meshData, forceRough);
+                AddTextureToSubMesh(&meshData, forceRough,
+                    MESH_TEXTURE_TYPE::ROUGHNESS);
             }
 
             if (!meshData.mTextures.size())

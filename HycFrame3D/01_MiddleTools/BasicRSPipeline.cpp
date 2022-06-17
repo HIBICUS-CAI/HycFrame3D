@@ -779,7 +779,7 @@ void RSPass_MRT::ExecuatePass()
         STContext()->VSSetShaderResources(1, 1, &mInstanceStructedBufferSrv);
         ID3D11ShaderResourceView* matSrv = g_Root->StaticResources()->GetMaterialSrv();
         STContext()->PSSetShaderResources(0, 1, &matSrv);
-        for (UINT i = 0; i < MESH_TEX_MAX; i++)
+        for (UINT i = 0; i < (UINT)MESH_TEXTURE_TYPE::SIZE; i++)
         {
             if (call.mTextureDatas[i].mUse)
             {
