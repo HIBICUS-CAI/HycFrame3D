@@ -108,15 +108,7 @@ float CalcShadowFactor(float4 _shadowPosH, float _slice)
 MATERIAL LerpMaterial(MATERIAL _m1, MATERIAL _m2, float _factor)
 {
     MATERIAL final;
-    if (_m1.mMetallic < 0.5f && _m1.mFresnelR0.x > 0.1f && _m1.mFresnelR0.y > 0.1f && _m1.mFresnelR0.z > 0.1f)
-    {
-        // final.mFresnelR0 = lerp(_m1.mFresnelR0, float3(0.1f, 0.1f, 0.1f), 1.f - _m1.mMetallic * 2.f);
-        final.mFresnelR0 = float3(0.1f, 0.1f, 0.1f);
-    }
-    else
-    {
-        final.mFresnelR0 = _m1.mFresnelR0;
-    }
+    final.mFresnelR0 = _m1.mFresnelR0;
     final.mSubSruface = lerp(_m1.mSubSruface, _m2.mSubSruface, _factor);
     final.mMetallic = lerp(_m1.mMetallic, _m2.mMetallic, _factor);
     final.mSpecular = lerp(_m1.mSpecular, _m2.mSpecular, _factor);
@@ -129,6 +121,20 @@ MATERIAL LerpMaterial(MATERIAL _m1, MATERIAL _m2, float _factor)
     final.mClearcoatGloss = lerp(_m1.mClearcoatGloss, _m2.mClearcoatGloss, _factor);
 
     return final;
+}
+
+float3 LerpFresnelR0(float3 _originR0, float _metallic)
+{
+    if (_metallic < 0.75f && _originR0.x > 0.1f && _originR0.y > 0.1f && _originR0.z > 0.1f)
+    {
+        float factor = _metallic / 0.75f;
+        factor = 1.f - Pow5(factor);
+        return lerp(_originR0, float3(0.1f, 0.1f, 0.1f), factor);
+    }
+    else
+    {
+        return _originR0;
+    }
 }
 
 float3 CalcSpecLookUpVec(float3 _pos, float3 _normal)
@@ -199,6 +205,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
         gAllMaterialInfo[matAbout.w], albedoAndMatFactor.w);
     mat.mRoughness = metAndRou.y;
     mat.mMetallic = metAndRou.x;
+    mat.mFresnelR0 = LerpFresnelR0(mat.mFresnelR0, mat.mMetallic);
 
     float3 envDiffuse = CalcEnvDiffuse(normalW, mat, toEye);
     float4 ambientL = float4(envDiffuse * access, 0.f);
