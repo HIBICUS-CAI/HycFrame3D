@@ -108,7 +108,14 @@ float CalcShadowFactor(float4 _shadowPosH, float _slice)
 MATERIAL LerpMaterial(MATERIAL _m1, MATERIAL _m2, float _factor)
 {
     MATERIAL final;
-    final.mFresnelR0 = _m1.mFresnelR0;
+    if (_m1.mMetallic < 0.5f && _m1.mFresnelR0.x > 0.1f && _m1.mFresnelR0.y > 0.1f && _m1.mFresnelR0.z > 0.1f)
+    {
+        final.mFresnelR0 = lerp(_m1.mFresnelR0, float3(0.1f, 0.1f, 0.1f), 1.f - _m1.mMetallic * 2.f);
+    }
+    else
+    {
+        final.mFresnelR0 = _m1.mFresnelR0;
+    }
     final.mSubSruface = lerp(_m1.mSubSruface, _m2.mSubSruface, _factor);
     final.mMetallic = lerp(_m1.mMetallic, _m2.mMetallic, _factor);
     final.mSpecular = lerp(_m1.mSpecular, _m2.mSpecular, _factor);
@@ -164,15 +171,6 @@ float3 CalcEnvSpecular(float3 _pos, float3 _normal ,float3 _view, MATERIAL _mat)
     return specular;
 }
 
-float3 FresnelR0Check(float _metallic, float3 _r0)
-{
-    if (_metallic < 0.5f && _r0.x > 0.1f && _r0.y > 0.1f && _r0.z > 0.1f)
-    {
-        _r0 = float3(0.1f, 0.1f, 0.1f);
-    }
-    return _r0;
-}
-
 float4 main(VS_OUTPUT _in) : SV_TARGET
 {
     float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
@@ -200,7 +198,6 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
         gAllMaterialInfo[matAbout.w], albedoAndMatFactor.w);
     mat.mRoughness = metAndRou.y;
     mat.mMetallic = metAndRou.x;
-    mat.mFresnelR0 = FresnelR0Check(mat.mMetallic, mat.mFresnelR0);
 
     float3 envDiffuse = CalcEnvDiffuse(normalW, mat, toEye);
     float4 ambientL = float4(envDiffuse * access, 0.f);
@@ -220,7 +217,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     {
         LIGHT l = gLights[i];
         l.gAlbedo = sRGBToACES(l.gAlbedo);
-        tempL = float4(ComputeDirectionalLight(diffuse.rgb, l, mat, normalW, toEye), 0.0f);
+        tempL = float4(ComputeDirectionalLight(diffuse.rgb, l, mat, normalW, toEye, anisoX, anisoY), 0.0f);
         if (i == gLightInfo[0].gShadowLightIndex[0])
         {
             shadowPosH = mul(float4(positionW, 1.0f), gShadowInfo[0].gShadowViewMat);
@@ -256,14 +253,14 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     {
         LIGHT l = gLights[i];
         l.gAlbedo = sRGBToACES(l.gAlbedo);
-        directL += float4(ComputePointLight(diffuse.rgb, l, mat, positionW, normalW, toEye), 0.0f);
+        directL += float4(ComputePointLight(diffuse.rgb, l, mat, positionW, normalW, toEye, anisoX, anisoY), 0.0f);
     }
 
     for (i = dNum + pNum; i < dNum + pNum + sNum; ++i)
     {
         LIGHT l = gLights[i];
         l.gAlbedo = sRGBToACES(l.gAlbedo);
-        tempL = float4(ComputeSpotLight(diffuse.rgb, l, mat, positionW, normalW, toEye), 0.0f);
+        tempL = float4(ComputeSpotLight(diffuse.rgb, l, mat, positionW, normalW, toEye, anisoX, anisoY), 0.0f);
         if (i == gLightInfo[0].gShadowLightIndex[0])
         {
             shadowPosH = mul(float4(positionW, 1.0f), gShadowInfo[0].gShadowViewMat);

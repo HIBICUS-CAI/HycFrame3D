@@ -107,6 +107,12 @@ uint2 UnpackUint32ToTwoUint16(uint _v)
 
 float2 EncodeNormalizeVec(float3 _v)
 {
+    if (_v.x == 0.f && _v.y == 0.f)
+    {
+        const float EPSILON = 0.00001f;
+        _v.xy = float2(EPSILON, EPSILON);
+        _v = normalize(_v);
+    }
     return (float2(atan2(_v.y, _v.x) / 3.1415926536f, _v.z) + 1.f) * 0.5f;
 }
 

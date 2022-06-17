@@ -50,7 +50,6 @@ PS_OUTPUT main(VS_OUTPUT _input)
     
     float3 tangent = normalize(_input.TangentW);
     float3 bitTangent = normalize(cross(normalize(unitNormal), tangent));
-    tangent = normalize(cross(bitTangent, normalize(unitNormal)));
     float2 encodeTangent = EncodeNormalizeVec(tangent);
     float2 encodeBitTangent = EncodeNormalizeVec(bitTangent);
 

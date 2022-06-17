@@ -65,6 +65,12 @@ float D_GTR2(float _NdotH, float _alpha)
     return a2 / (PI * Sqr(t));
 }
 
+float D_GTR2_Aniso(float _NdotH, float _HdotX,
+    float _HdotY, float _ax, float _ay)
+{
+    return 1 / (PI * _ax * _ay * Sqr(Sqr(_HdotX / _ax) + Sqr(_HdotY/ _ay) +  _NdotH* _NdotH));
+}
+
 float G_Smith_GGX(float _NdotV, float _alphaG)
 {
     float aG2 = Sqr(_alphaG);
@@ -72,7 +78,15 @@ float G_Smith_GGX(float _NdotV, float _alphaG)
     return 1.f / (_NdotV + sqrt(aG2 + NdotV2 - aG2 * NdotV2));
 }
 
-float3 Disney_BRDF(float3 _L, float3 _V, float3 _N, float3 _LStr, float3 _baseColor, MATERIAL _material)
+float G_Smith_GGX_Aniso(float _NdotV, float _VdotX, float _VdotY,
+    float _ax, float _ay)
+{
+    return 1 / (_NdotV + sqrt(Sqr(_VdotX * _ax) + Sqr(_VdotY * _ay) + Sqr(_NdotV)));
+}
+
+float3 Disney_BRDF(float3 _L, float3 _V, float3 _N,
+    float3 _X, float3 _Y,
+    float3 _LStr, float3 _baseColor, MATERIAL _material)
 {
     float NdotV = dot(_N, _V);
     float NdotL = dot(_N, _L);
@@ -91,7 +105,7 @@ float3 Disney_BRDF(float3 _L, float3 _V, float3 _N, float3 _LStr, float3 _baseCo
     float3 cSpec0 = lerp(_material.mSpecular * 0.08f *
         lerp((float3)1.f, cTint, _material.mSpecularTint),
         cDLin, _material.mMetallic);
-    // float3 cSheen = lerp(float3(1.f), cTint, _material.mSheenTint);
+    float3 cSheen = lerp((float3)1.f, cTint, _material.mSheenTint);
 
     // Diffuse fresnel
     float alpha = _material.mRoughness * _material.mRoughness;
@@ -104,17 +118,17 @@ float3 Disney_BRDF(float3 _L, float3 _V, float3 _N, float3 _LStr, float3 _baseCo
     float ss = 1.25f * (fSS * (1.f / (NdotL + NdotV) - 0.5f) + 0.5f);
 
     // Specular
-    // float aspect = sqrt(1.f - _material.mAnisotropic * 0.9f);
-    // float ax = max(0.001f, Sqr(_material.mRoughness) / aspect);
-    // float ay = max(0.001f, Sqr(_material.mRoughness) * aspect);
-    float dS = D_GTR2(NdotH, alpha);
+    float aspect = sqrt(1.f - _material.mAnisotropic * 0.9f);
+    float ax = max(0.001f, Sqr(_material.mRoughness) / aspect);
+    float ay = max(0.001f, Sqr(_material.mRoughness) * aspect);
+    float dS = D_GTR2_Aniso(NdotH, dot(H, _X), dot(H, _Y), ax, ay);
     float fH = F_SchlickFresnel(LdotH);
     float3 fS = lerp(cSpec0, (float3)1.f, fH);
-    float gS = G_Smith_GGX(NdotL, alpha) *
-        G_Smith_GGX(NdotV, alpha);
+    float gS = G_Smith_GGX_Aniso(NdotL, dot(_L, _X), dot(_L, _Y), ax, ay) *
+        G_Smith_GGX_Aniso(NdotV, dot(_V, _X), dot(_V, _Y), ax, ay);
     
     // Sheen
-    // float3 fSheen = fH * _material.mSheen * cSheen;
+    float3 fSheen = fH * _material.mSheen * cSheen;
 
     // clearcoat (ior = 1.5, F0 = 0.04, roughness = 0.25)
     float dR = D_GTR1(NdotH, lerp(0.1f, 0.001f, _material.mClearcoatGloss));
@@ -122,19 +136,19 @@ float3 Disney_BRDF(float3 _L, float3 _V, float3 _N, float3 _LStr, float3 _baseCo
     float gR = G_Smith_GGX(NdotL, 0.25f) * G_Smith_GGX(NdotV, 0.25f);
 
     return _LStr * ((1.f / PI) *
-        lerp(fD, ss, _material.mSubSruface) * cDLin) *
+        lerp(fD, ss, _material.mSubSruface) * cDLin + fSheen) *
         (1.f - _material.mMetallic) +
         _LStr * gS * fS * dS +
         _LStr * 0.25f * _material.mClearcoat * gR * fR * dR;
 }
 
-float3 ComputeDirectionalLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 normal, float3 toEye)
+float3 ComputeDirectionalLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 normal, float3 toEye, float3 X, float3 Y)
 {
     float3 lightVec = -l.gDirection;
     float ndotl = max(dot(lightVec, normal), 0.0f);
     float3 lightStr = l.gAlbedo * l.gTempIntensity * ndotl;
 
-    return Disney_BRDF(lightVec, toEye, normal, lightStr, baseColor, mat);
+    return Disney_BRDF(lightVec, toEye, normal, X, Y, lightStr, baseColor, mat);
 }
 
 float CalcAttenuation(float d, float falloffStart, float falloffEnd)
@@ -147,7 +161,7 @@ float CalcAttenuation(float d, float falloffStart, float falloffEnd)
     return att * smoothatt;
 }
 
-float3 ComputePointLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye)
+float3 ComputePointLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye, float3 X, float3 Y)
 {
     float3 lightVec = l.gPosition - pos;
     float d = length(lightVec);
@@ -163,10 +177,10 @@ float3 ComputePointLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, fl
     float att = CalcAttenuation(d, l.gFalloffStart, l.gFalloffEnd);
     lightStr *= att;
 
-    return Disney_BRDF(lightVec, toEye, normal, lightStr, baseColor, mat);
+    return Disney_BRDF(lightVec, toEye, normal, X, Y, lightStr, baseColor, mat);
 }
 
-float3 ComputeSpotLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye)
+float3 ComputeSpotLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye, float3 X, float3 Y)
 {
     float3 lightVec = l.gPosition - pos;
     float d = length(lightVec);
@@ -184,5 +198,5 @@ float3 ComputeSpotLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, flo
     float spotFactor = pow(max(dot(-lightVec, l.gDirection), 0.0f), l.gSpotPower);
     lightStr *= spotFactor;
 
-    return Disney_BRDF(lightVec, toEye, normal, lightStr, baseColor, mat);
+    return Disney_BRDF(lightVec, toEye, normal, X, Y, lightStr, baseColor, mat);
 }
