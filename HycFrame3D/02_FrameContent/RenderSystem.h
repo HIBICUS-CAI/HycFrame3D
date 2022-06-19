@@ -17,4 +17,7 @@ public:
 private:
     class RSRoot_DX11* mRenderSystemRoot;
     class AssetsPool* mAssetsPool;
+    struct ID3D11ShaderResourceView* mEnvTex;
+    struct ID3D11ShaderResourceView* mDiffTex;
+    struct ID3D11ShaderResourceView* mSpecTex;
 };

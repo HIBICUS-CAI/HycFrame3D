@@ -91,6 +91,22 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
     };
     newNode->SetCurrentAmbient(ambient);
 
+    {
+        std::string iblEnvTexName = "";
+        std::string iblDiffTexName = "";
+        std::string iblSpecTexName = "";
+
+        JsonNode iblEnvNode = GetJsonNode(&sceneConfig, "/ibl-environment");
+        JsonNode iblDiffNode = GetJsonNode(&sceneConfig, "/ibl-diffuse");
+        JsonNode iblSpecNode = GetJsonNode(&sceneConfig, "/ibl-specular");
+
+        if (iblEnvNode) { iblEnvTexName = iblEnvNode->GetString(); }
+        if (iblDiffNode) { iblDiffTexName = iblDiffNode->GetString(); }
+        if (iblSpecNode) { iblSpecTexName = iblSpecNode->GetString(); }
+
+        newNode->LoadIBLTexture(iblEnvTexName, iblDiffTexName, iblSpecTexName);
+    }
+
     CreateSceneAssets(newNode, &sceneConfig);
 
     if (sceneConfig.HasMember("actor") && !sceneConfig["actor"].IsNull())

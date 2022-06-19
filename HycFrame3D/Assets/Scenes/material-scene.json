@@ -6,6 +6,9 @@
         0.001,
         1.0
     ],
+    "ibl-environment": "winter_forest_env.dds",
+    "ibl-diffuse": "winter_forest_diff.dds",
+    "ibl-specular": "winter_forest_spec.dds",
     "model-assets": [
         {
             "mesh-name": "grid",

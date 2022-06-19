@@ -838,4 +838,8 @@ private:
     class RSCamera* mRSCamera;
 };
 
-void SetPipeLineDeltaTime(float _deltaMilliSecond);
+void SetPipelineDeltaTime(float _deltaMilliSecond);
+
+void SetPipelineIBLTextures(ID3D11ShaderResourceView* _envSrv,
+    ID3D11ShaderResourceView* _diffSrv,
+    ID3D11ShaderResourceView* _specSrv);

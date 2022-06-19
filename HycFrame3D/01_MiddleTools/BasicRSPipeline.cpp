@@ -67,9 +67,18 @@ struct RENDER_EFFECT_CONFIG
 
 static RENDER_EFFECT_CONFIG g_RenderEffectConfig = {};
 
-void SetPipeLineDeltaTime(float _deltaMilliSecond)
+void SetPipelineDeltaTime(float _deltaMilliSecond)
 {
     g_DeltaTimeInSecond = _deltaMilliSecond / 1000.f;
+}
+
+void SetPipelineIBLTextures(ID3D11ShaderResourceView* _envSrv,
+    ID3D11ShaderResourceView* _diffSrv,
+    ID3D11ShaderResourceView* _specSrv)
+{
+    g_EnviMapSrv = _envSrv;
+    g_DiffMapSrv = _diffSrv;
+    g_SpecMapSrv = _specSrv;
 }
 
 bool CreateBasicPipeline()
@@ -2708,7 +2717,7 @@ void RSPass_Defered::ExecuatePass()
     static std::string depthSrvName = "mrt-depth";
     static auto depSrv = g_Root->ResourceManager()->
         GetResourceInfo(depthSrvName)->mSrv;
-    static ID3D11ShaderResourceView* srvs[] =
+    ID3D11ShaderResourceView* srvs[] =
     {
         mAmbientStructedBufferSrv,
         mLightInfoStructedBufferSrv,
@@ -3066,22 +3075,11 @@ bool RSPass_SkyShpere::InitPass()
     mSkySphereMesh = g_Root->MeshHelper()->GeoGenerate()->
         CreateGeometrySphere(10.f, 0,
             LAYOUT_TYPE::NORMAL_TANGENT_TEX, false,
-            {}, "winter_forest_env.dds");
-    std::string resName = "winter_forest_env.dds";
-    g_EnviMapSrv = g_Root->ResourceManager()->GetMeshSrv(resName);
+            {},
+            "this is not a bug about loading skybox texture failed :)");
     HRESULT hr = DirectX::CreateDDSTextureFromFile(
         g_Root->Devices()->GetDevice(),
-        L".\\Assets\\Textures\\winter_forest_diff.dds",
-        nullptr, &g_DiffMapSrv);
-    if (FAILED(hr)) { return false; }
-    hr = DirectX::CreateDDSTextureFromFile(
-        g_Root->Devices()->GetDevice(),
-        L".\\Assets\\Textures\\winter_forest_spec.dds",
-        nullptr, &g_SpecMapSrv);
-    if (FAILED(hr)) { return false; }
-    hr = DirectX::CreateDDSTextureFromFile(
-        g_Root->Devices()->GetDevice(),
-        L".\\Assets\\Textures\\ibl_brdf.dds",
+        L".\\RenderSystem_StaticResources\\Textures\\ibl_brdf.dds",
         nullptr, &g_IblBrdfSrv);
     if (FAILED(hr)) { return false; }
 
@@ -3153,11 +3151,8 @@ void RSPass_SkyShpere::ExecuatePass()
         mSkySphereMesh.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
     STContext()->VSSetShaderResources(
         0, 1, &mSkyShpereInfoStructedBufferSrv);
-    static std::string tex = mSkySphereMesh.mTextures[0];
-    static ID3D11ShaderResourceView* cube = nullptr;
-    cube = g_Root->ResourceManager()->GetMeshSrv(tex);
     STContext()->PSSetShaderResources(
-        0, 1, &cube);
+        0, 1, &g_EnviMapSrv);
     STContext()->PSSetSamplers(0, 1, &mLinearWrapSampler);
 
     STContext()->DrawIndexedInstanced(mSkySphereMesh.mIndexCount,

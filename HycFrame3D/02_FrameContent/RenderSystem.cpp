@@ -18,7 +18,8 @@
 
 RenderSystem::RenderSystem(SystemExecutive* _sysExecutive) :
     System("render-system", _sysExecutive),
-    mRenderSystemRoot(nullptr), mAssetsPool(nullptr)
+    mRenderSystemRoot(nullptr), mAssetsPool(nullptr),
+    mEnvTex(nullptr), mDiffTex(nullptr), mSpecTex(nullptr)
 {
 
 }
@@ -68,6 +69,13 @@ bool RenderSystem::Init()
     mAssetsPool = GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetAssetsPool();
     if (!mAssetsPool) { return false; }
+
+    mEnvTex = GetSystemExecutive()->GetSceneManager()->
+        GetCurrentSceneNode()->GetIBLEnvironment();
+    mDiffTex = GetSystemExecutive()->GetSceneManager()->
+        GetCurrentSceneNode()->GetIBLDiffuse();
+    mSpecTex = GetSystemExecutive()->GetSceneManager()->
+        GetCurrentSceneNode()->GetIBLSpecular();
 
     GetRSRoot_DX11_Singleton()->ParticlesContainer()->ResetRSParticleSystem();
 
@@ -150,7 +158,8 @@ void RenderSystem::Run(Timer& _timer)
         GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetCurrentAmbient());
 
-    SetPipeLineDeltaTime(_timer.FloatDeltaTime());
+    SetPipelineIBLTextures(mEnvTex, mDiffTex, mSpecTex);
+    SetPipelineDeltaTime(_timer.FloatDeltaTime());
 
     GetRSRoot_DX11_Singleton()->PipelinesManager()->ProcessNextPipeline();
     mRenderSystemRoot->PipelinesManager()->ExecuateCurrentPipeline();

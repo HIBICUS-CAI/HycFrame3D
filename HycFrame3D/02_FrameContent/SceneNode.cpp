@@ -1,5 +1,7 @@
 #include "SceneNode.h"
 #include <vector>
+#include "DDSTextureLoader11.h"
+#include "RSDevices.h"
 #include "RSCamerasContainer.h"
 #include "RSCamera.h"
 #include "RSRoot_DX11.h"
@@ -66,6 +68,22 @@ void SceneNode::ReleaseScene()
     mCompContainerPtr->DeleteAllComponent();
     mPhysicsWorldPtr->DeletePhysicsWorld();
     mAssetsPoolPtr->DeleteAllAssets();
+
+    if (mCameraAmbientInfo.mIBLEnvTex)
+    {
+        mCameraAmbientInfo.mIBLEnvTex->Release();
+        mCameraAmbientInfo.mIBLEnvTex = nullptr;
+    }
+    if (mCameraAmbientInfo.mIBLDiffTex)
+    {
+        mCameraAmbientInfo.mIBLDiffTex->Release();
+        mCameraAmbientInfo.mIBLDiffTex = nullptr;
+    }
+    if (mCameraAmbientInfo.mIBLSpecTex)
+    {
+        mCameraAmbientInfo.mIBLSpecTex->Release();
+        mCameraAmbientInfo.mIBLSpecTex = nullptr;
+    }
 }
 
 const std::string& SceneNode::GetSceneNodeName() const
@@ -91,6 +109,61 @@ void SceneNode::SetCurrentAmbient(DirectX::XMFLOAT4& _ambientColor)
 DirectX::XMFLOAT4& SceneNode::GetCurrentAmbient()
 {
     return mCameraAmbientInfo.mAmbientColor;
+}
+
+void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string _spc)
+{
+    std::wstring wstr = L"";
+    HRESULT hr = S_OK;
+    ID3D11ShaderResourceView* srv = nullptr;
+
+    if (_env != "")
+    {
+        wstr = std::wstring(_env.begin(), _env.end());
+        wstr = L".\\Assets\\Textures\\" + wstr;
+        hr = DirectX::CreateDDSTextureFromFile(
+            GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
+            wstr.c_str(), nullptr, &srv);
+        assert(!FAILED(hr));
+        mCameraAmbientInfo.mIBLEnvTex = srv;
+    }
+
+    if (_diff != "")
+    {
+        wstr = std::wstring(_diff.begin(), _diff.end());
+        wstr = L".\\Assets\\Textures\\" + wstr;
+        hr = DirectX::CreateDDSTextureFromFile(
+            GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
+            wstr.c_str(), nullptr, &srv);
+        assert(!FAILED(hr));
+        mCameraAmbientInfo.mIBLDiffTex = srv;
+    }
+
+    if (_spc != "")
+    {
+        wstr = std::wstring(_spc.begin(), _spc.end());
+        wstr = L".\\Assets\\Textures\\" + wstr;
+        hr = DirectX::CreateDDSTextureFromFile(
+            GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
+            wstr.c_str(), nullptr, &srv);
+        assert(!FAILED(hr));
+        mCameraAmbientInfo.mIBLSpecTex = srv;
+    }    
+}
+
+ID3D11ShaderResourceView* SceneNode::GetIBLEnvironment()
+{
+    return mCameraAmbientInfo.mIBLEnvTex;
+}
+
+ID3D11ShaderResourceView* SceneNode::GetIBLDiffuse()
+{
+    return mCameraAmbientInfo.mIBLDiffTex;
+}
+
+ID3D11ShaderResourceView* SceneNode::GetIBLSpecular()
+{
+    return mCameraAmbientInfo.mIBLSpecTex;
 }
 
 RSCamera* SceneNode::GetMainCamera()

@@ -8,6 +8,9 @@ struct CAMERA_AND_AMBIENT
 {
     class RSCamera* mRSCameraPtr = nullptr;
     DirectX::XMFLOAT4 mAmbientColor = {};
+    struct ID3D11ShaderResourceView* mIBLEnvTex = nullptr;
+    struct ID3D11ShaderResourceView* mIBLDiffTex = nullptr;
+    struct ID3D11ShaderResourceView* mIBLSpecTex = nullptr;
 };
 
 class SceneNode
@@ -25,6 +28,12 @@ public:
     void SetCurrentAmbient(DirectX::XMFLOAT4&& _ambientColor);
     void SetCurrentAmbient(DirectX::XMFLOAT4& _ambientColor);
     DirectX::XMFLOAT4& GetCurrentAmbient();
+
+    void LoadIBLTexture(std::string _env = "", std::string _diff = "",
+        std::string _spc = "");
+    struct ID3D11ShaderResourceView* GetIBLEnvironment();
+    struct ID3D11ShaderResourceView* GetIBLDiffuse();
+    struct ID3D11ShaderResourceView* GetIBLSpecular();
 
     class RSCamera* GetMainCamera();
 
