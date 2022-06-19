@@ -125,11 +125,11 @@ MATERIAL LerpMaterial(MATERIAL _m1, MATERIAL _m2, float _factor)
 
 float3 LerpFresnelR0(float3 _originR0, float _metallic)
 {
-    if (_metallic < 0.75f && _originR0.x > 0.1f && _originR0.y > 0.1f && _originR0.z > 0.1f)
+    if (_metallic < 1.f && _originR0.x > 0.1f && _originR0.y > 0.1f && _originR0.z > 0.1f)
     {
-        float factor = _metallic / 0.75f;
-        factor = 1.f - Pow5(factor);
-        return lerp(_originR0, float3(0.1f, 0.1f, 0.1f), factor);
+        float minV = min(min(_originR0.x, _originR0.y), _originR0.z);
+        float factor = 1.f - Pow5(_metallic);
+        return lerp(float3(minV, minV, minV), float3(0.1f, 0.1f, 0.1f), factor);
     }
     else
     {
