@@ -155,7 +155,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="StaticResources\Materials\StaticMaterials.json">
+    <None Include="StaticResources\Materials\static-materials.json">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
