@@ -1,4 +1,5 @@
 {
+    "$schema": "./static-material.schema.json",
     "static-material": [
         {
             "name": "gloss-copper",

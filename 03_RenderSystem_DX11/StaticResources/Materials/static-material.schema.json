@@ -1,0 +1,89 @@
+{
+    "title": "Root Schema",
+    "description": "the root schema for editing static material JSON document. NOT FOR VALIDATING.",
+    "type": "object",
+    "default": {},
+    "required": [
+        "static-material"
+    ],
+    "properties": {
+        "static-material": {
+            "title": "The static-material Schema",
+            "description": "all the material instances can be use in rendering system (no more than 255)",
+            "type": "array",
+            "default": [],
+            "items": {
+                "title": "A Schema",
+                "description": "terms in disney's brdf material",
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "The name Schema",
+                        "description": "the name of this material instance",
+                        "type": "string"
+                    },
+                    "fresnel-r0": {
+                        "title": "The fresnel-r0 Schema",
+                        "description": "fresnel r0 (with rgb component)",
+                        "type": "array",
+                        "items": {
+                            "title": "A Schema",
+                            "description": "float value [0.0, 1.0]",
+                            "type": "number"
+                        }
+                    },
+                    "subsurface": {
+                        "title": "The subsurface Schema",
+                        "description": "subsurface term in float value [0.0, 1.0]",
+                        "type": "number"
+                    },
+                    "metallic": {
+                        "title": "The metallic Schema",
+                        "description": "metallic term in float value [0.0, 1.0]",
+                        "type": "number"
+                    },
+                    "specular": {
+                        "title": "The specular Schema",
+                        "description": "specular term in float value [0.0, 1.0]",
+                        "type": "number"
+                    },
+                    "specular-tint": {
+                        "title": "The specular-tint Schema",
+                        "description": "specular tint in float value (currently not an important term) [0.0, 1.0]",
+                        "type": "number"
+                    },
+                    "roughness": {
+                        "title": "The roughness Schema",
+                        "description": "roughness term in float value [0.0, 1.0]",
+                        "type": "number"
+                    },
+                    "anisotropic": {
+                        "title": "The anisotropic Schema",
+                        "description": "anisotropic term in float value [0.0, 1.0]",
+                        "type": "number"
+                    },
+                    "sheen": {
+                        "title": "The sheen Schema",
+                        "description": "sheen term in float value (currently not an important term) [0.0, 1.0]",
+                        "type": "number"
+                    },
+                    "sheen-tint": {
+                        "title": "The sheen-tint Schema",
+                        "description": "sheen tint in float value (currently not an important term) [0.0, 1.0]",
+                        "type": "number"
+                    },
+                    "clearcoat": {
+                        "title": "The clearcoat Schema",
+                        "description": "clearcoat in float value [0.0, 1.0]",
+                        "type": "number"
+                    },
+                    "clearcoat-gloss": {
+                        "title": "The clearcoat-gloss Schema",
+                        "description": "clearcoat gloss term in float value [0.0, 1.0]",
+                        "type": "number"
+                    }
+                }
+            }
+        }
+    }
+}

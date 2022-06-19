@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Root">
       <UniqueIdentifier>{28271718-a871-469f-9a50-5047207eed57}</UniqueIdentifier>
     </Filter>
@@ -153,10 +149,5 @@
     <ClCompile Include="WICTextureLoader11.cpp">
       <Filter>Tool</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="StaticResources\Materials\static-materials.json">
-      <Filter>Resource Files</Filter>
-    </None>
   </ItemGroup>
 </Project>
