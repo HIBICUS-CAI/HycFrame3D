@@ -6,9 +6,9 @@
         0.001,
         1.0
     ],
-    "ibl-environment": "winter_forest_env.dds",
-    "ibl-diffuse": "winter_forest_diff.dds",
-    "ibl-specular": "winter_forest_spec.dds",
+    "ibl-environment": "mat_studio_env.dds",
+    "ibl-diffuse": "mat_studio_diff.dds",
+    "ibl-specular": "mat_studio_spec.dds",
     "model-assets": [
         {
             "mesh-name": "grid",
@@ -33,10 +33,7 @@
         {
             "mesh-name": "mat-ball",
             "load-mode": "model-file",
-            "force-diffuse": "matball_diffuse.png",
-            "force-normal": "matball_normal.png",
-            "force-metallic": "matball_metallic.png",
-            "force-roughness": "matball_roughness.png",
+            "force-diffuse": "copper.png",
             "material-info": {
                 "major-material": "gloss-copper",
                 "minor-material": "dull-copper",
