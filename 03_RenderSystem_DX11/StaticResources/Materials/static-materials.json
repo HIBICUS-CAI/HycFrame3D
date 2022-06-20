@@ -3,6 +3,186 @@
     "material-look-up-list": [],
     "static-material": [
         {
+            "name": "gloss-porcelain",
+            "fresnel-r0": [
+                0.09,
+                0.09,
+                0.09
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 1.0,
+            "specular-tint": 0.0,
+            "roughness": 0.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-porcelain",
+            "fresnel-r0": [
+                0.09,
+                0.09,
+                0.09
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 1.0,
+            "specular-tint": 0.0,
+            "roughness": 0.1,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "gloss-gem",
+            "fresnel-r0": [
+                0.08,
+                0.08,
+                0.08
+            ],
+            "subsurface": 1.0,
+            "metallic": 0.0,
+            "specular": 1.0,
+            "specular-tint": 0.0,
+            "roughness": 0.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-gem",
+            "fresnel-r0": [
+                0.08,
+                0.08,
+                0.08
+            ],
+            "subsurface": 1.0,
+            "metallic": 0.0,
+            "specular": 1.0,
+            "specular-tint": 0.0,
+            "roughness": 0.7,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "gloss-plastic",
+            "fresnel-r0": [
+                0.045,
+                0.045,
+                0.045
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.3,
+            "specular-tint": 0.0,
+            "roughness": 0.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-plastic",
+            "fresnel-r0": [
+                0.045,
+                0.045,
+                0.045
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.3,
+            "specular-tint": 0.0,
+            "roughness": 0.6,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "refract-semi-rough-plastic",
+            "fresnel-r0": [
+                0.045,
+                0.045,
+                0.045
+            ],
+            "subsurface": 1.0,
+            "metallic": 0.0,
+            "specular": 0.3,
+            "specular-tint": 0.0,
+            "roughness": 0.3,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "gloss-marble",
+            "fresnel-r0": [
+                0.056,
+                0.056,
+                0.056
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.9,
+            "specular-tint": 0.0,
+            "roughness": 0.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-marble",
+            "fresnel-r0": [
+                0.056,
+                0.056,
+                0.056
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.9,
+            "specular-tint": 0.0,
+            "roughness": 1.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "refract-semi-rough-marble",
+            "fresnel-r0": [
+                0.056,
+                0.056,
+                0.056
+            ],
+            "subsurface": 1.0,
+            "metallic": 0.0,
+            "specular": 0.9,
+            "specular-tint": 0.0,
+            "roughness": 0.5,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
             "name": "gloss-chromium",
             "fresnel-r0": [
                 0.549,
