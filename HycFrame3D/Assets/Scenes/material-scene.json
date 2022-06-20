@@ -33,11 +33,11 @@
         {
             "mesh-name": "mat-ball",
             "load-mode": "model-file",
-            "force-diffuse": "blue_green.png",
+            "force-diffuse": "white.jpg",
             "material-info": {
-                "major-material": "gloss-porcelain",
-                "minor-material": "rough-porcelain",
-                "interpolate-factor": 1.0
+                "major-material": "gloss-iron",
+                "minor-material": "rough-rubber",
+                "interpolate-factor": 0.0
             },
             "load-info": {
                 "model-file": "mat_ball.gltf.meshdata",

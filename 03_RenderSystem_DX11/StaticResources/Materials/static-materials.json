@@ -1,7 +1,226 @@
 {
     "$schema": "./static-material.schema.json",
-    "material-look-up-list": [],
+    "static-material-look-up-list": [
+        "brushed-copper",
+        "rough-copper",
+        "gloss-copper",
+        "brushed-silver",
+        "rough-silver",
+        "gloss-silver",
+        "brushed-gold",
+        "rough-gold",
+        "gloss-gold",
+        "brushed-iron",
+        "rough-iron",
+        "gloss-iron",
+        "brushed-aluminum",
+        "rough-aluminum",
+        "gloss-aluminum",
+        "brushed-chromium",
+        "rough-chromium",
+        "gloss-chromium",
+        "refract-semi-rough-marble",
+        "rough-marble",
+        "gloss-marble",
+        "refract-semi-rough-plastic",
+        "rough-plastic",
+        "gloss-plastic",
+        "rough-gem",
+        "gloss-gem",
+        "rough-porcelain",
+        "gloss-porcelain",
+        "rough-soil",
+        "semi-rough-soil",
+        "rough-paper",
+        "semi-rough-paper",
+        "rough-wood",
+        "semi-rough-wood",
+        "rough-brick",
+        "semi-rough-brick",
+        "rough-rubber",
+        "semi-rough-rubber"
+    ],
     "static-material": [
+        {
+            "name": "semi-rough-rubber",
+            "fresnel-r0": [
+                0.02,
+                0.02,
+                0.02
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.05,
+            "specular-tint": 0.0,
+            "roughness": 0.6,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-rubber",
+            "fresnel-r0": [
+                0.02,
+                0.02,
+                0.02
+            ],
+            "subsurface": 0.2,
+            "metallic": 0.0,
+            "specular": 0.05,
+            "specular-tint": 0.0,
+            "roughness": 1.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "semi-rough-brick",
+            "fresnel-r0": [
+                0.02,
+                0.02,
+                0.02
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.05,
+            "specular-tint": 0.0,
+            "roughness": 0.3,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-brick",
+            "fresnel-r0": [
+                0.02,
+                0.02,
+                0.02
+            ],
+            "subsurface": 0.2,
+            "metallic": 0.0,
+            "specular": 0.05,
+            "specular-tint": 0.0,
+            "roughness": 1.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "semi-rough-wood",
+            "fresnel-r0": [
+                0.03,
+                0.03,
+                0.03
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.25,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-wood",
+            "fresnel-r0": [
+                0.03,
+                0.03,
+                0.03
+            ],
+            "subsurface": 0.2,
+            "metallic": 0.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 1.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "semi-rough-paper",
+            "fresnel-r0": [
+                0.04,
+                0.04,
+                0.04
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.15,
+            "specular-tint": 0.0,
+            "roughness": 0.25,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-paper",
+            "fresnel-r0": [
+                0.04,
+                0.04,
+                0.04
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.15,
+            "specular-tint": 0.0,
+            "roughness": 1.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "semi-rough-soil",
+            "fresnel-r0": [
+                0.02,
+                0.02,
+                0.02
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.1,
+            "specular-tint": 0.0,
+            "roughness": 0.3,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-soil",
+            "fresnel-r0": [
+                0.02,
+                0.02,
+                0.02
+            ],
+            "subsurface": 0.0,
+            "metallic": 0.0,
+            "specular": 0.1,
+            "specular-tint": 0.0,
+            "roughness": 1.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
         {
             "name": "gloss-porcelain",
             "fresnel-r0": [
