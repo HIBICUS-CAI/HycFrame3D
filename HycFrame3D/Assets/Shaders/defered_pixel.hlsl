@@ -50,17 +50,12 @@ StructuredBuffer<MATERIAL> gAllMaterialInfo : register(t5);
 
 Texture2D<uint4> gGeoBuffer : register(t6);
 Texture2D gAnisotropic : register(t7);
-Texture2D gWorldPos : register(t8);
-Texture2D<uint4> gNormal : register(t9);
-Texture2D gDiffuse : register(t10);
-Texture2D gDiffuseAlbedo : register(t11);
-Texture2D gFresnelShiniese : register(t12);
-Texture2D gSsao : register(t13);
-Texture2DArray<float> gShadowMap : register(t14);
-Texture2D gBRDFLUT : register(t15);
-TextureCube gDiffuseMap : register(t16);
-TextureCube gSpecularMap : register(t17);
-Texture2D gDepthMap : register(t18);
+Texture2D gSsao : register(t8);
+Texture2DArray<float> gShadowMap : register(t9);
+Texture2D gBRDFLUT : register(t10);
+TextureCube gDiffuseMap : register(t11);
+TextureCube gSpecularMap : register(t12);
+Texture2D gDepthMap : register(t13);
 
 float3 DepthToWorldPos(float2 uv, float depth)
 {
@@ -180,9 +175,8 @@ float3 CalcEnvSpecular(float3 _pos, float3 _normal ,float3 _view, MATERIAL _mat)
 
 float4 main(VS_OUTPUT _in) : SV_TARGET
 {
-    float3 positionW = gWorldPos.Sample(gSamPointClamp, _in.TexCoordL).rgb;
     float depth = gDepthMap.Sample(gSamPointClamp, _in.TexCoordL).r;
-    positionW = DepthToWorldPos(_in.TexCoordL, depth);
+    float3 positionW = DepthToWorldPos(_in.TexCoordL, depth);
     int3 tcInt = int3(_in.TexCoordL.x * 1280, _in.TexCoordL.y * 720, 0);
     uint4 geoData = gGeoBuffer.Load(tcInt);
     float4 anisoData = gAnisotropic.Sample(gSamPointClamp, _in.TexCoordL);
@@ -194,10 +188,6 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     uint4 matAbout = UnpackUint32ToFourUint8(geoData.z);
     float2 metAndRou = Uint8ToFloat_V2(matAbout.xy);
     float3 toEye = normalize(gLightInfo[0].gCameraPos - positionW);
-    float4 albedo = gDiffuseAlbedo.Sample(gSamLinearWrap, _in.TexCoordL);
-    float4 fresshin = gFresnelShiniese.Sample(gSamLinearWrap, _in.TexCoordL);
-    float3 fresnel = fresshin.rgb;
-    float shiniese = fresshin.a;
     float4 diffuse = float4(albedoAndMatFactor.rgb, 1.f);
     float access = gSsao.SampleLevel(gSamLinearWrap, _in.TexCoordL, 0.0f).r;
     diffuse.rgb = sRGBToACES(diffuse.rgb);

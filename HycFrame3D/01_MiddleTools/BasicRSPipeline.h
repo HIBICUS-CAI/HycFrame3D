@@ -205,11 +205,6 @@ private:
     ID3D11Buffer* mBonesStructedBuffer;
     ID3D11ShaderResourceView* mBonesStructedBufferSrv;
     ID3D11SamplerState* mLinearSampler;
-    ID3D11RenderTargetView* mDiffuseRtv;
-    ID3D11RenderTargetView* mNormalRtv;
-    ID3D11RenderTargetView* mWorldPosRtv;
-    ID3D11RenderTargetView* mDiffAlbeRtv;
-    ID3D11RenderTargetView* mFresShinRtv;
     ID3D11RenderTargetView* mGeoBufferRtv;
     ID3D11RenderTargetView* mAnisotropicRtv;
     ID3D11DepthStencilView* mDepthDsv;
@@ -255,7 +250,6 @@ private:
     ID3D11Buffer* mSsaoInfoStructedBuffer;
     ID3D11ShaderResourceView* mSsaoInfoStructedBufferSrv;
     ID3D11ShaderResourceView* mGeoBufferSrv;
-    ID3D11ShaderResourceView* mNormalMapSrv;
     ID3D11ShaderResourceView* mDepthMapSrv;
     ID3D11ShaderResourceView* mRandomMapSrv;
     DirectX::XMFLOAT4 mOffsetVec[14];
@@ -290,7 +284,6 @@ private:
     ID3D11ComputeShader* mVertBlurShader;
     ID3D11UnorderedAccessView* mSsaoTexUav;
     ID3D11ShaderResourceView* mGeoBufferSrv;
-    ID3D11ShaderResourceView* mNormalMapSrv;
     ID3D11ShaderResourceView* mDepthMapSrv;
 };
 
@@ -373,11 +366,6 @@ private:
     ID3D11ShaderResourceView* mShadowStructedBufferSrv;
     ID3D11Buffer* mCameraStructedBuffer;
     ID3D11ShaderResourceView* mCameraStructedBufferSrv;
-    ID3D11ShaderResourceView* mWorldPosSrv;
-    ID3D11ShaderResourceView* mNormalSrv;
-    ID3D11ShaderResourceView* mDiffuseSrv;
-    ID3D11ShaderResourceView* mDiffuseAlbedoSrv;
-    ID3D11ShaderResourceView* mFresenlShineseSrv;
     ID3D11ShaderResourceView* mGeoBufferSrv;
     ID3D11ShaderResourceView* mAnisotropicSrv;
     ID3D11ShaderResourceView* mSsaoSrv;
@@ -788,8 +776,6 @@ private:
     ID3D11PixelShader* mPixelShader;
     ID3D11RenderTargetView* mRenderTargetView;
     ID3D11SamplerState* mLinearWrapSampler;
-    ID3D11ShaderResourceView* mDiffuseSrv;
-    ID3D11ShaderResourceView* mDiffuseAlbedoSrv;
     ID3D11ShaderResourceView* mGeoBufferSrv;
     ID3D11ShaderResourceView* mSsaoSrv;
     ID3D11Buffer* mVertexBuffer;

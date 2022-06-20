@@ -554,9 +554,7 @@ RSPass_MRT::RSPass_MRT(std::string& _name, PASS_TYPE _type,
     mBonesStructedBuffer(nullptr),
     mBonesStructedBufferSrv(nullptr),
     mLinearSampler(nullptr), mDepthDsv(nullptr),
-    mDiffuseRtv(nullptr), mNormalRtv(nullptr),
-    mRSCameraInfo(nullptr), mWorldPosRtv(nullptr),
-    mDiffAlbeRtv(nullptr), mFresShinRtv(nullptr),
+    mRSCameraInfo(nullptr),
     mGeoBufferRtv(nullptr), mAnisotropicRtv(nullptr)
 {
 
@@ -577,13 +575,8 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
     mInstanceStructedBufferSrv(_source.mInstanceStructedBufferSrv),
     mBonesStructedBufferSrv(_source.mBonesStructedBufferSrv),
     mLinearSampler(_source.mLinearSampler),
-    mDiffuseRtv(_source.mDiffuseRtv),
-    mNormalRtv(_source.mNormalRtv),
     mDepthDsv(_source.mDepthDsv),
     mRSCameraInfo(_source.mRSCameraInfo),
-    mWorldPosRtv(_source.mWorldPosRtv),
-    mDiffAlbeRtv(_source.mDiffAlbeRtv),
-    mFresShinRtv(_source.mFresShinRtv),
     mGeoBufferRtv(_source.mGeoBufferRtv),
     mAnisotropicRtv(_source.mAnisotropicRtv)
 {
@@ -649,16 +642,6 @@ void RSPass_MRT::ReleasePass()
 
     std::string name = "mrt-depth";
     g_Root->ResourceManager()->DeleteResource(name);
-    name = "mrt-normal";
-    g_Root->ResourceManager()->DeleteResource(name);
-    name = "mrt-diffuse";
-    g_Root->ResourceManager()->DeleteResource(name);
-    name = "mrt-worldpos";
-    g_Root->ResourceManager()->DeleteResource(name);
-    name = "mrt-diffuse-albedo";
-    g_Root->ResourceManager()->DeleteResource(name);
-    name = "mrt-fresnel-shinese";
-    g_Root->ResourceManager()->DeleteResource(name);
     name = "mrt-geo-buffer";
     g_Root->ResourceManager()->DeleteResource(name);
     name = "mrt-anisotropic";
@@ -668,25 +651,13 @@ void RSPass_MRT::ReleasePass()
 void RSPass_MRT::ExecuatePass()
 {
     ID3D11RenderTargetView* rtvnull = nullptr;
-    static ID3D11RenderTargetView* mrt[] = { mGeoBufferRtv,
-        mAnisotropicRtv, mDiffuseRtv,
-        mNormalRtv,mWorldPosRtv,mDiffAlbeRtv,mFresShinRtv };
-    STContext()->OMSetRenderTargets(7, mrt, mDepthDsv);
+    static ID3D11RenderTargetView* mrt[] = { mGeoBufferRtv, mAnisotropicRtv };
+    STContext()->OMSetRenderTargets(2, mrt, mDepthDsv);
     STContext()->RSSetViewports(1, &g_ViewPort);
     STContext()->ClearRenderTargetView(
         mGeoBufferRtv, DirectX::Colors::Transparent);
     STContext()->ClearRenderTargetView(
         mAnisotropicRtv, DirectX::Colors::Transparent);
-    STContext()->ClearRenderTargetView(
-        mDiffuseRtv, DirectX::Colors::DarkGreen);
-    STContext()->ClearRenderTargetView(
-        mNormalRtv, DirectX::Colors::Transparent);
-    STContext()->ClearRenderTargetView(
-        mWorldPosRtv, DirectX::Colors::Transparent);
-    STContext()->ClearRenderTargetView(
-        mDiffAlbeRtv, DirectX::Colors::Transparent);
-    STContext()->ClearRenderTargetView(
-        mFresShinRtv, DirectX::Colors::Transparent);
     STContext()->ClearDepthStencilView(mDepthDsv, D3D11_CLEAR_DEPTH, 1.f, 0);
     //STContext()->VSSetShader(mVertexShader, nullptr, 0);
     STContext()->PSSetShader(mPixelShader, nullptr, 0);
@@ -994,42 +965,6 @@ bool RSPass_MRT::CreateViews()
     texDesc.Usage = D3D11_USAGE_DEFAULT;
     texDesc.CPUAccessFlags = 0;
     texDesc.MiscFlags = 0;
-    texDesc.Format = DXGI_FORMAT_R16G16B16A16_UINT;
-    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
-    if (FAILED(hr)) { return false; }
-
-    rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_UINT;
-    rtvDesc.Texture2D.MipSlice = 0;
-    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(texture, &rtvDesc, &mNormalRtv);
-    if (FAILED(hr)) { return false; }
-
-    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_UINT;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture, &srvDesc, &srv);
-    if (FAILED(hr)) { return false; }
-
-    dti = {};
-    name = "mrt-normal";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = mNormalRtv;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
-
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->
-        GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->
-        GetCurrWndHeight();
-    texDesc.MipLevels = 1;
-    texDesc.ArraySize = 1;
-    texDesc.SampleDesc.Count = 1;
-    texDesc.Usage = D3D11_USAGE_DEFAULT;
-    texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = 0;
     texDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
     texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
     hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
@@ -1086,144 +1021,7 @@ bool RSPass_MRT::CreateViews()
     name = "mrt-anisotropic";
     dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
     dti.mResource.mTexture2D = texture;
-    dti.mRtv = mWorldPosRtv;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
-
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
-    texDesc.MipLevels = 1;
-    texDesc.ArraySize = 1;
-    texDesc.SampleDesc.Count = 1;
-    texDesc.Usage = D3D11_USAGE_DEFAULT;
-    texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = 0;
-    texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
-    if (FAILED(hr)) { return false; }
-
-    rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-    rtvDesc.Texture2D.MipSlice = 0;
-    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(texture, &rtvDesc, &mWorldPosRtv);
-    if (FAILED(hr)) { return false; }
-
-    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture, &srvDesc, &srv);
-    if (FAILED(hr)) { return false; }
-
-    dti = {};
-    name = "mrt-worldpos";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = mWorldPosRtv;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
-
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
-    texDesc.MipLevels = 1;
-    texDesc.ArraySize = 1;
-    texDesc.SampleDesc.Count = 1;
-    texDesc.Usage = D3D11_USAGE_DEFAULT;
-    texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = 0;
-    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
-    if (FAILED(hr)) { return false; }
-
-    rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    rtvDesc.Texture2D.MipSlice = 0;
-    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(texture, &rtvDesc, &mDiffuseRtv);
-    if (FAILED(hr)) { return false; }
-
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture, &srvDesc, &srv);
-    if (FAILED(hr)) { return false; }
-
-    dti = {};
-    name = "mrt-diffuse";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = mDiffuseRtv;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
-
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
-    texDesc.MipLevels = 1;
-    texDesc.ArraySize = 1;
-    texDesc.SampleDesc.Count = 1;
-    texDesc.Usage = D3D11_USAGE_DEFAULT;
-    texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = 0;
-    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
-    if (FAILED(hr)) { return false; }
-
-    rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    rtvDesc.Texture2D.MipSlice = 0;
-    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(
-        texture, &rtvDesc, &mDiffAlbeRtv);
-    if (FAILED(hr)) { return false; }
-
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture, &srvDesc, &srv);
-    if (FAILED(hr)) { return false; }
-
-    dti = {};
-    name = "mrt-diffuse-albedo";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = mDiffAlbeRtv;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
-
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
-    texDesc.MipLevels = 1;
-    texDesc.ArraySize = 1;
-    texDesc.SampleDesc.Count = 1;
-    texDesc.Usage = D3D11_USAGE_DEFAULT;
-    texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = 0;
-    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
-    if (FAILED(hr)) { return false; }
-
-    rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    rtvDesc.Texture2D.MipSlice = 0;
-    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(texture, &rtvDesc, &mFresShinRtv);
-    if (FAILED(hr)) { return false; }
-
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture, &srvDesc, &srv);
-    if (FAILED(hr)) { return false; }
-
-    dti = {};
-    name = "mrt-fresnel-shinese";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = mFresShinRtv;
+    dti.mRtv = mAnisotropicRtv;
     dti.mSrv = srv;
     g_Root->ResourceManager()->AddResource(name, dti);
 
@@ -1275,7 +1073,6 @@ RSPass_Ssao::RSPass_Ssao(
     mSsaoInfoStructedBuffer(nullptr),
     mSsaoInfoStructedBufferSrv(nullptr),
     mGeoBufferSrv(nullptr),
-    mNormalMapSrv(nullptr),
     mDepthMapSrv(nullptr),
     mRandomMapSrv(nullptr),
     mSamplePointClamp(nullptr), mSampleLinearClamp(nullptr),
@@ -1303,7 +1100,6 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao& _source) :
     mSsaoInfoStructedBuffer(_source.mSsaoInfoStructedBuffer),
     mSsaoInfoStructedBufferSrv(_source.mSsaoInfoStructedBufferSrv),
     mGeoBufferSrv(_source.mGeoBufferSrv),
-    mNormalMapSrv(_source.mNormalMapSrv),
     mDepthMapSrv(_source.mDepthMapSrv),
     mRandomMapSrv(_source.mRandomMapSrv),
     mVertexBuffer(_source.mVertexBuffer),
@@ -1828,9 +1624,6 @@ bool RSPass_Ssao::CreateViews()
     name = "mrt-geo-buffer";
     mGeoBufferSrv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mSrv;
-    name = "mrt-normal";
-    mNormalMapSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
     name = "mrt-depth";
     mDepthMapSrv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mSrv;
@@ -1916,7 +1709,6 @@ RSPass_KBBlur::RSPass_KBBlur(
     mHoriBlurShader(nullptr), mVertBlurShader(nullptr),
     mSsaoTexUav(nullptr),
     mGeoBufferSrv(nullptr),
-    mNormalMapSrv(nullptr),
     mDepthMapSrv(nullptr)
 {
 
@@ -1928,7 +1720,6 @@ RSPass_KBBlur::RSPass_KBBlur(const RSPass_KBBlur& _source) :
     mVertBlurShader(_source.mVertBlurShader),
     mSsaoTexUav(_source.mSsaoTexUav),
     mGeoBufferSrv(_source.mGeoBufferSrv),
-    mNormalMapSrv(_source.mNormalMapSrv),
     mDepthMapSrv(_source.mDepthMapSrv)
 {
     if (mHasBeenInited)
@@ -2044,10 +1835,7 @@ bool RSPass_KBBlur::CreateShaders()
 
 bool RSPass_KBBlur::CreateViews()
 {
-    std::string name = "mrt-normal";
-    mNormalMapSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
-    name = "mrt-geo-buffer";
+    std::string name = "mrt-geo-buffer";
     mGeoBufferSrv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mSrv;
     name = "mrt-depth";
@@ -2505,8 +2293,6 @@ RSPass_Defered::RSPass_Defered(
     mCameraStructedBufferSrv(nullptr),
     mSsaoSrv(nullptr),
     mVertexBuffer(nullptr), mIndexBuffer(nullptr),
-    mWorldPosSrv(nullptr), mNormalSrv(nullptr), mDiffuseSrv(nullptr),
-    mDiffuseAlbedoSrv(nullptr), mFresenlShineseSrv(nullptr),
     mGeoBufferSrv(nullptr),
     mAnisotropicSrv(nullptr),
     mRSCameraInfo(nullptr), mShadowDepthSrv(nullptr)
@@ -2535,11 +2321,6 @@ RSPass_Defered::RSPass_Defered(const RSPass_Defered& _source) :
     mSsaoSrv(_source.mSsaoSrv),
     mVertexBuffer(_source.mVertexBuffer),
     mIndexBuffer(_source.mIndexBuffer),
-    mWorldPosSrv(_source.mWorldPosSrv),
-    mNormalSrv(_source.mNormalSrv),
-    mDiffuseSrv(_source.mDiffuseSrv),
-    mDiffuseAlbedoSrv(_source.mDiffuseAlbedoSrv),
-    mFresenlShineseSrv(_source.mFresenlShineseSrv),
     mGeoBufferSrv(_source.mGeoBufferSrv),
     mAnisotropicSrv(_source.mAnisotropicSrv),
     mRSCameraInfo(_source.mRSCameraInfo),
@@ -2726,13 +2507,11 @@ void RSPass_Defered::ExecuatePass()
         mCameraStructedBufferSrv,
         g_Root->StaticResources()->GetMaterialSrv(),
         mGeoBufferSrv, mAnisotropicSrv,
-        mWorldPosSrv, mNormalSrv, mDiffuseSrv,
-        mDiffuseAlbedoSrv, mFresenlShineseSrv,
         mSsaoSrv, mShadowDepthSrv,
         g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv,
         depSrv
     };
-    STContext()->PSSetShaderResources(0, 19, srvs);
+    STContext()->PSSetShaderResources(0, 14, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
@@ -2758,10 +2537,9 @@ void RSPass_Defered::ExecuatePass()
     {
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
-        nullptr
+        nullptr, nullptr
     };
-    STContext()->PSSetShaderResources(0, 19, nullsrvs);
+    STContext()->PSSetShaderResources(0, 14, nullsrvs);
 }
 
 bool RSPass_Defered::CreateShaders()
@@ -2895,22 +2673,7 @@ bool RSPass_Defered::CreateViews()
 {
     mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
 
-    std::string name = "mrt-worldpos";
-    mWorldPosSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
-    name = "mrt-normal";
-    mNormalSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
-    name = "mrt-diffuse";
-    mDiffuseSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
-    name = "mrt-diffuse-albedo";
-    mDiffuseAlbedoSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
-    name = "mrt-fresnel-shinese";
-    mFresenlShineseSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
-    name = "mrt-geo-buffer";
+    std::string name = "mrt-geo-buffer";
     mGeoBufferSrv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mSrv;
     name = "mrt-anisotropic";
@@ -5942,7 +5705,7 @@ RSPass_SimpleLight::RSPass_SimpleLight(
     mVertexShader(nullptr), mPixelShader(nullptr),
     mLinearWrapSampler(nullptr), mRenderTargetView(nullptr),
     mVertexBuffer(nullptr), mIndexBuffer(nullptr),
-    mSsaoSrv(nullptr), mDiffuseSrv(nullptr), mDiffuseAlbedoSrv(nullptr),
+    mSsaoSrv(nullptr),
     mGeoBufferSrv(nullptr)
 {
 
@@ -5957,9 +5720,7 @@ RSPass_SimpleLight::RSPass_SimpleLight(const RSPass_SimpleLight& _source) :
     mSsaoSrv(_source.mSsaoSrv),
     mVertexBuffer(_source.mVertexBuffer),
     mIndexBuffer(_source.mIndexBuffer),
-    mGeoBufferSrv(_source.mGeoBufferSrv),
-    mDiffuseSrv(_source.mDiffuseSrv),
-    mDiffuseAlbedoSrv(_source.mDiffuseAlbedoSrv)
+    mGeoBufferSrv(_source.mGeoBufferSrv)
 {
 
 }
@@ -6122,11 +5883,7 @@ bool RSPass_SimpleLight::CreateViews()
 {
     mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
 
-    std::string name = "mrt-diffuse";
-    mDiffuseSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
-    name = "mrt-diffuse-albedo";
-    mDiffuseAlbedoSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
-    name = "mrt-geo-buffer";
+    std::string name = "mrt-geo-buffer";
     mGeoBufferSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
     name = "ssao-tex-compress-ssao";
     mSsaoSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
