@@ -6,6 +6,9 @@
         0.5,
         1.0
     ],
+    "ibl-environment": "mat_studio_env.dds",
+    "ibl-diffuse": "mat_studio_diff.dds",
+    "ibl-specular": "mat_studio_spec.dds",
     "model-assets": [],
     "audio-assets": [
         {

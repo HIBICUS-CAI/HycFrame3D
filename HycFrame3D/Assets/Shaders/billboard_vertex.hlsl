@@ -18,9 +18,9 @@ struct VS_OUTPUT
 
 struct MATERIAL
 {
-    float4 gDiffuseAlbedo;
-    float3 gFresnelR0;
-    float gShininess;
+    uint gMajorIndex;
+    uint gMinorIndex;
+    float gFactor;
 };
 
 struct INSTANCE_DATA

@@ -6,23 +6,16 @@
         0.5,
         1.0
     ],
+    "ibl-environment": "winter_forest_env.dds",
+    "ibl-diffuse": "winter_forest_diff.dds",
+    "ibl-specular": "winter_forest_spec.dds",
     "model-assets": [
         {
             "mesh-name": "tile-box",
-            "static-material": null,
             "material-info": {
-                "albedo": [
-                    0.8,
-                    0.8,
-                    0.8,
-                    0.8
-                ],
-                "fresnel": [
-                    0.1,
-                    0.3,
-                    0.1
-                ],
-                "shininess": 0.5
+                "major-material": "gloss-copper",
+                "minor-material": "rough-copper",
+                "interpolate-factor": 0.3
             },
             "force-diffuse": "tile.dds",
             "force-normal": "tile_nmap.dds",
@@ -39,10 +32,14 @@
         },
         {
             "mesh-name": "sand-grid",
-            "static-material": null,
+            "material-info": {
+                "major-material": "rough-soil",
+                "minor-material": "rough-soil",
+                "interpolate-factor": 1.0
+            },
             "load-mode": "program-grid",
             "load-info": {
-                "tex-file": "sand.jpg",
+                "tex-file": "copper.png",
                 "grid-size": [
                     150.0,
                     150.0
@@ -55,6 +52,11 @@
         },
         {
             "mesh-name": "cloud-cyl",
+            "material-info": {
+                "major-material": "gloss-gem",
+                "minor-material": "rough-gem",
+                "interpolate-factor": 0.0
+            },
             "load-mode": "program-cylinder",
             "load-info": {
                 "tex-file": "cloud.png",
@@ -71,6 +73,11 @@
         },
         {
             "mesh-name": "cloud-sphere",
+            "material-info": {
+                "major-material": "gloss-copper",
+                "minor-material": "rough-copper",
+                "interpolate-factor": 0.5
+            },
             "load-mode": "program-sphere",
             "load-info": {
                 "tex-file": "cloud.png",
@@ -83,6 +90,11 @@
         },
         {
             "mesh-name": "cloud-geo-sphere",
+            "material-info": {
+                "major-material": "gloss-copper",
+                "minor-material": "rough-copper",
+                "interpolate-factor": 0.2
+            },
             "load-mode": "program-geo-sphere",
             "load-info": {
                 "tex-file": "cloud.png",
@@ -92,6 +104,11 @@
         },
         {
             "mesh-name": "dragon",
+            "material-info": {
+                "major-material": "gloss-marble",
+                "minor-material": "rough-marble",
+                "interpolate-factor": 0.0
+            },
             "load-mode": "model-file",
             "load-info": {
                 "model-file": "Dragon.FBX.meshdata",
@@ -103,18 +120,9 @@
             "load-mode": "model-file",
             "force-diffuse": "rex_diffuse.png",
             "material-info": {
-                "albedo": [
-                    0.8,
-                    0.8,
-                    0.8,
-                    0.8
-                ],
-                "fresnel": [
-                    0.1,
-                    0.3,
-                    0.1
-                ],
-                "shininess": 0.5
+                "major-material": "gloss-plastic",
+                "minor-material": "rough-plastic",
+                "interpolate-factor": 0.8
             },
             "load-info": {
                 "model-file": "rex_ani.gltf.meshdata",
@@ -124,20 +132,11 @@
         {
             "mesh-name": "fenghuang",
             "load-mode": "model-file",
-            "force-diffuse": "cloud.png",
+            "force-diffuse": "gold.png",
             "material-info": {
-                "albedo": [
-                    0.8,
-                    0.8,
-                    0.8,
-                    0.8
-                ],
-                "fresnel": [
-                    0.1,
-                    0.3,
-                    0.1
-                ],
-                "shininess": 0.5
+                "major-material": "gloss-gold",
+                "minor-material": "rough-gold",
+                "interpolate-factor": 0.0
             },
             "load-info": {
                 "model-file": "fly_ani.fbx.meshdata",
@@ -148,20 +147,11 @@
         {
             "mesh-name": "fenghuang",
             "load-mode": "model-file",
-            "force-diffuse": "cloud.png",
+            "force-diffuse": "gold.png",
             "material-info": {
-                "albedo": [
-                    0.8,
-                    0.8,
-                    0.8,
-                    0.8
-                ],
-                "fresnel": [
-                    0.1,
-                    0.3,
-                    0.1
-                ],
-                "shininess": 0.5
+                "major-material": "gloss-gold",
+                "minor-material": "rough-gold",
+                "interpolate-factor": 0.0
             },
             "load-info": {
                 "model-file": "fly_ani.fbx.meshdata",
@@ -357,7 +347,7 @@
                     "light-type": "point",
                     "with-shadow": false,
                     "with-bloom": true,
-                    "intensity": 1.0,
+                    "intensity": 3000.0,
                     "albedo": [
                         0.9,
                         0.0,
@@ -369,8 +359,8 @@
                         0.0
                     ],
                     "fall-off-start-end": [
-                        30.0,
-                        80.0
+                        0.0,
+                        100.0
                     ],
                     "spot-power": 2.0
                 },
