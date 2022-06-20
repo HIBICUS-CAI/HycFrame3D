@@ -1,18 +1,19 @@
 {
     "$schema": "./static-material.schema.json",
+    "material-look-up-list": [],
     "static-material": [
         {
-            "name": "gloss-copper",
+            "name": "gloss-chromium",
             "fresnel-r0": [
-                0.95,
-                0.64,
-                0.54
+                0.549,
+                0.556,
+                0.554
             ],
             "subsurface": 0.0,
-            "metallic": 0.99,
+            "metallic": 1.0,
             "specular": 0.8,
             "specular-tint": 0.0,
-            "roughness": 0.05,
+            "roughness": 0.0,
             "anisotropic": 0.0,
             "sheen": 0.0,
             "sheen-tint": 0.0,
@@ -20,18 +21,306 @@
             "clearcoat-gloss": 0.0
         },
         {
-            "name": "dull-copper",
+            "name": "rough-chromium",
             "fresnel-r0": [
-                0.95,
-                0.64,
-                0.54
+                0.549,
+                0.556,
+                0.554
             ],
             "subsurface": 0.0,
-            "metallic": 0.99,
+            "metallic": 1.0,
             "specular": 0.8,
             "specular-tint": 0.0,
-            "roughness": 0.95,
+            "roughness": 0.6,
             "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "brushed-chromium",
+            "fresnel-r0": [
+                0.549,
+                0.556,
+                0.554
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.3,
+            "anisotropic": 1.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "gloss-aluminum",
+            "fresnel-r0": [
+                0.913,
+                0.922,
+                0.924
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-aluminum",
+            "fresnel-r0": [
+                0.913,
+                0.922,
+                0.924
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.6,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "brushed-aluminum",
+            "fresnel-r0": [
+                0.913,
+                0.922,
+                0.924
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.3,
+            "anisotropic": 1.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "gloss-iron",
+            "fresnel-r0": [
+                0.562,
+                0.565,
+                0.578
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-iron",
+            "fresnel-r0": [
+                0.562,
+                0.565,
+                0.578
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.6,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "brushed-iron",
+            "fresnel-r0": [
+                0.562,
+                0.565,
+                0.578
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.3,
+            "anisotropic": 1.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "gloss-gold",
+            "fresnel-r0": [
+                1.000,
+                0.782,
+                0.344
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-gold",
+            "fresnel-r0": [
+                1.000,
+                0.782,
+                0.344
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.6,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "brushed-gold",
+            "fresnel-r0": [
+                1.000,
+                0.782,
+                0.344
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.3,
+            "anisotropic": 1.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "gloss-silver",
+            "fresnel-r0": [
+                0.972,
+                0.960,
+                0.915
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-silver",
+            "fresnel-r0": [
+                0.972,
+                0.960,
+                0.915
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.6,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "brushed-silver",
+            "fresnel-r0": [
+                0.972,
+                0.960,
+                0.915
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.3,
+            "anisotropic": 1.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "gloss-copper",
+            "fresnel-r0": [
+                0.955,
+                0.638,
+                0.538
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.0,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "rough-copper",
+            "fresnel-r0": [
+                0.955,
+                0.638,
+                0.538
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.6,
+            "anisotropic": 0.0,
+            "sheen": 0.0,
+            "sheen-tint": 0.0,
+            "clearcoat": 0.0,
+            "clearcoat-gloss": 0.0
+        },
+        {
+            "name": "brushed-copper",
+            "fresnel-r0": [
+                0.955,
+                0.638,
+                0.538
+            ],
+            "subsurface": 0.0,
+            "metallic": 1.0,
+            "specular": 0.8,
+            "specular-tint": 0.0,
+            "roughness": 0.3,
+            "anisotropic": 1.0,
             "sheen": 0.0,
             "sheen-tint": 0.0,
             "clearcoat": 0.0,

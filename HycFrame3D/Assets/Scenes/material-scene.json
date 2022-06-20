@@ -14,7 +14,7 @@
             "mesh-name": "grid",
             "material-info": {
                 "major-material": "gloss-copper",
-                "minor-material": "dull-copper",
+                "minor-material": "rough-copper",
                 "interpolate-factor": 0.0
             },
             "load-mode": "program-grid",
@@ -33,10 +33,10 @@
         {
             "mesh-name": "mat-ball",
             "load-mode": "model-file",
-            "force-diffuse": "copper.png",
+            "force-diffuse": "silver.png",
             "material-info": {
-                "major-material": "gloss-copper",
-                "minor-material": "dull-copper",
+                "major-material": "gloss-chromium",
+                "minor-material": "rough-chromium",
                 "interpolate-factor": 0.0
             },
             "load-info": {
