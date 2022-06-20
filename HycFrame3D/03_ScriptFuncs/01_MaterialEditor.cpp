@@ -36,6 +36,7 @@ static ATransformComponent* g_PointLightAtc = nullptr;
 static ATransformComponent* g_MaterialBallAtc = nullptr;
 static RS_MATERIAL_DATA* g_Material = nullptr;
 static MAT_TYPE g_EditingMatTerm = MAT_TYPE::ROUGHNESS;
+static SUBMESH_DATA* g_MatBallMesh = nullptr;
 
 void OutputThisMaterialInfo()
 {
@@ -253,6 +254,23 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         GetRSRoot_DX11_Singleton()->StaticResources()->MapMaterialData();
     }
 
+    float& factor = g_MatBallMesh->mInstanceMap.begin()->
+        second.mMaterialData.mInterpolateFactor;
+    if (InputInterface::IsKeyDownInSingle(KB_COMMA))
+    {
+        factor -= deltatime / 1000.f;
+        if (factor < 0.f) { factor = 0.f; }
+    }
+    if (InputInterface::IsKeyDownInSingle(KB_PERIOD))
+    {
+        factor += deltatime / 1000.f;
+        if (factor > 1.f) { factor = 1.f; }
+    }
+    if (InputInterface::IsKeyPushedInSingle(KB_SLASH))
+    {
+        P_LOG(LOG_DEBUG, "current material factor : %f\n", factor);
+    }
+
     if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
     {
         OutputThisMaterialInfo();
@@ -274,9 +292,11 @@ bool MatEditorInit(AInteractComponent* _aitc)
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
     if (!g_MaterialBallAtc) { return false; }
 
-    auto& submeshName = (*_aitc->GetActorOwner()->
+    g_MatBallMesh = &(*_aitc->GetActorOwner()->
         GetSceneNode().GetAssetsPool()->
-        GetMeshIfExisted("mat-ball"))[0];
+        GetSubMeshIfExisted("mat-ball0"));
+    if (!g_MatBallMesh) { return false; }
+
     g_Material = GetRSRoot_DX11_Singleton()->StaticResources()->
         GetMaterialDataPtrForTest();
     if (!g_Material) { return false; }
@@ -296,4 +316,5 @@ void MatEditorDestory(AInteractComponent* _aitc)
     g_PointLightAtc = nullptr;
     g_MaterialBallAtc = nullptr;
     g_Material = nullptr;
+    g_MatBallMesh = nullptr;
 }
