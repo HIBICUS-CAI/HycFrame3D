@@ -13,9 +13,9 @@
         {
             "mesh-name": "tile-box",
             "material-info": {
-                "major-material": "gloss-copper",
-                "minor-material": "rough-copper",
-                "interpolate-factor": 0.3
+                "major-material": "gloss-porcelain",
+                "minor-material": "rough-porcelain",
+                "interpolate-factor": 0.0
             },
             "force-diffuse": "tile.dds",
             "force-normal": "tile_nmap.dds",
