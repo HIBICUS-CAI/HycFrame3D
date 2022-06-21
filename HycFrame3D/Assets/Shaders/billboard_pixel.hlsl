@@ -1,3 +1,5 @@
+#include "color_utility.hlsli"
+
 struct GS_OUTPUT
 {
     float4 PosH : SV_POSITION;
@@ -14,5 +16,6 @@ float4 main(GS_OUTPUT _in) : SV_TARGET
 {
     float4 color = gDiffuse.Sample(gSamLinear, _in.TexCoordL);
     clip(color.a - 0.1f);
+    color.rgb = sRGBToACES(color.rgb);
     return color;
 }

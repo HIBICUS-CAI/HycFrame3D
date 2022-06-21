@@ -162,12 +162,9 @@ void RSLight::UpdateBloomColor()
 {
     if (mBloomLightFlg)
     {
-        mLightInstanceData[0].mCustomizedData1.x =
-            mLightStrength.x * 1.6f;
-        mLightInstanceData[0].mCustomizedData1.y =
-            mLightStrength.y * 1.6f;
-        mLightInstanceData[0].mCustomizedData1.z =
-            mLightStrength.z * 1.6f;
+        mLightInstanceData[0].mCustomizedData1.x = mLightStrength.x;
+        mLightInstanceData[0].mCustomizedData1.y = mLightStrength.y;
+        mLightInstanceData[0].mCustomizedData1.z = mLightStrength.z;
         mLightInstanceData[0].mCustomizedData1.w = mIntensity;
     }
 }

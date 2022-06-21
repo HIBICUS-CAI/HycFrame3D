@@ -294,12 +294,12 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
         float4(CalcEnvSpecular(positionW, normalW, toEye, mat) * diffuse.rgb, 0.f);
 
     float4 litColor = ambientL * diffuse + directL;
+    litColor.a = diffuse.a;
     
     // TEMP EXPOSURE
-    litColor *= 0.2f;
+    // litColor *= 0.2f;
     // TEMP EXPOSURE
-    litColor.rgb = LinearToSRGB(ACESTonemapping(litColor.rgb));
-    litColor.a = diffuse.a;
+    // litColor.rgb = LinearToSRGB(ACESTonemapping(litColor.rgb));
 
     return litColor;
 }

@@ -439,8 +439,6 @@ private:
 private:
     ID3D11VertexShader* mVertexShader;
     ID3D11PixelShader* mPixelShader;
-    ID3D11VertexShader* mCompressVertexShader;
-    ID3D11PixelShader* mCompressPixelShader;
     DRAWCALL_TYPE mDrawCallType;
     RSDrawCallsPipe* mDrawCallPipe;
     ID3D11Buffer* mViewProjStructedBuffer;
@@ -448,76 +446,11 @@ private:
     ID3D11Buffer* mInstanceStructedBuffer;
     ID3D11ShaderResourceView* mInstanceStructedBufferSrv;
     ID3D11RenderTargetView* mRtv;
-    ID3D11ShaderResourceView* mNotCompressSrv;
-    ID3D11RenderTargetView* mCompressRtv;
     ID3D11DepthStencilView* mDepthDsv;
     RS_CAM_INFO* mRSCameraInfo;
     ID3D11Buffer* mVertexBuffer;
     ID3D11Buffer* mIndexBuffer;
     ID3D11SamplerState* mSampler;
-};
-
-class RSPass_BloomOn :public RSPass_Base
-{
-public:
-    RSPass_BloomOn(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_BloomOn(const RSPass_BloomOn& _source);
-    virtual ~RSPass_BloomOn();
-
-public:
-    virtual RSPass_BloomOn* ClonePass() override;
-
-    virtual bool InitPass();
-
-    virtual void ReleasePass();
-
-    virtual void ExecuatePass();
-
-private:
-    bool CreateShaders();
-    bool CreateBuffers();
-    bool CreateViews();
-    bool CreateStates();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11RenderTargetView* mRtv;
-    ID3D11ShaderResourceView* mBloomTexSrv;
-    ID3D11BlendState* mBlendState;
-    ID3D11DepthStencilState* mDepthState;
-    ID3D11SamplerState* mSampler;
-    ID3D11Buffer* mVertexBuffer;
-    ID3D11Buffer* mIndexBuffer;
-};
-
-class RSPass_Blur :public RSPass_Base
-{
-public:
-    RSPass_Blur(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_Blur(const RSPass_Blur& _source);
-    virtual ~RSPass_Blur();
-
-public:
-    virtual RSPass_Blur* ClonePass() override;
-
-    virtual bool InitPass();
-
-    virtual void ReleasePass();
-
-    virtual void ExecuatePass();
-
-private:
-    bool CreateShaders();
-    bool CreateViews();
-
-private:
-    ID3D11ComputeShader* mHoriBlurShader;
-    ID3D11ComputeShader* mVertBlurShader;
-    ID3D11UnorderedAccessView* mLightTexUav;
 };
 
 class RSPass_PriticleSetUp :public RSPass_Base

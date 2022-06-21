@@ -368,22 +368,10 @@ bool CreateBasicPipeline()
         name, PASS_TYPE::RENDER, g_Root);
     bloomdraw->SetExecuateOrder(1);
 
-    name = "bloomblur-pass";
-    RSPass_Blur* bloomblur = new RSPass_Blur(
-        name, PASS_TYPE::COMPUTE, g_Root);
-    bloomblur->SetExecuateOrder(2);
-
-    name = "bloomblend-pass";
-    RSPass_BloomOn* bloomblend = new RSPass_BloomOn(
-        name, PASS_TYPE::RENDER, g_Root);
-    bloomblend->SetExecuateOrder(3);
-
     name = "bloom-topic";
     RSTopic* bloom_topic = new RSTopic(name);
     bloom_topic->StartTopicAssembly();
     bloom_topic->InsertPass(bloomdraw);
-    bloom_topic->InsertPass(bloomblur);
-    bloom_topic->InsertPass(bloomblend);
     bloom_topic->SetExecuateOrder(7);
     bloom_topic->FinishTopicAssembly();
 
@@ -424,7 +412,7 @@ bool CreateBasicPipeline()
     RSTopic* sprite_topic = new RSTopic(name);
     sprite_topic->StartTopicAssembly();
     sprite_topic->InsertPass(sprite);
-    sprite_topic->SetExecuateOrder(9);
+    sprite_topic->SetExecuateOrder(10);
     sprite_topic->FinishTopicAssembly();
 
     name = "tonemapping-pass";
@@ -436,7 +424,7 @@ bool CreateBasicPipeline()
     RSTopic* post_procsssing_topic = new RSTopic(name);
     post_procsssing_topic->StartTopicAssembly();
     post_procsssing_topic->InsertPass(tonemap);
-    post_procsssing_topic->SetExecuateOrder(10);
+    post_procsssing_topic->SetExecuateOrder(9);
     post_procsssing_topic->FinishTopicAssembly();
 
     name = "light-pipeline";
@@ -447,14 +435,14 @@ bool CreateBasicPipeline()
     g_BasicPipeline->InsertTopic(shadow_topic);
     g_BasicPipeline->InsertTopic(defered_topic);
     g_BasicPipeline->InsertTopic(sky_topic);
-    g_BasicPipeline->InsertTopic(billboard_topic);
     g_BasicPipeline->InsertTopic(bloom_topic);
+    g_BasicPipeline->InsertTopic(billboard_topic);
     if (!g_RenderEffectConfig.mParticleOff)
     {
         g_BasicPipeline->InsertTopic(particle_topic);
     }
-    g_BasicPipeline->InsertTopic(sprite_topic);
     g_BasicPipeline->InsertTopic(post_procsssing_topic);
+    g_BasicPipeline->InsertTopic(sprite_topic);
     g_BasicPipeline->FinishPipelineAssembly();
 #endif // ONE_PASS_PER_TOPIC
 
@@ -3066,8 +3054,6 @@ RSPass_Bloom::RSPass_Bloom(std::string& _name, PASS_TYPE _type,
     mInstanceStructedBuffer(nullptr),
     mInstanceStructedBufferSrv(nullptr),
     mRtv(nullptr), mDepthDsv(nullptr), mRSCameraInfo(nullptr),
-    mCompressVertexShader(nullptr), mCompressPixelShader(nullptr),
-    mNotCompressSrv(nullptr), mCompressRtv(nullptr),
     mVertexBuffer(nullptr), mIndexBuffer(nullptr),
     mSampler(nullptr)
 {
@@ -3086,10 +3072,6 @@ RSPass_Bloom::RSPass_Bloom(const RSPass_Bloom& _source) :
     mInstanceStructedBufferSrv(_source.mInstanceStructedBufferSrv),
     mRtv(_source.mRtv), mDepthDsv(_source.mDepthDsv),
     mRSCameraInfo(_source.mRSCameraInfo),
-    mCompressVertexShader(_source.mCompressVertexShader),
-    mCompressPixelShader(_source.mCompressPixelShader),
-    mNotCompressSrv(_source.mNotCompressSrv),
-    mCompressRtv(_source.mCompressRtv),
     mVertexBuffer(_source.mVertexBuffer),
     mIndexBuffer(_source.mIndexBuffer),
     mSampler(_source.mSampler)
@@ -3144,16 +3126,12 @@ void RSPass_Bloom::ReleasePass()
     RS_RELEASE(mVertexBuffer);
     RS_RELEASE(mIndexBuffer);
     RS_RELEASE(mSampler);
-    RS_RELEASE(mCompressVertexShader);
-    RS_RELEASE(mCompressPixelShader);
 }
 
 void RSPass_Bloom::ExecuatePass()
 {
     STContext()->OMSetRenderTargets(1, &mRtv, mDepthDsv);
     STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->ClearRenderTargetView(mRtv,
-        DirectX::Colors::Transparent);
     STContext()->VSSetShader(mVertexShader, nullptr, 0);
     STContext()->PSSetShader(mPixelShader, nullptr, 0);
 
@@ -3216,26 +3194,10 @@ void RSPass_Bloom::ExecuatePass()
             (UINT)call.mInstanceData.mDataPtr->size(), 0, 0, 0);
     }
 
-    stride = sizeof(VertexType::TangentVertex);
-    STContext()->OMSetRenderTargets(1, &mCompressRtv, nullptr);
-    STContext()->IASetPrimitiveTopology(
-        D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    STContext()->IASetVertexBuffers(
-        0, 1, &mVertexBuffer,
-        &stride, &offset);
-    STContext()->IASetIndexBuffer(
-        mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->VSSetShader(mCompressVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mCompressPixelShader, nullptr, 0);
-    STContext()->PSSetSamplers(0, 1, &mSampler);
-    STContext()->PSSetShaderResources(
-        0, 1, &mNotCompressSrv);
-
-    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
-
     static ID3D11RenderTargetView* nullrtv[] = { nullptr };
+    static ID3D11ShaderResourceView* nullsrv[] = { nullptr };
     STContext()->OMSetRenderTargets(1, nullrtv, nullptr);
+    STContext()->VSSetShaderResources(0, 1, nullsrv);
 }
 
 bool RSPass_Bloom::CreateShaders()
@@ -3265,32 +3227,6 @@ bool RSPass_Bloom::CreateShaders()
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
-    shaderBlob->Release();
-    shaderBlob = nullptr;
-    if (FAILED(hr)) { return false; }
-
-    hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\compress_vertex.hlsl",
-        "main", "vs_5_0", &shaderBlob);
-    if (FAILED(hr)) { return false; }
-
-    hr = Device()->CreateVertexShader(
-        shaderBlob->GetBufferPointer(),
-        shaderBlob->GetBufferSize(),
-        nullptr, &mCompressVertexShader);
-    shaderBlob->Release();
-    shaderBlob = nullptr;
-    if (FAILED(hr)) { return false; }
-
-    hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\compress_pixel.hlsl",
-        "main", "ps_5_0", &shaderBlob);
-    if (FAILED(hr)) { return false; }
-
-    hr = Device()->CreatePixelShader(
-        shaderBlob->GetBufferPointer(),
-        shaderBlob->GetBufferSize(),
-        nullptr, &mCompressPixelShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
@@ -3405,6 +3341,8 @@ bool RSPass_Bloom::CreateViews()
     ID3D11UnorderedAccessView* uav = nullptr;
     std::string name = "";
 
+    mRtv = g_Root->Devices()->GetHighDynamicRtv();
+
     name = "mrt-depth";
     mDepthDsv = g_Root->ResourceManager()->
         GetResourceInfo(name)->mDsv;
@@ -3424,465 +3362,6 @@ bool RSPass_Bloom::CreateViews()
         mViewProjStructedBuffer,
         &srvDesc, &mViewProjStructedBufferSrv);
     if (FAILED(hr)) { return false; }
-
-    ZeroMemory(&texDesc, sizeof(texDesc));
-    ZeroMemory(&rtvDesc, sizeof(rtvDesc));
-    ZeroMemory(&srvDesc, sizeof(srvDesc));
-    ZeroMemory(&uavDesc, sizeof(uavDesc));
-    RS_RESOURCE_INFO dti = {};
-
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->
-        GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->
-        GetCurrWndHeight();
-    texDesc.MipLevels = 1;
-    texDesc.ArraySize = 1;
-    texDesc.SampleDesc.Count = 1;
-    texDesc.Usage = D3D11_USAGE_DEFAULT;
-    texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = 0;
-    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    texDesc.BindFlags =
-        D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(
-        &texDesc, nullptr, &texture);
-    if (FAILED(hr)) { return false; }
-
-    rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    rtvDesc.Texture2D.MipSlice = 0;
-    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(
-        texture, &rtvDesc, &mRtv);
-    if (FAILED(hr)) { return false; }
-
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture,
-        &srvDesc, &mNotCompressSrv);
-    if (FAILED(hr)) { return false; }
-
-    dti = {};
-    name = "bloom-light";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = mRtv;
-    dti.mSrv = mNotCompressSrv;
-    g_Root->ResourceManager()->AddResource(name, dti);
-
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->
-        GetCurrWndWidth() / 2;
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->
-        GetCurrWndHeight() / 2;
-    texDesc.MipLevels = 1;
-    texDesc.ArraySize = 1;
-    texDesc.SampleDesc.Count = 1;
-    texDesc.Usage = D3D11_USAGE_DEFAULT;
-    texDesc.CPUAccessFlags = 0;
-    texDesc.MiscFlags = 0;
-    texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    texDesc.BindFlags =
-        D3D11_BIND_RENDER_TARGET | D3D11_BIND_UNORDERED_ACCESS |
-        D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(
-        &texDesc, nullptr, &texture);
-    if (FAILED(hr)) { return false; }
-
-    rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    rtvDesc.Texture2D.MipSlice = 0;
-    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(
-        texture, &rtvDesc, &mCompressRtv);
-    if (FAILED(hr)) { return false; }
-
-    srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-    srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture,
-        &srvDesc, &srv);
-    if (FAILED(hr)) { return false; }
-
-    uavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-    uavDesc.Texture2D.MipSlice = 0;
-    hr = Device()->CreateUnorderedAccessView(
-        texture, &uavDesc, &uav);
-    if (FAILED(hr)) { return false; }
-
-    dti = {};
-    name = "bloom-compress-light";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = mCompressRtv;
-    dti.mSrv = srv;
-    dti.mUav = uav;
-    g_Root->ResourceManager()->AddResource(name, dti);
-
-    return true;
-}
-
-RSPass_BloomOn::RSPass_BloomOn(std::string& _name, PASS_TYPE _type,
-    RSRoot_DX11* _root) :RSPass_Base(_name, _type, _root),
-    mVertexShader(nullptr), mPixelShader(nullptr),
-    mRtv(nullptr), mBloomTexSrv(nullptr), mDepthState(nullptr),
-    mBlendState(nullptr), mSampler(nullptr),
-    mVertexBuffer(nullptr), mIndexBuffer(nullptr)
-{
-
-}
-
-RSPass_BloomOn::RSPass_BloomOn(const RSPass_BloomOn& _source) :
-    RSPass_Base(_source),
-    mVertexShader(_source.mVertexShader),
-    mPixelShader(_source.mPixelShader),
-    mRtv(_source.mRtv),
-    mBloomTexSrv(_source.mBloomTexSrv),
-    mBlendState(_source.mBlendState),
-    mDepthState(_source.mDepthState),
-    mSampler(_source.mSampler),
-    mVertexBuffer(_source.mVertexBuffer),
-    mIndexBuffer(_source.mIndexBuffer)
-{
-
-}
-
-RSPass_BloomOn::~RSPass_BloomOn()
-{
-
-}
-
-RSPass_BloomOn* RSPass_BloomOn::ClonePass()
-{
-    return new RSPass_BloomOn(*this);
-}
-
-bool RSPass_BloomOn::InitPass()
-{
-    if (mHasBeenInited) { return true; }
-
-    if (!CreateShaders()) { return false; }
-    if (!CreateBuffers()) { return false; }
-    if (!CreateViews()) { return false; }
-    if (!CreateStates()) { return false; }
-    if (!CreateSamplers()) { return false; }
-
-    mHasBeenInited = true;
-
-    return true;
-}
-
-void RSPass_BloomOn::ReleasePass()
-{
-    RS_RELEASE(mVertexShader);
-    RS_RELEASE(mPixelShader);
-    RS_RELEASE(mBlendState);
-    RS_RELEASE(mDepthState);
-    RS_RELEASE(mSampler);
-    RS_RELEASE(mVertexBuffer);
-    RS_RELEASE(mIndexBuffer);
-}
-
-void RSPass_BloomOn::ExecuatePass()
-{
-    ID3D11RenderTargetView* rtvnull = nullptr;
-    STContext()->OMSetRenderTargets(1, &mRtv, nullptr);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->OMSetDepthStencilState(mDepthState, 0);
-    static float factor[4] = { 0.f,0.f,0.f,0.f };
-    STContext()->OMSetBlendState(mBlendState, factor, 0xFFFFFFFF);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
-    STContext()->PSSetSamplers(0, 1, &mSampler);
-    STContext()->PSSetShaderResources(0, 1, &mBloomTexSrv);
-
-    UINT stride = sizeof(VertexType::TangentVertex);
-    UINT offset = 0;
-    STContext()->IASetPrimitiveTopology(
-        D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    STContext()->IASetVertexBuffers(
-        0, 1, &mVertexBuffer,
-        &stride, &offset);
-    STContext()->IASetIndexBuffer(
-        mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
-
-    STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
-    STContext()->OMSetDepthStencilState(nullptr, 0);
-    STContext()->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
-}
-
-bool RSPass_BloomOn::CreateShaders()
-{
-    ID3DBlob* shaderBlob = nullptr;
-    HRESULT hr = S_OK;
-
-    hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\bloomon_vertex.hlsl",
-        "main", "vs_5_0", &shaderBlob);
-    if (FAILED(hr)) { return false; }
-
-    hr = Device()->CreateVertexShader(
-        shaderBlob->GetBufferPointer(),
-        shaderBlob->GetBufferSize(),
-        nullptr, &mVertexShader);
-    shaderBlob->Release();
-    shaderBlob = nullptr;
-    if (FAILED(hr)) { return false; }
-
-    hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\bloomon_pixel.hlsl",
-        "main", "ps_5_0", &shaderBlob);
-    if (FAILED(hr)) { return false; }
-
-    hr = Device()->CreatePixelShader(
-        shaderBlob->GetBufferPointer(),
-        shaderBlob->GetBufferSize(),
-        nullptr, &mPixelShader);
-    shaderBlob->Release();
-    shaderBlob = nullptr;
-    if (FAILED(hr)) { return false; }
-
-    return true;
-}
-
-bool RSPass_BloomOn::CreateBuffers()
-{
-    HRESULT hr = S_OK;
-    D3D11_BUFFER_DESC bufDesc = {};
-
-    VertexType::TangentVertex v[4] = {};
-    v[0].Position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
-    v[1].Position = DirectX::XMFLOAT3(-1.0f, +1.0f, 0.0f);
-    v[2].Position = DirectX::XMFLOAT3(+1.0f, +1.0f, 0.0f);
-    v[3].Position = DirectX::XMFLOAT3(+1.0f, -1.0f, 0.0f);
-    v[0].Normal = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-    v[1].Normal = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-    v[2].Normal = DirectX::XMFLOAT3(2.0f, 0.0f, 0.0f);
-    v[3].Normal = DirectX::XMFLOAT3(3.0f, 0.0f, 0.0f);
-    v[0].Tangent = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-    v[1].Tangent = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-    v[2].Tangent = DirectX::XMFLOAT3(2.0f, 0.0f, 0.0f);
-    v[3].Tangent = DirectX::XMFLOAT3(3.0f, 0.0f, 0.0f);
-    v[0].TexCoord = DirectX::XMFLOAT2(0.0f, 1.0f);
-    v[1].TexCoord = DirectX::XMFLOAT2(0.0f, 0.0f);
-    v[2].TexCoord = DirectX::XMFLOAT2(1.0f, 0.0f);
-    v[3].TexCoord = DirectX::XMFLOAT2(1.0f, 1.0f);
-    ZeroMemory(&bufDesc, sizeof(bufDesc));
-    bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufDesc.ByteWidth = sizeof(VertexType::TangentVertex) * 4;
-    bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bufDesc.CPUAccessFlags = 0;
-    bufDesc.MiscFlags = 0;
-    bufDesc.StructureByteStride = 0;
-    D3D11_SUBRESOURCE_DATA vinitData = {};
-    ZeroMemory(&vinitData, sizeof(vinitData));
-    vinitData.pSysMem = v;
-    hr = Device()->CreateBuffer(
-        &bufDesc, &vinitData, &mVertexBuffer);
-    if (FAILED(hr)) { return false; }
-
-    UINT indices[6] =
-    {
-        0, 1, 2,
-        0, 2, 3
-    };
-    ZeroMemory(&bufDesc, sizeof(bufDesc));
-    bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufDesc.ByteWidth = sizeof(UINT) * 6;
-    bufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    bufDesc.CPUAccessFlags = 0;
-    bufDesc.StructureByteStride = 0;
-    bufDesc.MiscFlags = 0;
-    D3D11_SUBRESOURCE_DATA iinitData = {};
-    ZeroMemory(&iinitData, sizeof(iinitData));
-    iinitData.pSysMem = indices;
-    hr = Device()->CreateBuffer(
-        &bufDesc, &iinitData, &mIndexBuffer);
-    if (FAILED(hr)) { return false; }
-
-    return true;
-}
-
-bool RSPass_BloomOn::CreateStates()
-{
-    HRESULT hr = S_OK;
-
-    D3D11_DEPTH_STENCIL_DESC depDesc = {};
-    depDesc.DepthEnable = FALSE;
-    depDesc.StencilEnable = FALSE;
-    hr = Device()->CreateDepthStencilState(
-        &depDesc, &mDepthState);
-    if (FAILED(hr)) { return false; }
-
-    D3D11_BLEND_DESC bldDesc = {};
-    bldDesc.AlphaToCoverageEnable = FALSE;
-    bldDesc.IndependentBlendEnable = FALSE;
-    bldDesc.RenderTarget[0].BlendEnable = TRUE;
-    bldDesc.RenderTarget[0].RenderTargetWriteMask =
-        D3D11_COLOR_WRITE_ENABLE_ALL;
-    bldDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-    bldDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-    bldDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-    bldDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-    bldDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-    bldDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-    hr = Device()->CreateBlendState(&bldDesc, &mBlendState);
-    if (FAILED(hr)) { return false; }
-
-    return true;
-}
-
-bool RSPass_BloomOn::CreateSamplers()
-{
-    HRESULT hr = S_OK;
-    D3D11_SAMPLER_DESC sampDesc = {};
-    ZeroMemory(&sampDesc, sizeof(sampDesc));
-    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-    sampDesc.MinLOD = 0;
-    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-    hr = Device()->CreateSamplerState(
-        &sampDesc, &mSampler);
-    if (FAILED(hr)) { return false; }
-
-    return true;
-}
-
-bool RSPass_BloomOn::CreateViews()
-{
-    mRtv = g_Root->Devices()->GetHighDynamicRtv();
-
-    std::string name = "bloom-compress-light";
-    mBloomTexSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
-    if (!mBloomTexSrv) { return false; }
-
-    return true;
-}
-
-RSPass_Blur::RSPass_Blur(
-    std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
-    RSPass_Base(_name, _type, _root),
-    mHoriBlurShader(nullptr), mVertBlurShader(nullptr),
-    mLightTexUav(nullptr)
-{
-
-}
-
-RSPass_Blur::RSPass_Blur(const RSPass_Blur& _source) :
-    RSPass_Base(_source),
-    mHoriBlurShader(_source.mHoriBlurShader),
-    mVertBlurShader(_source.mVertBlurShader),
-    mLightTexUav(_source.mLightTexUav)
-{
-
-}
-
-RSPass_Blur::~RSPass_Blur()
-{
-
-}
-
-RSPass_Blur* RSPass_Blur::ClonePass()
-{
-    return new RSPass_Blur(*this);
-}
-
-bool RSPass_Blur::InitPass()
-{
-    if (mHasBeenInited) { return true; }
-
-    if (!CreateShaders()) { return false; }
-    if (!CreateViews()) { return false; }
-
-    mHasBeenInited = true;
-
-    return true;
-}
-
-void RSPass_Blur::ReleasePass()
-{
-    RS_RELEASE(mHoriBlurShader);
-    RS_RELEASE(mVertBlurShader);
-}
-
-void RSPass_Blur::ExecuatePass()
-{
-    static ID3D11UnorderedAccessView* nullUav = nullptr;
-
-    static UINT loopCount = 1;
-    static UINT width = GetRSRoot_DX11_Singleton()->Devices()->
-        GetCurrWndWidth() / 2;
-    static UINT height = GetRSRoot_DX11_Singleton()->Devices()->
-        GetCurrWndHeight() / 2;
-    UINT dispatchVert = Tool::Align(width, 256) / 256;
-    UINT dispatchHori = Tool::Align(height, 256) / 256;
-
-    for (UINT i = 0; i < loopCount; i++)
-    {
-        STContext()->CSSetShader(mHoriBlurShader, nullptr, 0);
-        STContext()->CSSetUnorderedAccessViews(0, 1,
-            &mLightTexUav, nullptr);
-        STContext()->Dispatch(dispatchVert, height, 1);
-        STContext()->CSSetUnorderedAccessViews(0, 1,
-            &nullUav, nullptr);
-
-        STContext()->CSSetShader(mVertBlurShader, nullptr, 0);
-        STContext()->CSSetUnorderedAccessViews(0, 1,
-            &mLightTexUav, nullptr);
-        STContext()->Dispatch(width, dispatchHori, 1);
-        STContext()->CSSetUnorderedAccessViews(0, 1,
-            &nullUav, nullptr);
-    }
-}
-
-bool RSPass_Blur::CreateShaders()
-{
-    ID3DBlob* shaderBlob = nullptr;
-    HRESULT hr = S_OK;
-
-    hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\bloom_compute.hlsl",
-        "HMain", "cs_5_0", &shaderBlob);
-    if (FAILED(hr)) { return false; }
-
-    hr = Device()->CreateComputeShader(
-        shaderBlob->GetBufferPointer(),
-        shaderBlob->GetBufferSize(),
-        nullptr, &mHoriBlurShader);
-    shaderBlob->Release();
-    shaderBlob = nullptr;
-    if (FAILED(hr)) { return false; }
-
-    hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\bloom_compute.hlsl",
-        "VMain", "cs_5_0", &shaderBlob);
-    if (FAILED(hr)) { return false; }
-
-    hr = Device()->CreateComputeShader(
-        shaderBlob->GetBufferPointer(),
-        shaderBlob->GetBufferSize(),
-        nullptr, &mVertBlurShader);
-    shaderBlob->Release();
-    shaderBlob = nullptr;
-    if (FAILED(hr)) { return false; }
-
-    return true;
-}
-
-bool RSPass_Blur::CreateViews()
-{
-    std::string name = "bloom-compress-light";
-    mLightTexUav = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mUav;
-    if (!mLightTexUav) { return false; }
 
     return true;
 }
@@ -5661,7 +5140,7 @@ bool RSPass_Sprite::CreateBuffers()
 
 bool RSPass_Sprite::CreateViews()
 {
-    mRenderTargetView = g_Root->Devices()->GetHighDynamicRtv();
+    mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desSRV = {};
     HRESULT hr = S_OK;

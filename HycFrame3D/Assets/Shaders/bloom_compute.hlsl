@@ -1,4 +1,4 @@
-RWTexture2D<unorm float4> BloomTex : register(u0);
+RWTexture2D<float4> BloomTex : register(u0);
 
 groupshared unorm float4 gBloomCache[256 + 2 * 2];
 

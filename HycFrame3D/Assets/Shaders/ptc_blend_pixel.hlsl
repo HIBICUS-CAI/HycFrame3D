@@ -1,3 +1,5 @@
+#include "color_utility.hlsli"
+
 // TEMP-----------------------------
 #define gScreenWidth (1280)
 #define gScreenHeight (720)
@@ -19,6 +21,7 @@ float4 Main(float4 posH : SV_POSITION) : SV_Target
 	uint pixelIndex = x + (y * gScreenWidth);
 	float4 particleValue = gParticleRenderBuffer.Load(pixelIndex);
 	color = particleValue;
+	color.rgb = sRGBToACES(color.rgb);
 
 	return color;
 }
