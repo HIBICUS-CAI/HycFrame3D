@@ -398,10 +398,10 @@
                 },
                 {
                     "type": "particle",
-                    "emit-per-second": 2400.0,
+                    "emit-per-second": 200.0,
                     "velocity": [
                         0.0,
-                        18.0,
+                        36.0,
                         0.0
                     ],
                     "pos-variance": [
@@ -415,8 +415,8 @@
                         -9.8,
                         0.0
                     ],
-                    "particle-mass": 0.3,
-                    "life-span": 100.0,
+                    "particle-mass": 10.0,
+                    "life-span": 20.0,
                     "start-end-size": [
                         0.5,
                         0.0
