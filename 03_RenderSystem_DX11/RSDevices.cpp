@@ -22,7 +22,7 @@ RSDevices::RSDevices() :
     mDevice1(nullptr), mImmediateContext1(nullptr),
     mDXGISwapChain(nullptr), mDXGISwapChain1(nullptr),
     mSwapChainRtv(nullptr), mFullWindowViewPort({}),
-    mHighDynamicTexture(nullptr),
+    mHighDynamicTexture(nullptr), mHighDynamicUav(nullptr),
     mHighDynamicRtv(nullptr), mHighDynamicSrv(nullptr),
     mConcurrentCreateSupport(false), mCommandListSupport(false),
     mWndWidth(0), mWndHeight(0)
@@ -102,6 +102,7 @@ void RSDevices::CleanAndStop()
     {
         mImmediateContext->ClearState();
     }
+    SAFE_RELEASE(mHighDynamicUav);
     SAFE_RELEASE(mHighDynamicSrv);
     SAFE_RELEASE(mHighDynamicRtv);
     SAFE_RELEASE(mHighDynamicTexture);
@@ -125,31 +126,6 @@ void RSDevices::CleanAndStop()
 
     SAFE_RELEASE(mDevice1);
     SAFE_RELEASE(mDevice);
-}
-
-ID3D11Device* RSDevices::GetDevice() const
-{
-    return mDevice;
-}
-
-ID3D11DeviceContext* RSDevices::GetSTContext() const
-{
-    return mImmediateContext;
-}
-
-ID3D11RenderTargetView* RSDevices::GetHighDynamicRtv() const
-{
-    return mHighDynamicRtv;
-}
-
-ID3D11RenderTargetView* RSDevices::GetSwapChainRtv() const
-{
-    return mSwapChainRtv;
-}
-
-ID3D11ShaderResourceView* RSDevices::GetHighDynamicSrv() const
-{
-    return mHighDynamicSrv;
 }
 
 void RSDevices::PresentSwapChain()
@@ -370,9 +346,11 @@ bool RSDevices::CreateHighDynamicTexture(UINT _width, UINT _height)
     D3D11_TEXTURE2D_DESC texDesc = {};
     D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
     ZeroMemory(&texDesc, sizeof(texDesc));
     ZeroMemory(&rtvDesc, sizeof(rtvDesc));
     ZeroMemory(&srvDesc, sizeof(srvDesc));
+    ZeroMemory(&uavDesc, sizeof(uavDesc));
 
     texDesc.Width = _width;
     texDesc.Height = _height;
@@ -383,7 +361,9 @@ bool RSDevices::CreateHighDynamicTexture(UINT _width, UINT _height)
     texDesc.CPUAccessFlags = 0;
     texDesc.MiscFlags = 0;
     texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET |
+        D3D11_BIND_SHADER_RESOURCE |
+        D3D11_BIND_UNORDERED_ACCESS;
     hr = mDevice->CreateTexture2D(&texDesc, nullptr, &mHighDynamicTexture);
     FAIL_HR_RETURN(hr);
 
@@ -400,6 +380,13 @@ bool RSDevices::CreateHighDynamicTexture(UINT _width, UINT _height)
     srvDesc.Texture2D.MipLevels = 1;
     hr = mDevice->CreateShaderResourceView(mHighDynamicTexture,
         &srvDesc, &mHighDynamicSrv);
+    FAIL_HR_RETURN(hr);
+
+    uavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+    uavDesc.Texture2D.MipSlice = 0;
+    hr = mDevice->CreateUnorderedAccessView(mHighDynamicTexture,
+        &uavDesc, &mHighDynamicUav);
     FAIL_HR_RETURN(hr);
 
     return true;

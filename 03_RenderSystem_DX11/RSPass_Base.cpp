@@ -56,17 +56,6 @@ UINT RSPass_Base::GetExecuateOrder() const
     return mExecuateOrderInTopic;
 }
 
-ID3D11Device* RSPass_Base::Device() const
-{
-    return mDevice;
-}
-
-ID3D11DeviceContext* RSPass_Base::STContext() const
-{
-    if (mMTContext) { return mMTContext; }
-    return mSTContext;
-}
-
 void RSPass_Base::SetMTContext(ID3D11DeviceContext* _mtContext)
 {
     mMTContext = _mtContext;

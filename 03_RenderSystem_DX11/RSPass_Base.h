@@ -25,8 +25,15 @@ public:
     UINT GetExecuateOrder() const;
     void SetMTContext(ID3D11DeviceContext* _mtContext);
 
-    ID3D11Device* Device() const;
-    ID3D11DeviceContext* STContext() const;
+    ID3D11Device* Device() const
+    {
+        return mDevice;
+    }
+    ID3D11DeviceContext* STContext() const
+    {
+        if (mMTContext) { return mMTContext; }
+        return mSTContext;
+    }
 
 public:
     virtual RSPass_Base* ClonePass() = 0;

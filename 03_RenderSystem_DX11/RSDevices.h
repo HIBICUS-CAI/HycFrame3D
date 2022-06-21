@@ -26,11 +26,12 @@ public:
     bool StartUp(class RSRoot_DX11* _root, HWND _wnd);
     void CleanAndStop();
 
-    ID3D11Device* GetDevice() const;
-    ID3D11DeviceContext* GetSTContext() const;
-    ID3D11RenderTargetView* GetHighDynamicRtv() const;
-    ID3D11RenderTargetView* GetSwapChainRtv() const;
-    ID3D11ShaderResourceView* GetHighDynamicSrv() const;
+    ID3D11Device* GetDevice() const { return mDevice; }
+    ID3D11DeviceContext* GetSTContext() const { return mImmediateContext; }
+    ID3D11RenderTargetView* GetHighDynamicRtv() const { return mHighDynamicRtv; }
+    ID3D11RenderTargetView* GetSwapChainRtv() const { return mSwapChainRtv; }
+    ID3D11ShaderResourceView* GetHighDynamicSrv() const { return mHighDynamicSrv; }
+    ID3D11UnorderedAccessView* GetHighDynamicUav() const { return mHighDynamicUav; }
 
     bool GetConcurrentCreateSupport() const;
     bool GetCommandListSupport() const;
@@ -66,6 +67,7 @@ private:
     ID3D11Texture2D* mHighDynamicTexture;
     ID3D11RenderTargetView* mHighDynamicRtv;
     ID3D11ShaderResourceView* mHighDynamicSrv;
+    ID3D11UnorderedAccessView* mHighDynamicUav;
 
     bool mConcurrentCreateSupport;
     bool mCommandListSupport;
