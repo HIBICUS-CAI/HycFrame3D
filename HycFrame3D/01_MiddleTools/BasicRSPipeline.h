@@ -824,6 +824,39 @@ private:
     class RSCamera* mRSCamera;
 };
 
+class RSPass_Tonemapping :public RSPass_Base
+{
+public:
+    RSPass_Tonemapping(std::string& _name, PASS_TYPE _type,
+        class RSRoot_DX11* _root);
+    RSPass_Tonemapping(const RSPass_Tonemapping& _source);
+    virtual ~RSPass_Tonemapping();
+
+public:
+    virtual RSPass_Tonemapping* ClonePass() override;
+
+    virtual bool InitPass();
+
+    virtual void ReleasePass();
+
+    virtual void ExecuatePass();
+
+private:
+    bool CreateBuffers();
+    bool CreateShaders();
+    bool CreateViews();
+    bool CreateSamplers();
+
+private:
+    ID3D11Buffer* mVertexBuffer;
+    ID3D11Buffer* mIndexBuffer;
+    ID3D11VertexShader* mVertexShader;
+    ID3D11PixelShader* mPixelShader;
+    ID3D11RenderTargetView* mSwapChainRtv;
+    ID3D11ShaderResourceView* mHdrSrv;
+    ID3D11SamplerState* mLinearWrapSampler;
+};
+
 void SetPipelineDeltaTime(float _deltaMilliSecond);
 
 void SetPipelineIBLTextures(ID3D11ShaderResourceView* _envSrv,

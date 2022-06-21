@@ -22,6 +22,8 @@ RSDevices::RSDevices() :
     mDevice1(nullptr), mImmediateContext1(nullptr),
     mDXGISwapChain(nullptr), mDXGISwapChain1(nullptr),
     mSwapChainRtv(nullptr), mFullWindowViewPort({}),
+    mHighDynamicTexture(nullptr),
+    mHighDynamicRtv(nullptr), mHighDynamicSrv(nullptr),
     mConcurrentCreateSupport(false), mCommandListSupport(false),
     mWndWidth(0), mWndHeight(0)
 {
@@ -69,6 +71,11 @@ bool RSDevices::StartUp(RSRoot_DX11* _root, HWND _wnd)
         return false;
     }
 
+    if (!CreateHighDynamicTexture(wndWidth, wndHeight))
+    {
+        return false;
+    }
+
     ApplyViewPort();
 
     D3D11_FEATURE_DATA_THREADING threadSupport = {};
@@ -95,6 +102,9 @@ void RSDevices::CleanAndStop()
     {
         mImmediateContext->ClearState();
     }
+    SAFE_RELEASE(mHighDynamicSrv);
+    SAFE_RELEASE(mHighDynamicRtv);
+    SAFE_RELEASE(mHighDynamicTexture);
     SAFE_RELEASE(mSwapChainRtv);
     SAFE_RELEASE(mImmediateContext1);
     SAFE_RELEASE(mImmediateContext);
@@ -127,9 +137,19 @@ ID3D11DeviceContext* RSDevices::GetSTContext() const
     return mImmediateContext;
 }
 
+ID3D11RenderTargetView* RSDevices::GetHighDynamicRtv() const
+{
+    return mHighDynamicRtv;
+}
+
 ID3D11RenderTargetView* RSDevices::GetSwapChainRtv() const
 {
     return mSwapChainRtv;
+}
+
+ID3D11ShaderResourceView* RSDevices::GetHighDynamicSrv() const
+{
+    return mHighDynamicSrv;
 }
 
 void RSDevices::PresentSwapChain()
@@ -339,6 +359,47 @@ bool RSDevices::CreateDevices(HWND _wnd,
     hr = mDevice->CreateRenderTargetView(
         pBackBuffer, nullptr, &mSwapChainRtv);
     pBackBuffer->Release();
+    FAIL_HR_RETURN(hr);
+
+    return true;
+}
+
+bool RSDevices::CreateHighDynamicTexture(UINT _width, UINT _height)
+{
+    HRESULT hr = S_OK;
+    D3D11_TEXTURE2D_DESC texDesc = {};
+    D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    ZeroMemory(&texDesc, sizeof(texDesc));
+    ZeroMemory(&rtvDesc, sizeof(rtvDesc));
+    ZeroMemory(&srvDesc, sizeof(srvDesc));
+
+    texDesc.Width = _width;
+    texDesc.Height = _height;
+    texDesc.MipLevels = 1;
+    texDesc.ArraySize = 1;
+    texDesc.SampleDesc.Count = 1;
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+    texDesc.CPUAccessFlags = 0;
+    texDesc.MiscFlags = 0;
+    texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+    hr = mDevice->CreateTexture2D(&texDesc, nullptr, &mHighDynamicTexture);
+    FAIL_HR_RETURN(hr);
+
+    rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    rtvDesc.Texture2D.MipSlice = 0;
+    rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+    hr = mDevice->CreateRenderTargetView(mHighDynamicTexture,
+        &rtvDesc, &mHighDynamicRtv);
+    FAIL_HR_RETURN(hr);
+
+    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = 1;
+    hr = mDevice->CreateShaderResourceView(mHighDynamicTexture,
+        &srvDesc, &mHighDynamicSrv);
     FAIL_HR_RETURN(hr);
 
     return true;

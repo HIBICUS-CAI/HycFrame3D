@@ -427,6 +427,18 @@ bool CreateBasicPipeline()
     sprite_topic->SetExecuateOrder(9);
     sprite_topic->FinishTopicAssembly();
 
+    name = "tonemapping-pass";
+    RSPass_Tonemapping* tonemap = new RSPass_Tonemapping(
+        name, PASS_TYPE::RENDER, g_Root);
+    tonemap->SetExecuateOrder(1);
+
+    name = "post-processing-topic";
+    RSTopic* post_procsssing_topic = new RSTopic(name);
+    post_procsssing_topic->StartTopicAssembly();
+    post_procsssing_topic->InsertPass(tonemap);
+    post_procsssing_topic->SetExecuateOrder(10);
+    post_procsssing_topic->FinishTopicAssembly();
+
     name = "light-pipeline";
     g_BasicPipeline = new RSPipeline(name);
     g_BasicPipeline->StartPipelineAssembly();
@@ -442,6 +454,7 @@ bool CreateBasicPipeline()
         g_BasicPipeline->InsertTopic(particle_topic);
     }
     g_BasicPipeline->InsertTopic(sprite_topic);
+    g_BasicPipeline->InsertTopic(post_procsssing_topic);
     g_BasicPipeline->FinishPipelineAssembly();
 #endif // ONE_PASS_PER_TOPIC
 
@@ -2671,7 +2684,7 @@ bool RSPass_Defered::CreateBuffers()
 
 bool RSPass_Defered::CreateViews()
 {
-    mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
+    mRenderTargetView = g_Root->Devices()->GetHighDynamicRtv();
 
     std::string name = "mrt-geo-buffer";
     mGeoBufferSrv = g_Root->ResourceManager()->
@@ -3005,7 +3018,7 @@ bool RSPass_SkyShpere::CreateBuffers()
 
 bool RSPass_SkyShpere::CreateViews()
 {
-    mRenderTargerView = g_Root->Devices()->GetSwapChainRtv();
+    mRenderTargerView = g_Root->Devices()->GetHighDynamicRtv();
     std::string name = "mrt-depth";
     mDepthStencilView = g_Root->ResourceManager()->
         GetResourceInfo(name)->mDsv;
@@ -3744,7 +3757,7 @@ bool RSPass_BloomOn::CreateSamplers()
 
 bool RSPass_BloomOn::CreateViews()
 {
-    mRtv = g_Root->Devices()->GetSwapChainRtv();
+    mRtv = g_Root->Devices()->GetHighDynamicRtv();
 
     std::string name = "bloom-compress-light";
     mBloomTexSrv = g_Root->ResourceManager()->
@@ -5194,7 +5207,7 @@ void RSPass_PriticleTileRender::ExecuatePass()
     }
 
     {
-        static auto rtv = GetRSRoot_DX11_Singleton()->Devices()->GetSwapChainRtv();
+        static auto rtv = GetRSRoot_DX11_Singleton()->Devices()->GetHighDynamicRtv();
         static D3D11_VIEWPORT vp = {};
         vp.Width = 1280.f; vp.Height = 720.f; vp.MinDepth = 0.f;
         vp.MaxDepth = 1.f; vp.TopLeftX = 0.f; vp.TopLeftY = 0.f;
@@ -5648,7 +5661,7 @@ bool RSPass_Sprite::CreateBuffers()
 
 bool RSPass_Sprite::CreateViews()
 {
-    mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
+    mRenderTargetView = g_Root->Devices()->GetHighDynamicRtv();
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desSRV = {};
     HRESULT hr = S_OK;
@@ -6193,7 +6206,7 @@ bool RSPass_Billboard::CreateBuffers()
 
 bool RSPass_Billboard::CreateViews()
 {
-    mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
+    mRenderTargetView = g_Root->Devices()->GetHighDynamicRtv();
 
     std::string name = "";
     name = "mrt-depth";
@@ -6223,6 +6236,236 @@ bool RSPass_Billboard::CreateViews()
 }
 
 bool RSPass_Billboard::CreateSamplers()
+{
+    HRESULT hr = S_OK;
+    D3D11_SAMPLER_DESC sampDesc = {};
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+    auto filter = g_RenderEffectConfig.mSamplerLevel;
+    switch (filter)
+    {
+    case SAMPLER_LEVEL::POINT:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+        break;
+    case SAMPLER_LEVEL::BILINEAR:
+        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+        break;
+    case SAMPLER_LEVEL::ANISO_8X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 8;
+        break;
+    case SAMPLER_LEVEL::ANISO_16X:
+        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sampDesc.MaxAnisotropy = 16;
+        break;
+    default: return false;
+    }
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    hr = Device()->CreateSamplerState(
+        &sampDesc, &mLinearWrapSampler);
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+RSPass_Tonemapping::RSPass_Tonemapping(
+    std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
+    RSPass_Base(_name, _type, _root),
+    mVertexBuffer(nullptr), mIndexBuffer(nullptr),
+    mVertexShader(nullptr), mPixelShader(nullptr),
+    mLinearWrapSampler(nullptr), mSwapChainRtv(nullptr),
+    mHdrSrv(nullptr)
+{
+
+}
+
+RSPass_Tonemapping::RSPass_Tonemapping(const RSPass_Tonemapping& _source) :
+    RSPass_Base(_source),
+    mVertexBuffer(_source.mVertexBuffer),
+    mIndexBuffer(_source.mIndexBuffer),
+    mVertexShader(_source.mVertexShader),
+    mPixelShader(_source.mPixelShader),
+    mSwapChainRtv(_source.mSwapChainRtv),
+    mHdrSrv(_source.mHdrSrv),
+    mLinearWrapSampler(_source.mLinearWrapSampler)
+{
+    if (mHasBeenInited)
+    {
+        RS_ADD(mVertexBuffer);
+        RS_ADD(mIndexBuffer);
+        RS_ADD(mVertexShader);
+        RS_ADD(mPixelShader);
+        RS_ADD(mLinearWrapSampler);
+    }
+}
+
+RSPass_Tonemapping::~RSPass_Tonemapping()
+{
+
+}
+
+RSPass_Tonemapping* RSPass_Tonemapping::ClonePass()
+{
+    return new RSPass_Tonemapping(*this);
+}
+
+bool RSPass_Tonemapping::InitPass()
+{
+    if (mHasBeenInited) { return true; }
+
+    if (!CreateBuffers()) { return false; }
+    if (!CreateShaders()) { return false; }
+    if (!CreateViews()) { return false; }
+    if (!CreateSamplers()) { return false; }
+
+    mHasBeenInited = true;
+
+    return true;
+}
+
+void RSPass_Tonemapping::ReleasePass()
+{
+    RS_RELEASE(mVertexBuffer);
+    RS_RELEASE(mIndexBuffer);
+    RS_RELEASE(mVertexShader);
+    RS_RELEASE(mPixelShader);
+    RS_RELEASE(mLinearWrapSampler);
+}
+
+void RSPass_Tonemapping::ExecuatePass()
+{
+    STContext()->OMSetRenderTargets(1, &mSwapChainRtv, nullptr);
+    STContext()->RSSetViewports(1, &g_ViewPort);
+    STContext()->ClearRenderTargetView(
+        mSwapChainRtv, DirectX::Colors::DarkGreen);
+    STContext()->VSSetShader(mVertexShader, nullptr, 0);
+    STContext()->PSSetShader(mPixelShader, nullptr, 0);
+
+    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT offset = 0;
+
+    static ID3D11ShaderResourceView* srvs[] =
+    {
+        mHdrSrv
+    };
+    STContext()->PSSetShaderResources(0, 1, srvs);
+
+    static ID3D11SamplerState* samps[] =
+    {
+        mLinearWrapSampler,
+    };
+    STContext()->PSSetSamplers(0, 1, samps);
+
+    STContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    STContext()->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
+    STContext()->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
+    ID3D11RenderTargetView* rtvnull = nullptr;
+    STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
+    static ID3D11ShaderResourceView* nullsrvs[] =
+    {
+        nullptr
+    };
+    STContext()->PSSetShaderResources(0, 1, nullsrvs);
+}
+
+bool RSPass_Tonemapping::CreateBuffers()
+{
+    HRESULT hr = S_OK;
+    D3D11_BUFFER_DESC bufDesc = {};
+
+    VertexType::TangentVertex v[4] = {};
+    v[0].Position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
+    v[1].Position = DirectX::XMFLOAT3(-1.0f, +1.0f, 0.0f);
+    v[2].Position = DirectX::XMFLOAT3(+1.0f, +1.0f, 0.0f);
+    v[3].Position = DirectX::XMFLOAT3(+1.0f, -1.0f, 0.0f);
+    v[0].TexCoord = DirectX::XMFLOAT2(0.0f, 1.0f);
+    v[1].TexCoord = DirectX::XMFLOAT2(0.0f, 0.0f);
+    v[2].TexCoord = DirectX::XMFLOAT2(1.0f, 0.0f);
+    v[3].TexCoord = DirectX::XMFLOAT2(1.0f, 1.0f);
+    ZeroMemory(&bufDesc, sizeof(bufDesc));
+    bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufDesc.ByteWidth = sizeof(VertexType::TangentVertex) * 4;
+    bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bufDesc.CPUAccessFlags = 0;
+    bufDesc.MiscFlags = 0;
+    bufDesc.StructureByteStride = 0;
+    D3D11_SUBRESOURCE_DATA vinitData = {};
+    ZeroMemory(&vinitData, sizeof(vinitData));
+    vinitData.pSysMem = v;
+    hr = Device()->CreateBuffer(&bufDesc, &vinitData, &mVertexBuffer);
+    if (FAILED(hr)) { return false; }
+
+    UINT indices[6] =
+    {
+        0, 1, 2,
+        0, 2, 3
+    };
+    ZeroMemory(&bufDesc, sizeof(bufDesc));
+    bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
+    bufDesc.ByteWidth = sizeof(UINT) * 6;
+    bufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+    bufDesc.CPUAccessFlags = 0;
+    bufDesc.StructureByteStride = 0;
+    bufDesc.MiscFlags = 0;
+    D3D11_SUBRESOURCE_DATA iinitData = {};
+    ZeroMemory(&iinitData, sizeof(iinitData));
+    iinitData.pSysMem = indices;
+    hr = Device()->CreateBuffer(&bufDesc, &iinitData, &mIndexBuffer);
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_Tonemapping::CreateShaders()
+{
+    ID3DBlob* shaderBlob = nullptr;
+    HRESULT hr = S_OK;
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\tonemap_vertex.hlsl",
+        "main", "vs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateVertexShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mVertexShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\tonemap_pixel.hlsl",
+        "main", "ps_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreatePixelShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mPixelShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_Tonemapping::CreateViews()
+{
+    mSwapChainRtv = g_Root->Devices()->GetSwapChainRtv();
+    mHdrSrv = g_Root->Devices()->GetHighDynamicSrv();
+
+    return true;
+}
+
+bool RSPass_Tonemapping::CreateSamplers()
 {
     HRESULT hr = S_OK;
     D3D11_SAMPLER_DESC sampDesc = {};

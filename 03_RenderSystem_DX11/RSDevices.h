@@ -28,7 +28,9 @@ public:
 
     ID3D11Device* GetDevice() const;
     ID3D11DeviceContext* GetSTContext() const;
+    ID3D11RenderTargetView* GetHighDynamicRtv() const;
     ID3D11RenderTargetView* GetSwapChainRtv() const;
+    ID3D11ShaderResourceView* GetHighDynamicSrv() const;
 
     bool GetConcurrentCreateSupport() const;
     bool GetCommandListSupport() const;
@@ -40,6 +42,7 @@ public:
 
 private:
     bool CreateDevices(HWND _wnd, UINT _width, UINT _height);
+    bool CreateHighDynamicTexture(UINT _width, UINT _height);
     void ApplyViewPort();
 
 private:
@@ -59,6 +62,10 @@ private:
     IDXGISwapChain1* mDXGISwapChain1;
     ID3D11RenderTargetView* mSwapChainRtv;
     D3D11_VIEWPORT mFullWindowViewPort;
+
+    ID3D11Texture2D* mHighDynamicTexture;
+    ID3D11RenderTargetView* mHighDynamicRtv;
+    ID3D11ShaderResourceView* mHighDynamicSrv;
 
     bool mConcurrentCreateSupport;
     bool mCommandListSupport;
