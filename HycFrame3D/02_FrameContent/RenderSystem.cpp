@@ -156,7 +156,7 @@ void RenderSystem::Run(Timer& _timer)
 
     mRenderSystemRoot->LightsContainer()->ForceCurrentAmbientLight(
         GetSystemExecutive()->GetSceneManager()->
-        GetCurrentSceneNode()->GetCurrentAmbient());
+        GetCurrentSceneNode()->GetCurrentAmbientFactor());
 
     SetPipelineIBLTextures(mEnvTex, mDiffTex, mSpecTex);
     SetPipelineDeltaTime(_timer.FloatDeltaTime());

@@ -1,6 +1,6 @@
 {
     "scene-name": "loading-scene",
-    "ambient-light": [
+    "ambient-factor": [
         0.0,
         0.0,
         0.0,

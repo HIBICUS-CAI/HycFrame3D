@@ -10,7 +10,7 @@ struct VS_OUTPUT
 
 struct AMBIENT
 {
-    float4 gAmbient;
+    float4 gAmbientFactor;
 };
 
 struct LIGHT_INFO
@@ -197,7 +197,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     mat.mMetallic = metAndRou.x;
     mat.mFresnelR0 = LerpFresnelR0(mat.mFresnelR0, mat.mMetallic);
 
-    float3 envDiffuse = CalcEnvDiffuse(normalW, mat, toEye);
+    float3 envDiffuse = CalcEnvDiffuse(normalW, mat, toEye) * gAmbient[0].gAmbientFactor.rgb;
     float4 ambientL = float4(envDiffuse * access, 0.f);
     // ambientL = gAmbient[0].gAmbient * albedo * access;
 
@@ -291,7 +291,8 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     }
 
     directL += lerp(0.1f, 1.f, mat.mMetallic) *
-        float4(CalcEnvSpecular(positionW, normalW, toEye, mat) * diffuse.rgb, 0.f);
+        float4(CalcEnvSpecular(positionW, normalW, toEye, mat) * diffuse.rgb, 0.f) *
+        gAmbient[0].gAmbientFactor;
 
     float4 litColor = ambientL * diffuse + directL;
     litColor.a = diffuse.a;

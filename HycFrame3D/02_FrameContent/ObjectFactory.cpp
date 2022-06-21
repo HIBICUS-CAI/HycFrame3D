@@ -72,8 +72,8 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
         }
     }
 
-    if (sceneConfig["ambient-light"].IsNull() ||
-        sceneConfig["ambient-light"].Size() != 4)
+    if (sceneConfig["ambient-factor"].IsNull() ||
+        sceneConfig["ambient-factor"].Size() != 4)
     {
         P_LOG(LOG_ERROR,
             "the scene's name in json file %s \
@@ -84,12 +84,12 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
     }
     DirectX::XMFLOAT4 ambient =
     {
-        sceneConfig["ambient-light"][0].GetFloat(),
-        sceneConfig["ambient-light"][1].GetFloat(),
-        sceneConfig["ambient-light"][2].GetFloat(),
-        sceneConfig["ambient-light"][3].GetFloat()
+        sceneConfig["ambient-factor"][0].GetFloat(),
+        sceneConfig["ambient-factor"][1].GetFloat(),
+        sceneConfig["ambient-factor"][2].GetFloat(),
+        sceneConfig["ambient-factor"][3].GetFloat()
     };
-    newNode->SetCurrentAmbient(ambient);
+    newNode->SetCurrentAmbientFactor(ambient);
 
     {
         std::string iblEnvTexName = "";

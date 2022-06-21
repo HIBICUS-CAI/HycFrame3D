@@ -1,9 +1,9 @@
 {
     "scene-name": "material-scene",
-    "ambient-light": [
-        0.001,
-        0.001,
-        0.001,
+    "ambient-factor": [
+        1.0,
+        1.0,
+        1.0,
         1.0
     ],
     "ibl-environment": "mat_studio_env.dds",

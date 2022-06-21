@@ -1,6 +1,6 @@
 {
     "scene-name": "sample2-scene",
-    "ambient-light": [
+    "ambient-factor": [
         0.5,
         0.5,
         0.5,

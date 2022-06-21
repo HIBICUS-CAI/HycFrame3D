@@ -96,19 +96,19 @@ SceneManager* SceneNode::GetSceneManager() const
     return mSceneManagerPtr;
 }
 
-void SceneNode::SetCurrentAmbient(DirectX::XMFLOAT4&& _ambientColor)
+void SceneNode::SetCurrentAmbientFactor(DirectX::XMFLOAT4&& _ambientColor)
 {
-    mCameraAmbientInfo.mAmbientColor = _ambientColor;
+    mCameraAmbientInfo.mAmbientFactor = _ambientColor;
 }
 
-void SceneNode::SetCurrentAmbient(DirectX::XMFLOAT4& _ambientColor)
+void SceneNode::SetCurrentAmbientFactor(DirectX::XMFLOAT4& _ambientColor)
 {
-    mCameraAmbientInfo.mAmbientColor = _ambientColor;
+    mCameraAmbientInfo.mAmbientFactor = _ambientColor;
 }
 
-DirectX::XMFLOAT4& SceneNode::GetCurrentAmbient()
+DirectX::XMFLOAT4& SceneNode::GetCurrentAmbientFactor()
 {
-    return mCameraAmbientInfo.mAmbientColor;
+    return mCameraAmbientInfo.mAmbientFactor;
 }
 
 void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string _spc)
