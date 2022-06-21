@@ -4227,7 +4227,7 @@ void RSPass_PriticleEmitSimulate::ExecuatePass()
         }
         STContext()->Unmap(mSimulEmitterStructedBuffer, 0);
 
-        ID3D11Buffer* cb[] = { mCameraConstantBuffer };
+        ID3D11Buffer* cb[] = { mCameraConstantBuffer,mTimeConstantBuffer };
         ID3D11ShaderResourceView* srv[] =
         { mDepthTex_Srv,mSimulEmitterStructedBuffer_Srv };
         ID3D11UnorderedAccessView* uav[] =

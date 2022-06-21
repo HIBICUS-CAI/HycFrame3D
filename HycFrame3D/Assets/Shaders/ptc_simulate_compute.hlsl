@@ -1,7 +1,6 @@
 // TEMP-----------------------------
 #define gScreenWidth (1280)
 #define gScreenHeight (720)
-#define gDeltaTime (0.016f)
 #define gCollisionThickness (4.f)
 #define gSunDirection (float3(0.f, -1.f, -1.f))
 // TEMP-----------------------------
@@ -50,6 +49,13 @@ cbuffer CameraStatus : register(b0)
     float3 gEyePosition;
     float gPad[1];
 }
+
+cbuffer Time : register(b1)
+{
+	float gDeltaTime;
+    float gTotalTime;
+    float gTimePads[2];
+};
 
 RWStructuredBuffer<GPUParticlePartA> gParticleBufferA : register(u0);
 RWStructuredBuffer<GPUParticlePartB> gParticleBufferB : register(u1);
