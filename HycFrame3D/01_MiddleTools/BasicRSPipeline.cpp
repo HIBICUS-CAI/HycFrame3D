@@ -235,7 +235,7 @@ bool CreateBasicPipeline()
 
     name = "tonemapping-pass";
     RSPass_Tonemapping* tonemap = new RSPass_Tonemapping(
-        name, PASS_TYPE::RENDER, g_Root);
+        name, PASS_TYPE::COMPUTE, g_Root);
     tonemap->SetExecuateOrder(1);
 
     name = "to-swapchain-pass";
@@ -5577,31 +5577,19 @@ bool RSPass_Billboard::CreateSamplers()
 RSPass_Tonemapping::RSPass_Tonemapping(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mVertexBuffer(nullptr), mIndexBuffer(nullptr),
-    mVertexShader(nullptr), mPixelShader(nullptr),
-    mLinearWrapSampler(nullptr), mSwapChainRtv(nullptr),
-    mHdrSrv(nullptr)
+    mComputeShader(nullptr), mHdrUav(nullptr)
 {
 
 }
 
 RSPass_Tonemapping::RSPass_Tonemapping(const RSPass_Tonemapping& _source) :
     RSPass_Base(_source),
-    mVertexBuffer(_source.mVertexBuffer),
-    mIndexBuffer(_source.mIndexBuffer),
-    mVertexShader(_source.mVertexShader),
-    mPixelShader(_source.mPixelShader),
-    mSwapChainRtv(_source.mSwapChainRtv),
-    mHdrSrv(_source.mHdrSrv),
-    mLinearWrapSampler(_source.mLinearWrapSampler)
+    mComputeShader(_source.mComputeShader),
+    mHdrUav(_source.mHdrUav)
 {
     if (mHasBeenInited)
     {
-        RS_ADD(mVertexBuffer);
-        RS_ADD(mIndexBuffer);
-        RS_ADD(mVertexShader);
-        RS_ADD(mPixelShader);
-        RS_ADD(mLinearWrapSampler);
+        RS_ADD(mComputeShader);
     }
 }
 
@@ -5619,10 +5607,8 @@ bool RSPass_Tonemapping::InitPass()
 {
     if (mHasBeenInited) { return true; }
 
-    if (!CreateBuffers()) { return false; }
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
-    if (!CreateSamplers()) { return false; }
 
     mHasBeenInited = true;
 
@@ -5631,98 +5617,22 @@ bool RSPass_Tonemapping::InitPass()
 
 void RSPass_Tonemapping::ReleasePass()
 {
-    RS_RELEASE(mVertexBuffer);
-    RS_RELEASE(mIndexBuffer);
-    RS_RELEASE(mVertexShader);
-    RS_RELEASE(mPixelShader);
-    RS_RELEASE(mLinearWrapSampler);
+    RS_RELEASE(mComputeShader);
 }
 
 void RSPass_Tonemapping::ExecuatePass()
 {
-    STContext()->OMSetRenderTargets(1, &mSwapChainRtv, nullptr);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->ClearRenderTargetView(
-        mSwapChainRtv, DirectX::Colors::DarkGreen);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
+    static ID3D11UnorderedAccessView* nullUav = nullptr;
+    UINT width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
+    UINT height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
+    UINT dispatchX = Tool::Align(width, 256) / 256;
 
-    UINT stride = sizeof(VertexType::TangentVertex);
-    UINT offset = 0;
+    STContext()->CSSetShader(mComputeShader, nullptr, 0);
+    STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
 
-    static ID3D11ShaderResourceView* srvs[] =
-    {
-        mHdrSrv
-    };
-    STContext()->PSSetShaderResources(0, 1, srvs);
+    STContext()->Dispatch(dispatchX, height, 1);
 
-    static ID3D11SamplerState* samps[] =
-    {
-        mLinearWrapSampler,
-    };
-    STContext()->PSSetSamplers(0, 1, samps);
-
-    STContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    STContext()->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
-    STContext()->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
-
-    ID3D11RenderTargetView* rtvnull = nullptr;
-    STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
-    static ID3D11ShaderResourceView* nullsrvs[] =
-    {
-        nullptr
-    };
-    STContext()->PSSetShaderResources(0, 1, nullsrvs);
-}
-
-bool RSPass_Tonemapping::CreateBuffers()
-{
-    HRESULT hr = S_OK;
-    D3D11_BUFFER_DESC bufDesc = {};
-
-    VertexType::TangentVertex v[4] = {};
-    v[0].Position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
-    v[1].Position = DirectX::XMFLOAT3(-1.0f, +1.0f, 0.0f);
-    v[2].Position = DirectX::XMFLOAT3(+1.0f, +1.0f, 0.0f);
-    v[3].Position = DirectX::XMFLOAT3(+1.0f, -1.0f, 0.0f);
-    v[0].TexCoord = DirectX::XMFLOAT2(0.0f, 1.0f);
-    v[1].TexCoord = DirectX::XMFLOAT2(0.0f, 0.0f);
-    v[2].TexCoord = DirectX::XMFLOAT2(1.0f, 0.0f);
-    v[3].TexCoord = DirectX::XMFLOAT2(1.0f, 1.0f);
-    ZeroMemory(&bufDesc, sizeof(bufDesc));
-    bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufDesc.ByteWidth = sizeof(VertexType::TangentVertex) * 4;
-    bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    bufDesc.CPUAccessFlags = 0;
-    bufDesc.MiscFlags = 0;
-    bufDesc.StructureByteStride = 0;
-    D3D11_SUBRESOURCE_DATA vinitData = {};
-    ZeroMemory(&vinitData, sizeof(vinitData));
-    vinitData.pSysMem = v;
-    hr = Device()->CreateBuffer(&bufDesc, &vinitData, &mVertexBuffer);
-    if (FAILED(hr)) { return false; }
-
-    UINT indices[6] =
-    {
-        0, 1, 2,
-        0, 2, 3
-    };
-    ZeroMemory(&bufDesc, sizeof(bufDesc));
-    bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufDesc.ByteWidth = sizeof(UINT) * 6;
-    bufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    bufDesc.CPUAccessFlags = 0;
-    bufDesc.StructureByteStride = 0;
-    bufDesc.MiscFlags = 0;
-    D3D11_SUBRESOURCE_DATA iinitData = {};
-    ZeroMemory(&iinitData, sizeof(iinitData));
-    iinitData.pSysMem = indices;
-    hr = Device()->CreateBuffer(&bufDesc, &iinitData, &mIndexBuffer);
-    if (FAILED(hr)) { return false; }
-
-    return true;
+    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
 }
 
 bool RSPass_Tonemapping::CreateShaders()
@@ -5731,27 +5641,14 @@ bool RSPass_Tonemapping::CreateShaders()
     HRESULT hr = S_OK;
 
     hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\tonemap_vertex.hlsl",
-        "main", "vs_5_0", &shaderBlob);
+        L".\\Assets\\Shaders\\tonemap_compute.hlsl",
+        "main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = Device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
-        nullptr, &mVertexShader);
-    shaderBlob->Release();
-    shaderBlob = nullptr;
-    if (FAILED(hr)) { return false; }
-
-    hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\tonemap_pixel.hlsl",
-        "main", "ps_5_0", &shaderBlob);
-    if (FAILED(hr)) { return false; }
-
-    hr = Device()->CreatePixelShader(
-        shaderBlob->GetBufferPointer(),
-        shaderBlob->GetBufferSize(),
-        nullptr, &mPixelShader);
+        nullptr, &mComputeShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
@@ -5761,45 +5658,7 @@ bool RSPass_Tonemapping::CreateShaders()
 
 bool RSPass_Tonemapping::CreateViews()
 {
-    mSwapChainRtv = g_Root->Devices()->GetSwapChainRtv();
-    mHdrSrv = g_Root->Devices()->GetHighDynamicSrv();
-
-    return true;
-}
-
-bool RSPass_Tonemapping::CreateSamplers()
-{
-    HRESULT hr = S_OK;
-    D3D11_SAMPLER_DESC sampDesc = {};
-    ZeroMemory(&sampDesc, sizeof(sampDesc));
-    auto filter = g_RenderEffectConfig.mSamplerLevel;
-    switch (filter)
-    {
-    case SAMPLER_LEVEL::POINT:
-        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-        break;
-    case SAMPLER_LEVEL::BILINEAR:
-        sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-        break;
-    case SAMPLER_LEVEL::ANISO_8X:
-        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-        sampDesc.MaxAnisotropy = 8;
-        break;
-    case SAMPLER_LEVEL::ANISO_16X:
-        sampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-        sampDesc.MaxAnisotropy = 16;
-        break;
-    default: return false;
-    }
-    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-    sampDesc.MinLOD = 0;
-    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
-        &sampDesc, &mLinearWrapSampler);
-    if (FAILED(hr)) { return false; }
+    mHdrUav = g_Root->Devices()->GetHighDynamicUav();
 
     return true;
 }

@@ -775,19 +775,12 @@ public:
     virtual void ExecuatePass();
 
 private:
-    bool CreateBuffers();
     bool CreateShaders();
     bool CreateViews();
-    bool CreateSamplers();
 
 private:
-    ID3D11Buffer* mVertexBuffer;
-    ID3D11Buffer* mIndexBuffer;
-    ID3D11VertexShader* mVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11RenderTargetView* mSwapChainRtv;
-    ID3D11ShaderResourceView* mHdrSrv;
-    ID3D11SamplerState* mLinearWrapSampler;
+    ID3D11ComputeShader* mComputeShader;
+    ID3D11UnorderedAccessView* mHdrUav;
 };
 
 class RSPass_ToSwapChain :public RSPass_Base
