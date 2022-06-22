@@ -415,7 +415,7 @@
                         -9.8,
                         0.0
                     ],
-                    "particle-mass": 10.0,
+                    "particle-mass": 6.0,
                     "life-span": 20.0,
                     "start-end-size": [
                         0.5,

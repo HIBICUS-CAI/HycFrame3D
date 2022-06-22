@@ -790,6 +790,39 @@ private:
     ID3D11SamplerState* mLinearWrapSampler;
 };
 
+class RSPass_ToSwapChain :public RSPass_Base
+{
+public:
+    RSPass_ToSwapChain(std::string& _name, PASS_TYPE _type,
+        class RSRoot_DX11* _root);
+    RSPass_ToSwapChain(const RSPass_ToSwapChain& _source);
+    virtual ~RSPass_ToSwapChain();
+
+public:
+    virtual RSPass_ToSwapChain* ClonePass() override;
+
+    virtual bool InitPass();
+
+    virtual void ReleasePass();
+
+    virtual void ExecuatePass();
+
+private:
+    bool CreateBuffers();
+    bool CreateShaders();
+    bool CreateViews();
+    bool CreateSamplers();
+
+private:
+    ID3D11Buffer* mVertexBuffer;
+    ID3D11Buffer* mIndexBuffer;
+    ID3D11VertexShader* mVertexShader;
+    ID3D11PixelShader* mPixelShader;
+    ID3D11RenderTargetView* mSwapChainRtv;
+    ID3D11ShaderResourceView* mHdrSrv;
+    ID3D11SamplerState* mLinearWrapSampler;
+};
+
 void SetPipelineDeltaTime(float _deltaMilliSecond);
 
 void SetPipelineIBLTextures(ID3D11ShaderResourceView* _envSrv,
