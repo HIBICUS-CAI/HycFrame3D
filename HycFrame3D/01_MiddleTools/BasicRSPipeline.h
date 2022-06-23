@@ -806,7 +806,11 @@ private:
 
 private:
     ID3D11ComputeShader* mComputeShader;
+    ID3D11ShaderResourceView* mHdrSrv;
     ID3D11UnorderedAccessView* mHdrUav;
+    ID3D11Texture2D* mNeedBloomTexture;
+    ID3D11ShaderResourceView* mNeedBloomSrv;
+    std::array<ID3D11UnorderedAccessView*, 10> mNeedBloomUavArray;
 };
 
 class RSPass_ToSwapChain :public RSPass_Base
