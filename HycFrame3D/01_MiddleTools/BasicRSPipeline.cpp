@@ -5747,6 +5747,8 @@ void RSPass_BloomHdr::ExecuatePass()
 
     STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
     STContext()->CSSetShaderResources(0, 1, &nullSrv);
+
+    STContext()->GenerateMips(mNeedBloomSrv);
 }
 
 bool RSPass_BloomHdr::CreateShaders()

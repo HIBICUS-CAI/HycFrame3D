@@ -11,8 +11,10 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
     gLightCache[linearGroupIndex] = (float4)0.f;
 
     float4 originValue = gOriginTex.Load(_dispatchId);
-    if (length(originValue) > 4.f)
+    if (originValue.r > 1.5f || originValue.g > 1.5f || originValue.b > 1.5f)
     {
         gLightCache[linearGroupIndex] = originValue;
     }
+
+    gBloomTex[_dispatchId.xy] = gLightCache[linearGroupIndex];
 }
