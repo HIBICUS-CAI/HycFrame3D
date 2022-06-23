@@ -783,6 +783,32 @@ private:
     ID3D11UnorderedAccessView* mHdrUav;
 };
 
+class RSPass_BloomHdr :public RSPass_Base
+{
+public:
+    RSPass_BloomHdr(std::string& _name, PASS_TYPE _type,
+        class RSRoot_DX11* _root);
+    RSPass_BloomHdr(const RSPass_BloomHdr& _source);
+    virtual ~RSPass_BloomHdr();
+
+public:
+    virtual RSPass_BloomHdr* ClonePass() override;
+
+    virtual bool InitPass();
+
+    virtual void ReleasePass();
+
+    virtual void ExecuatePass();
+
+private:
+    bool CreateShaders();
+    bool CreateViews();
+
+private:
+    ID3D11ComputeShader* mComputeShader;
+    ID3D11UnorderedAccessView* mHdrUav;
+};
+
 class RSPass_ToSwapChain :public RSPass_Base
 {
 public:

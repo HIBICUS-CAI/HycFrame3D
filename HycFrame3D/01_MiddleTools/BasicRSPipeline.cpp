@@ -236,18 +236,24 @@ bool CreateBasicPipeline()
     name = "tonemapping-pass";
     RSPass_Tonemapping* tonemap = new RSPass_Tonemapping(
         name, PASS_TYPE::COMPUTE, g_Root);
-    tonemap->SetExecuateOrder(1);
+    tonemap->SetExecuateOrder(2);
+
+    name = "bloom-hdr-pass";
+    RSPass_BloomHdr* bloomhdr = new RSPass_BloomHdr(
+        name, PASS_TYPE::COMPUTE, g_Root);
+    bloomhdr->SetExecuateOrder(1);
 
     name = "to-swapchain-pass";
     RSPass_ToSwapChain* toswap = new RSPass_ToSwapChain(
         name, PASS_TYPE::RENDER, g_Root);
-    toswap->SetExecuateOrder(2);
+    toswap->SetExecuateOrder(3);
 
     name = "post-processing-topic";
     RSTopic* post_procsssing_topic = new RSTopic(name);
     post_procsssing_topic->StartTopicAssembly();
     post_procsssing_topic->InsertPass(tonemap);
     post_procsssing_topic->InsertPass(toswap);
+    post_procsssing_topic->InsertPass(bloomhdr);
     post_procsssing_topic->SetExecuateOrder(9);
     post_procsssing_topic->FinishTopicAssembly();
 
@@ -5657,6 +5663,95 @@ bool RSPass_Tonemapping::CreateShaders()
 }
 
 bool RSPass_Tonemapping::CreateViews()
+{
+    mHdrUav = g_Root->Devices()->GetHighDynamicUav();
+
+    return true;
+}
+
+RSPass_BloomHdr::RSPass_BloomHdr(
+    std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
+    RSPass_Base(_name, _type, _root),
+    mComputeShader(nullptr), mHdrUav(nullptr)
+{
+
+}
+
+RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
+    RSPass_Base(_source),
+    mComputeShader(_source.mComputeShader),
+    mHdrUav(_source.mHdrUav)
+{
+    if (mHasBeenInited)
+    {
+        RS_ADD(mComputeShader);
+    }
+}
+
+RSPass_BloomHdr::~RSPass_BloomHdr()
+{
+
+}
+
+RSPass_BloomHdr* RSPass_BloomHdr::ClonePass()
+{
+    return new RSPass_BloomHdr(*this);
+}
+
+bool RSPass_BloomHdr::InitPass()
+{
+    if (mHasBeenInited) { return true; }
+
+    if (!CreateShaders()) { return false; }
+    if (!CreateViews()) { return false; }
+
+    mHasBeenInited = true;
+
+    return true;
+}
+
+void RSPass_BloomHdr::ReleasePass()
+{
+    RS_RELEASE(mComputeShader);
+}
+
+void RSPass_BloomHdr::ExecuatePass()
+{
+    /*static ID3D11UnorderedAccessView* nullUav = nullptr;
+    UINT width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
+    UINT height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
+    UINT dispatchX = Tool::Align(width, 256) / 256;
+
+    STContext()->CSSetShader(mComputeShader, nullptr, 0);
+    STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
+
+    STContext()->Dispatch(dispatchX, height, 1);
+
+    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);*/
+}
+
+bool RSPass_BloomHdr::CreateShaders()
+{
+    /*ID3DBlob* shaderBlob = nullptr;
+    HRESULT hr = S_OK;
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\tonemap_compute.hlsl",
+        "main", "cs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateComputeShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mComputeShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }*/
+
+    return true;
+}
+
+bool RSPass_BloomHdr::CreateViews()
 {
     mHdrUav = g_Root->Devices()->GetHighDynamicUav();
 
