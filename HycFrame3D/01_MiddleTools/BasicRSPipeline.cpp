@@ -28,7 +28,7 @@
 #include "JsonHelper.h"
 
 #define RS_RELEASE(p) { if (p) { (p)->Release(); (p)=nullptr; } }
-#define RS_ADD(p) { if(p) { p->AddRef(); } }
+#define RS_ADDREF(p) { if(p) { p->AddRef(); } }
 static RSRoot_DX11* g_Root = nullptr;
 static RSPass_PriticleSetUp* g_ParticleSetUpPass = nullptr;
 static RSPipeline* g_BasicPipeline = nullptr;
@@ -412,17 +412,17 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
 {
     if (mHasBeenInited)
     {
-        RS_ADD(mVertexShader);
-        RS_ADD(mAniVertexShader);
-        RS_ADD(mPixelShader);
-        RS_ADD(mNDPixelShader);
-        RS_ADD(mViewProjStructedBuffer);
-        RS_ADD(mViewProjStructedBufferSrv);
-        RS_ADD(mInstanceStructedBuffer);
-        RS_ADD(mInstanceStructedBufferSrv);
-        RS_ADD(mBonesStructedBuffer);
-        RS_ADD(mBonesStructedBufferSrv);
-        RS_ADD(mLinearSampler);
+        RS_ADDREF(mVertexShader);
+        RS_ADDREF(mAniVertexShader);
+        RS_ADDREF(mPixelShader);
+        RS_ADDREF(mNDPixelShader);
+        RS_ADDREF(mViewProjStructedBuffer);
+        RS_ADDREF(mViewProjStructedBufferSrv);
+        RS_ADDREF(mInstanceStructedBuffer);
+        RS_ADDREF(mInstanceStructedBufferSrv);
+        RS_ADDREF(mBonesStructedBuffer);
+        RS_ADDREF(mBonesStructedBufferSrv);
+        RS_ADDREF(mLinearSampler);
     }
 }
 
@@ -947,18 +947,18 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao& _source) :
 
     if (mHasBeenInited)
     {
-        RS_ADD(mVertexShader);
-        RS_ADD(mPixelShader);
-        RS_ADD(mCompressVertexShader);
-        RS_ADD(mCompressPixelShader);
-        RS_ADD(mSamplePointClamp);
-        RS_ADD(mSampleLinearClamp);
-        RS_ADD(mSampleDepthMap);
-        RS_ADD(mSampleLinearWrap);
-        RS_ADD(mSsaoInfoStructedBuffer);
-        RS_ADD(mSsaoInfoStructedBufferSrv);
-        RS_ADD(mVertexBuffer);
-        RS_ADD(mIndexBuffer);
+        RS_ADDREF(mVertexShader);
+        RS_ADDREF(mPixelShader);
+        RS_ADDREF(mCompressVertexShader);
+        RS_ADDREF(mCompressPixelShader);
+        RS_ADDREF(mSamplePointClamp);
+        RS_ADDREF(mSampleLinearClamp);
+        RS_ADDREF(mSampleDepthMap);
+        RS_ADDREF(mSampleLinearWrap);
+        RS_ADDREF(mSsaoInfoStructedBuffer);
+        RS_ADDREF(mSsaoInfoStructedBufferSrv);
+        RS_ADDREF(mVertexBuffer);
+        RS_ADDREF(mIndexBuffer);
     }
 }
 
@@ -1554,8 +1554,8 @@ RSPass_KBBlur::RSPass_KBBlur(const RSPass_KBBlur& _source) :
 {
     if (mHasBeenInited)
     {
-        RS_ADD(mHoriBlurShader);
-        RS_ADD(mVertBlurShader);
+        RS_ADDREF(mHoriBlurShader);
+        RS_ADDREF(mVertBlurShader);
     }
 }
 
@@ -4749,14 +4749,14 @@ RSPass_Sprite::RSPass_Sprite(
 {
     if (mHasBeenInited)
     {
-        RS_ADD(mVertexShader);
-        RS_ADD(mPixelShader);
-        RS_ADD(mDepthStencilState);
-        RS_ADD(mLinearSampler);
-        RS_ADD(mProjStructedBufferSrv);
-        RS_ADD(mProjStructedBuffer);
-        RS_ADD(mInstanceStructedBufferSrv);
-        RS_ADD(mInstanceStructedBuffer);
+        RS_ADDREF(mVertexShader);
+        RS_ADDREF(mPixelShader);
+        RS_ADDREF(mDepthStencilState);
+        RS_ADDREF(mLinearSampler);
+        RS_ADDREF(mProjStructedBufferSrv);
+        RS_ADDREF(mProjStructedBuffer);
+        RS_ADDREF(mInstanceStructedBufferSrv);
+        RS_ADDREF(mInstanceStructedBuffer);
     }
 }
 
@@ -5285,15 +5285,15 @@ RSPass_Billboard::RSPass_Billboard(const RSPass_Billboard& _source) :
 {
     if (mHasBeenInited)
     {
-        RS_ADD(mVertexShader);
-        RS_ADD(mGeometryShader);
-        RS_ADD(mPixelShader);
-        RS_ADD(mLinearWrapSampler);
-        RS_ADD(mBlendState);
-        RS_ADD(mViewProjStructedBuffer);
-        RS_ADD(mViewProjStructedBufferSrv);
-        RS_ADD(mInstanceStructedBuffer);
-        RS_ADD(mInstanceStructedBufferSrv);
+        RS_ADDREF(mVertexShader);
+        RS_ADDREF(mGeometryShader);
+        RS_ADDREF(mPixelShader);
+        RS_ADDREF(mLinearWrapSampler);
+        RS_ADDREF(mBlendState);
+        RS_ADDREF(mViewProjStructedBuffer);
+        RS_ADDREF(mViewProjStructedBufferSrv);
+        RS_ADDREF(mInstanceStructedBuffer);
+        RS_ADDREF(mInstanceStructedBufferSrv);
     }
 }
 
@@ -5597,7 +5597,7 @@ RSPass_Tonemapping::RSPass_Tonemapping(const RSPass_Tonemapping& _source) :
 {
     if (mHasBeenInited)
     {
-        RS_ADD(mComputeShader);
+        RS_ADDREF(mComputeShader);
     }
 }
 
@@ -5692,10 +5692,10 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
 {
     if (mHasBeenInited)
     {
-        RS_ADD(mComputeShader);
-        RS_ADD(mNeedBloomTexture);
-        RS_ADD(mNeedBloomSrv);
-        for (auto uav : mNeedBloomUavArray) { RS_ADD(uav); }
+        RS_ADDREF(mComputeShader);
+        RS_ADDREF(mNeedBloomTexture);
+        RS_ADDREF(mNeedBloomSrv);
+        for (auto uav : mNeedBloomUavArray) { RS_ADDREF(uav); }
     }
 }
 
@@ -5846,11 +5846,11 @@ RSPass_ToSwapChain::RSPass_ToSwapChain(const RSPass_ToSwapChain& _source) :
 {
     if (mHasBeenInited)
     {
-        RS_ADD(mVertexBuffer);
-        RS_ADD(mIndexBuffer);
-        RS_ADD(mVertexShader);
-        RS_ADD(mPixelShader);
-        RS_ADD(mLinearWrapSampler);
+        RS_ADDREF(mVertexBuffer);
+        RS_ADDREF(mIndexBuffer);
+        RS_ADDREF(mVertexShader);
+        RS_ADDREF(mPixelShader);
+        RS_ADDREF(mLinearWrapSampler);
     }
 }
 
