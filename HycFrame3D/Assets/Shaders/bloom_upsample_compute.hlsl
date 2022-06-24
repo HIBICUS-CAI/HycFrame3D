@@ -3,7 +3,7 @@ Texture2D<float4> gFilterPixel : register(t0);
 RWTexture2D<float4> gUpSamplingTarget : register(u0);
 RWTexture2D<float4> gUpSamplingSource : register(u1);
 
-SamplerState gLinearClamp : register(s0);
+SamplerState gLinearBorder : register(s0);
 
 cbuffer UP_SAMPLING_INFO : register(b0)
 {
@@ -29,7 +29,7 @@ void main(int3 _dispatchId : SV_DispatchThreadID)
         float2 uv;
         uv.x = (_dispatchId.x + 0.5f) / gCurrentTexWidth;
         uv.y = (_dispatchId.y + 0.5f) / gCurrentTexHeight;
-        upValue = gFilterPixel.SampleLevel(gLinearClamp, uv, gTargetMip + 2);
+        upValue = gFilterPixel.SampleLevel(gLinearBorder, uv, gTargetMip + 2);
     }
     else
     {

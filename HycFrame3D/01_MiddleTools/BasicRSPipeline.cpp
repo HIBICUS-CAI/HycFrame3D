@@ -5679,7 +5679,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(
     mBlurVertShader(nullptr),
     mBlendShader(nullptr),
     mBlurConstBuffer(nullptr),
-    mLinearClampSampler(nullptr),
+    mLinearBorderSampler(nullptr),
     mFilterPixelShader(nullptr), mHdrUav(nullptr),
     mNeedBloomTexture(nullptr), mHdrSrv(nullptr),
     mNeedBloomSrv(nullptr), mNeedBloomUavArray({ nullptr }),
@@ -5697,7 +5697,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
     mFilterPixelShader(_source.mFilterPixelShader),
     mBlendShader(_source.mBlendShader),
     mBlurConstBuffer(_source.mBlurConstBuffer),
-    mLinearClampSampler(_source.mLinearClampSampler),
+    mLinearBorderSampler(_source.mLinearBorderSampler),
     mHdrSrv(_source.mHdrSrv),
     mHdrUav(_source.mHdrUav),
     mNeedBloomTexture(_source.mNeedBloomTexture),
@@ -5715,7 +5715,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
         RS_ADDREF(mFilterPixelShader);
         RS_ADDREF(mBlendShader);
         RS_ADDREF(mBlurConstBuffer);
-        RS_ADDREF(mLinearClampSampler);
+        RS_ADDREF(mLinearBorderSampler);
         RS_ADDREF(mNeedBloomTexture);
         RS_ADDREF(mNeedBloomSrv);
         for (auto uav : mNeedBloomUavArray) { RS_ADDREF(uav); }
@@ -5757,7 +5757,7 @@ void RSPass_BloomHdr::ReleasePass()
     RS_RELEASE(mBlurVertShader);
     RS_RELEASE(mBlendShader);
     RS_RELEASE(mBlurConstBuffer);
-    RS_RELEASE(mLinearClampSampler);
+    RS_RELEASE(mLinearBorderSampler);
     RS_RELEASE(mNeedBloomTexture);
     RS_RELEASE(mNeedBloomSrv);
     for (auto uav : mNeedBloomUavArray) { RS_RELEASE(uav); }
@@ -5827,7 +5827,7 @@ void RSPass_BloomHdr::ExecuatePass()
     height /= 2;
     STContext()->CSSetShader(mUpSampleShader, nullptr, 0);
     STContext()->CSSetShaderResources(0, 1, &mNeedBloomSrv);
-    STContext()->CSSetSamplers(0, 1, &mLinearClampSampler);
+    STContext()->CSSetSamplers(0, 1, &mLinearBorderSampler);
     for (size_t i = 0; i < 6; i++)
     {
         auto inv_i = 5 - i;
@@ -6035,13 +6035,13 @@ bool RSPass_BloomHdr::CreateSampler()
     ZeroMemory(&sampDesc, sizeof(sampDesc));
 
     sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(&sampDesc, &mLinearClampSampler);
+    hr = Device()->CreateSamplerState(&sampDesc, &mLinearBorderSampler);
     if (FAILED(hr)) { return false; }
 
     return true;
