@@ -35,6 +35,13 @@ constexpr UINT PTC_TILE_X_SIZE = 32;
 constexpr UINT PTC_TILE_Y_SIZE = 32;
 constexpr UINT PTC_COARSE_CULLING_THREADS = 256;
 
+struct RS_BLUR_INFO
+{
+    UINT mTexWidth;
+    UINT mTexHeight;
+    UINT mPads[2];
+};
+
 struct RS_PARTICLE_PART_A
 {
     DirectX::XMFLOAT4 mColorAndAlpha = {};
@@ -803,9 +810,13 @@ public:
 private:
     bool CreateShaders();
     bool CreateViews();
+    bool CreateBuffers();
 
 private:
-    ID3D11ComputeShader* mComputeShader;
+    ID3D11ComputeShader* mFilterPixelShader;
+    ID3D11ComputeShader* mDownSampleBlurHoriShader;
+    ID3D11ComputeShader* mDownSampleBlurVertShader;
+    ID3D11Buffer* mBlurConstBuffer;
     ID3D11ShaderResourceView* mHdrSrv;
     ID3D11UnorderedAccessView* mHdrUav;
     ID3D11Texture2D* mNeedBloomTexture;

@@ -5674,7 +5674,10 @@ bool RSPass_Tonemapping::CreateViews()
 RSPass_BloomHdr::RSPass_BloomHdr(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mComputeShader(nullptr), mHdrUav(nullptr),
+    mDownSampleBlurHoriShader(nullptr),
+    mDownSampleBlurVertShader(nullptr),
+    mBlurConstBuffer(nullptr),
+    mFilterPixelShader(nullptr), mHdrUav(nullptr),
     mNeedBloomTexture(nullptr), mHdrSrv(nullptr),
     mNeedBloomSrv(nullptr), mNeedBloomUavArray({ nullptr })
 {
@@ -5683,7 +5686,10 @@ RSPass_BloomHdr::RSPass_BloomHdr(
 
 RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
     RSPass_Base(_source),
-    mComputeShader(_source.mComputeShader),
+    mDownSampleBlurHoriShader(_source.mDownSampleBlurHoriShader),
+    mDownSampleBlurVertShader(_source.mDownSampleBlurVertShader),
+    mFilterPixelShader(_source.mFilterPixelShader),
+    mBlurConstBuffer(_source.mBlurConstBuffer),
     mHdrSrv(_source.mHdrSrv),
     mHdrUav(_source.mHdrUav),
     mNeedBloomTexture(_source.mNeedBloomTexture),
@@ -5692,7 +5698,10 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
 {
     if (mHasBeenInited)
     {
-        RS_ADDREF(mComputeShader);
+        RS_ADDREF(mDownSampleBlurHoriShader);
+        RS_ADDREF(mDownSampleBlurVertShader);
+        RS_ADDREF(mFilterPixelShader);
+        RS_ADDREF(mBlurConstBuffer);
         RS_ADDREF(mNeedBloomTexture);
         RS_ADDREF(mNeedBloomSrv);
         for (auto uav : mNeedBloomUavArray) { RS_ADDREF(uav); }
@@ -5715,6 +5724,7 @@ bool RSPass_BloomHdr::InitPass()
 
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
+    if (!CreateBuffers()) { return false; }
 
     mHasBeenInited = true;
 
@@ -5723,7 +5733,10 @@ bool RSPass_BloomHdr::InitPass()
 
 void RSPass_BloomHdr::ReleasePass()
 {
-    RS_RELEASE(mComputeShader);
+    RS_RELEASE(mFilterPixelShader);
+    RS_RELEASE(mDownSampleBlurHoriShader);
+    RS_RELEASE(mDownSampleBlurVertShader);
+    RS_RELEASE(mBlurConstBuffer);
     RS_RELEASE(mNeedBloomTexture);
     RS_RELEASE(mNeedBloomSrv);
     for (auto uav : mNeedBloomUavArray) { RS_RELEASE(uav); }
@@ -5738,7 +5751,7 @@ void RSPass_BloomHdr::ExecuatePass()
     UINT dispatchX = Tool::Align(width, 16) / 16;
     UINT dispatchY = Tool::Align(height, 16) / 16;
 
-    STContext()->CSSetShader(mComputeShader, nullptr, 0);
+    STContext()->CSSetShader(mFilterPixelShader, nullptr, 0);
     STContext()->CSSetShaderResources(0, 1, &mHdrSrv);
     STContext()->CSSetUnorderedAccessViews(0, 1,
         mNeedBloomUavArray.data(), nullptr);
@@ -5749,6 +5762,39 @@ void RSPass_BloomHdr::ExecuatePass()
     STContext()->CSSetShaderResources(0, 1, &nullSrv);
 
     STContext()->GenerateMips(mNeedBloomSrv);
+
+    D3D11_MAPPED_SUBRESOURCE msr = {};
+
+    for (size_t i = 0; i < 8; i++)
+    {
+        UINT blurTexWidth = width / (1 << i);
+        UINT blurTexHeight = height / (1 << i);
+        STContext()->Map(mBlurConstBuffer, 0,
+            D3D11_MAP_WRITE_DISCARD, 0, &msr);
+        RS_BLUR_INFO* info = (RS_BLUR_INFO*)msr.pData;
+        info->mTexWidth = blurTexWidth;
+        info->mTexHeight = blurTexHeight;
+        STContext()->Unmap(mBlurConstBuffer, 0);
+
+        STContext()->CSSetUnorderedAccessViews(0, 1,
+            &mNeedBloomUavArray[i], nullptr);
+        STContext()->CSSetConstantBuffers(0, 1, &mBlurConstBuffer);
+
+        for (size_t j = 0; j < 2; j++)
+        {
+            STContext()->CSSetShader(mDownSampleBlurHoriShader,
+                nullptr, 0);
+            dispatchX = Tool::Align(blurTexWidth, 256) / 256;
+            dispatchY = blurTexHeight;
+            STContext()->Dispatch(dispatchX, dispatchY, 1);
+
+            STContext()->CSSetShader(mDownSampleBlurVertShader,
+                nullptr, 0);
+            dispatchX = blurTexWidth;
+            dispatchY = Tool::Align(blurTexHeight, 256) / 256;
+            STContext()->Dispatch(dispatchX, dispatchY, 1);
+        }
+    }
 }
 
 bool RSPass_BloomHdr::CreateShaders()
@@ -5764,7 +5810,33 @@ bool RSPass_BloomHdr::CreateShaders()
     hr = Device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
-        nullptr, &mComputeShader);
+        nullptr, &mFilterPixelShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\downsample_blur_compute.hlsl",
+        "HMain", "cs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateComputeShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mDownSampleBlurHoriShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\downsample_blur_compute.hlsl",
+        "VMain", "cs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateComputeShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mDownSampleBlurVertShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
@@ -5789,7 +5861,7 @@ bool RSPass_BloomHdr::CreateViews()
 
     texDesc.Width = g_Root->Devices()->GetCurrWndWidth();
     texDesc.Height = g_Root->Devices()->GetCurrWndHeight();
-    texDesc.MipLevels = 7;
+    texDesc.MipLevels = 8;
     texDesc.ArraySize = 1;
     texDesc.SampleDesc.Count = 1;
     texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -5805,12 +5877,12 @@ bool RSPass_BloomHdr::CreateViews()
     srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 7;
+    srvDesc.Texture2D.MipLevels = 8;
     hr = Device()->CreateShaderResourceView(mNeedBloomTexture,
         &srvDesc, &mNeedBloomSrv);
     if (FAILED(hr)) { return false; }
 
-    for (size_t i = 0; i < 7; i++)
+    for (size_t i = 0; i < 8; i++)
     {
         uavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
@@ -5819,6 +5891,22 @@ bool RSPass_BloomHdr::CreateViews()
             &uavDesc, &mNeedBloomUavArray[i]);
         if (FAILED(hr)) { return false; }
     }
+
+    return true;
+}
+
+bool RSPass_BloomHdr::CreateBuffers()
+{
+    HRESULT hr = S_OK;
+    D3D11_BUFFER_DESC bfrDesc = {};
+
+    ZeroMemory(&bfrDesc, sizeof(bfrDesc));
+    bfrDesc.Usage = D3D11_USAGE_DYNAMIC;
+    bfrDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    bfrDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    bfrDesc.ByteWidth = sizeof(RS_BLUR_INFO);
+    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mBlurConstBuffer);
+    if (FAILED(hr)) { return false; }
 
     return true;
 }
