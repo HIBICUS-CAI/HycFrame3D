@@ -5678,9 +5678,12 @@ RSPass_BloomHdr::RSPass_BloomHdr(
     mBlurHoriShader(nullptr),
     mBlurVertShader(nullptr),
     mBlurConstBuffer(nullptr),
+    mLinearClampSampler(nullptr),
     mFilterPixelShader(nullptr), mHdrUav(nullptr),
     mNeedBloomTexture(nullptr), mHdrSrv(nullptr),
-    mNeedBloomSrv(nullptr), mNeedBloomUavArray({ nullptr })
+    mNeedBloomSrv(nullptr), mNeedBloomUavArray({ nullptr }),
+    mUpSampleTexture(nullptr),
+    mUpSampleSrv(nullptr), mUpSampleUavArray({ nullptr })
 {
 
 }
@@ -5692,11 +5695,15 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
     mBlurVertShader(_source.mBlurVertShader),
     mFilterPixelShader(_source.mFilterPixelShader),
     mBlurConstBuffer(_source.mBlurConstBuffer),
+    mLinearClampSampler(_source.mLinearClampSampler),
     mHdrSrv(_source.mHdrSrv),
     mHdrUav(_source.mHdrUav),
     mNeedBloomTexture(_source.mNeedBloomTexture),
     mNeedBloomSrv(_source.mNeedBloomSrv),
-    mNeedBloomUavArray(_source.mNeedBloomUavArray)
+    mNeedBloomUavArray(_source.mNeedBloomUavArray),
+    mUpSampleTexture(_source.mUpSampleTexture),
+    mUpSampleSrv(_source.mUpSampleSrv),
+    mUpSampleUavArray(_source.mUpSampleUavArray)
 {
     if (mHasBeenInited)
     {
@@ -5705,9 +5712,13 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
         RS_ADDREF(mBlurVertShader);
         RS_ADDREF(mFilterPixelShader);
         RS_ADDREF(mBlurConstBuffer);
+        RS_ADDREF(mLinearClampSampler);
         RS_ADDREF(mNeedBloomTexture);
         RS_ADDREF(mNeedBloomSrv);
         for (auto uav : mNeedBloomUavArray) { RS_ADDREF(uav); }
+        RS_ADDREF(mUpSampleTexture);
+        RS_ADDREF(mUpSampleSrv);
+        for (auto uav : mUpSampleUavArray) { RS_ADDREF(uav); }
     }
 }
 
@@ -5728,6 +5739,7 @@ bool RSPass_BloomHdr::InitPass()
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
     if (!CreateBuffers()) { return false; }
+    if (!CreateSampler()) { return false; }
 
     mHasBeenInited = true;
 
@@ -5741,9 +5753,13 @@ void RSPass_BloomHdr::ReleasePass()
     RS_RELEASE(mBlurHoriShader);
     RS_RELEASE(mBlurVertShader);
     RS_RELEASE(mBlurConstBuffer);
+    RS_RELEASE(mLinearClampSampler);
     RS_RELEASE(mNeedBloomTexture);
     RS_RELEASE(mNeedBloomSrv);
     for (auto uav : mNeedBloomUavArray) { RS_RELEASE(uav); }
+    RS_RELEASE(mUpSampleTexture);
+    RS_RELEASE(mUpSampleSrv);
+    for (auto uav : mUpSampleUavArray) { RS_RELEASE(uav); }
 }
 
 void RSPass_BloomHdr::ExecuatePass()
@@ -5775,7 +5791,7 @@ void RSPass_BloomHdr::ExecuatePass()
         UINT blurTexHeight = height / (1 << i);
         STContext()->Map(mBlurConstBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
-        RS_BLUR_INFO* info = (RS_BLUR_INFO*)msr.pData;
+        BLM_BLUR_INFO* info = (BLM_BLUR_INFO*)msr.pData;
         info->mTexWidth = blurTexWidth;
         info->mTexHeight = blurTexHeight;
         STContext()->Unmap(mBlurConstBuffer, 0);
@@ -5798,6 +5814,11 @@ void RSPass_BloomHdr::ExecuatePass()
             dispatchY = Tool::Align(blurTexHeight, 256) / 256;
             STContext()->Dispatch(dispatchX, dispatchY, 1);
         }
+    }
+
+    for (size_t i = 0; i < 6; i++)
+    {
+
     }
 }
 
@@ -5841,6 +5862,19 @@ bool RSPass_BloomHdr::CreateShaders()
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mBlurVertShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\bloom_upsample_compute.hlsl",
+        "main", "cs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateComputeShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mUpSampleShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
@@ -5896,6 +5930,29 @@ bool RSPass_BloomHdr::CreateViews()
         if (FAILED(hr)) { return false; }
     }
 
+    texDesc.MipLevels = 6;
+    texDesc.MiscFlags = 0;
+    texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE |
+        D3D11_BIND_UNORDERED_ACCESS;
+    srvDesc.Texture2D.MipLevels = 6;
+    hr = Device()->CreateTexture2D(&texDesc, nullptr,
+        &mUpSampleTexture);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateShaderResourceView(mUpSampleTexture,
+        &srvDesc, &mUpSampleSrv);
+    if (FAILED(hr)) { return false; }
+
+    for (size_t i = 0; i < 6; i++)
+    {
+        uavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+        uavDesc.Texture2D.MipSlice = static_cast<UINT>(i);
+        hr = Device()->CreateUnorderedAccessView(mUpSampleTexture,
+            &uavDesc, &mUpSampleUavArray[i]);
+        if (FAILED(hr)) { return false; }
+    }
+
     return true;
 }
 
@@ -5908,8 +5965,27 @@ bool RSPass_BloomHdr::CreateBuffers()
     bfrDesc.Usage = D3D11_USAGE_DYNAMIC;
     bfrDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bfrDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    bfrDesc.ByteWidth = sizeof(RS_BLUR_INFO);
+    bfrDesc.ByteWidth = sizeof(BLM_BLUR_INFO);
     hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mBlurConstBuffer);
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_BloomHdr::CreateSampler()
+{
+    HRESULT hr = S_OK;
+    D3D11_SAMPLER_DESC sampDesc = {};
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    hr = Device()->CreateSamplerState(&sampDesc, &mLinearClampSampler);
     if (FAILED(hr)) { return false; }
 
     return true;

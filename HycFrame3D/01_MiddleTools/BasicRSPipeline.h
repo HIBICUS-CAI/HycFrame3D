@@ -35,7 +35,7 @@ constexpr UINT PTC_TILE_X_SIZE = 32;
 constexpr UINT PTC_TILE_Y_SIZE = 32;
 constexpr UINT PTC_COARSE_CULLING_THREADS = 256;
 
-struct RS_BLUR_INFO
+struct BLM_BLUR_INFO
 {
     UINT mTexWidth;
     UINT mTexHeight;
@@ -811,18 +811,23 @@ private:
     bool CreateShaders();
     bool CreateViews();
     bool CreateBuffers();
+    bool CreateSampler();
 
 private:
     ID3D11ComputeShader* mFilterPixelShader;
     ID3D11ComputeShader* mBlurHoriShader;
     ID3D11ComputeShader* mBlurVertShader;
     ID3D11ComputeShader* mUpSampleShader;
+    ID3D11SamplerState* mLinearClampSampler;
     ID3D11Buffer* mBlurConstBuffer;
     ID3D11ShaderResourceView* mHdrSrv;
     ID3D11UnorderedAccessView* mHdrUav;
     ID3D11Texture2D* mNeedBloomTexture;
     ID3D11ShaderResourceView* mNeedBloomSrv;
     std::array<ID3D11UnorderedAccessView*, 10> mNeedBloomUavArray;
+    ID3D11Texture2D* mUpSampleTexture;
+    ID3D11ShaderResourceView* mUpSampleSrv;
+    std::array<ID3D11UnorderedAccessView*, 8> mUpSampleUavArray;
 };
 
 class RSPass_ToSwapChain :public RSPass_Base
