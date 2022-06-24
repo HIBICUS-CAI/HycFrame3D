@@ -5815,11 +5815,38 @@ void RSPass_BloomHdr::ExecuatePass()
             STContext()->Dispatch(dispatchX, dispatchY, 1);
         }
     }
+    static ID3D11UnorderedAccessView* nulluav = nullptr;
+    static ID3D11ShaderResourceView* nullsrv = nullptr;
+    STContext()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
 
+    width /= 2;
+    height /= 2;
+    STContext()->CSSetShader(mUpSampleShader, nullptr, 0);
+    STContext()->CSSetShaderResources(0, 1, &mNeedBloomSrv);
+    STContext()->CSSetSamplers(0, 1, &mLinearClampSampler);
     for (size_t i = 0; i < 6; i++)
     {
+        auto inv_i = 5 - i;
+        UINT texWidth = width / (1 << inv_i);
+        UINT texHeight = height / (1 << inv_i);
 
+        STContext()->Map(mBlurConstBuffer, 0,
+            D3D11_MAP_WRITE_DISCARD, 0, &msr);
+        BLM_BLUR_INFO* info = (BLM_BLUR_INFO*)msr.pData;
+        info->mTexWidth = texWidth;
+        info->mTexHeight = texHeight;
+        info->mPads[0] = static_cast<UINT>(inv_i);
+        STContext()->Unmap(mBlurConstBuffer, 0);
+
+        STContext()->CSSetUnorderedAccessViews(0, 2,
+            &mUpSampleUavArray[inv_i], nullptr);
+
+        dispatchX = Tool::Align(texWidth, 16) / 16;
+        dispatchY = Tool::Align(texHeight, 16) / 16;
+        STContext()->Dispatch(dispatchX, dispatchY, 1);
     }
+    STContext()->CSSetShaderResources(0, 1, &nullsrv);
+    STContext()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
 }
 
 bool RSPass_BloomHdr::CreateShaders()
@@ -5930,6 +5957,8 @@ bool RSPass_BloomHdr::CreateViews()
         if (FAILED(hr)) { return false; }
     }
 
+    texDesc.Width /= 2;
+    texDesc.Height /= 2;
     texDesc.MipLevels = 6;
     texDesc.MiscFlags = 0;
     texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE |
