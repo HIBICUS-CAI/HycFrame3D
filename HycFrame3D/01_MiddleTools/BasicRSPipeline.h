@@ -814,8 +814,9 @@ private:
 
 private:
     ID3D11ComputeShader* mFilterPixelShader;
-    ID3D11ComputeShader* mDownSampleBlurHoriShader;
-    ID3D11ComputeShader* mDownSampleBlurVertShader;
+    ID3D11ComputeShader* mBlurHoriShader;
+    ID3D11ComputeShader* mBlurVertShader;
+    ID3D11ComputeShader* mUpSampleShader;
     ID3D11Buffer* mBlurConstBuffer;
     ID3D11ShaderResourceView* mHdrSrv;
     ID3D11UnorderedAccessView* mHdrUav;

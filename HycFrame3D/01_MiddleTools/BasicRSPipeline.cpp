@@ -5674,8 +5674,9 @@ bool RSPass_Tonemapping::CreateViews()
 RSPass_BloomHdr::RSPass_BloomHdr(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mDownSampleBlurHoriShader(nullptr),
-    mDownSampleBlurVertShader(nullptr),
+    mUpSampleShader(nullptr),
+    mBlurHoriShader(nullptr),
+    mBlurVertShader(nullptr),
     mBlurConstBuffer(nullptr),
     mFilterPixelShader(nullptr), mHdrUav(nullptr),
     mNeedBloomTexture(nullptr), mHdrSrv(nullptr),
@@ -5686,8 +5687,9 @@ RSPass_BloomHdr::RSPass_BloomHdr(
 
 RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
     RSPass_Base(_source),
-    mDownSampleBlurHoriShader(_source.mDownSampleBlurHoriShader),
-    mDownSampleBlurVertShader(_source.mDownSampleBlurVertShader),
+    mUpSampleShader(_source.mUpSampleShader),
+    mBlurHoriShader(_source.mBlurHoriShader),
+    mBlurVertShader(_source.mBlurVertShader),
     mFilterPixelShader(_source.mFilterPixelShader),
     mBlurConstBuffer(_source.mBlurConstBuffer),
     mHdrSrv(_source.mHdrSrv),
@@ -5698,8 +5700,9 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
 {
     if (mHasBeenInited)
     {
-        RS_ADDREF(mDownSampleBlurHoriShader);
-        RS_ADDREF(mDownSampleBlurVertShader);
+        RS_ADDREF(mUpSampleShader);
+        RS_ADDREF(mBlurHoriShader);
+        RS_ADDREF(mBlurVertShader);
         RS_ADDREF(mFilterPixelShader);
         RS_ADDREF(mBlurConstBuffer);
         RS_ADDREF(mNeedBloomTexture);
@@ -5734,8 +5737,9 @@ bool RSPass_BloomHdr::InitPass()
 void RSPass_BloomHdr::ReleasePass()
 {
     RS_RELEASE(mFilterPixelShader);
-    RS_RELEASE(mDownSampleBlurHoriShader);
-    RS_RELEASE(mDownSampleBlurVertShader);
+    RS_RELEASE(mUpSampleShader);
+    RS_RELEASE(mBlurHoriShader);
+    RS_RELEASE(mBlurVertShader);
     RS_RELEASE(mBlurConstBuffer);
     RS_RELEASE(mNeedBloomTexture);
     RS_RELEASE(mNeedBloomSrv);
@@ -5765,7 +5769,7 @@ void RSPass_BloomHdr::ExecuatePass()
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
 
-    for (size_t i = 0; i < 8; i++)
+    for (size_t i = 1; i < 8; i++)
     {
         UINT blurTexWidth = width / (1 << i);
         UINT blurTexHeight = height / (1 << i);
@@ -5782,13 +5786,13 @@ void RSPass_BloomHdr::ExecuatePass()
 
         for (size_t j = 0; j < 2; j++)
         {
-            STContext()->CSSetShader(mDownSampleBlurHoriShader,
+            STContext()->CSSetShader(mBlurHoriShader,
                 nullptr, 0);
             dispatchX = Tool::Align(blurTexWidth, 256) / 256;
             dispatchY = blurTexHeight;
             STContext()->Dispatch(dispatchX, dispatchY, 1);
 
-            STContext()->CSSetShader(mDownSampleBlurVertShader,
+            STContext()->CSSetShader(mBlurVertShader,
                 nullptr, 0);
             dispatchX = blurTexWidth;
             dispatchY = Tool::Align(blurTexHeight, 256) / 256;
@@ -5816,27 +5820,27 @@ bool RSPass_BloomHdr::CreateShaders()
     if (FAILED(hr)) { return false; }
 
     hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\downsample_blur_compute.hlsl",
+        L".\\Assets\\Shaders\\gauss_blur_compute.hlsl",
         "HMain", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
-        nullptr, &mDownSampleBlurHoriShader);
+        nullptr, &mBlurHoriShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
     hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\downsample_blur_compute.hlsl",
+        L".\\Assets\\Shaders\\gauss_blur_compute.hlsl",
         "VMain", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
-        nullptr, &mDownSampleBlurVertShader);
+        nullptr, &mBlurVertShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
