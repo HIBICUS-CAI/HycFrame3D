@@ -818,6 +818,7 @@ private:
     ID3D11ComputeShader* mBlurHoriShader;
     ID3D11ComputeShader* mBlurVertShader;
     ID3D11ComputeShader* mUpSampleShader;
+    ID3D11ComputeShader* mBlendShader;
     ID3D11SamplerState* mLinearClampSampler;
     ID3D11Buffer* mBlurConstBuffer;
     ID3D11ShaderResourceView* mHdrSrv;

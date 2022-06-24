@@ -347,10 +347,10 @@
                     "light-type": "point",
                     "with-shadow": false,
                     "with-bloom": true,
-                    "intensity": 3000.0,
+                    "intensity": 2000.0,
                     "albedo": [
-                        0.9,
                         0.0,
+                        0.9,
                         0.9
                     ],
                     "direction": [

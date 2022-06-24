@@ -5677,6 +5677,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(
     mUpSampleShader(nullptr),
     mBlurHoriShader(nullptr),
     mBlurVertShader(nullptr),
+    mBlendShader(nullptr),
     mBlurConstBuffer(nullptr),
     mLinearClampSampler(nullptr),
     mFilterPixelShader(nullptr), mHdrUav(nullptr),
@@ -5694,6 +5695,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
     mBlurHoriShader(_source.mBlurHoriShader),
     mBlurVertShader(_source.mBlurVertShader),
     mFilterPixelShader(_source.mFilterPixelShader),
+    mBlendShader(_source.mBlendShader),
     mBlurConstBuffer(_source.mBlurConstBuffer),
     mLinearClampSampler(_source.mLinearClampSampler),
     mHdrSrv(_source.mHdrSrv),
@@ -5711,6 +5713,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
         RS_ADDREF(mBlurHoriShader);
         RS_ADDREF(mBlurVertShader);
         RS_ADDREF(mFilterPixelShader);
+        RS_ADDREF(mBlendShader);
         RS_ADDREF(mBlurConstBuffer);
         RS_ADDREF(mLinearClampSampler);
         RS_ADDREF(mNeedBloomTexture);
@@ -5752,6 +5755,7 @@ void RSPass_BloomHdr::ReleasePass()
     RS_RELEASE(mUpSampleShader);
     RS_RELEASE(mBlurHoriShader);
     RS_RELEASE(mBlurVertShader);
+    RS_RELEASE(mBlendShader);
     RS_RELEASE(mBlurConstBuffer);
     RS_RELEASE(mLinearClampSampler);
     RS_RELEASE(mNeedBloomTexture);
@@ -5845,6 +5849,16 @@ void RSPass_BloomHdr::ExecuatePass()
         dispatchY = Tool::Align(texHeight, 16) / 16;
         STContext()->Dispatch(dispatchX, dispatchY, 1);
     }
+    STContext()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
+    STContext()->CSSetUnorderedAccessViews(1, 1, &nulluav, nullptr);
+
+    STContext()->CSSetShader(mBlendShader, nullptr, 0);
+    STContext()->CSSetShaderResources(0, 1, &mUpSampleSrv);
+    STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
+    dispatchX = Tool::Align(width * 2, 16) / 16;
+    dispatchY = Tool::Align(height * 2, 16) / 16;
+    STContext()->Dispatch(dispatchX, dispatchY, 1);
+
     STContext()->CSSetShaderResources(0, 1, &nullsrv);
     STContext()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
 }
@@ -5902,6 +5916,19 @@ bool RSPass_BloomHdr::CreateShaders()
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mUpSampleShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\bloom_blend_compute.hlsl",
+        "main", "cs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateComputeShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mBlendShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }

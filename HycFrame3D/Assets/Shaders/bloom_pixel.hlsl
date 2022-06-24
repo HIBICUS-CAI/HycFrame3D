@@ -8,7 +8,7 @@ struct VS_OUTPUT
 
 float4 main(VS_OUTPUT _input) : SV_TARGET
 {
-    _input.LightColorW.rgb *= _input.LightColorW.a / 30.f;
+    _input.LightColorW.rgb *= _input.LightColorW.a / 50.f;
     _input.LightColorW = float4(sRGBToACES(_input.LightColorW.rgb), 1.f);
     return _input.LightColorW;
 }
