@@ -17,7 +17,7 @@ cbuffer BLUR_INFO : register(b0)
     uint gPads[2];
 }
 
-RWTexture2D<float4> gMipUav : register(u0);
+RWTexture2D<float4> gTargetUav : register(u0);
 
 groupshared float4 gColorCache[256 + 2 * KERNEL_HALF];
 
@@ -29,14 +29,14 @@ void HMain(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThrea
     if (_groupId.x < KERNEL_HALF)
     {
         int x = max(_dispatchId.x - KERNEL_HALF, 0);
-        gColorCache[_groupId.x] = gMipUav[int2(x, _dispatchId.y)];
+        gColorCache[_groupId.x] = gTargetUav[int2(x, _dispatchId.y)];
     }
     if (_groupId.x >= 256 - KERNEL_HALF)
     {
         int x = min(_dispatchId.x + KERNEL_HALF, gTexWidth - 1);
-        gColorCache[_groupId.x + 2 * KERNEL_HALF] = gMipUav[int2(x, _dispatchId.y)];
+        gColorCache[_groupId.x + 2 * KERNEL_HALF] = gTargetUav[int2(x, _dispatchId.y)];
     }
-    gColorCache[_groupId.x + KERNEL_HALF] = gMipUav[min(_dispatchId.xy, int2(gTexWidth, gTexHeight) - 1)];
+    gColorCache[_groupId.x + KERNEL_HALF] = gTargetUav[min(_dispatchId.xy, int2(gTexWidth, gTexHeight) - 1)];
 
     GroupMemoryBarrierWithGroupSync();
 
@@ -52,7 +52,7 @@ void HMain(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThrea
 
     blur /= totalWeight;
 
-    gMipUav[_dispatchId.xy] = blur;
+    gTargetUav[_dispatchId.xy] = blur;
 }
 
 [numthreads(1, 256, 1)]
@@ -61,14 +61,14 @@ void VMain(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThrea
     if (_groupId.y < KERNEL_HALF)
     {
         int y = max(_dispatchId.y - KERNEL_HALF, 0);
-        gColorCache[_groupId.y] = gMipUav[int2(_dispatchId.x, y)];
+        gColorCache[_groupId.y] = gTargetUav[int2(_dispatchId.x, y)];
     }
     if (_groupId.y >= 256 - KERNEL_HALF)
     {
         int y = min(_dispatchId.y + KERNEL_HALF, gTexHeight - 1);
-        gColorCache[_groupId.y + 2 * KERNEL_HALF] = gMipUav[int2(_dispatchId.x, y)];
+        gColorCache[_groupId.y + 2 * KERNEL_HALF] = gTargetUav[int2(_dispatchId.x, y)];
     }
-    gColorCache[_groupId.y + KERNEL_HALF] = gMipUav[min(_dispatchId.xy, int2(gTexWidth, gTexHeight) - 1)];
+    gColorCache[_groupId.y + KERNEL_HALF] = gTargetUav[min(_dispatchId.xy, int2(gTexWidth, gTexHeight) - 1)];
 
     GroupMemoryBarrierWithGroupSync();
 
@@ -84,5 +84,5 @@ void VMain(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThrea
 
     blur /= totalWeight;
 
-    gMipUav[_dispatchId.xy] = blur;
+    gTargetUav[_dispatchId.xy] = blur;
 }
