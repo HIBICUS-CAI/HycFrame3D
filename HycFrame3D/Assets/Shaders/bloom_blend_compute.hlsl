@@ -1,3 +1,9 @@
+cbuffer BLOOM_INTENSITY_INFO : register(b0)
+{
+    float gIntensityFactor;
+    float gPads[3];
+}
+
 Texture2D<float4> gBloomResult : register(t0);
 
 RWTexture2D<float4> gHdrTexture : register(u0);
@@ -41,7 +47,7 @@ void main(int3 _dispatchId : SV_DispatchThreadID)
     }
 
     float alpha = saturate(bloomValue.a);
-    originValue.rgb = originValue.rgb * (1.f - alpha) + bloomValue.rgb * alpha;
+    originValue.rgb = originValue.rgb * (1.f - alpha) + bloomValue.rgb * gIntensityFactor * alpha;
     originValue.a = 1.f;
 
     gHdrTexture[_dispatchId.xy] = originValue;

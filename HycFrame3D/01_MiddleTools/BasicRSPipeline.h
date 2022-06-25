@@ -42,6 +42,12 @@ struct BLM_BLUR_INFO
     UINT mPads[2];
 };
 
+struct BLM_INTENSITY_INFO
+{
+    float mIntensityFactor;
+    float mPads[3];
+};
+
 struct RS_PARTICLE_PART_A
 {
     DirectX::XMFLOAT4 mColorAndAlpha = {};
@@ -821,6 +827,7 @@ private:
     ID3D11ComputeShader* mBlendShader;
     ID3D11SamplerState* mLinearBorderSampler;
     ID3D11Buffer* mBlurConstBuffer;
+    ID3D11Buffer* mIntensityConstBuffer;
     ID3D11ShaderResourceView* mHdrSrv;
     ID3D11UnorderedAccessView* mHdrUav;
     ID3D11Texture2D* mNeedBloomTexture;

@@ -57,8 +57,19 @@ struct RENDER_EFFECT_CONFIG
     float mSsaoEnd = 1.f;
     float mSsaoEpsilon = 0.05f;
     UINT mSsaoBlurCount = 4;
+
     SAMPLER_LEVEL mSamplerLevel = SAMPLER_LEVEL::ANISO_16X;
+
     bool mParticleOff = false;
+
+    bool mBloomOff = false;
+    float mBloomMinValue = 2.f;
+    UINT mBloomDownSamplingCount = 7;
+    UINT mBloomBlurCount = 2;
+    UINT mBloomBlurKernel = 5;
+    float mBloomBlurSigma = 1.f;
+    float mBloomIntensityFactor = 1.f;
+    float mBloomLightPixelFactor = 0.02f;
 };
 
 static RENDER_EFFECT_CONFIG g_RenderEffectConfig = {};
@@ -99,6 +110,22 @@ bool CreateBasicPipeline()
         {
             return false;
         }
+
+        g_RenderEffectConfig.mBloomOff = config["bloom-off"].GetBool();
+        g_RenderEffectConfig.mBloomMinValue =
+            config["bloom-min-value"].GetFloat();
+        g_RenderEffectConfig.mBloomDownSamplingCount =
+            config["bloom-downsampling-count"].GetUint();
+        g_RenderEffectConfig.mBloomBlurCount =
+            config["bloom-gauss-count"].GetUint();
+        g_RenderEffectConfig.mBloomBlurKernel =
+            config["bloom-gauss-kernel-size"].GetUint();
+        g_RenderEffectConfig.mBloomBlurSigma =
+            config["bloom-gauss-sigma"].GetFloat();
+        g_RenderEffectConfig.mBloomIntensityFactor =
+            config["bloom-intensity-factor"].GetFloat();
+        g_RenderEffectConfig.mBloomLightPixelFactor =
+            config["bloom-light-pixel-factor"].GetFloat();
     }
 
     g_Root = GetRSRoot_DX11_Singleton();
@@ -5679,6 +5706,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(
     mBlurVertShader(nullptr),
     mBlendShader(nullptr),
     mBlurConstBuffer(nullptr),
+    mIntensityConstBuffer(nullptr),
     mLinearBorderSampler(nullptr),
     mFilterPixelShader(nullptr), mHdrUav(nullptr),
     mNeedBloomTexture(nullptr), mHdrSrv(nullptr),
@@ -5697,6 +5725,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
     mFilterPixelShader(_source.mFilterPixelShader),
     mBlendShader(_source.mBlendShader),
     mBlurConstBuffer(_source.mBlurConstBuffer),
+    mIntensityConstBuffer(_source.mIntensityConstBuffer),
     mLinearBorderSampler(_source.mLinearBorderSampler),
     mHdrSrv(_source.mHdrSrv),
     mHdrUav(_source.mHdrUav),
@@ -5715,6 +5744,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
         RS_ADDREF(mFilterPixelShader);
         RS_ADDREF(mBlendShader);
         RS_ADDREF(mBlurConstBuffer);
+        RS_ADDREF(mIntensityConstBuffer);
         RS_ADDREF(mLinearBorderSampler);
         RS_ADDREF(mNeedBloomTexture);
         RS_ADDREF(mNeedBloomSrv);
@@ -5757,6 +5787,7 @@ void RSPass_BloomHdr::ReleasePass()
     RS_RELEASE(mBlurVertShader);
     RS_RELEASE(mBlendShader);
     RS_RELEASE(mBlurConstBuffer);
+    RS_RELEASE(mIntensityConstBuffer);
     RS_RELEASE(mLinearBorderSampler);
     RS_RELEASE(mNeedBloomTexture);
     RS_RELEASE(mNeedBloomSrv);
@@ -5852,7 +5883,14 @@ void RSPass_BloomHdr::ExecuatePass()
     STContext()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
     STContext()->CSSetUnorderedAccessViews(1, 1, &nulluav, nullptr);
 
+
+    STContext()->Map(mIntensityConstBuffer, 0,
+        D3D11_MAP_WRITE_DISCARD, 0, &msr);
+    BLM_INTENSITY_INFO* info = (BLM_INTENSITY_INFO*)msr.pData;
+    info->mIntensityFactor = 1.f;
+    STContext()->Unmap(mIntensityConstBuffer, 0);
     STContext()->CSSetShader(mBlendShader, nullptr, 0);
+    STContext()->CSSetConstantBuffers(0, 1, &mIntensityConstBuffer);
     STContext()->CSSetShaderResources(0, 1, &mUpSampleSrv);
     STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
     dispatchX = Tool::Align(width * 2, 16) / 16;
@@ -6023,6 +6061,10 @@ bool RSPass_BloomHdr::CreateBuffers()
     bfrDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     bfrDesc.ByteWidth = sizeof(BLM_BLUR_INFO);
     hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mBlurConstBuffer);
+    if (FAILED(hr)) { return false; }
+
+    bfrDesc.ByteWidth = sizeof(BLM_INTENSITY_INFO);
+    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mIntensityConstBuffer);
     if (FAILED(hr)) { return false; }
 
     return true;

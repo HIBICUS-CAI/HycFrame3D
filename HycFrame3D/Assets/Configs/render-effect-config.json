@@ -13,5 +13,14 @@
     
     "// CAUTION0": "Turning off particle is ok but it plays a quite important role in vision",
     "// CAUTION1": "So it's recommend to be enable",
-    "particle-off": false
+    "particle-off": false,
+
+    "bloom-off": false,
+    "bloom-min-value": 2.0,
+    "bloom-downsampling-count": 7,
+    "bloom-gauss-count": 2,
+    "bloom-gauss-kernel-size": 5,
+    "bloom-gauss-sigma": 1.0,
+    "bloom-intensity-factor": 1.0,
+    "bloom-light-pixel-factor": 0.02
 }
