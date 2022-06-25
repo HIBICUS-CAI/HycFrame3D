@@ -26,6 +26,28 @@ namespace Tool
         return median - variance + (2.0f * fRange);
     }
 
+    float Gauss1D(float _x, float _sigma)
+    {
+        return expf(-1.f * _x * _x / (2.f * _sigma * _sigma));
+    }
+
+    void CalcGaussWeight1D(uint16_t _kernelSize, float _sigma,
+        std::vector<float>& _outResult)
+    {
+        assert(_kernelSize % 2);
+        _outResult.resize(_kernelSize);
+        int x = -1 * (_kernelSize / 2);
+        float sum = 0.f;
+        for (uint16_t i = 0; i < _kernelSize; i++)
+        {
+            float weight = Gauss1D((float)(x++), _sigma);
+            _outResult[i] = weight;
+            sum += weight;
+        }
+
+        for (auto& w : _outResult) { w /= sum; }
+    }
+
     namespace Json
     {
         void LoadJsonFile(JsonFile* json, const char* _path)

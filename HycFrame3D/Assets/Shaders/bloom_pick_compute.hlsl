@@ -1,3 +1,7 @@
+#ifndef MIN_VALUE
+#define MIN_VALUE (2.f)
+#endif
+
 RWTexture2D<float4> gBloomTex : register(u0);
 
 Texture2D<float4> gOriginTex : register(t0);
@@ -11,7 +15,7 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
     gLightCache[linearGroupIndex] = (float4)0.f;
 
     float4 originValue = gOriginTex.Load(_dispatchId);
-    if (originValue.r > 2.f || originValue.g > 2.f || originValue.b > 2.f)
+    if (originValue.r > MIN_VALUE || originValue.g > MIN_VALUE || originValue.b > MIN_VALUE)
     {
         gLightCache[linearGroupIndex] = float4(originValue.rgb, 1.f);
     }

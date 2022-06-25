@@ -265,10 +265,13 @@ bool CreateBasicPipeline()
         name, PASS_TYPE::COMPUTE, g_Root);
     tonemap->SetExecuateOrder(2);
 
-    name = "bloom-hdr-pass";
-    RSPass_BloomHdr* bloomhdr = new RSPass_BloomHdr(
-        name, PASS_TYPE::COMPUTE, g_Root);
-    bloomhdr->SetExecuateOrder(1);
+    RSPass_BloomHdr* bloomhdr = nullptr;
+    if (!g_RenderEffectConfig.mBloomOff)
+    {
+        name = "bloom-hdr-pass";
+        bloomhdr = new RSPass_BloomHdr(name, PASS_TYPE::COMPUTE, g_Root);
+        bloomhdr->SetExecuateOrder(1);
+    }
 
     name = "to-swapchain-pass";
     RSPass_ToSwapChain* toswap = new RSPass_ToSwapChain(
@@ -280,7 +283,10 @@ bool CreateBasicPipeline()
     post_procsssing_topic->StartTopicAssembly();
     post_procsssing_topic->InsertPass(tonemap);
     post_procsssing_topic->InsertPass(toswap);
-    post_procsssing_topic->InsertPass(bloomhdr);
+    if (!g_RenderEffectConfig.mBloomOff)
+    {
+        post_procsssing_topic->InsertPass(bloomhdr);
+    }
     post_procsssing_topic->SetExecuateOrder(9);
     post_procsssing_topic->FinishTopicAssembly();
 
@@ -3074,10 +3080,33 @@ bool RSPass_Bloom::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\bloom_pixel.hlsl",
-        "main", "ps_5_0", &shaderBlob);
-    if (FAILED(hr)) { return false; }
+    const std::string pixelFactor = std::to_string(
+        g_RenderEffectConfig.mBloomLightPixelFactor);
+    if (g_RenderEffectConfig.mBloomOff)
+    {
+        D3D_SHADER_MACRO macro[] =
+        {
+            "PIXEL_FACTOR", pixelFactor.c_str(),
+            nullptr, nullptr
+        };
+        hr = Tool::CompileShaderFromFile(
+            L".\\Assets\\Shaders\\bloom_pixel.hlsl",
+            "main", "ps_5_0", &shaderBlob, macro);
+        if (FAILED(hr)) { return false; }
+    }
+    else
+    {
+        D3D_SHADER_MACRO macro[] =
+        {
+            "BLOOM_ON", "1",
+            "PIXEL_FACTOR", pixelFactor.c_str(),
+            nullptr, nullptr
+        };
+        hr = Tool::CompileShaderFromFile(
+            L".\\Assets\\Shaders\\bloom_pixel.hlsl",
+            "main", "ps_5_0", &shaderBlob, macro);
+        if (FAILED(hr)) { return false; }
+    }
 
     hr = Device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
@@ -5820,10 +5849,15 @@ void RSPass_BloomHdr::ExecuatePass()
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
 
-    for (size_t i = 1; i < 8; i++)
+    static const size_t DOWN_COUNT = g_RenderEffectConfig.mBloomDownSamplingCount;
+    static const size_t UP_COUNT = DOWN_COUNT - 1;
+    static const size_t BLUR_COUNT = g_RenderEffectConfig.mBloomBlurCount;
+
+    for (size_t i = 0; i < DOWN_COUNT; i++)
     {
-        UINT blurTexWidth = width / (1 << i);
-        UINT blurTexHeight = height / (1 << i);
+        auto index = i + 1;
+        UINT blurTexWidth = width / (1 << index);
+        UINT blurTexHeight = height / (1 << index);
         STContext()->Map(mBlurConstBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         BLM_BLUR_INFO* info = (BLM_BLUR_INFO*)msr.pData;
@@ -5832,10 +5866,10 @@ void RSPass_BloomHdr::ExecuatePass()
         STContext()->Unmap(mBlurConstBuffer, 0);
 
         STContext()->CSSetUnorderedAccessViews(0, 1,
-            &mNeedBloomUavArray[i], nullptr);
+            &mNeedBloomUavArray[index], nullptr);
         STContext()->CSSetConstantBuffers(0, 1, &mBlurConstBuffer);
 
-        for (size_t j = 0; j < 2; j++)
+        for (size_t j = 0; j < BLUR_COUNT; j++)
         {
             STContext()->CSSetShader(mBlurHoriShader,
                 nullptr, 0);
@@ -5859,9 +5893,9 @@ void RSPass_BloomHdr::ExecuatePass()
     STContext()->CSSetShader(mUpSampleShader, nullptr, 0);
     STContext()->CSSetShaderResources(0, 1, &mNeedBloomSrv);
     STContext()->CSSetSamplers(0, 1, &mLinearBorderSampler);
-    for (size_t i = 0; i < 6; i++)
+    for (size_t i = 0; i < UP_COUNT; i++)
     {
-        auto inv_i = 5 - i;
+        auto inv_i = UP_COUNT - 1 - i;
         UINT texWidth = width / (1 << inv_i);
         UINT texHeight = height / (1 << inv_i);
 
@@ -5887,7 +5921,7 @@ void RSPass_BloomHdr::ExecuatePass()
     STContext()->Map(mIntensityConstBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     BLM_INTENSITY_INFO* info = (BLM_INTENSITY_INFO*)msr.pData;
-    info->mIntensityFactor = 1.f;
+    info->mIntensityFactor = g_RenderEffectConfig.mBloomIntensityFactor;
     STContext()->Unmap(mIntensityConstBuffer, 0);
     STContext()->CSSetShader(mBlendShader, nullptr, 0);
     STContext()->CSSetConstantBuffers(0, 1, &mIntensityConstBuffer);
@@ -5906,9 +5940,16 @@ bool RSPass_BloomHdr::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
+    const std::string pickMinValue = std::to_string(
+        g_RenderEffectConfig.mBloomMinValue);
+    D3D_SHADER_MACRO pickMacro[] =
+    {
+        "MIN_VALUE", pickMinValue.c_str(),
+        nullptr, nullptr
+    };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\bloom_pick_compute.hlsl",
-        "main", "cs_5_0", &shaderBlob);
+        "main", "cs_5_0", &shaderBlob, pickMacro);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreateComputeShader(
@@ -5919,9 +5960,36 @@ bool RSPass_BloomHdr::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
+    std::string kernelSize = "";
+    std::string kernelHalf = "";
+    std::string weightArray = "";
+    {
+        UINT kernel = g_RenderEffectConfig.mBloomBlurKernel;
+        UINT half = kernel / 2;
+        float sigma = g_RenderEffectConfig.mBloomBlurSigma;
+
+        std::vector<float> weights = {};
+        Tool::CalcGaussWeight1D(kernel, sigma, weights);
+
+        kernelSize = std::to_string(kernel);
+        kernelHalf = std::to_string(half);
+        weightArray = "static const float gBlurWeight[] = {";
+        for (const auto& w : weights)
+        {
+            weightArray += std::to_string(w) + "f,";
+        }
+        weightArray += "}";
+    }
+    D3D_SHADER_MACRO blurMacro[] =
+    {
+        "KERNEL_SIZE", kernelSize.c_str(),
+        "KERNEL_HALF", kernelHalf.c_str(),
+        "WEIGHT_ARRAY", weightArray.c_str(),
+        nullptr, nullptr
+    };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\gauss_blur_compute.hlsl",
-        "HMain", "cs_5_0", &shaderBlob);
+        "HMain", "cs_5_0", &shaderBlob, blurMacro);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreateComputeShader(
@@ -5934,7 +6002,7 @@ bool RSPass_BloomHdr::CreateShaders()
 
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\gauss_blur_compute.hlsl",
-        "VMain", "cs_5_0", &shaderBlob);
+        "VMain", "cs_5_0", &shaderBlob, blurMacro);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreateComputeShader(
@@ -5989,9 +6057,12 @@ bool RSPass_BloomHdr::CreateViews()
     ZeroMemory(&srvDesc, sizeof(srvDesc));
     ZeroMemory(&uavDesc, sizeof(uavDesc));
 
+    UINT downMips = g_RenderEffectConfig.mBloomDownSamplingCount + 1;
+    UINT upMips = downMips - 2;
+
     texDesc.Width = g_Root->Devices()->GetCurrWndWidth();
     texDesc.Height = g_Root->Devices()->GetCurrWndHeight();
-    texDesc.MipLevels = 8;
+    texDesc.MipLevels = downMips;
     texDesc.ArraySize = 1;
     texDesc.SampleDesc.Count = 1;
     texDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -6007,12 +6078,12 @@ bool RSPass_BloomHdr::CreateViews()
     srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
-    srvDesc.Texture2D.MipLevels = 8;
+    srvDesc.Texture2D.MipLevels = downMips;
     hr = Device()->CreateShaderResourceView(mNeedBloomTexture,
         &srvDesc, &mNeedBloomSrv);
     if (FAILED(hr)) { return false; }
 
-    for (size_t i = 0; i < 8; i++)
+    for (size_t i = 0; i < downMips; i++)
     {
         uavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
@@ -6024,11 +6095,11 @@ bool RSPass_BloomHdr::CreateViews()
 
     texDesc.Width /= 2;
     texDesc.Height /= 2;
-    texDesc.MipLevels = 6;
+    texDesc.MipLevels = upMips;
     texDesc.MiscFlags = 0;
     texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE |
         D3D11_BIND_UNORDERED_ACCESS;
-    srvDesc.Texture2D.MipLevels = 6;
+    srvDesc.Texture2D.MipLevels = upMips;
     hr = Device()->CreateTexture2D(&texDesc, nullptr,
         &mUpSampleTexture);
     if (FAILED(hr)) { return false; }
@@ -6037,7 +6108,7 @@ bool RSPass_BloomHdr::CreateViews()
         &srvDesc, &mUpSampleSrv);
     if (FAILED(hr)) { return false; }
 
-    for (size_t i = 0; i < 6; i++)
+    for (size_t i = 0; i < upMips; i++)
     {
         uavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
