@@ -41,7 +41,7 @@ disable-bloom = false
 # [float]
 # the threshold luminous to calculate bloom.
 min-luminous = 2.0
-# [uint] valid value : [1, 9]
+# [uint] valid value : [2, 8]
 # affect downsampling and mips level count.
 downsampling-count = 7
 # [uint]
@@ -57,7 +57,7 @@ gauss-kernel-size = 5
 # gauss bluring's sigma, each weight goes 
 #   more average when this value gets bigger.
 gauss-sigma = 1.0
-# [float] valid value : [0.0, +inf)
+# [float]
 # this factor affects on final bloom intensity.
 intensity-factor = 1.0
 # [float] valid value : [0.0, 1.0]
