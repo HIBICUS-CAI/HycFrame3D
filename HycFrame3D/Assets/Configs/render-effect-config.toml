@@ -1,3 +1,11 @@
+# set using which pipeline as default.
+[pipeline]
+# [bool]
+# if false, use complex lighting pipeline.
+# if true, use simple lighting pipeline,
+#   only unblured ssao active.
+simply-lit = true
+
 # about screen space ambient occlusion.
 [ssao]
 # [float]
@@ -54,7 +62,7 @@ downsampling-blur-count = 2
 #   with radius as ((int)"gauss-kernel-size" / 2).
 gauss-kernel-size = 5
 # [float] valid value : [0.0, +inf)
-# gauss bluring's sigma, each weight goes 
+# gauss bluring's sigma, each weight goes
 #   more average when this value gets bigger.
 gauss-sigma = 1.0
 # [float]

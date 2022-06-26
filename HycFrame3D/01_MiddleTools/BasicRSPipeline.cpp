@@ -52,6 +52,8 @@ enum class SAMPLER_LEVEL
 
 struct RENDER_EFFECT_CONFIG
 {
+    bool mSimplyLitOn = true;
+
     float mSsaoRadius = 0.5f;
     float mSsaoStart = 0.2f;
     float mSsaoEnd = 1.f;
@@ -102,6 +104,12 @@ bool CreateBasicPipeline()
         {
             return false;
         }
+
+        if (!GetTomlNode(config, "pipeline", node))
+        {
+            return false;
+        }
+        g_RenderEffectConfig.mSimplyLitOn = GetAs<bool>(node["simply-lit"]);
 
         if (!GetTomlNode(config, "ssao", node))
         {
@@ -415,8 +423,11 @@ bool CreateBasicPipeline()
 
     name = g_SimplePipeline->GetPipelineName();
     g_Root->PipelinesManager()->AddPipeline(name, g_SimplePipeline);
-    g_Root->PipelinesManager()->SetPipeline(name);
-    g_Root->PipelinesManager()->ProcessNextPipeline();
+    if (g_RenderEffectConfig.mSimplyLitOn)
+    {
+        g_Root->PipelinesManager()->SetPipeline(name);
+        g_Root->PipelinesManager()->ProcessNextPipeline();
+    }
 
     g_ViewPort.Width = (float)g_Root->Devices()->GetCurrWndWidth();
     g_ViewPort.Height = (float)g_Root->Devices()->GetCurrWndHeight();
