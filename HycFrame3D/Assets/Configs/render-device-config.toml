@@ -1,6 +1,18 @@
+# about render device setting.
 [device]
+# [bool]
+# whether force not to use deferred cmdlist or not.
 single-thread = false
 
+# about render adapter setting
 [device.adapter]
+# [bool]
+# if false, let render system automatically choose one.
+# if true, uncomment the field "index-designation" below
+#   and set it to the adapter index that you want to use.
 manual-setting = false
+# [uint]
+# all adapter and its index information will be listed up
+#   at "AutoCreated_AdapterInfoInSystem.txt" in current folder
+#   after calling render system initialize function one time.
 # index-designation = 0

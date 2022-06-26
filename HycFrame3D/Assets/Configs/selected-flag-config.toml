@@ -1,2 +1,6 @@
+# the flag / effect to show which button is being selected.
 [flag-texture]
+# [string]
+# a texture's file name
+#   exists in "../Assets/Textures" folder.
 file = "btn-selected.png"
