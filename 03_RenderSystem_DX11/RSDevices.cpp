@@ -12,7 +12,7 @@
 #include "RSDevices.h"
 #include "RSRoot_DX11.h"
 #include <fstream>
-#include "RSUtilityFunctions.h"
+#include <TextUtility.h>
 
 RSDevices::RSDevices() :
     mRootPtr(nullptr), mRenderDeivceConfig({}),
@@ -41,10 +41,13 @@ bool RSDevices::StartUp(RSRoot_DX11* _root, HWND _wnd)
 
     mRootPtr = _root;
 
-    using namespace Tool::Json;
+    using namespace Hyc::Text;
     JsonFile config = {};
-    LoadJsonFile(&config, ".\\Assets\\Configs\\render-device-config.json");
-    if (config.HasParseError()) { return false; }
+    if (!LoadAndParse(config,
+        ".\\Assets\\Configs\\render-device-config.json"))
+    {
+        return false;
+    }
     if (!config["force-adapter-index"].IsNull())
     {
         mRenderDeivceConfig.mForceAdapterIndex =

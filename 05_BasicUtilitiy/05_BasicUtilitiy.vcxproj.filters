@@ -16,6 +16,9 @@
     <Filter Include="TextAndBinary">
       <UniqueIdentifier>{5f3a5eaa-c721-4f4f-a65c-20490548b9dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Unused">
+      <UniqueIdentifier>{7af6281a-8a50-45de-b8be-4c56256eed25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HycType.h">
@@ -32,8 +35,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="JsonUtility.cpp">
-      <Filter>TextAndBinary</Filter>
+    <ClCompile Include="Empty.cpp">
+      <Filter>Unused</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

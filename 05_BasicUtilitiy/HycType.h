@@ -1,6 +1,6 @@
 #pragma once
 
-namespace hyc
+namespace Hyc
 {
     using int8 = signed char;
     using int16 = short;

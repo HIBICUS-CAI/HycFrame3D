@@ -2,7 +2,7 @@
 #include "ObjectFactory.h"
 #include "SceneNode.h"
 #include "ObjectContainer.h"
-#include "JsonHelper.h"
+#include <TextUtility.h>
 #include <thread>
 
 SceneManager::SceneManager() :
@@ -46,12 +46,13 @@ bool SceneManager::DeferedStartUp()
         return false;
     }
 
+    using namespace Hyc::Text;
     JsonFile entryInfo = {};
-    LoadJsonFile(&entryInfo, ".\\Assets\\Configs\\scene-entry-config.json");
-    if (entryInfo.HasParseError())
+    if (!LoadAndParse(entryInfo,
+        ".\\Assets\\Configs\\scene-entry-config.json"))
     {
         P_LOG(LOG_ERROR, "entry scene config json error code : %d\n",
-            entryInfo.GetParseError());
+            GetParseError(entryInfo));
         return false;
     }
 

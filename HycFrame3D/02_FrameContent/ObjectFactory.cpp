@@ -7,6 +7,9 @@
 #include "RSRoot_DX11.h"
 #include "RSMeshHelper.h"
 #include "RSStaticResources.h"
+#include <TextUtility.h>
+
+using namespace Hyc::Text;
 
 ObjectFactory::ObjectFactory() :mSceneManagerPtr(nullptr),
 mActorInputFuncPtrMap({}), mActorInteractInitFuncPtrMap({}),
@@ -49,12 +52,11 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
     }
 
     JsonFile sceneConfig = {};
-    LoadJsonFile(&sceneConfig, _path);
-    if (sceneConfig.HasParseError())
+    if (!LoadAndParse(sceneConfig, _path))
     {
         P_LOG(LOG_ERROR,
             "failed to parse scene config name %s with error code : %d\n",
-            _path.c_str(), sceneConfig.GetParseError());
+            _path.c_str(), GetParseError(sceneConfig));
         delete newNode;
         return nullptr;
     }
@@ -96,9 +98,9 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
         std::string iblDiffTexName = "";
         std::string iblSpecTexName = "";
 
-        JsonNode iblEnvNode = GetJsonNode(&sceneConfig, "/ibl-environment");
-        JsonNode iblDiffNode = GetJsonNode(&sceneConfig, "/ibl-diffuse");
-        JsonNode iblSpecNode = GetJsonNode(&sceneConfig, "/ibl-specular");
+        JsonNode iblEnvNode = GetJsonNode(sceneConfig, "/ibl-environment");
+        JsonNode iblDiffNode = GetJsonNode(sceneConfig, "/ibl-diffuse");
+        JsonNode iblSpecNode = GetJsonNode(sceneConfig, "/ibl-specular");
 
         if (iblEnvNode) { iblEnvTexName = iblEnvNode->GetString(); }
         if (iblDiffNode) { iblDiffTexName = iblDiffNode->GetString(); }
@@ -107,13 +109,13 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
         newNode->LoadIBLTexture(iblEnvTexName, iblDiffTexName, iblSpecTexName);
     }
 
-    CreateSceneAssets(newNode, &sceneConfig);
+    CreateSceneAssets(newNode, sceneConfig);
 
     if (sceneConfig.HasMember("actor") && !sceneConfig["actor"].IsNull())
     {
         for (unsigned int i = 0; i < sceneConfig["actor"].Size(); i++)
         {
-            CreateActorObject(newNode, &sceneConfig,
+            CreateActorObject(newNode, sceneConfig,
                 "/actor/" + std::to_string(i));
         }
     }
@@ -121,7 +123,7 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
     {
         for (unsigned int i = 0; i < sceneConfig["ui"].Size(); i++)
         {
-            CreateUiObject(newNode, &sceneConfig,
+            CreateUiObject(newNode, sceneConfig,
                 "/ui/" + std::to_string(i));
         }
     }
@@ -129,7 +131,7 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
     return newNode;
 }
 
-void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
+void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
 {
     JsonNode modelRoot = GetJsonNode(_json, "/model-assets");
     std::string jsonPath = "";
@@ -393,7 +395,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile* _json)
     }
 }
 
-void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile* _json,
+void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile& _json,
     std::string _jsonPath)
 {
     JsonNode actorRoot = GetJsonNode(_json, _jsonPath);
@@ -434,7 +436,7 @@ void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile* _json,
     _node->AddActorObject(actor);
 }
 
-void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile* _json,
+void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile& _json,
     std::string _jsonPath)
 {
     JsonNode uiRoot = GetJsonNode(_json, _jsonPath);
@@ -476,7 +478,7 @@ void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile* _json,
 }
 
 void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
-    JsonFile* _json, std::string _jsonPath)
+    JsonFile& _json, std::string _jsonPath)
 {
     JsonNode compRoot = GetJsonNode(_json, _jsonPath);
     std::string compType = GetJsonNode(_json, _jsonPath + "/type")->GetString();
@@ -922,7 +924,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
 }
 
 void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
-    JsonFile* _json, std::string _jsonPath)
+    JsonFile& _json, std::string _jsonPath)
 {
     JsonNode compRoot = GetJsonNode(_json, _jsonPath);
     std::string compType = GetJsonNode(_json, _jsonPath + "/type")->GetString();

@@ -14,6 +14,7 @@
 #include "RSShaderCompile.h"
 #include "RSUtilityFunctions.h"
 #include "RSDevices.h"
+#include <TextUtility.h>
 
 RSStaticResources::RSStaticResources() :
     mRootPtr(nullptr),
@@ -346,10 +347,13 @@ bool RSStaticResources::BuildStaticPipelines()
 
 bool RSStaticResources::BuildStaticMaterials()
 {
-    Tool::Json::JsonFile matFile = {};
-    Tool::Json::LoadJsonFile(&matFile,
-        "RenderSystem_StaticResources\\Materials\\static-materials.json");
-    if (matFile.HasParseError()) { return false; }
+    using namespace Hyc::Text;
+    JsonFile matFile = {};
+    if (!LoadAndParse(matFile,
+        "RenderSystem_StaticResources\\Materials\\static-materials.json"))
+    {
+        return false;
+    }
 
     UINT matSize = matFile["static-material"].Size();
     mMaterialVector.resize(matSize);

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
-#include "JsonHelper.h"
+#include <TextUtility.h>
 #include <string>
 #include <unordered_map>
 #include "AInputComponent.h"
@@ -38,17 +38,17 @@ public:
         GetUDestoryMapPtr() { return &mUiInteractDestoryFuncPtrMap; }
 
 private:
-    void CreateSceneAssets(class SceneNode* _node, JsonFile* _json);
+    void CreateSceneAssets(class SceneNode* _node, Hyc::Text::JsonFile& _json);
 
-    void CreateActorObject(class SceneNode* _node, JsonFile* _json,
+    void CreateActorObject(class SceneNode* _node, Hyc::Text::JsonFile& _json,
         std::string _jsonPath);
-    void CreateUiObject(class SceneNode* _node, JsonFile* _json,
+    void CreateUiObject(class SceneNode* _node, Hyc::Text::JsonFile& _json,
         std::string _jsonPath);
 
     void CreateActorComp(class SceneNode* _node, class ActorObject* _actor,
-        JsonFile* _json, std::string _jsonPath);
+        Hyc::Text::JsonFile& _json, std::string _jsonPath);
     void CreateUiComp(class SceneNode* _node, class UiObject* _ui,
-        JsonFile* _json, std::string _jsonPath);
+        Hyc::Text::JsonFile& _json, std::string _jsonPath);
 
 private:
     class SceneManager* mSceneManagerPtr;

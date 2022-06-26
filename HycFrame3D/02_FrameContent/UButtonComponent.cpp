@@ -6,7 +6,7 @@
 #include "WM_Interface.h"
 #include "RSRoot_DX11.h"
 #include "RSMeshHelper.h"
-#include "JsonHelper.h"
+#include <TextUtility.h>
 
 static UButtonComponent* g_SelectedBtnCompPtr = nullptr;
 
@@ -57,14 +57,14 @@ bool UButtonComponent::Init()
     {
         if (g_SelectFlagTexture == "")
         {
+            using namespace Hyc::Text;
             JsonFile btnFlgConfig = {};
-            LoadJsonFile(&btnFlgConfig,
-                ".\\Assets\\Configs\\selected-flag-config.json");
-            if (btnFlgConfig.HasParseError())
+            if (!LoadAndParse(btnFlgConfig,
+                ".\\Assets\\Configs\\selected-flag-config.json"))
             {
                 P_LOG(LOG_ERROR,
                     "failed to parse btn flag config with error code : %d\n",
-                    btnFlgConfig.GetParseError());
+                    GetParseError(btnFlgConfig));
                 return false;
             }
             g_SelectFlagTexture = btnFlgConfig["flag-tex-file"].GetString();

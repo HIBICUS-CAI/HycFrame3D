@@ -25,7 +25,7 @@
 #include "RSUtilityFunctions.h"
 #include "DDSTextureLoader11.h"
 #include "WICTextureLoader11.h"
-#include "JsonHelper.h"
+#include <TextUtility.h>
 
 #define RS_RELEASE(p) { if (p) { (p)->Release(); (p)=nullptr; } }
 #define RS_ADDREF(p) { if(p) { p->AddRef(); } }
@@ -91,9 +91,13 @@ void SetPipelineIBLTextures(ID3D11ShaderResourceView* _envSrv,
 bool CreateBasicPipeline()
 {
     {
+        using namespace Hyc::Text;
         JsonFile config = {};
-        LoadJsonFile(&config, ".\\Assets\\Configs\\render-effect-config.json");
-        if (config.HasParseError()) { return false; }
+        if (!LoadAndParse(config,
+            ".\\Assets\\Configs\\render-effect-config.json"))
+        {
+            return false;
+        }
         g_RenderEffectConfig.mSsaoRadius = config["ssao-radius"].GetFloat();
         g_RenderEffectConfig.mSsaoStart = config["ssao-start"].GetFloat();
         g_RenderEffectConfig.mSsaoEnd = config["ssao-end"].GetFloat();
