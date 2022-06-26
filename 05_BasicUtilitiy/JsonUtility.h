@@ -16,7 +16,7 @@ namespace Hyc
         using JsonFile = rapidjson::Document;
         using JsonNode = rapidjson::Value*;
 
-        inline bool LoadAndParse(JsonFile& _outFile, const std::string& _path)
+        inline bool LoadJsonAndParse(JsonFile& _outFile, const std::string& _path)
         {
             std::ifstream ifs(_path);
             rapidjson::IStreamWrapper isw(ifs);
@@ -25,7 +25,7 @@ namespace Hyc
             return !_outFile.HasParseError();
         }
 
-        inline bool LoadAndParse(JsonFile& _outFile, cstring _path)
+        inline bool LoadJsonAndParse(JsonFile& _outFile, cstring _path)
         {
             std::ifstream ifs(_path);
             rapidjson::IStreamWrapper isw(ifs);
@@ -34,7 +34,7 @@ namespace Hyc
             return !_outFile.HasParseError();
         }
 
-        inline uint GetParseError(const JsonFile& _file)
+        inline uint GetJsonParseError(const JsonFile& _file)
         {
             return static_cast<uint>(_file.GetParseError());
         }

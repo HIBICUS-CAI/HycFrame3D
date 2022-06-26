@@ -48,11 +48,11 @@ bool SceneManager::DeferedStartUp()
 
     using namespace Hyc::Text;
     JsonFile entryInfo = {};
-    if (!LoadAndParse(entryInfo,
+    if (!LoadJsonAndParse(entryInfo,
         ".\\Assets\\Configs\\scene-entry-config.json"))
     {
         P_LOG(LOG_ERROR, "entry scene config json error code : %d\n",
-            GetParseError(entryInfo));
+            GetJsonParseError(entryInfo));
         return false;
     }
 

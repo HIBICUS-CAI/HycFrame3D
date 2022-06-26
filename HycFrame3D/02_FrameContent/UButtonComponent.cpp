@@ -59,12 +59,12 @@ bool UButtonComponent::Init()
         {
             using namespace Hyc::Text;
             JsonFile btnFlgConfig = {};
-            if (!LoadAndParse(btnFlgConfig,
+            if (!LoadJsonAndParse(btnFlgConfig,
                 ".\\Assets\\Configs\\selected-flag-config.json"))
             {
                 P_LOG(LOG_ERROR,
                     "failed to parse btn flag config with error code : %d\n",
-                    GetParseError(btnFlgConfig));
+                    GetJsonParseError(btnFlgConfig));
                 return false;
             }
             g_SelectFlagTexture = btnFlgConfig["flag-tex-file"].GetString();

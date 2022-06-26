@@ -52,11 +52,11 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
     }
 
     JsonFile sceneConfig = {};
-    if (!LoadAndParse(sceneConfig, _path))
+    if (!LoadJsonAndParse(sceneConfig, _path))
     {
         P_LOG(LOG_ERROR,
             "failed to parse scene config name %s with error code : %d\n",
-            _path.c_str(), GetParseError(sceneConfig));
+            _path.c_str(), GetJsonParseError(sceneConfig));
         delete newNode;
         return nullptr;
     }

@@ -93,7 +93,7 @@ bool CreateBasicPipeline()
     {
         using namespace Hyc::Text;
         JsonFile config = {};
-        if (!LoadAndParse(config,
+        if (!LoadJsonAndParse(config,
             ".\\Assets\\Configs\\render-effect-config.json"))
         {
             return false;

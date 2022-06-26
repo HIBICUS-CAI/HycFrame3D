@@ -43,7 +43,7 @@ bool RSDevices::StartUp(RSRoot_DX11* _root, HWND _wnd)
 
     using namespace Hyc::Text;
     JsonFile config = {};
-    if (!LoadAndParse(config,
+    if (!LoadJsonAndParse(config,
         ".\\Assets\\Configs\\render-device-config.json"))
     {
         return false;
