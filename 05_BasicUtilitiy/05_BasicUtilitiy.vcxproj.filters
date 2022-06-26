@@ -4,14 +4,17 @@
     <Filter Include="TypeDef">
       <UniqueIdentifier>{aba6208a-a0ea-43a5-8e40-6b05c408135a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="FileAndBuffer">
-      <UniqueIdentifier>{5f3a5eaa-c721-4f4f-a65c-20490548b9dc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="StringAbout">
       <UniqueIdentifier>{a675c60f-f2ea-4524-86cf-740a9ebee522}</UniqueIdentifier>
     </Filter>
     <Filter Include="SocketAndNetwork">
       <UniqueIdentifier>{06c8c992-e09e-4c9b-96f8-049e79491989}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{0de3baa2-2103-43e7-9e7c-5c3bf93e69f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TextAndBinary">
+      <UniqueIdentifier>{5f3a5eaa-c721-4f4f-a65c-20490548b9dc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -19,12 +22,18 @@
       <Filter>TypeDef</Filter>
     </ClInclude>
     <ClInclude Include="JsonUtility.h">
-      <Filter>FileAndBuffer</Filter>
+      <Filter>TextAndBinary</Filter>
+    </ClInclude>
+    <ClInclude Include="TextUtility.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="HycUtility.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="JsonUtility.cpp">
-      <Filter>FileAndBuffer</Filter>
+      <Filter>TextAndBinary</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
