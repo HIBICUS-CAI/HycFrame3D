@@ -50,5 +50,11 @@ namespace Hyc
             rapidjson::Pointer ptr(_path);
             return rapidjson::GetValueByPointer(_file, ptr);
         }
+
+        template <typename T>
+        T GetAs(const JsonNode& _node)
+        {
+            return _node->Get<T>();
+        }
     }
 }

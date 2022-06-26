@@ -33,5 +33,11 @@
     <ClInclude Include="TomlUtility.h">
       <Filter>TextAndBinary</Filter>
     </ClInclude>
+    <ClInclude Include="StdStringUtility.h">
+      <Filter>StringAbout</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtility.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

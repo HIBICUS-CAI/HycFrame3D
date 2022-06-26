@@ -1,0 +1,6 @@
+[device]
+single-thread = false
+
+[device.adapter]
+manual-setting = false
+# index-designation = 0

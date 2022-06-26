@@ -2,3 +2,4 @@
 
 #include "HycType.h"
 #include "TextUtility.h"
+#include "StringUtility.h"

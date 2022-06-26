@@ -1,0 +1,22 @@
+[ssao]
+radius = 6.0
+range-start = 3.0
+range-end = 15.0
+epsilon = 5.0
+blur-count = 4
+
+[sampler]
+filter-level = 3
+
+[particle]
+enable-particle = true
+
+[bloom]
+enable-bloom = true
+min-luminous = 2.0
+downsampling-count = 7
+downsampling-blur-count = 2
+gauss-kernel-size = 5
+gauss-sigma = 1.0
+intensity-factor = 1.0
+light-source-factor = 0.02
