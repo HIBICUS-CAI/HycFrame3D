@@ -17,6 +17,7 @@ public:
         return *this;
     }
 
+    class SceneNode& GetSceneNode() const;
     class ActorObject* GetActorOwner() const;
     void ResetActorOwner(class ActorObject* _owner);
 

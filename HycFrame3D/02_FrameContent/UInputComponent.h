@@ -28,6 +28,11 @@ public:
     void SetInputFunction(UiInputProcessFuncType _func);
     void ClearInputFunction();
 
+    class ActorObject* GetActorObject(std::string&& _actorName);
+    class ActorObject* GetActorObject(std::string& _actorName);
+    class UiObject* GetUiObject(std::string&& _uiName);
+    class UiObject* GetUiObject(std::string& _uiName);
+
 private:
     UiInputProcessFuncType mInputPrecessFunctionPtr;
 };

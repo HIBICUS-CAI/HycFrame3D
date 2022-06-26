@@ -18,6 +18,11 @@ ActorComponent::~ActorComponent()
 
 }
 
+SceneNode& ActorComponent::GetSceneNode() const
+{
+    return mActorOwner->GetSceneNode();
+}
+
 ActorObject* ActorComponent::GetActorOwner() const
 {
     return mActorOwner;

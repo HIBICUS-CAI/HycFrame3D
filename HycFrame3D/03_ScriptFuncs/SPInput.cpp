@@ -48,35 +48,31 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
     {
         P_LOG(LOG_DEBUG, "to test2\n");
-        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+        _aic->GetSceneNode().GetSceneManager()->
             LoadSceneNode("sample2-scene", "sample2-scene.json");
     }
 
     if (InputInterface::IsKeyDownInSingle(KB_W))
     {
-        _aic->GetActorOwner()->GetSceneNode().
-            GetActorObject("sp-point-light-actor")->
+        _aic->GetActorObject("sp-point-light-actor")->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
             TranslateZAsix(0.1f * _timer.FloatDeltaTime());
     }
     if (InputInterface::IsKeyDownInSingle(KB_A))
     {
-        _aic->GetActorOwner()->GetSceneNode().
-            GetActorObject("sp-point-light-actor")->
+        _aic->GetActorObject("sp-point-light-actor")->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
             TranslateXAsix(-0.1f * _timer.FloatDeltaTime());
     }
     if (InputInterface::IsKeyDownInSingle(KB_S))
     {
-        _aic->GetActorOwner()->GetSceneNode().
-            GetActorObject("sp-point-light-actor")->
+        _aic->GetActorObject("sp-point-light-actor")->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
             TranslateZAsix(-0.1f * _timer.FloatDeltaTime());
     }
     if (InputInterface::IsKeyDownInSingle(KB_D))
     {
-        _aic->GetActorOwner()->GetSceneNode().
-            GetActorObject("sp-point-light-actor")->
+        _aic->GetActorObject("sp-point-light-actor")->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
             TranslateXAsix(0.1f * _timer.FloatDeltaTime());
     }
@@ -119,13 +115,11 @@ void TestASpUpdate(AInteractComponent* _aitc, Timer&)
     P_LOG(LOG_DEBUG, "timer0 : %f , timer1 : %f\n", time0, time1);*/
 
     CONTACT_PONT_PAIR contact = {};
-    if (_aitc->GetActorOwner()->GetSceneNode().
-        GetActorObject("sp-point-light-actor")->
+    if (_aitc->GetActorObject("sp-point-light-actor")->
         GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION)->
         CheckCollisionWith("sp-actor", &contact))
     {
-        _aitc->GetActorOwner()->GetSceneNode().
-            GetActorObject("sp-point-light-actor")->
+        _aitc->GetActorObject("sp-point-light-actor")->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
             RollBackPosition();
         P_LOG(LOG_DEBUG, "a : %f, %f, %f ; b : %f, %f, %f\n",
@@ -136,15 +130,12 @@ void TestASpUpdate(AInteractComponent* _aitc, Timer&)
             center.x, center.y, center.z);
     }
 
-    _aitc->GetActorOwner()->GetSceneNode().
-        GetActorObject("sp-particle-actor")->
+    _aitc->GetActorObject("sp-particle-actor")->
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
-        SetPosition(_aitc->GetActorOwner()->GetSceneNode().
-            GetActorObject("sp-point-light-actor")->
+        SetPosition(_aitc->GetActorObject("sp-point-light-actor")->
             GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
             GetProcessingPosition());
-    _aitc->GetActorOwner()->GetSceneNode().
-        GetActorObject("sp-particle-actor")->
+    _aitc->GetActorObject("sp-particle-actor")->
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
         TranslateYAsix(5.f);
 }
@@ -212,7 +203,7 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
     if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
     {
         P_LOG(LOG_DEBUG, "to test1\n");
-        _uic->GetUiOwner()->GetSceneNode().GetSceneManager()->
+        _uic->GetSceneNode().GetSceneManager()->
             LoadSceneNode("sample1-scene", "sample1-scene.json");
     }
 }
@@ -267,7 +258,7 @@ void TempToTitle(AInputComponent* _aic, Timer&)
     if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to title\n");
-        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+        _aic->GetSceneNode().GetSceneManager()->
             LoadSceneNode("title-scene", "title-scene.json");
     }
 }
@@ -277,7 +268,7 @@ void TempToSelect(AInputComponent* _aic, Timer&)
     if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to select\n");
-        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+        _aic->GetSceneNode().GetSceneManager()->
             LoadSceneNode("select-scene", "select-scene.json");
     }
 }
@@ -287,7 +278,7 @@ void TempToRun(AInputComponent* _aic, Timer&)
     if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to run\n");
-        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+        _aic->GetSceneNode().GetSceneManager()->
             LoadSceneNode("run-scene", "run-scene.json");
     }
 }
@@ -297,7 +288,7 @@ void TempToResult(AInputComponent* _aic, Timer&)
     if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to result\n");
-        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+        _aic->GetSceneNode().GetSceneManager()->
             LoadSceneNode("result-scene", "result-scene.json");
     }
 }

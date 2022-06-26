@@ -1,4 +1,5 @@
 #include "UInputComponent.h"
+#include "UiObject.h"
 #include "ActorObject.h"
 
 UInputComponent::UInputComponent(std::string&& _compName,
@@ -52,4 +53,24 @@ void UInputComponent::SetInputFunction(UiInputProcessFuncType _func)
 void UInputComponent::ClearInputFunction()
 {
     mInputPrecessFunctionPtr = nullptr;
+}
+
+ActorObject* UInputComponent::GetActorObject(std::string&& _actorName)
+{
+    return GetSceneNode().GetActorObject(_actorName);
+}
+
+ActorObject* UInputComponent::GetActorObject(std::string& _actorName)
+{
+    return GetSceneNode().GetActorObject(_actorName);
+}
+
+UiObject* UInputComponent::GetUiObject(std::string&& _uiName)
+{
+    return GetSceneNode().GetUiObject(_uiName);
+}
+
+UiObject* UInputComponent::GetUiObject(std::string& _uiName)
+{
+    return GetSceneNode().GetUiObject(_uiName);
 }

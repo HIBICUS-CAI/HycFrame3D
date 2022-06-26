@@ -17,6 +17,7 @@ public:
         return *this;
     }
 
+    class SceneNode& GetSceneNode() const;
     class UiObject* GetUiOwner() const;
     void ResetUiOwner(class UiObject* _owner);
 

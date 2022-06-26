@@ -36,6 +36,11 @@ public:
     void ClearUpdateFunction();
     void ClearDestoryFunction();
 
+    class ActorObject* GetActorObject(std::string&& _actorName);
+    class ActorObject* GetActorObject(std::string& _actorName);
+    class UiObject* GetUiObject(std::string&& _uiName);
+    class UiObject* GetUiObject(std::string& _uiName);
+
 private:
     ActorInteractInitFuncType mInitProcessFunctionPtr;
     ActorInteractUpdateFuncType mUpdateProcessFunctionPtr;

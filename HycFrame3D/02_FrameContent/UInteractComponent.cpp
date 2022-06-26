@@ -1,5 +1,6 @@
 #include "UInteractComponent.h"
 #include "UiObject.h"
+#include "ActorObject.h"
 
 UInteractComponent::UInteractComponent(std::string&& _compName,
     UiObject* _uiOwner) :
@@ -79,4 +80,24 @@ void UInteractComponent::ClearUpdateFunction()
 void UInteractComponent::ClearDestoryFunction()
 {
     mDestoryProcessFunctionPtr = nullptr;
+}
+
+ActorObject* UInteractComponent::GetActorObject(std::string&& _actorName)
+{
+    return GetSceneNode().GetActorObject(_actorName);
+}
+
+ActorObject* UInteractComponent::GetActorObject(std::string& _actorName)
+{
+    return GetSceneNode().GetActorObject(_actorName);
+}
+
+UiObject* UInteractComponent::GetUiObject(std::string&& _uiName)
+{
+    return GetSceneNode().GetUiObject(_uiName);
+}
+
+UiObject* UInteractComponent::GetUiObject(std::string& _uiName)
+{
+    return GetSceneNode().GetUiObject(_uiName);
 }

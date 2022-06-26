@@ -18,6 +18,11 @@ UiComponent::~UiComponent()
 
 }
 
+SceneNode& UiComponent::GetSceneNode() const
+{
+    return mUiOwner->GetSceneNode();
+}
+
 UiObject* UiComponent::GetUiOwner() const
 {
     return mUiOwner;

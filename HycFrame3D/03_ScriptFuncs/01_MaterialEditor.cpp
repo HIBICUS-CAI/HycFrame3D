@@ -64,7 +64,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 {
     if (InputInterface::IsKeyPushedInSingle(KB_F5))
     {
-        _aic->GetActorOwner()->GetSceneNode().GetSceneManager()->
+        _aic->GetSceneNode().GetSceneManager()->
             LoadSceneNode("material-scene", "material-scene.json");
     }
 
@@ -282,18 +282,15 @@ bool MatEditorInit(AInteractComponent* _aitc)
     std::string basic = "light-pipeline";
     GetRSRoot_DX11_Singleton()->PipelinesManager()->SetPipeline(basic);
 
-    g_PointLightAtc = _aitc->GetActorOwner()->
-        GetSceneNode().GetActorObject("point-light-actor")->
+    g_PointLightAtc = _aitc->GetActorObject("point-light-actor")->
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
     if (!g_PointLightAtc) { return false; }
 
-    g_MaterialBallAtc = _aitc->GetActorOwner()->
-        GetSceneNode().GetActorObject("mat-ball-actor")->
+    g_MaterialBallAtc = _aitc->GetActorObject("mat-ball-actor")->
         GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
     if (!g_MaterialBallAtc) { return false; }
 
-    g_MatBallMesh = &(*_aitc->GetActorOwner()->
-        GetSceneNode().GetAssetsPool()->
+    g_MatBallMesh = &(*_aitc->GetSceneNode().GetAssetsPool()->
         GetSubMeshIfExisted("mat-ball0"));
     if (!g_MatBallMesh) { return false; }
 
