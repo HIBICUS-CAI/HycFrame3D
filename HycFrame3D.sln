@@ -11,7 +11,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04_WindowManager", "04_Wind
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_RenderSystem_DX11", "03_RenderSystem_DX11\03_RenderSystem_DX11.vcxproj", "{CF02A67D-5FD6-4863-B32B-21E34250FCA8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "05_BasicUtilitiy", "05_BasicUtilitiy\05_BasicUtilitiy.vcxproj", "{F7ACB549-CF30-484C-A54D-FBBD6671F404}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "05_HycUtilitiy", "05_HycUtilitiy\05_HycUtilitiy.vcxproj", "{F7ACB549-CF30-484C-A54D-FBBD6671F404}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

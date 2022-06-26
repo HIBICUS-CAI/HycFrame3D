@@ -30,5 +30,8 @@
     <ClInclude Include="HycUtility.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="TomlUtility.h">
+      <Filter>TextAndBinary</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
