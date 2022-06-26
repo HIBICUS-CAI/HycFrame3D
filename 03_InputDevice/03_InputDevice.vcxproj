@@ -191,6 +191,9 @@
     <ProjectReference Include="..\04_WindowManager\04_WindowManager.vcxproj">
       <Project>{948ff8dd-8fb2-4e3e-8ab2-f9f702f9c501}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\05_BasicUtilitiy\05_BasicUtilitiy.vcxproj">
+      <Project>{f7acb549-cf30-484c-a54d-fbbd6671f404}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

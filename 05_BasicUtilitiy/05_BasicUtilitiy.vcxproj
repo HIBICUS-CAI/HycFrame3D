@@ -18,78 +18,26 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="DDSTextureLoader11.h" />
-    <ClInclude Include="RSCamera.h" />
-    <ClInclude Include="RSCamerasContainer.h" />
-    <ClInclude Include="RSCommon.h" />
-    <ClInclude Include="RSDevices.h" />
-    <ClInclude Include="RSDrawCallsPool.h" />
-    <ClInclude Include="RSExtraMacro.h" />
-    <ClInclude Include="RSLight.h" />
-    <ClInclude Include="RSLightsContainer.h" />
-    <ClInclude Include="RSMeshHelper.h" />
-    <ClInclude Include="RSParticleEmitter.h" />
-    <ClInclude Include="RSParticlesContainer.h" />
-    <ClInclude Include="RSPass_Base.h" />
-    <ClInclude Include="RSPipeline.h" />
-    <ClInclude Include="RSPipelinesManager.h" />
-    <ClInclude Include="RSRoot_DX11.h" />
-    <ClInclude Include="RSShaderCompile.h" />
-    <ClInclude Include="RSStaticResources.h" />
-    <ClInclude Include="RSResourceManager.h" />
-    <ClInclude Include="RSTopic.h" />
-    <ClInclude Include="RSUtilityFunctions.h" />
-    <ClInclude Include="RSVertexType.h" />
-    <ClInclude Include="WICTextureLoader11.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="DDSTextureLoader11.cpp" />
-    <ClCompile Include="RSCamera.cpp" />
-    <ClCompile Include="RSCamerasContainer.cpp" />
-    <ClCompile Include="RSDevices.cpp" />
-    <ClCompile Include="RSDrawCallsPool.cpp" />
-    <ClCompile Include="RSLight.cpp" />
-    <ClCompile Include="RSLightsContainer.cpp" />
-    <ClCompile Include="RSMeshHelper.cpp" />
-    <ClCompile Include="RSParticleEmitter.cpp" />
-    <ClCompile Include="RSParticlesContainer.cpp" />
-    <ClCompile Include="RSPass_Base.cpp" />
-    <ClCompile Include="RSPipeline.cpp" />
-    <ClCompile Include="RSPipelinesManager.cpp" />
-    <ClCompile Include="RSRoot_DX11.cpp" />
-    <ClCompile Include="RSShaderCompile.cpp" />
-    <ClCompile Include="RSStaticResources.cpp" />
-    <ClCompile Include="RSResourceManager.cpp" />
-    <ClCompile Include="RSTopic.cpp" />
-    <ClCompile Include="RSUtilityFunctions.cpp" />
-    <ClCompile Include="WICTextureLoader11.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\05_BasicUtilitiy\05_BasicUtilitiy.vcxproj">
-      <Project>{f7acb549-cf30-484c-a54d-fbbd6671f404}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{cf02a67d-5fd6-4863-b32b-21e34250fca8}</ProjectGuid>
-    <RootNamespace>My03RenderSystemDX11</RootNamespace>
+    <ProjectGuid>{f7acb549-cf30-484c-a54d-fbbd6671f404}</ProjectGuid>
+    <RootNamespace>My05BasicUtilitiy</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -122,36 +70,17 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_RS_DX11;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <Lib>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -159,45 +88,27 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_RS_DX11;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <Lib>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_RS_DX11;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)HycFrame3D\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <Lib>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
-    <PreBuildEvent>
-      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)HycFrame3D\RenderSystem_StaticResources\</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -205,27 +116,23 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_RS_DX11;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
-      <PrecompiledHeaderFile>
-      </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)HycFrame3D\ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>
-      </SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
-    <Lib>
-      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
-    <PreBuildEvent>
-      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)HycFrame3D\RenderSystem_StaticResources\</Command>
-    </PreBuildEvent>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="HycType.h" />
+    <ClInclude Include="JsonUtility.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="JsonUtility.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

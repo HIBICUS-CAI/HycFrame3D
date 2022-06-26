@@ -116,12 +116,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)04_WindowManager;$(SolutionDir)03_RenderSystem_DX11;$(SolutionDir)03_InputDevice;$(ProjectDir)00_BasicFuncs;$(ProjectDir)01_MiddleTools;$(ProjectDir)02_FrameContent;$(ProjectDir)03_ScriptFuncs;$(ProjectDir)ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)04_WindowManager;$(SolutionDir)03_RenderSystem_DX11;$(SolutionDir)03_InputDevice;$(ProjectDir)00_BasicFuncs;$(ProjectDir)01_MiddleTools;$(ProjectDir)02_FrameContent;$(ProjectDir)03_ScriptFuncs;$(SolutionDir)ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\Lib\Deb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\Deb;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Bullet3Common.lib;BulletCollision.lib;BulletDynamics.lib;BulletInverseDynamics.lib;BulletSoftBody.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>
       </StackReserveSize>
@@ -135,14 +135,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)04_WindowManager;$(SolutionDir)03_RenderSystem_DX11;$(SolutionDir)03_InputDevice;$(ProjectDir)00_BasicFuncs;$(ProjectDir)01_MiddleTools;$(ProjectDir)02_FrameContent;$(ProjectDir)03_ScriptFuncs;$(ProjectDir)ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)04_WindowManager;$(SolutionDir)03_RenderSystem_DX11;$(SolutionDir)03_InputDevice;$(ProjectDir)00_BasicFuncs;$(ProjectDir)01_MiddleTools;$(ProjectDir)02_FrameContent;$(ProjectDir)03_ScriptFuncs;$(SolutionDir)ThirdParty\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)ThirdParty\Lib\Rel;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\Lib\Rel;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Bullet3Common.lib;BulletCollision.lib;BulletDynamics.lib;BulletInverseDynamics.lib;BulletSoftBody.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <StackReserveSize>
       </StackReserveSize>
@@ -272,6 +272,9 @@
     </ProjectReference>
     <ProjectReference Include="..\04_WindowManager\04_WindowManager.vcxproj">
       <Project>{948ff8dd-8fb2-4e3e-8ab2-f9f702f9c501}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\05_BasicUtilitiy\05_BasicUtilitiy.vcxproj">
+      <Project>{f7acb549-cf30-484c-a54d-fbbd6671f404}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

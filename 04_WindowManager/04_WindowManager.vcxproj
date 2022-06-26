@@ -172,6 +172,11 @@
     </ClCompile>
     <ClCompile Include="WM_Interface.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\05_BasicUtilitiy\05_BasicUtilitiy.vcxproj">
+      <Project>{f7acb549-cf30-484c-a54d-fbbd6671f404}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

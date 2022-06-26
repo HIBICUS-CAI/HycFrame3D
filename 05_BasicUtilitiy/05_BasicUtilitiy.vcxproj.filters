@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="TypeDef">
+      <UniqueIdentifier>{aba6208a-a0ea-43a5-8e40-6b05c408135a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FileAndBuffer">
+      <UniqueIdentifier>{5f3a5eaa-c721-4f4f-a65c-20490548b9dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="StringAbout">
+      <UniqueIdentifier>{a675c60f-f2ea-4524-86cf-740a9ebee522}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SocketAndNetwork">
+      <UniqueIdentifier>{06c8c992-e09e-4c9b-96f8-049e79491989}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="HycType.h">
+      <Filter>TypeDef</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonUtility.h">
+      <Filter>FileAndBuffer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="JsonUtility.cpp">
+      <Filter>FileAndBuffer</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
