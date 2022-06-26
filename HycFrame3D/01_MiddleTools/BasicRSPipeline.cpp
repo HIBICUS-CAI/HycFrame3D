@@ -91,45 +91,65 @@ void SetPipelineIBLTextures(ID3D11ShaderResourceView* _envSrv,
 bool CreateBasicPipeline()
 {
     {
+        using namespace Hyc;
         using namespace Hyc::Text;
-        JsonFile config = {};
-        if (!LoadJsonAndParse(config,
-            ".\\Assets\\Configs\\render-effect-config.json"))
+        TomlNode config = {};
+        TomlNode node = {};
+        std::string errorMess = "";
+        if (!LoadTomlAndParse(config,
+            ".\\Assets\\Configs\\render-effect-config.toml",
+            errorMess))
         {
             return false;
         }
-        g_RenderEffectConfig.mSsaoRadius = config["ssao-radius"].GetFloat();
-        g_RenderEffectConfig.mSsaoStart = config["ssao-start"].GetFloat();
-        g_RenderEffectConfig.mSsaoEnd = config["ssao-end"].GetFloat();
-        g_RenderEffectConfig.mSsaoEpsilon = config["ssao-epsilon"].GetFloat();
-        g_RenderEffectConfig.mSsaoBlurCount =
-            config["ssao-blur-loop-count"].GetUint();
-        g_RenderEffectConfig.mSamplerLevel =
-            (SAMPLER_LEVEL)(config["filter-level"].GetUint());
-        g_RenderEffectConfig.mParticleOff =
-            config["particle-off"].GetBool();
 
+        if (!GetTomlNode(config, "ssao", node))
+        {
+            return false;
+        }
+        g_RenderEffectConfig.mSsaoRadius = GetAs<float>(node["radius"]);
+        g_RenderEffectConfig.mSsaoStart = GetAs<float>(node["range-start"]);
+        g_RenderEffectConfig.mSsaoEnd = GetAs<float>(node["range-end"]);
+        g_RenderEffectConfig.mSsaoEpsilon = GetAs<float>(node["epsilon"]);
+        g_RenderEffectConfig.mSsaoBlurCount = GetAs<uint>(node["blur-count"]);
+
+        if (!GetTomlNode(config, "sampler", node))
+        {
+            return false;
+        }
+        g_RenderEffectConfig.mSamplerLevel =
+            (SAMPLER_LEVEL)(GetAs<uint>(node["filter-level"]));
         if ((UINT)g_RenderEffectConfig.mSamplerLevel < 0 ||
             (UINT)g_RenderEffectConfig.mSamplerLevel > 3)
         {
             return false;
         }
 
-        g_RenderEffectConfig.mBloomOff = config["bloom-off"].GetBool();
+        if (!GetTomlNode(config, "particle", node))
+        {
+            return false;
+        }
+        g_RenderEffectConfig.mParticleOff = GetAs<bool>(node["disable-particle"]);
+
+        if (!GetTomlNode(config, "bloom", node))
+        {
+            return false;
+        }
+        g_RenderEffectConfig.mBloomOff = GetAs<bool>(node["disable-bloom"]);
         g_RenderEffectConfig.mBloomMinValue =
-            config["bloom-min-value"].GetFloat();
+            GetAs<float>(node["min-luminous"]);
         g_RenderEffectConfig.mBloomDownSamplingCount =
-            config["bloom-downsampling-count"].GetUint();
+            GetAs<uint>(node["downsampling-count"]);
         g_RenderEffectConfig.mBloomBlurCount =
-            config["bloom-gauss-count"].GetUint();
+            GetAs<uint>(node["downsampling-blur-count"]);
         g_RenderEffectConfig.mBloomBlurKernel =
-            config["bloom-gauss-kernel-size"].GetUint();
+            GetAs<uint>(node["gauss-kernel-size"]);
         g_RenderEffectConfig.mBloomBlurSigma =
-            config["bloom-gauss-sigma"].GetFloat();
+            GetAs<float>(node["gauss-sigma"]);
         g_RenderEffectConfig.mBloomIntensityFactor =
-            config["bloom-intensity-factor"].GetFloat();
+            GetAs<float>(node["intensity-factor"]);
         g_RenderEffectConfig.mBloomLightPixelFactor =
-            config["bloom-light-pixel-factor"].GetFloat();
+            GetAs<float>(node["light-source-factor"]);
     }
 
     g_Root = GetRSRoot_DX11_Singleton();

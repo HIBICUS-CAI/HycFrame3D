@@ -46,18 +46,21 @@ bool SceneManager::DeferedStartUp()
         return false;
     }
 
+    using namespace Hyc;
     using namespace Hyc::Text;
-    JsonFile entryInfo = {};
-    if (!LoadJsonAndParse(entryInfo,
-        ".\\Assets\\Configs\\scene-entry-config.json"))
+    TomlNode entryInfo = {};
+    std::string errorMess = "";
+    if (!LoadTomlAndParse(entryInfo,
+        ".\\Assets\\Configs\\scene-entry-config.toml",
+        errorMess))
     {
-        P_LOG(LOG_ERROR, "entry scene config json error code : %d\n",
-            GetJsonParseError(entryInfo));
+        P_LOG(LOG_ERROR, "failed to parse entry scene config : %s\n",
+            errorMess.c_str());
         return false;
     }
 
-    LoadSceneNode(entryInfo["entry-scene-name"].GetString(),
-        entryInfo["entry-scene-file"].GetString());
+    LoadSceneNode(GetAs<std::string>(entryInfo["entry-scene"]["name"]),
+        GetAs<std::string>(entryInfo["entry-scene"]["file"]));
 
     return true;
 }

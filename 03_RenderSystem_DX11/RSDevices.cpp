@@ -41,20 +41,41 @@ bool RSDevices::StartUp(RSRoot_DX11* _root, HWND _wnd)
 
     mRootPtr = _root;
 
-    using namespace Hyc::Text;
-    JsonFile config = {};
-    if (!LoadJsonAndParse(config,
-        ".\\Assets\\Configs\\render-device-config.json"))
     {
-        return false;
+        using namespace Hyc;
+        using namespace Hyc::Text;
+        TomlNode configRoot = {};
+        TomlNode node = {};
+        std::string errorMess = "";
+        if (!LoadTomlAndParse(configRoot,
+            ".\\Assets\\Configs\\render-device-config.toml",
+            errorMess))
+        {
+            return false;
+        }
+
+        if (!GetTomlNode(configRoot, "device.adapter.manual-setting", node))
+        {
+            return false;
+        }
+        else
+        {
+            if (GetAs<bool>(node) &&
+                GetTomlNode(configRoot, "device.adapter.index-designation", node))
+            {
+                mRenderDeivceConfig.mForceAdapterIndex = GetAs<uint>(node);
+            }
+        }
+
+        if (!GetTomlNode(configRoot, "device.single-thread", node))
+        {
+            return false;
+        }
+        else
+        {
+            mRenderDeivceConfig.mForceSingleThread = GetAs<bool>(node);
+        }
     }
-    if (!config["force-adapter-index"].IsNull())
-    {
-        mRenderDeivceConfig.mForceAdapterIndex =
-            config["force-adapter-index"].GetUint();
-    }
-    mRenderDeivceConfig.mForceSingleThread =
-        config["force-single-thread"].GetBool();
 
     UINT wndWidth = 1280;
     UINT wndHeight = 720;

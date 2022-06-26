@@ -58,16 +58,18 @@ bool UButtonComponent::Init()
         if (g_SelectFlagTexture == "")
         {
             using namespace Hyc::Text;
-            JsonFile btnFlgConfig = {};
-            if (!LoadJsonAndParse(btnFlgConfig,
-                ".\\Assets\\Configs\\selected-flag-config.json"))
+            TomlNode btnFlgConfig = {};
+            std::string errorMess = "";
+            if (!LoadTomlAndParse(btnFlgConfig,
+                ".\\Assets\\Configs\\selected-flag-config.toml",
+                errorMess))
             {
-                P_LOG(LOG_ERROR,
-                    "failed to parse btn flag config with error code : %d\n",
-                    GetJsonParseError(btnFlgConfig));
+                P_LOG(LOG_ERROR, "failed to parse btn flag config : %s\n",
+                    errorMess.c_str());
                 return false;
             }
-            g_SelectFlagTexture = btnFlgConfig["flag-tex-file"].GetString();
+            g_SelectFlagTexture =
+                GetAs<std::string>(btnFlgConfig["flag-texture"]["file"]);
         }
 
         RS_SUBMESH_DATA btnSelect = GetRSRoot_DX11_Singleton()->

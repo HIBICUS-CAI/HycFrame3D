@@ -9,10 +9,10 @@ blur-count = 4
 filter-level = 3
 
 [particle]
-enable-particle = true
+disable-particle = false
 
 [bloom]
-enable-bloom = true
+disable-bloom = false
 min-luminous = 2.0
 downsampling-count = 7
 downsampling-blur-count = 2
