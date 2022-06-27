@@ -1,3 +1,5 @@
+#include "color_utility.hlsli"
+
 #ifndef MIN_VALUE
 #define MIN_VALUE (2.f)
 #endif
@@ -15,7 +17,8 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
     gLightCache[linearGroupIndex] = (float4)0.f;
 
     float4 originValue = gOriginTex.Load(_dispatchId);
-    if (originValue.r > MIN_VALUE || originValue.g > MIN_VALUE || originValue.b > MIN_VALUE)
+    float lumin = ColorToLuminance(originValue.rgb);
+    if (lumin > MIN_VALUE)
     {
         gLightCache[linearGroupIndex] = float4(originValue.rgb, 1.f);
     }

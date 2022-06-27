@@ -5676,19 +5676,19 @@ bool RSPass_Billboard::CreateSamplers()
 RSPass_Tonemapping::RSPass_Tonemapping(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mComputeShader(nullptr), mHdrUav(nullptr)
+    mColorSapceShader(nullptr), mHdrUav(nullptr)
 {
 
 }
 
 RSPass_Tonemapping::RSPass_Tonemapping(const RSPass_Tonemapping& _source) :
     RSPass_Base(_source),
-    mComputeShader(_source.mComputeShader),
+    mColorSapceShader(_source.mColorSapceShader),
     mHdrUav(_source.mHdrUav)
 {
     if (mHasBeenInited)
     {
-        RS_ADDREF(mComputeShader);
+        RS_ADDREF(mColorSapceShader);
     }
 }
 
@@ -5716,7 +5716,7 @@ bool RSPass_Tonemapping::InitPass()
 
 void RSPass_Tonemapping::ReleasePass()
 {
-    RS_RELEASE(mComputeShader);
+    RS_RELEASE(mColorSapceShader);
 }
 
 void RSPass_Tonemapping::ExecuatePass()
@@ -5726,7 +5726,7 @@ void RSPass_Tonemapping::ExecuatePass()
     UINT height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
     UINT dispatchX = Tool::Align(width, 256) / 256;
 
-    STContext()->CSSetShader(mComputeShader, nullptr, 0);
+    STContext()->CSSetShader(mColorSapceShader, nullptr, 0);
     STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
 
     STContext()->Dispatch(dispatchX, height, 1);
@@ -5747,7 +5747,7 @@ bool RSPass_Tonemapping::CreateShaders()
     hr = Device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
-        nullptr, &mComputeShader);
+        nullptr, &mColorSapceShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }

@@ -481,3 +481,10 @@ float3 LinearToSRGB(float3 color)
         LinearToSRGB_F(color.y),
         LinearToSRGB_F(color.z));
 }
+
+static const float3 TO_LUMIN = float3(0.2126f, 0.7152f, 0.0722f);
+
+float ColorToLuminance(float3 _rgb)
+{
+    return dot(_rgb, TO_LUMIN);
+}
