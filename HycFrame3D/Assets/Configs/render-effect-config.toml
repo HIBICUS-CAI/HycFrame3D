@@ -4,7 +4,7 @@
 # if false, use complex lighting pipeline.
 # if true, use simple lighting pipeline,
 #   only unblured ssao active.
-simply-lit = true
+simply-lit = false
 
 # about screen space ambient occlusion.
 [ssao]

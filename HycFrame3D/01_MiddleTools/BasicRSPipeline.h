@@ -795,6 +795,9 @@ private:
     ID3D11ComputeShader* mAverLuminShader;
     ID3D11ComputeShader* mToneMapShader;
     ID3D11UnorderedAccessView* mHdrUav;
+    ID3D11ShaderResourceView* mHdrSrv;
+    ID3D11Buffer* mAverageLuminBuffer;
+    ID3D11UnorderedAccessView* mAverageLuminUav;
 };
 
 class RSPass_BloomHdr :public RSPass_Base

@@ -1,6 +1,7 @@
 #include "color_utility.hlsli"
 
 RWTexture2D<float4> gHdrTexture : register(u0);
+RWStructuredBuffer<uint> AverageLumin : register(u1);
 
 groupshared float4 gHdrColorCache[256];
 
@@ -11,6 +12,10 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
 
     float4 color = gHdrColorCache[_groupId.x];
     // TEMP EXPOSURE
+    // color.rgb *= 0.2f;
+    float expo = asfloat(AverageLumin[0]);
+    color.rgb *= expo;
+    color.rgb /= expo;
     color.rgb *= 0.2f;
     // TEMP EXPOSURE
     color.rgb = LinearToSRGB(ACESTonemapping(color.rgb));
