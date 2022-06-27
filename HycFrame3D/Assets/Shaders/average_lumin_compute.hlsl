@@ -2,14 +2,14 @@
 
 Texture2D<float4> OriginTex : register(t0);
 
-RWStructuredBuffer<uint> Average : register(u1);
+RWStructuredBuffer<float> Average : register(u1);
 
 groupshared float SampleCache[256];
 
 [numthreads(16, 16, 1)]
-void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThreadID)
+void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThreadID, int3 _threadGroupID : SV_GroupID)
 {
-    int linearGroupIndex = _groupId.x * 16 + _groupId.y;
+    int linearGroupIndex = _groupId.y * 16 + _groupId.x;
     float3 originValue = OriginTex.Load(_dispatchId).rgb;
     SampleCache[linearGroupIndex] = RGBToLuminance(originValue);
 
@@ -46,7 +46,6 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
             groupAverage += SampleCache[i];
         }
         groupAverage /= 16.f;
-        int origin = 0;
-        InterlockedAdd(Average[0], asuint(groupAverage), origin);
+        Average[80 * _threadGroupID.y + _threadGroupID.x] = groupAverage;
     }
 }

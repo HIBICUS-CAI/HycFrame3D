@@ -5805,16 +5805,16 @@ bool RSPass_Tonemapping::CreateViews()
     bfrDesc.Usage = D3D11_USAGE_DEFAULT;
     bfrDesc.CPUAccessFlags = 0;
     bfrDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
-    bfrDesc.ByteWidth = sizeof(UINT);
+    bfrDesc.ByteWidth = 80 * 45 * (UINT)sizeof(float);
     bfrDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-    bfrDesc.StructureByteStride = sizeof(UINT);
+    bfrDesc.StructureByteStride = sizeof(float);
     hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mAverageLuminBuffer);
     if (FAILED(hr)) { return false; }
 
     ZeroMemory(&uavDesc, sizeof(uavDesc));
     uavDesc.Format = DXGI_FORMAT_UNKNOWN;
     uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-    uavDesc.Buffer.NumElements = 1;
+    uavDesc.Buffer.NumElements = 80 * 45;
     hr = Device()->CreateUnorderedAccessView(mAverageLuminBuffer,
         &uavDesc, &mAverageLuminUav);
     if (FAILED(hr)) { return false; }
