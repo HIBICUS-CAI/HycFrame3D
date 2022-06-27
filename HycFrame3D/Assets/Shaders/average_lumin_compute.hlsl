@@ -69,7 +69,7 @@ void CalcAverage(int3 _groupId : SV_GroupThreadID)
         [unroll]
         for (int i = 0; i < 23; ++i)
         {
-            value += LuminCache[index + i];
+            value += LuminCache[index * 23 + i];
         }
     }
 
@@ -91,7 +91,7 @@ void CalcAverage(int3 _groupId : SV_GroupThreadID)
         [unroll]
         for (int i = 0; i < 8; ++i)
         {
-            value += LuminCache[index + i];
+            value += LuminCache[index * 8 + i];
         }
     }
 
