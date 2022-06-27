@@ -45,6 +45,13 @@ void RegisterSPInput(ObjectFactory* _factory)
 
 void TestASpInput(AInputComponent* _aic, Timer& _timer)
 {
+    if (InputInterface::IsKeyDownInSingle(M_LEFTBTN))
+    {
+        auto mouseOffset = InputInterface::GetMouseOffset();
+        float horiR = -mouseOffset.x * _timer.FloatDeltaTime() / 800.f;
+        _aic->GetSceneNode().GetMainCamera()->RotateRSCamera(0.f, horiR);
+    }
+
     if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
     {
         P_LOG(LOG_DEBUG, "to test2\n");
