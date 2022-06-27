@@ -793,6 +793,7 @@ private:
 
 private:
     ID3D11ComputeShader* mAverLuminShader;
+    ID3D11ComputeShader* mCalcLuminShader;
     ID3D11ComputeShader* mToneMapShader;
     ID3D11UnorderedAccessView* mHdrUav;
     ID3D11ShaderResourceView* mHdrSrv;

@@ -5677,6 +5677,7 @@ RSPass_Tonemapping::RSPass_Tonemapping(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
     mAverLuminShader(nullptr),
+    mCalcLuminShader(nullptr),
     mToneMapShader(nullptr), mHdrUav(nullptr), mHdrSrv(nullptr),
     mAverageLuminBuffer(nullptr), mAverageLuminUav(nullptr)
 {
@@ -5686,6 +5687,7 @@ RSPass_Tonemapping::RSPass_Tonemapping(
 RSPass_Tonemapping::RSPass_Tonemapping(const RSPass_Tonemapping& _source) :
     RSPass_Base(_source),
     mAverLuminShader(_source.mAverLuminShader),
+    mCalcLuminShader(_source.mCalcLuminShader),
     mToneMapShader(_source.mToneMapShader),
     mHdrUav(_source.mHdrUav),
     mHdrSrv(_source.mHdrSrv),
@@ -5694,6 +5696,7 @@ RSPass_Tonemapping::RSPass_Tonemapping(const RSPass_Tonemapping& _source) :
 {
     if (mHasBeenInited)
     {
+        RS_ADDREF(mCalcLuminShader);
         RS_ADDREF(mAverLuminShader);
         RS_ADDREF(mToneMapShader);
         RS_ADDREF(mAverageLuminBuffer);
@@ -5725,6 +5728,7 @@ bool RSPass_Tonemapping::InitPass()
 
 void RSPass_Tonemapping::ReleasePass()
 {
+    RS_RELEASE(mCalcLuminShader);
     RS_RELEASE(mAverLuminShader);
     RS_RELEASE(mToneMapShader);
     RS_RELEASE(mAverageLuminBuffer);
@@ -5738,8 +5742,8 @@ void RSPass_Tonemapping::ExecuatePass()
 
     UINT width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
     UINT height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
-    UINT dispatchX = Tool::Align(width, 16) / 16;
-    UINT dispatchY = Tool::Align(height, 16) / 16;
+    UINT dispatchX = Tool::Align(width, 32) / 32;
+    UINT dispatchY = Tool::Align(height, 32) / 32;
 
     STContext()->CSSetShader(mAverLuminShader, nullptr, 0);
     STContext()->CSSetShaderResources(0, 1, &mHdrSrv);
@@ -5748,6 +5752,9 @@ void RSPass_Tonemapping::ExecuatePass()
     STContext()->Dispatch(dispatchX, dispatchY, 1);
 
     STContext()->CSSetShaderResources(0, 1, &nullSrv);
+
+    STContext()->CSSetShader(mCalcLuminShader, nullptr, 0);
+    STContext()->Dispatch(1, 1, 1);
 
     dispatchX = Tool::Align(width, 256) / 256;
     STContext()->CSSetShader(mToneMapShader, nullptr, 0);
@@ -5772,6 +5779,19 @@ bool RSPass_Tonemapping::CreateShaders()
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mAverLuminShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\average_lumin_compute.hlsl",
+        "CalcAverage", "cs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateComputeShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mCalcLuminShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
@@ -5805,7 +5825,7 @@ bool RSPass_Tonemapping::CreateViews()
     bfrDesc.Usage = D3D11_USAGE_DEFAULT;
     bfrDesc.CPUAccessFlags = 0;
     bfrDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
-    bfrDesc.ByteWidth = 80 * 45 * (UINT)sizeof(float);
+    bfrDesc.ByteWidth = 920 * (UINT)sizeof(float);
     bfrDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bfrDesc.StructureByteStride = sizeof(float);
     hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mAverageLuminBuffer);
@@ -5814,7 +5834,7 @@ bool RSPass_Tonemapping::CreateViews()
     ZeroMemory(&uavDesc, sizeof(uavDesc));
     uavDesc.Format = DXGI_FORMAT_UNKNOWN;
     uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-    uavDesc.Buffer.NumElements = 80 * 45;
+    uavDesc.Buffer.NumElements = 920;
     hr = Device()->CreateUnorderedAccessView(mAverageLuminBuffer,
         &uavDesc, &mAverageLuminUav);
     if (FAILED(hr)) { return false; }

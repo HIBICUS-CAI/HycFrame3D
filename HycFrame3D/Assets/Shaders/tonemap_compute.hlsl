@@ -13,12 +13,7 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
     float4 color = gHdrColorCache[_groupId.x];
     // TEMP EXPOSURE
     // color.rgb *= 0.2f;
-    float expo = 0;
-    for (int i = 0; i < 3600; ++i)
-    {
-        expo += AverageLumin[i];
-    }
-    expo /= 3600.f;
+    float expo = AverageLumin[0];
     color.rgb *= expo;
     // color.rgb /= expo;
     // color.rgb *= 0.2f;
