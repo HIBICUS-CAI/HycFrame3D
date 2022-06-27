@@ -792,7 +792,8 @@ private:
     bool CreateViews();
 
 private:
-    ID3D11ComputeShader* mColorSapceShader;
+    ID3D11ComputeShader* mAverLuminShader;
+    ID3D11ComputeShader* mToneMapShader;
     ID3D11UnorderedAccessView* mHdrUav;
 };
 

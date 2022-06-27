@@ -17,7 +17,7 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
     gLightCache[linearGroupIndex] = (float4)0.f;
 
     float4 originValue = gOriginTex.Load(_dispatchId);
-    float lumin = ColorToLuminance(originValue.rgb);
+    float lumin = RGBToLuminance(originValue.rgb);
     if (lumin > MIN_VALUE)
     {
         gLightCache[linearGroupIndex] = float4(originValue.rgb, 1.f);
