@@ -12,6 +12,18 @@ namespace Tool
         return (_value + (_alignment - 1)) & ~(_alignment - 1);
     }
 
+    float Lerp(float _v1, float _v2, float _factor)
+    {
+        return (1.f - _factor)* _v1 + _factor * _v2;
+    }
+
+    float Clamp(float _v, float _min, float _max)
+    {
+        _v = (_v > _max) ? _max : _v;
+        _v = (_v < _min) ? _min : _v;
+        return _v;
+    }
+
     float RandomVariance(float median, float variance)
     {
         static bool hasInited = false;

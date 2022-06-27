@@ -5762,16 +5762,26 @@ void RSPass_Tonemapping::ExecuatePass()
 
     STContext()->CSSetUnorderedAccessViews(1, 1, &nullUav, nullptr);
 
+    static float exposure = 0.2f;
+    static const float TRANS_SPEED = 0.05f;
+    static const float EXPO_MIN = 0.01f;
+    static const float EXPO_MAX = 6.f;
+
     D3D11_MAPPED_SUBRESOURCE msr = {};
     STContext()->Map(mAverageLuminBuffer, 0, D3D11_MAP_READ, 0, &msr);
     float* average = (float*)msr.pData;
-    float averageLumin = *average;
+    float averageLumin = *average + 0.0001f;
     STContext()->Unmap(mAverageLuminBuffer, 0);
+
+    exposure = Tool::Lerp(
+        exposure, 1.f / 25.f / averageLumin, TRANS_SPEED);
+    exposure = Tool::Clamp(exposure, EXPO_MIN, EXPO_MAX);
+
     STContext()->Map(mToneMapConstBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     EXPOSURE_INFO* info = (EXPOSURE_INFO*)msr.pData;
     info->mAverageLuminance = averageLumin;
-    info->mExposure = averageLumin;
+    info->mExposure = exposure;
     STContext()->Unmap(mToneMapConstBuffer, 0);
 
     dispatchX = Tool::Align(width, 256) / 256;
