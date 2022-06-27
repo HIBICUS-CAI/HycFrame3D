@@ -35,17 +35,24 @@ constexpr UINT PTC_TILE_X_SIZE = 32;
 constexpr UINT PTC_TILE_Y_SIZE = 32;
 constexpr UINT PTC_COARSE_CULLING_THREADS = 256;
 
+struct EXPOSURE_INFO
+{
+    float mAverageLuminance = 0.f;
+    float mExposure = 0.f;
+    UINT mPads[2] = { 0 };
+};
+
 struct BLM_BLUR_INFO
 {
-    UINT mTexWidth;
-    UINT mTexHeight;
-    UINT mPads[2];
+    UINT mTexWidth = 0;
+    UINT mTexHeight = 0;
+    UINT mPads[2] = { 0 };
 };
 
 struct BLM_INTENSITY_INFO
 {
-    float mIntensityFactor;
-    float mPads[3];
+    float mIntensityFactor = 0.f;
+    float mPads[3] = { 0.f };
 };
 
 struct RS_PARTICLE_PART_A
@@ -799,6 +806,7 @@ private:
     ID3D11ShaderResourceView* mHdrSrv;
     ID3D11Buffer* mAverageLuminBuffer;
     ID3D11UnorderedAccessView* mAverageLuminUav;
+    ID3D11Buffer* mToneMapConstBuffer;
 };
 
 class RSPass_BloomHdr :public RSPass_Base
