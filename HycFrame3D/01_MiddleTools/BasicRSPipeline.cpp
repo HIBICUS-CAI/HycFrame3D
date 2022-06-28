@@ -5677,10 +5677,11 @@ RSPass_Tonemapping::RSPass_Tonemapping(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
     mAverLuminShader(nullptr),
-    mCalcLuminShader(nullptr),
+    mDynamicExposureShader(nullptr),
     mToneMapShader(nullptr), mHdrUav(nullptr), mHdrSrv(nullptr),
-    mAverageLuminBuffer(nullptr), mAverageLuminUav(nullptr),
-    mToneMapConstBuffer(nullptr)
+    mAverageLuminBufferArray({ nullptr,nullptr }),
+    mAverageLuminUavArray({ nullptr,nullptr }),
+    mAverageLuminSrvArray({ nullptr,nullptr })
 {
 
 }
@@ -5688,22 +5689,25 @@ RSPass_Tonemapping::RSPass_Tonemapping(
 RSPass_Tonemapping::RSPass_Tonemapping(const RSPass_Tonemapping& _source) :
     RSPass_Base(_source),
     mAverLuminShader(_source.mAverLuminShader),
-    mCalcLuminShader(_source.mCalcLuminShader),
+    mDynamicExposureShader(_source.mDynamicExposureShader),
     mToneMapShader(_source.mToneMapShader),
     mHdrUav(_source.mHdrUav),
     mHdrSrv(_source.mHdrSrv),
-    mAverageLuminBuffer(_source.mAverageLuminBuffer),
-    mAverageLuminUav(_source.mAverageLuminUav),
-    mToneMapConstBuffer(_source.mToneMapConstBuffer)
+    mAverageLuminBufferArray(_source.mAverageLuminBufferArray),
+    mAverageLuminSrvArray(_source.mAverageLuminSrvArray),
+    mAverageLuminUavArray(_source.mAverageLuminUavArray)
 {
     if (mHasBeenInited)
     {
-        RS_ADDREF(mCalcLuminShader);
+        RS_ADDREF(mDynamicExposureShader);
         RS_ADDREF(mAverLuminShader);
         RS_ADDREF(mToneMapShader);
-        RS_ADDREF(mAverageLuminBuffer);
-        RS_ADDREF(mAverageLuminUav);
-        RS_ADDREF(mToneMapConstBuffer);
+        RS_ADDREF(mAverageLuminBufferArray[0]);
+        RS_ADDREF(mAverageLuminBufferArray[1]);
+        RS_ADDREF(mAverageLuminSrvArray[0]);
+        RS_ADDREF(mAverageLuminSrvArray[1]);
+        RS_ADDREF(mAverageLuminUavArray[0]);
+        RS_ADDREF(mAverageLuminUavArray[1]);
     }
 }
 
@@ -5731,12 +5735,15 @@ bool RSPass_Tonemapping::InitPass()
 
 void RSPass_Tonemapping::ReleasePass()
 {
-    RS_RELEASE(mCalcLuminShader);
+    RS_RELEASE(mDynamicExposureShader);
     RS_RELEASE(mAverLuminShader);
     RS_RELEASE(mToneMapShader);
-    RS_RELEASE(mAverageLuminBuffer);
-    RS_RELEASE(mAverageLuminUav);
-    RS_RELEASE(mToneMapConstBuffer);
+    RS_RELEASE(mAverageLuminBufferArray[0]);
+    RS_RELEASE(mAverageLuminBufferArray[1]);
+    RS_RELEASE(mAverageLuminSrvArray[0]);
+    RS_RELEASE(mAverageLuminSrvArray[1]);
+    RS_RELEASE(mAverageLuminUavArray[0]);
+    RS_RELEASE(mAverageLuminUavArray[1]);
 }
 
 void RSPass_Tonemapping::ExecuatePass()
@@ -5749,45 +5756,36 @@ void RSPass_Tonemapping::ExecuatePass()
     UINT dispatchX = Tool::Align(width, 32) / 32;
     UINT dispatchY = Tool::Align(height, 32) / 32;
 
+    static int cindex = 0;
+    int pindex = cindex;
+    cindex = (cindex + 1) % 2;
+
     STContext()->CSSetShader(mAverLuminShader, nullptr, 0);
     STContext()->CSSetShaderResources(0, 1, &mHdrSrv);
-    STContext()->CSSetUnorderedAccessViews(1, 1, &mAverageLuminUav, nullptr);
+    STContext()->CSSetUnorderedAccessViews(0, 1,
+        &mAverageLuminUavArray[cindex], nullptr);
 
     STContext()->Dispatch(dispatchX, dispatchY, 1);
 
     STContext()->CSSetShaderResources(0, 1, &nullSrv);
+    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
 
-    STContext()->CSSetShader(mCalcLuminShader, nullptr, 0);
+    STContext()->CSSetShader(mDynamicExposureShader, nullptr, 0);
+    STContext()->CSSetShaderResources(0, 1,
+        &mAverageLuminSrvArray[pindex]);
+    STContext()->CSSetUnorderedAccessViews(0, 1,
+        &mAverageLuminUavArray[cindex], nullptr);
+
     STContext()->Dispatch(1, 1, 1);
 
-    STContext()->CSSetUnorderedAccessViews(1, 1, &nullUav, nullptr);
-
-    static float exposure = 0.2f;
-    static const float TRANS_SPEED = 0.05f;
-    static const float EXPO_MIN = 0.01f;
-    static const float EXPO_MAX = 6.f;
-
-    D3D11_MAPPED_SUBRESOURCE msr = {};
-    STContext()->Map(mAverageLuminBuffer, 0, D3D11_MAP_READ, 0, &msr);
-    float* average = (float*)msr.pData;
-    float averageLumin = *average + 0.0001f;
-    STContext()->Unmap(mAverageLuminBuffer, 0);
-
-    exposure = Tool::Lerp(
-        exposure, 1.f / 25.f / averageLumin, TRANS_SPEED);
-    exposure = Tool::Clamp(exposure, EXPO_MIN, EXPO_MAX);
-
-    STContext()->Map(mToneMapConstBuffer, 0,
-        D3D11_MAP_WRITE_DISCARD, 0, &msr);
-    EXPOSURE_INFO* info = (EXPOSURE_INFO*)msr.pData;
-    info->mAverageLuminance = averageLumin;
-    info->mExposure = exposure;
-    STContext()->Unmap(mToneMapConstBuffer, 0);
+    STContext()->CSSetShaderResources(0, 1, &nullSrv);
+    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
 
     dispatchX = Tool::Align(width, 256) / 256;
     STContext()->CSSetShader(mToneMapShader, nullptr, 0);
+    STContext()->CSSetShaderResources(0, 1,
+        &mAverageLuminSrvArray[cindex]);
     STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
-    STContext()->CSGetConstantBuffers(0, 1, &mToneMapConstBuffer);
 
     STContext()->Dispatch(dispatchX, height, 1);
 
@@ -5813,14 +5811,14 @@ bool RSPass_Tonemapping::CreateShaders()
     if (FAILED(hr)) { return false; }
 
     hr = Tool::CompileShaderFromFile(
-        L".\\Assets\\Shaders\\average_lumin_compute.hlsl",
-        "CalcAverage", "cs_5_0", &shaderBlob);
+        L".\\Assets\\Shaders\\dynamic_exposure_compute.hlsl",
+        "main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
-        nullptr, &mCalcLuminShader);
+        nullptr, &mDynamicExposureShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
@@ -5848,32 +5846,49 @@ bool RSPass_Tonemapping::CreateViews()
 
     HRESULT hr = S_OK;
     D3D11_BUFFER_DESC bfrDesc = {};
+    D3D11_SUBRESOURCE_DATA initData = {};
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 
     ZeroMemory(&bfrDesc, sizeof(bfrDesc));
+    ZeroMemory(&initData, sizeof(initData));
     bfrDesc.Usage = D3D11_USAGE_DEFAULT;
     bfrDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-    bfrDesc.BindFlags = D3D11_BIND_UNORDERED_ACCESS;
+    bfrDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
     bfrDesc.ByteWidth = 920 * (UINT)sizeof(float);
     bfrDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bfrDesc.StructureByteStride = sizeof(float);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mAverageLuminBuffer);
+    float* data = new float[920];
+    data[0] = 0.2f;
+    initData.pSysMem = data;
+    hr = Device()->CreateBuffer(&bfrDesc, &initData,
+        &mAverageLuminBufferArray[0]);
+    if (FAILED(hr)) { delete data; return false; }
+    hr = Device()->CreateBuffer(&bfrDesc, &initData,
+        &mAverageLuminBufferArray[1]);
+    if (FAILED(hr)) { delete data; return false; }
+    delete data;
+
+    ZeroMemory(&srvDesc, sizeof(srvDesc));
+    srvDesc.Format = DXGI_FORMAT_UNKNOWN;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
+    srvDesc.Buffer.ElementWidth = 920;
+    hr = Device()->CreateShaderResourceView(mAverageLuminBufferArray[0],
+        &srvDesc, &mAverageLuminSrvArray[0]);
+    if (FAILED(hr)) { return false; }
+    hr = Device()->CreateShaderResourceView(mAverageLuminBufferArray[1],
+        &srvDesc, &mAverageLuminSrvArray[1]);
     if (FAILED(hr)) { return false; }
 
     ZeroMemory(&uavDesc, sizeof(uavDesc));
     uavDesc.Format = DXGI_FORMAT_UNKNOWN;
     uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
     uavDesc.Buffer.NumElements = 920;
-    hr = Device()->CreateUnorderedAccessView(mAverageLuminBuffer,
-        &uavDesc, &mAverageLuminUav);
+    hr = Device()->CreateUnorderedAccessView(mAverageLuminBufferArray[0],
+        &uavDesc, &mAverageLuminUavArray[0]);
     if (FAILED(hr)) { return false; }
-
-    ZeroMemory(&bfrDesc, sizeof(bfrDesc));
-    bfrDesc.Usage = D3D11_USAGE_DYNAMIC;
-    bfrDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    bfrDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    bfrDesc.ByteWidth = sizeof(EXPOSURE_INFO);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mToneMapConstBuffer);
+    hr = Device()->CreateUnorderedAccessView(mAverageLuminBufferArray[1],
+        &uavDesc, &mAverageLuminUavArray[1]);
     if (FAILED(hr)) { return false; }
 
     return true;

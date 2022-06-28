@@ -2,7 +2,7 @@
 
 Texture2D<float4> OriginTex : register(t0);
 
-RWStructuredBuffer<float> Average : register(u1);
+RWStructuredBuffer<float> Average : register(u0);
 
 groupshared float SampleCache[1024];
 
@@ -47,72 +47,5 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
         }
         groupAverage /= 32.f;
         Average[40 * _threadGroupID.y + _threadGroupID.x] = groupAverage;
-    }
-}
-
-groupshared float LuminCache[920];
-
-[numthreads(920, 1, 1)]
-void CalcAverage(int3 _groupId : SV_GroupThreadID)
-{
-    int threadID = _groupId.y * 920 + _groupId.x;
-    LuminCache[threadID] = Average[threadID];
-
-    GroupMemoryBarrierWithGroupSync();
-
-    int stride = 23;
-    int index = threadID / stride;
-    float value = 0.f;
-
-    if (threadID % stride == 0)
-    {
-        [unroll]
-        for (int i = 0; i < 23; ++i)
-        {
-            value += LuminCache[index * 23 + i];
-        }
-    }
-
-    GroupMemoryBarrierWithGroupSync();
-
-    if (threadID % stride == 0)
-    {
-        LuminCache[index] = value / 23.f;
-    }
-
-    GroupMemoryBarrierWithGroupSync();
-
-    stride = 8;
-    index = threadID / stride;
-    value = 0.f;
-
-    if (threadID % stride == 0)
-    {
-        [unroll]
-        for (int i = 0; i < 8; ++i)
-        {
-            value += LuminCache[index * 8 + i];
-        }
-    }
-
-    GroupMemoryBarrierWithGroupSync();
-
-    if (threadID % stride == 0)
-    {
-        LuminCache[index] = value / 8.f;
-    }
-
-    GroupMemoryBarrierWithGroupSync();
-
-    value = 0.f;
-
-    if (threadID == 0)
-    {
-        [unroll]
-        for (int i = 0; i < 5; ++i)
-        {
-            value += LuminCache[i];
-        }
-        Average[0] = value / 5.f;
     }
 }

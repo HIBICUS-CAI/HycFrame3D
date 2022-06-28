@@ -35,13 +35,6 @@ constexpr UINT PTC_TILE_X_SIZE = 32;
 constexpr UINT PTC_TILE_Y_SIZE = 32;
 constexpr UINT PTC_COARSE_CULLING_THREADS = 256;
 
-struct EXPOSURE_INFO
-{
-    float mAverageLuminance = 0.f;
-    float mExposure = 0.f;
-    UINT mPads[2] = { 0 };
-};
-
 struct BLM_BLUR_INFO
 {
     UINT mTexWidth = 0;
@@ -800,13 +793,13 @@ private:
 
 private:
     ID3D11ComputeShader* mAverLuminShader;
-    ID3D11ComputeShader* mCalcLuminShader;
+    ID3D11ComputeShader* mDynamicExposureShader;
     ID3D11ComputeShader* mToneMapShader;
     ID3D11UnorderedAccessView* mHdrUav;
     ID3D11ShaderResourceView* mHdrSrv;
-    ID3D11Buffer* mAverageLuminBuffer;
-    ID3D11UnorderedAccessView* mAverageLuminUav;
-    ID3D11Buffer* mToneMapConstBuffer;
+    std::array<ID3D11Buffer*, 2> mAverageLuminBufferArray;
+    std::array<ID3D11ShaderResourceView*, 2> mAverageLuminSrvArray;
+    std::array<ID3D11UnorderedAccessView*, 2> mAverageLuminUavArray;
 };
 
 class RSPass_BloomHdr :public RSPass_Base
