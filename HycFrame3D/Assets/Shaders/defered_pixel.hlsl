@@ -1,4 +1,13 @@
+#if !defined BRDF_DISNEY && !defined BLINN_PHONG
+#define BRDF_DISNEY
+#endif
+
+#if defined BRDF_DISNEY
 #include "light_disney_pbr.hlsli"
+#elif defined BLINN_PHONG
+#include "light_blinn_phong.hlsli"
+#endif
+
 #include "color_utility.hlsli"
 #include "gbuffer_utility.hlsli"
 
@@ -215,7 +224,11 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     {
         LIGHT l = gLights[i];
         l.gAlbedo = sRGBToACES(l.gAlbedo);
+#if defined BRDF_DISNEY
         tempL = float4(ComputeDirectionalLight(diffuse.rgb, l, mat, normalW, toEye, anisoX, anisoY), 0.0f);
+#elif defined BLINN_PHONG
+        tempL = float4(ComputeDirectionalLight(diffuse.rgb, l, mat, normalW, toEye), 0.0f);
+#endif
         if (i == gLightInfo[0].gShadowLightIndex[0])
         {
             shadowPosH = mul(float4(positionW, 1.0f), gShadowInfo[0].gShadowViewMat);
@@ -251,14 +264,22 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     {
         LIGHT l = gLights[i];
         l.gAlbedo = sRGBToACES(l.gAlbedo);
+#if defined BRDF_DISNEY
         directL += float4(ComputePointLight(diffuse.rgb, l, mat, positionW, normalW, toEye, anisoX, anisoY), 0.0f);
+#elif defined BLINN_PHONG
+        directL += float4(ComputePointLight(diffuse.rgb, l, mat, positionW, normalW, toEye), 0.0f);
+#endif
     }
 
     for (i = dNum + pNum; i < dNum + pNum + sNum; ++i)
     {
         LIGHT l = gLights[i];
         l.gAlbedo = sRGBToACES(l.gAlbedo);
+#if defined BRDF_DISNEY
         tempL = float4(ComputeSpotLight(diffuse.rgb, l, mat, positionW, normalW, toEye, anisoX, anisoY), 0.0f);
+#elif defined BLINN_PHONG
+        tempL = float4(ComputeSpotLight(diffuse.rgb, l, mat, positionW, normalW, toEye), 0.0f);
+#endif
         if (i == gLightInfo[0].gShadowLightIndex[0])
         {
             shadowPosH = mul(float4(positionW, 1.0f), gShadowInfo[0].gShadowViewMat);
@@ -296,11 +317,6 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
 
     float4 litColor = ambientL * diffuse + directL;
     litColor.a = diffuse.a;
-    
-    // TEMP EXPOSURE
-    // litColor *= 0.2f;
-    // TEMP EXPOSURE
-    // litColor.rgb = LinearToSRGB(ACESTonemapping(litColor.rgb));
 
     return litColor;
 }

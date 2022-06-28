@@ -5,6 +5,10 @@
 # if true, use simple lighting pipeline,
 #   only unblured ssao active.
 simply-lit = false
+# type : string, valid value : ["blinn_phong", "brdf_disney"]
+# the lighting model going to use in opacity deferred rendering,
+#   if the name doesn't exist in valid value list it will be brdf_disney.
+light-model = "brdf_disney"
 
 # about screen space ambient occlusion.
 [ssao]
@@ -44,7 +48,9 @@ disable-particle = false
 # about bloom effect setting.
 [bloom]
 # type : bool
-# whether disable bloom effect or not.
+# whether disable bloom effect or not,
+#   if deferred lighting model is blinn_phong it will
+#   be forced to true.
 disable-bloom = false
 # type : float
 # the threshold luminous to calculate bloom.

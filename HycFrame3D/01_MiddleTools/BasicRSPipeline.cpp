@@ -53,6 +53,7 @@ enum class SAMPLER_LEVEL
 struct RENDER_EFFECT_CONFIG
 {
     bool mSimplyLitOn = true;
+    std::string mLightModel = "brdf_disney";
 
     float mSsaoRadius = 0.5f;
     float mSsaoStart = 0.2f;
@@ -115,6 +116,12 @@ bool CreateBasicPipeline()
             return false;
         }
         g_RenderEffectConfig.mSimplyLitOn = GetAs<bool>(node["simply-lit"]);
+        g_RenderEffectConfig.mLightModel = GetAs<std::string>(node["light-model"]);
+        if (g_RenderEffectConfig.mLightModel != "brdf_disney" &&
+            g_RenderEffectConfig.mLightModel != "blinn_phong")
+        {
+            g_RenderEffectConfig.mLightModel = "brdf_disney";
+        }
 
         if (!GetTomlNode(config, "ssao", node))
         {
@@ -149,6 +156,10 @@ bool CreateBasicPipeline()
             return false;
         }
         g_RenderEffectConfig.mBloomOff = GetAs<bool>(node["disable-bloom"]);
+        if (g_RenderEffectConfig.mLightModel == "blinn_phong")
+        {
+            g_RenderEffectConfig.mBloomOff = true;
+        }
         g_RenderEffectConfig.mBloomMinValue =
             GetAs<float>(node["min-luminous"]);
         g_RenderEffectConfig.mBloomDownSamplingCount =
@@ -2472,9 +2483,17 @@ bool RSPass_Defered::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
+    std::string modelName = g_RenderEffectConfig.mLightModel;
+    std::transform(modelName.begin(), modelName.end(),
+        modelName.begin(), std::toupper);
+    D3D_SHADER_MACRO macro[] =
+    {
+        { modelName.c_str(), "1" },
+        { nullptr, nullptr }
+    };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\defered_pixel.hlsl",
-        "main", "ps_5_0", &shaderBlob);
+        "main", "ps_5_0", &shaderBlob, macro);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreatePixelShader(

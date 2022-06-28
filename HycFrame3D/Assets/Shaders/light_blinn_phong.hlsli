@@ -30,6 +30,12 @@ struct MATERIAL
     float mClearcoatGloss;
 };
 
+float Pow5(float _val)
+{
+    float v2 = _val * _val;
+    return v2 * v2 * _val;
+}
+
 // 线性衰减因子计算
 float CalcAttenuation(float d, float falloffStart, float falloffEnd)
 {
@@ -60,17 +66,17 @@ float3 BlinnPhong(float3 lightStr, float3 lightVec, float3 normal, float3 toEye,
 }
 
 // 平行光源计算
-float3 ComputeDirectionalLight(LIGHT l, MATERIAL mat, float3 normal, float3 toEye)
+float3 ComputeDirectionalLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 normal, float3 toEye)
 {
     float3 lightVec = -l.gDirection;
     float ndotl = max(dot(lightVec, normal), 0.0f);
-    float3 lightStr = l.gAlbedo * l.gTempIntensity * ndotl;
+    float3 lightStr = l.gAlbedo * ndotl;
 
-    return BlinnPhong(lightStr, lightVec, normal, toEye, mat);
+    return BlinnPhong(lightStr, lightVec, normal, toEye, mat) * baseColor;
 }
 
 // 点光源计算
-float3 ComputePointLight(LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye)
+float3 ComputePointLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye)
 {
     float3 lightVec = l.gPosition - pos;
     float d = length(lightVec);
@@ -82,15 +88,15 @@ float3 ComputePointLight(LIGHT l, MATERIAL mat, float3 pos, float3 normal, float
 
     lightVec /= d;
     float ndotl = max(dot(lightVec, normal), 0.0f);
-    float3 lightStr = l.gAlbedo * l.gTempIntensity * ndotl;
+    float3 lightStr = l.gAlbedo * ndotl;
     float att = CalcAttenuation(d, l.gFalloffStart, l.gFalloffEnd);
     lightStr *= att;
 
-    return BlinnPhong(lightStr, lightVec, normal, toEye, mat);
+    return BlinnPhong(lightStr, lightVec, normal, toEye, mat) * baseColor;
 }
 
 // 聚光灯光源计算
-float3 ComputeSpotLight(LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye)
+float3 ComputeSpotLight(float3 baseColor, LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3 toEye)
 {
     float3 lightVec = l.gPosition - pos;
     float d = length(lightVec);
@@ -102,13 +108,13 @@ float3 ComputeSpotLight(LIGHT l, MATERIAL mat, float3 pos, float3 normal, float3
 
     lightVec /= d;
     float ndotl = max(dot(lightVec, normal), 0.0f);
-    float3 lightStr = l.gAlbedo * l.gTempIntensity * ndotl;
+    float3 lightStr = l.gAlbedo * ndotl;
     float att = CalcAttenuation(d, l.gFalloffStart, l.gFalloffEnd);
     lightStr *= att;
     float spotFactor = pow(max(dot(-lightVec, l.gDirection), 0.0f), l.gSpotPower);
     lightStr *= spotFactor;
 
-    return BlinnPhong(lightStr, lightVec, normal, toEye, mat);
+    return BlinnPhong(lightStr, lightVec, normal, toEye, mat) * baseColor;
 }
 
 // 光源叠加结果计算
