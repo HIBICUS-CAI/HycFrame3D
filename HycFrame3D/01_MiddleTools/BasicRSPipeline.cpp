@@ -5850,29 +5850,35 @@ bool RSPass_Tonemapping::CreateViews()
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 
+    UINT width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
+    UINT height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
+    // TODO shader hasn't been supported for other sreen size
+    UINT expoSize = Tool::Align(width, 32) / 32 *
+        Tool::Align(height, 32) / 32;
+
     ZeroMemory(&bfrDesc, sizeof(bfrDesc));
     ZeroMemory(&initData, sizeof(initData));
     bfrDesc.Usage = D3D11_USAGE_DEFAULT;
     bfrDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
     bfrDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-    bfrDesc.ByteWidth = 920 * (UINT)sizeof(float);
+    bfrDesc.ByteWidth = expoSize * (UINT)sizeof(float);
     bfrDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bfrDesc.StructureByteStride = sizeof(float);
-    float* data = new float[920];
+    float* data = new float[expoSize];
     data[0] = 0.2f;
     initData.pSysMem = data;
     hr = Device()->CreateBuffer(&bfrDesc, &initData,
         &mAverageLuminBufferArray[0]);
-    if (FAILED(hr)) { delete data; return false; }
+    if (FAILED(hr)) { delete[] data; return false; }
     hr = Device()->CreateBuffer(&bfrDesc, &initData,
         &mAverageLuminBufferArray[1]);
-    if (FAILED(hr)) { delete data; return false; }
-    delete data;
+    if (FAILED(hr)) { delete[] data; return false; }
+    delete[] data;
 
     ZeroMemory(&srvDesc, sizeof(srvDesc));
     srvDesc.Format = DXGI_FORMAT_UNKNOWN;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-    srvDesc.Buffer.ElementWidth = 920;
+    srvDesc.Buffer.ElementWidth = expoSize;
     hr = Device()->CreateShaderResourceView(mAverageLuminBufferArray[0],
         &srvDesc, &mAverageLuminSrvArray[0]);
     if (FAILED(hr)) { return false; }
@@ -5883,7 +5889,7 @@ bool RSPass_Tonemapping::CreateViews()
     ZeroMemory(&uavDesc, sizeof(uavDesc));
     uavDesc.Format = DXGI_FORMAT_UNKNOWN;
     uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-    uavDesc.Buffer.NumElements = 920;
+    uavDesc.Buffer.NumElements = expoSize;
     hr = Device()->CreateUnorderedAccessView(mAverageLuminBufferArray[0],
         &uavDesc, &mAverageLuminUavArray[0]);
     if (FAILED(hr)) { return false; }
