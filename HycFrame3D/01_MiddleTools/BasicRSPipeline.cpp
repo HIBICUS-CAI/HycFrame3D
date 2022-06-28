@@ -72,6 +72,11 @@ struct RENDER_EFFECT_CONFIG
     float mBloomBlurSigma = 1.f;
     float mBloomIntensityFactor = 1.f;
     float mBloomLightPixelFactor = 0.02f;
+
+    float mExpoTransSpeed = 0.05f;
+    float mExpoMin = 0.01f;
+    float mExpoMax = 10.f;
+    float mExpoInvFactor = 25.f;
 };
 
 static RENDER_EFFECT_CONFIG g_RenderEffectConfig = {};
@@ -158,6 +163,15 @@ bool CreateBasicPipeline()
             GetAs<float>(node["intensity-factor"]);
         g_RenderEffectConfig.mBloomLightPixelFactor =
             GetAs<float>(node["light-source-factor"]);
+
+        if (!GetTomlNode(config, "exposure", node))
+        {
+            return false;
+        }
+        g_RenderEffectConfig.mExpoTransSpeed = GetAs<float>(node["trans-speed"]);
+        g_RenderEffectConfig.mExpoMin = GetAs<float>(node["min-value"]);
+        g_RenderEffectConfig.mExpoMax = GetAs<float>(node["max-value"]);
+        g_RenderEffectConfig.mExpoInvFactor = GetAs<float>(node["inverse-factor"]);
     }
 
     g_Root = GetRSRoot_DX11_Singleton();
@@ -5810,9 +5824,25 @@ bool RSPass_Tonemapping::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
+    std::string transSpdStr = "(" +
+        std::to_string(g_RenderEffectConfig.mExpoTransSpeed) + "f)";
+    std::string expoMinStr = "(" +
+        std::to_string(g_RenderEffectConfig.mExpoMin) + "f)";
+    std::string expoMaxStr = "(" +
+        std::to_string(g_RenderEffectConfig.mExpoMax) + "f)";
+    std::string invFactorStr = "(" +
+        std::to_string(g_RenderEffectConfig.mExpoInvFactor) + "f)";
+    D3D_SHADER_MACRO expoMacro[] =
+    {
+        "TRANS_SPEED", transSpdStr.c_str(),
+        "EXPO_MIN", expoMinStr.c_str(),
+        "EXPO_MAX", expoMaxStr.c_str(),
+        "INV_FACTOR", invFactorStr.c_str(),
+        nullptr, nullptr
+    };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\dynamic_exposure_compute.hlsl",
-        "main", "cs_5_0", &shaderBlob);
+        "main", "cs_5_0", &shaderBlob, expoMacro);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreateComputeShader(
