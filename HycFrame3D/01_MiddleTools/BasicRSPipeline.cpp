@@ -330,15 +330,20 @@ bool CreateBasicPipeline()
         bloomhdr->SetExecuateOrder(1);
     }
 
+    name = "fxaa-pass";
+    RSPass_FXAA* fxaa = new RSPass_FXAA(name, PASS_TYPE::COMPUTE, g_Root);
+    fxaa->SetExecuateOrder(3);
+
     name = "to-swapchain-pass";
     RSPass_ToSwapChain* toswap = new RSPass_ToSwapChain(
         name, PASS_TYPE::RENDER, g_Root);
-    toswap->SetExecuateOrder(3);
+    toswap->SetExecuateOrder(4);
 
     name = "post-processing-topic";
     RSTopic* post_procsssing_topic = new RSTopic(name);
     post_procsssing_topic->StartTopicAssembly();
     post_procsssing_topic->InsertPass(tonemap);
+    post_procsssing_topic->InsertPass(fxaa);
     post_procsssing_topic->InsertPass(toswap);
     if (!g_RenderEffectConfig.mBloomOff)
     {
@@ -6609,5 +6614,97 @@ bool RSPass_ToSwapChain::CreateSamplers()
         &sampDesc, &mLinearWrapSampler);
     if (FAILED(hr)) { return false; }
 
+    return true;
+}
+
+RSPass_FXAA::RSPass_FXAA(
+    std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
+    RSPass_Base(_name, _type, _root),
+    mFXAAShader(nullptr),
+    mHdrUav(nullptr),
+    mLinearBorderSampler(nullptr)
+{
+
+}
+
+RSPass_FXAA::RSPass_FXAA(const RSPass_FXAA& _source) :
+    RSPass_Base(_source),
+    mFXAAShader(_source.mFXAAShader),
+    mHdrUav(_source.mHdrUav),
+    mLinearBorderSampler(_source.mLinearBorderSampler)
+{
+    if (mHasBeenInited)
+    {
+        RS_ADDREF(mFXAAShader);
+        RS_ADDREF(mHdrUav);
+        RS_ADDREF(mLinearBorderSampler);
+    }
+}
+
+RSPass_FXAA::~RSPass_FXAA()
+{
+
+}
+
+RSPass_FXAA* RSPass_FXAA::ClonePass()
+{
+    return new RSPass_FXAA(*this);
+}
+
+bool RSPass_FXAA::InitPass()
+{
+    if (mHasBeenInited) { return true; }
+
+    if (!CreateShaders()) { return false; }
+    if (!CreateViews()) { return false; }
+    if (!CreateSamplers()) { return false; }
+
+    mHasBeenInited = true;
+
+    return true;
+}
+
+void RSPass_FXAA::ReleasePass()
+{
+    RS_RELEASE(mFXAAShader);
+    RS_RELEASE(mHdrUav);
+    RS_RELEASE(mLinearBorderSampler);
+}
+
+void RSPass_FXAA::ExecuatePass()
+{
+
+}
+
+bool RSPass_FXAA::CreateShaders()
+{
+    ID3DBlob* shaderBlob = nullptr;
+    HRESULT hr = S_OK;
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\fxaa_compute.hlsl",
+        "main", "cs_5_0", &shaderBlob);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateComputeShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mFXAAShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    return true;
+}
+
+bool RSPass_FXAA::CreateViews()
+{
+    mHdrUav = g_Root->Devices()->GetHighDynamicUav();
+
+    return true;
+}
+
+bool RSPass_FXAA::CreateSamplers()
+{
     return true;
 }

@@ -844,6 +844,34 @@ private:
     std::array<ID3D11UnorderedAccessView*, 8> mUpSampleUavArray;
 };
 
+class RSPass_FXAA :public RSPass_Base
+{
+public:
+    RSPass_FXAA(std::string& _name, PASS_TYPE _type,
+        class RSRoot_DX11* _root);
+    RSPass_FXAA(const RSPass_FXAA& _source);
+    virtual ~RSPass_FXAA();
+
+public:
+    virtual RSPass_FXAA* ClonePass() override;
+
+    virtual bool InitPass();
+
+    virtual void ReleasePass();
+
+    virtual void ExecuatePass();
+
+private:
+    bool CreateShaders();
+    bool CreateViews();
+    bool CreateSamplers();
+
+private:
+    ID3D11ComputeShader* mFXAAShader;
+    ID3D11UnorderedAccessView* mHdrUav;
+    ID3D11SamplerState* mLinearBorderSampler;
+};
+
 class RSPass_ToSwapChain :public RSPass_Base
 {
 public:

@@ -31,26 +31,6 @@
             }
         },
         {
-            "mesh-name": "rubber-box",
-            "material-info": {
-                "major-material": "gloss-porcelain",
-                "minor-material": "rough-rubber",
-                "interpolate-factor": 1.0
-            },
-            "force-diffuse": "tile.dds",
-            "force-normal": "tile_nmap.dds",
-            "load-mode": "program-box",
-            "load-info": {
-                "tex-file": "sand.jpg",
-                "box-size": [
-                    15.0,
-                    15.0,
-                    15.0
-                ],
-                "divide": 0
-            }
-        },
-        {
             "mesh-name": "sand-grid",
             "material-info": {
                 "major-material": "rough-soil",
@@ -299,7 +279,7 @@
                     "init-position": [
                         0.0,
                         90.0,
-                        0.0
+                        -90.0
                     ],
                     "init-angle": [
                         0.0,
@@ -326,7 +306,7 @@
                     "direction": [
                         0.0,
                         -1.0,
-                        0.0
+                        1.0
                     ],
                     "fall-off-start-end": [
                         5.0,
@@ -335,7 +315,7 @@
                     "spot-power": 2.0,
                     "cam-up-vec": [
                         0.0,
-                        0.0,
+                        1.0,
                         1.0
                     ]
                 }
@@ -572,70 +552,6 @@
                     "type": "animate",
                     "init-animation": "Take 001",
                     "speed-factor": 1.0
-                }
-            ]
-        },
-        {
-            "actor-name": "sp-box-actor",
-            "components": [
-                {
-                    "type": "transform",
-                    "init-position": [
-                        0.0,
-                        0.0,
-                        -50.0
-                    ],
-                    "init-angle": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "init-scale": [
-                        4.0,
-                        4.0,
-                        4.0
-                    ]
-                },
-                {
-                    "type": "mesh",
-                    "meshes": [
-                        {
-                            "mesh-name": "rubber-box",
-                            "mesh-offset": null
-                        },
-                        {
-                            "mesh-name": "rubber-box",
-                            "mesh-offset": [
-                                -15.0,
-                                0.0,
-                                15.0
-                            ]
-                        },
-                        {
-                            "mesh-name": "rubber-box",
-                            "mesh-offset": [
-                                15.0,
-                                0.0,
-                                15.0
-                            ]
-                        },
-                        {
-                            "mesh-name": "rubber-box",
-                            "mesh-offset": [
-                                0.0,
-                                15.0,
-                                15.0
-                            ]
-                        },
-                        {
-                            "mesh-name": "rubber-box",
-                            "mesh-offset": [
-                                0.0,
-                                -15.0,
-                                15.0
-                            ]
-                        }
-                    ]
                 }
             ]
         },
