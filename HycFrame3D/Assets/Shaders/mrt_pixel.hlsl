@@ -90,7 +90,7 @@ PS_OUTPUT main(VS_OUTPUT _input)
     uint geoMatData = PackFourUint8ToUint32(matData.x, matData.y, matData.z, matData.w);
     
     uint4 emissInten = (uint4)0;
-    if (_input.UsePBRTex.w == 1)
+    if (_input.UsePBRTex.w == 1 && _input.EmissiveIntensity != 0.f)
     {
         float3 emissive = gEmissive.Sample(gLinearSampler, _input.TexCoordL);
         float emissIntensityFloat = _input.EmissiveIntensity;

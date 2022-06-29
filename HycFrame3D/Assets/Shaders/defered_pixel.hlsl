@@ -215,7 +215,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
 
     if (emissAbout.x != 0 && emissAbout.y != 0 && emissAbout.z != 0 && emissAbout.w != 0)
     {
-        emissive = emissIntensity.rgb * emissIntensity.a * EMISSIVE_INTENSITY_MAX;
+        emissive = sRGBToACES(emissIntensity.rgb) * emissIntensity.a * EMISSIVE_INTENSITY_MAX;
     }
 
     float4 directL = (float4)0.0f;
