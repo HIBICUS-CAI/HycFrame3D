@@ -32,6 +32,11 @@ public:
     ID3D11RenderTargetView* GetSwapChainRtv() const { return mSwapChainRtv; }
     ID3D11ShaderResourceView* GetHighDynamicSrv() const { return mHighDynamicSrv; }
     ID3D11UnorderedAccessView* GetHighDynamicUav() const { return mHighDynamicUav; }
+    void CopyHighDynamicTexture(ID3D11DeviceContext* _context,
+        ID3D11Resource* _dstResource)
+    {
+        _context->CopyResource(_dstResource, mHighDynamicTexture);
+    }
 
     bool GetConcurrentCreateSupport() const;
     bool GetCommandListSupport() const;

@@ -6622,6 +6622,8 @@ RSPass_FXAA::RSPass_FXAA(
     RSPass_Base(_name, _type, _root),
     mFXAAShader(nullptr),
     mHdrUav(nullptr),
+    mCopyTex(nullptr),
+    mCopySrv(nullptr),
     mLinearBorderSampler(nullptr)
 {
 
@@ -6631,13 +6633,16 @@ RSPass_FXAA::RSPass_FXAA(const RSPass_FXAA& _source) :
     RSPass_Base(_source),
     mFXAAShader(_source.mFXAAShader),
     mHdrUav(_source.mHdrUav),
+    mCopyTex(_source.mCopyTex),
+    mCopySrv(_source.mCopySrv),
     mLinearBorderSampler(_source.mLinearBorderSampler)
 {
     if (mHasBeenInited)
     {
         RS_ADDREF(mFXAAShader);
-        RS_ADDREF(mHdrUav);
         RS_ADDREF(mLinearBorderSampler);
+        RS_ADDREF(mCopyTex);
+        RS_ADDREF(mCopySrv);
     }
 }
 
@@ -6667,13 +6672,31 @@ bool RSPass_FXAA::InitPass()
 void RSPass_FXAA::ReleasePass()
 {
     RS_RELEASE(mFXAAShader);
-    RS_RELEASE(mHdrUav);
     RS_RELEASE(mLinearBorderSampler);
+    RS_RELEASE(mCopyTex);
+    RS_RELEASE(mCopySrv);
 }
 
 void RSPass_FXAA::ExecuatePass()
 {
+    UINT dispatchX = g_Root->Devices()->GetCurrWndWidth();
+    UINT dispatchY = g_Root->Devices()->GetCurrWndHeight();
+    dispatchX = Tool::Align(dispatchX, 16) / 16;
+    dispatchY = Tool::Align(dispatchY, 16) / 16;
 
+    g_Root->Devices()->CopyHighDynamicTexture(STContext(), mCopyTex);
+
+    STContext()->CSSetShader(mFXAAShader, nullptr, 0);
+    STContext()->CSSetSamplers(0, 1, &mLinearBorderSampler);
+    STContext()->CSSetShaderResources(0, 1, &mCopySrv);
+    STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
+
+    STContext()->Dispatch(dispatchX, dispatchY, 1);
+
+    static ID3D11ShaderResourceView* nullSrv = nullptr;
+    static ID3D11UnorderedAccessView* nullUav = nullptr;
+    STContext()->CSSetShaderResources(0, 1, &nullSrv);
+    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
 }
 
 bool RSPass_FXAA::CreateShaders()
@@ -6701,10 +6724,50 @@ bool RSPass_FXAA::CreateViews()
 {
     mHdrUav = g_Root->Devices()->GetHighDynamicUav();
 
+    HRESULT hr = S_OK;
+    D3D11_TEXTURE2D_DESC texDesc = {};
+    D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+    ZeroMemory(&texDesc, sizeof(texDesc));
+    ZeroMemory(&srvDesc, sizeof(srvDesc));
+
+    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
+    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
+    texDesc.MipLevels = 1;
+    texDesc.ArraySize = 1;
+    texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    texDesc.SampleDesc.Count = 1;
+    texDesc.SampleDesc.Quality = 0;
+    texDesc.Usage = D3D11_USAGE_DEFAULT;
+    texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+    texDesc.CPUAccessFlags = 0;
+    texDesc.MiscFlags = 0;
+    hr = Device()->CreateTexture2D(&texDesc, nullptr, &mCopyTex);
+    if (FAILED(hr)) { return false; }
+
+    srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    srvDesc.Texture2D.MostDetailedMip = 0;
+    srvDesc.Texture2D.MipLevels = 1;
+    hr = Device()->CreateShaderResourceView(mCopyTex, &srvDesc, &mCopySrv);
+    if (FAILED(hr)) { return false; }
+
     return true;
 }
 
 bool RSPass_FXAA::CreateSamplers()
 {
+    HRESULT hr = S_OK;
+    D3D11_SAMPLER_DESC sampDesc = {};
+    ZeroMemory(&sampDesc, sizeof(sampDesc));
+    sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
+    sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
+    sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
+    sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    sampDesc.MinLOD = 0;
+    sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    hr = Device()->CreateSamplerState(&sampDesc, &mLinearBorderSampler);
+    if (FAILED(hr)) { return false; }
+
     return true;
 }

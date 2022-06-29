@@ -869,6 +869,8 @@ private:
 private:
     ID3D11ComputeShader* mFXAAShader;
     ID3D11UnorderedAccessView* mHdrUav;
+    ID3D11Texture2D* mCopyTex;
+    ID3D11ShaderResourceView* mCopySrv;
     ID3D11SamplerState* mLinearBorderSampler;
 };
 
