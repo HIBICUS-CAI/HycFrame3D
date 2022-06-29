@@ -84,6 +84,7 @@ void main(int3 _groupId : SV_GroupThreadID)
         float averageLumin = value / 5.f + 0.001f;
         float preExpo = PreExposure[0];     // read pre-frame exposure
         float currExpo = lerp(preExpo, 1.f / INV_FACTOR / averageLumin, TRANS_SPEED);
+        if (isnan(currExpo)) { currExpo = preExpo; }
         currExpo = clamp(currExpo, EXPO_MIN, EXPO_MAX);
         CurrentExposure[0] = currExpo;      // store final exposure at index 0
         CurrentExposure[1] = averageLumin;  // store average luminance at index 1
