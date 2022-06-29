@@ -9,7 +9,7 @@
 AMeshComponent::AMeshComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mSubMeshesName({}),
-    mMeshesName({}), mOffsetPosition({})
+    mMeshesName({}), mOffsetPosition({}), mEmissiveIntensity(0.f)
 {
 
 }
@@ -17,7 +17,7 @@ AMeshComponent::AMeshComponent(std::string&& _compName,
 AMeshComponent::AMeshComponent(std::string& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner), mSubMeshesName({}),
-    mMeshesName({}), mOffsetPosition({})
+    mMeshesName({}), mOffsetPosition({}), mEmissiveIntensity(0.f)
 {
 
 }
@@ -92,6 +92,17 @@ void AMeshComponent::AddMeshInfo(std::string& _meshName, DirectX::XMFLOAT3 _offs
     mOffsetPosition.push_back(_offset);
 }
 
+void AMeshComponent::SetEmissiveIntensity(float _intensity)
+{
+    mEmissiveIntensity = _intensity;
+    if (mEmissiveIntensity > 255.f) { mEmissiveIntensity = 255.f; }
+}
+
+float AMeshComponent::GetEmissiveIntensity()
+{
+    return mEmissiveIntensity;
+}
+
 bool AMeshComponent::BindInstanceToAssetsPool(std::string& _meshName)
 {
     SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
@@ -106,6 +117,10 @@ bool AMeshComponent::BindInstanceToAssetsPool(std::string& _meshName)
     else { id.mCustomizedData1.y = -1.f; }
     if (mesh->mMeshData.mTextures[3] != "") { id.mCustomizedData1.z = 1.f; }
     else { id.mCustomizedData1.z = -1.f; }
+    if (mesh->mMeshData.mTextures[4] != "") { id.mCustomizedData1.w = 1.f; }
+    else { id.mCustomizedData1.w = -1.f; }
+    if (mesh->mMeshData.mTextures[4] != "") { id.mCustomizedData2.x = mEmissiveIntensity; }
+    else { id.mCustomizedData2.x = 0.f; }
 
     mesh->mInstanceMap.insert({ GetCompName(),id });
 
@@ -151,6 +166,8 @@ void AMeshComponent::SyncTransformDataToInstance()
             mat = DirectX::XMMatrixMultiply(mat,
                 DirectX::XMMatrixTranslation(world.x, world.y, world.z));
             DirectX::XMStoreFloat4x4(&(ins_data.mWorldMat), mat);
+
+            ins_data.mCustomizedData2.x = mEmissiveIntensity;
 
             ++index;
         }

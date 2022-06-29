@@ -19,7 +19,8 @@ struct VS_OUTPUT
     float3 NormalW : NORMAL;
     float3 TangentW : TANGENT;
     float2 TexCoordL : TEXCOORD;
-    uint3 UsePBRTex : BLENDINDICES;
+    uint4 UsePBRTex : BLENDINDICES;
+    float EmissiveIntensity : BLENDINDICES4;
 };
 
 struct VIEWPROJ
@@ -125,6 +126,15 @@ VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
     else
     {
         _out.UsePBRTex.z = 0;
+    }
+    if (gInstances[_instanceID].gCustomizedData1.w > 0.0f)
+    {
+        _out.UsePBRTex.w = 1;
+        _out.EmissiveIntensity = gInstances[_instanceID].gCustomizedData2.x;
+    }
+    else
+    {
+        _out.UsePBRTex.w = 0;
     }
 
     return _out;

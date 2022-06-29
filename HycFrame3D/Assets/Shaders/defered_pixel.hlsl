@@ -196,6 +196,9 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     float4 albedoAndMatFactor = Uint8ToFloat_V4(UnpackUint32ToFourUint8(geoData.y));
     uint4 matAbout = UnpackUint32ToFourUint8(geoData.z);
     float2 metAndRou = Uint8ToFloat_V2(matAbout.xy);
+    uint4 emissAbout = UnpackUint32ToFourUint8(geoData.w);
+    float4 emissIntensity = Uint8ToFloat_V4(emissAbout);
+    float3 emissive = (float3)0.f;
     float3 toEye = normalize(gLightInfo[0].gCameraPos - positionW);
     float4 diffuse = float4(albedoAndMatFactor.rgb, 1.f);
     float access = gSsao.SampleLevel(gSamLinearWrap, _in.TexCoordL, 0.0f).r;
@@ -209,6 +212,11 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
     float3 envDiffuse = CalcEnvDiffuse(normalW, mat, toEye) * gAmbient[0].gAmbientFactor.rgb;
     float4 ambientL = float4(envDiffuse * access, 0.f);
     // ambientL = gAmbient[0].gAmbient * albedo * access;
+
+    if (emissAbout.x != 0 && emissAbout.y != 0 && emissAbout.z != 0 && emissAbout.w != 0)
+    {
+        emissive = emissIntensity.rgb * emissIntensity.a * EMISSIVE_INTENSITY_MAX;
+    }
 
     float4 directL = (float4)0.0f;
     float4 tempL = (float4)0.0f;
@@ -315,7 +323,7 @@ float4 main(VS_OUTPUT _in) : SV_TARGET
         float4(CalcEnvSpecular(positionW, normalW, toEye, mat) * diffuse.rgb, 0.f) *
         gAmbient[0].gAmbientFactor;
 
-    float4 litColor = ambientL * diffuse + directL;
+    float4 litColor = ambientL * diffuse + directL + float4(emissive, 0.f);
     litColor.a = diffuse.a;
 
     return litColor;

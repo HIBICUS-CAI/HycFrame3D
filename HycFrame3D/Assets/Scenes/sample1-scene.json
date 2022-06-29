@@ -133,6 +133,7 @@
             "mesh-name": "fenghuang",
             "load-mode": "model-file",
             "force-diffuse": "phoenix_a.png",
+            "force-emissive": "phoenix_emissive_a.png",
             "material-info": {
                 "major-material": "gloss-plastic",
                 "minor-material": "rough-plastic",
@@ -148,6 +149,7 @@
             "mesh-name": "fenghuang",
             "load-mode": "model-file",
             "force-diffuse": "phoenix_b.png",
+            "force-emissive": "phoenix_emissive_b.png",
             "material-info": {
                 "major-material": "gloss-plastic",
                 "minor-material": "rough-plastic",
@@ -546,7 +548,8 @@
                             "mesh-name": "fenghuang",
                             "mesh-offset": null
                         }
-                    ]
+                    ],
+                    "emissive-intensity": 3.0
                 },
                 {
                     "type": "animate",

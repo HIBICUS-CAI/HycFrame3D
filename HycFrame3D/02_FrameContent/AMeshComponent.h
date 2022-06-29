@@ -31,6 +31,9 @@ public:
         DirectX::XMFLOAT3 _offset = { 0.f,0.f,0.f });
     void AddMeshInfo(std::string& _meshName,
         DirectX::XMFLOAT3 _offset = { 0.f,0.f,0.f });
+    
+    void SetEmissiveIntensity(float _intensity);
+    float GetEmissiveIntensity();
 
 private:
     bool BindInstanceToAssetsPool(std::string& _meshName);
@@ -41,4 +44,5 @@ private:
     std::vector<std::string> mMeshesName;
     std::vector<std::string> mSubMeshesName;
     std::vector<DirectX::XMFLOAT3> mOffsetPosition;
+    float mEmissiveIntensity;
 };

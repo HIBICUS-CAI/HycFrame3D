@@ -10,7 +10,8 @@ struct VS_OUTPUT
     float3 NormalW : NORMAL;
     float3 TangentW : TANGENT;
     float2 TexCoordL : TEXCOORD;
-    uint3 UsePBRTex : BLENDINDICES;
+    uint4 UsePBRTex : BLENDINDICES;
+    float EmissiveIntensity : BLENDINDICES4;
 };
 
 struct PS_OUTPUT
@@ -24,6 +25,7 @@ Texture2D gAlbedo : register(t1);
 Texture2D gBumped : register(t2);
 Texture2D gMetallic : register(t3);
 Texture2D gRoughness : register(t4);
+Texture2D gEmissive : register(t5);
 
 SamplerState gLinearSampler : register(s0);
 
@@ -87,11 +89,17 @@ PS_OUTPUT main(VS_OUTPUT _input)
         majorMatIndex, minorMatIndex);
     uint geoMatData = PackFourUint8ToUint32(matData.x, matData.y, matData.z, matData.w);
     
-    uint geoEmiss = PackFourUint8ToUint32(0, 0, 0, 0);
-    uint3 norU;
-    norU.x = FloatToUint16_S(_input.NormalW.x);
-    norU.y = FloatToUint16_S(_input.NormalW.y);
-    norU.z = FloatToUint16_S(_input.NormalW.z);
+    uint4 emissInten = (uint4)0;
+    if (_input.UsePBRTex.w == 1)
+    {
+        float3 emissive = gEmissive.Sample(gLinearSampler, _input.TexCoordL);
+        float emissIntensityFloat = _input.EmissiveIntensity;
+        float emissIntensityRatio = emissIntensityFloat / EMISSIVE_INTENSITY_MAX;
+        emissIntensityRatio = saturate(emissIntensityRatio);
+        emissInten = FloatToUint8_V4(float4(emissive.rgb, emissIntensityRatio));
+    }
+
+    uint geoEmiss = PackFourUint8ToUint32(emissInten.x, emissInten.y, emissInten.z, emissInten.w);
 
     PS_OUTPUT _out = (PS_OUTPUT)0;
     _out.GeoData = uint4(geoNormalData, geoAlbeAndFactor, geoMatData, geoEmiss);

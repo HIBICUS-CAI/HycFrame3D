@@ -130,3 +130,5 @@ float3 GetNormalFromGeoValue(uint _v)
     float2 unpack = Uint16ToFloat_V2(UnpackUint32ToTwoUint16(_v));
     return DecodeNormalizeVec(unpack);
 }
+
+#define EMISSIVE_INTENSITY_MAX (255.f)

@@ -144,6 +144,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
         std::string forceNormal = "";
         std::string forceMetal = "";
         std::string forceRough = "";
+        std::string forceEmiss = "";
         std::string loadMode = "";
         RS_SUBMESH_DATA meshData = {};
         static SUBMESH_BONES bonesData = {};
@@ -220,6 +221,13 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
             if (roughNode && !roughNode->IsNull())
             {
                 forceRough = roughNode->GetString();
+            }
+
+            JsonNode emissNode = GetJsonNode(_json,
+                jsonPath + "/force-emissive");
+            if (emissNode && !emissNode->IsNull())
+            {
+                forceEmiss = emissNode->GetString();
             }
 
             loadMode = GetJsonNode(_json,
@@ -360,6 +368,11 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
             {
                 AddTextureToSubMesh(&meshData, forceRough,
                     MESH_TEXTURE_TYPE::ROUGHNESS);
+            }
+            if (forceEmiss != "")
+            {
+                AddTextureToSubMesh(&meshData, forceEmiss,
+                    MESH_TEXTURE_TYPE::EMISSIVE);
             }
 
             if (!meshData.mTextures.size())
@@ -641,6 +654,13 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
                 };
             }
             amc.AddMeshInfo(meshName, offset);
+        }
+
+        JsonNode intensityNode = GetJsonNode(_json,
+            _jsonPath + "/emissive-intensity");
+        if (intensityNode && intensityNode->IsFloat())
+        {
+            amc.SetEmissiveIntensity(GetAs<float>(intensityNode));
         }
 
         COMP_TYPE type = COMP_TYPE::A_MESH;

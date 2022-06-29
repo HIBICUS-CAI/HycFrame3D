@@ -214,6 +214,7 @@ enum class MESH_TEXTURE_TYPE
     NORMAL,
     METALLIC,
     ROUGHNESS,
+    EMISSIVE,
 
     SIZE
 };
