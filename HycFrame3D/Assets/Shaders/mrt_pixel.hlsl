@@ -41,6 +41,9 @@ float3 ClacBumpedNormal(float3 _normalMapSample,
 
 PS_OUTPUT main(VS_OUTPUT _input)
 {
+    float4 albedoAndAlpha = gAlbedo.Sample(gLinearSampler,_input.TexCoordL);
+    clip(albedoAndAlpha.a - 0.1f);
+
     float3 unitNormal = _input.NormalW;
     
     float3 tangent = normalize(_input.TangentW);
@@ -60,9 +63,7 @@ PS_OUTPUT main(VS_OUTPUT _input)
     uint2 encodeUNormal = FloatToUint16_V2(encodeNormal);
     uint geoNormalData = PackTwoUint16ToUint32(encodeUNormal.x, encodeUNormal.y);
     
-    uint4 alFctUint = FloatToUint8_V4(
-        float4(gAlbedo.Sample(gLinearSampler,_input.TexCoordL).rgb,
-        asfloat(_input.MaterialIndexFactor.z)));
+    uint4 alFctUint = FloatToUint8_V4(float4(albedoAndAlpha.rgb, asfloat(_input.MaterialIndexFactor.z)));
     uint geoAlbeAndFactor = PackFourUint8ToUint32(alFctUint.x, alFctUint.y, alFctUint.z, alFctUint.w);
     
     uint majorMatIndex = _input.MaterialIndexFactor.x;

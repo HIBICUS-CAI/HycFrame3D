@@ -132,11 +132,11 @@
         {
             "mesh-name": "fenghuang",
             "load-mode": "model-file",
-            "force-diffuse": "gold.png",
+            "force-diffuse": "phoenix_a.png",
             "material-info": {
-                "major-material": "gloss-gold",
-                "minor-material": "rough-gold",
-                "interpolate-factor": 0.0
+                "major-material": "gloss-plastic",
+                "minor-material": "rough-plastic",
+                "interpolate-factor": 0.6
             },
             "load-info": {
                 "model-file": "fly_ani.fbx.meshdata",
@@ -147,11 +147,11 @@
         {
             "mesh-name": "fenghuang",
             "load-mode": "model-file",
-            "force-diffuse": "gold.png",
+            "force-diffuse": "phoenix_b.png",
             "material-info": {
-                "major-material": "gloss-gold",
-                "minor-material": "rough-gold",
-                "interpolate-factor": 0.0
+                "major-material": "gloss-plastic",
+                "minor-material": "rough-plastic",
+                "interpolate-factor": 0.6
             },
             "load-info": {
                 "model-file": "fly_ani.fbx.meshdata",
