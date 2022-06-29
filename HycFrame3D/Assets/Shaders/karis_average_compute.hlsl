@@ -10,6 +10,8 @@
 #define WEIGHT_ARRAY static const float gBlurWeight[] = { 0.0545f, 0.2442f, 0.4026f, 0.2442f, 0.0545f }
 #endif
 
+#include "color_utility.hlsli"
+
 cbuffer BLUR_INFO : register(b0)
 {
     uint gTexWidth;
@@ -46,8 +48,9 @@ void HMain(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThrea
     for (int i = -KERNEL_HALF; i <= KERNEL_HALF; ++i)
     {
         int texIndex = _groupId.x + KERNEL_HALF + i;
-        blur += gBlurWeight[i + KERNEL_HALF] * gColorCache[texIndex];
-        totalWeight += gBlurWeight[i + KERNEL_HALF];
+        float luminWeight = 1.f / (1.f + RGBToLuminance(gColorCache[texIndex].rgb));
+        blur += gBlurWeight[i + KERNEL_HALF] * gColorCache[texIndex] * luminWeight;
+        totalWeight += gBlurWeight[i + KERNEL_HALF] * luminWeight;
     }
 
     blur /= totalWeight;
@@ -78,8 +81,9 @@ void VMain(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThrea
     for (int i = -KERNEL_HALF; i <= KERNEL_HALF; ++i)
     {
         int texIndex = _groupId.y + KERNEL_HALF + i;
-        blur += gBlurWeight[i + KERNEL_HALF] * gColorCache[texIndex];
-        totalWeight += gBlurWeight[i + KERNEL_HALF];
+        float luminWeight = 1.f / (1.f + RGBToLuminance(gColorCache[texIndex].rgb));
+        blur += gBlurWeight[i + KERNEL_HALF] * gColorCache[texIndex] * luminWeight;
+        totalWeight += gBlurWeight[i + KERNEL_HALF] * luminWeight;
     }
 
     blur /= totalWeight;

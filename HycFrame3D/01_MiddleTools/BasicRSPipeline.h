@@ -827,6 +827,8 @@ private:
 
 private:
     ID3D11ComputeShader* mFilterPixelShader;
+    ID3D11ComputeShader* mKABlurHoriShader;
+    ID3D11ComputeShader* mKABlurVertShader;
     ID3D11ComputeShader* mBlurHoriShader;
     ID3D11ComputeShader* mBlurVertShader;
     ID3D11ComputeShader* mUpSampleShader;

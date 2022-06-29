@@ -5999,6 +5999,8 @@ RSPass_BloomHdr::RSPass_BloomHdr(
     mUpSampleShader(nullptr),
     mBlurHoriShader(nullptr),
     mBlurVertShader(nullptr),
+    mKABlurHoriShader(nullptr),
+    mKABlurVertShader(nullptr),
     mBlendShader(nullptr),
     mBlurConstBuffer(nullptr),
     mIntensityConstBuffer(nullptr),
@@ -6017,6 +6019,8 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
     mUpSampleShader(_source.mUpSampleShader),
     mBlurHoriShader(_source.mBlurHoriShader),
     mBlurVertShader(_source.mBlurVertShader),
+    mKABlurHoriShader(_source.mKABlurHoriShader),
+    mKABlurVertShader(_source.mKABlurVertShader),
     mFilterPixelShader(_source.mFilterPixelShader),
     mBlendShader(_source.mBlendShader),
     mBlurConstBuffer(_source.mBlurConstBuffer),
@@ -6036,6 +6040,8 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
         RS_ADDREF(mUpSampleShader);
         RS_ADDREF(mBlurHoriShader);
         RS_ADDREF(mBlurVertShader);
+        RS_ADDREF(mKABlurHoriShader);
+        RS_ADDREF(mKABlurVertShader);
         RS_ADDREF(mFilterPixelShader);
         RS_ADDREF(mBlendShader);
         RS_ADDREF(mBlurConstBuffer);
@@ -6080,6 +6086,8 @@ void RSPass_BloomHdr::ReleasePass()
     RS_RELEASE(mUpSampleShader);
     RS_RELEASE(mBlurHoriShader);
     RS_RELEASE(mBlurVertShader);
+    RS_RELEASE(mKABlurHoriShader);
+    RS_RELEASE(mKABlurVertShader);
     RS_RELEASE(mBlendShader);
     RS_RELEASE(mBlurConstBuffer);
     RS_RELEASE(mIntensityConstBuffer);
@@ -6119,7 +6127,38 @@ void RSPass_BloomHdr::ExecuatePass()
     static const size_t UP_COUNT = DOWN_COUNT - 1;
     static const size_t BLUR_COUNT = g_RenderEffectConfig.mBloomBlurCount;
 
-    for (size_t i = 0; i < DOWN_COUNT; i++)
+    {
+        auto index = 1;
+        UINT blurTexWidth = width / (1 << index);
+        UINT blurTexHeight = height / (1 << index);
+        STContext()->Map(mBlurConstBuffer, 0,
+            D3D11_MAP_WRITE_DISCARD, 0, &msr);
+        BLM_BLUR_INFO* info = (BLM_BLUR_INFO*)msr.pData;
+        info->mTexWidth = blurTexWidth;
+        info->mTexHeight = blurTexHeight;
+        STContext()->Unmap(mBlurConstBuffer, 0);
+
+        STContext()->CSSetUnorderedAccessViews(0, 1,
+            &mNeedBloomUavArray[index], nullptr);
+        STContext()->CSSetConstantBuffers(0, 1, &mBlurConstBuffer);
+
+        for (size_t j = 0; j < BLUR_COUNT; j++)
+        {
+            STContext()->CSSetShader(mKABlurHoriShader,
+                nullptr, 0);
+            dispatchX = Tool::Align(blurTexWidth, 256) / 256;
+            dispatchY = blurTexHeight;
+            STContext()->Dispatch(dispatchX, dispatchY, 1);
+
+            STContext()->CSSetShader(mKABlurVertShader,
+                nullptr, 0);
+            dispatchX = blurTexWidth;
+            dispatchY = Tool::Align(blurTexHeight, 256) / 256;
+            STContext()->Dispatch(dispatchX, dispatchY, 1);
+        }
+    }
+
+    for (size_t i = 1; i < DOWN_COUNT; i++)
     {
         auto index = i + 1;
         UINT blurTexWidth = width / (1 << index);
@@ -6275,6 +6314,32 @@ bool RSPass_BloomHdr::CreateShaders()
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mBlurVertShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\karis_average_compute.hlsl",
+        "HMain", "cs_5_0", &shaderBlob, blurMacro);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateComputeShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mKABlurHoriShader);
+    shaderBlob->Release();
+    shaderBlob = nullptr;
+    if (FAILED(hr)) { return false; }
+
+    hr = Tool::CompileShaderFromFile(
+        L".\\Assets\\Shaders\\karis_average_compute.hlsl",
+        "VMain", "cs_5_0", &shaderBlob, blurMacro);
+    if (FAILED(hr)) { return false; }
+
+    hr = Device()->CreateComputeShader(
+        shaderBlob->GetBufferPointer(),
+        shaderBlob->GetBufferSize(),
+        nullptr, &mKABlurVertShader);
     shaderBlob->Release();
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }

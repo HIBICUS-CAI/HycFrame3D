@@ -73,7 +73,7 @@ gauss-kernel-size = 5
 gauss-sigma = 1.0
 # type : float
 # this factor affects on final bloom intensity.
-intensity-factor = 1.0
+intensity-factor = 1.5
 # type : float, valid range : [0.0, 1.0]
 # this factor affects on attenuation about each point light.
 light-source-factor = 0.02
