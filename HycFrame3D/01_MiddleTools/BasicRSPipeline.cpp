@@ -80,6 +80,12 @@ struct RENDER_EFFECT_CONFIG
     float mExpoMin = 0.01f;
     float mExpoMax = 10.f;
     float mExpoInvFactor = 25.f;
+
+    bool mFXAAOff = false;
+    float mFXAAThreshould = 0.125f;
+    float mFXAAMinThreshould = 0.0625f;
+    UINT mFXAASearchStep = 10;
+    UINT mFXAAGuess = 8;
 };
 
 static RENDER_EFFECT_CONFIG g_RenderEffectConfig = {};
@@ -187,6 +193,20 @@ bool CreateBasicPipeline()
         g_RenderEffectConfig.mExpoMin = GetAs<float>(node["min-value"]);
         g_RenderEffectConfig.mExpoMax = GetAs<float>(node["max-value"]);
         g_RenderEffectConfig.mExpoInvFactor = GetAs<float>(node["inverse-factor"]);
+
+        if (!GetTomlNode(config, "fxaa", node))
+        {
+            return false;
+        }
+        g_RenderEffectConfig.mFXAAOff = GetAs<bool>(node["disable-fxaa"]);
+        g_RenderEffectConfig.mFXAAThreshould = GetAs<float>(node["threshold"]);
+        g_RenderEffectConfig.mFXAAMinThreshould = GetAs<float>(node["min-threshold"]);
+        g_RenderEffectConfig.mFXAASearchStep = GetAs<uint>(node["search-step"]);
+        g_RenderEffectConfig.mFXAAGuess = GetAs<uint>(node["edge-guess"]);
+        if (!g_RenderEffectConfig.mFXAASearchStep)
+        {
+            g_RenderEffectConfig.mFXAAOff = true;
+        }
     }
 
     g_Root = GetRSRoot_DX11_Singleton();
@@ -347,7 +367,10 @@ bool CreateBasicPipeline()
     RSTopic* post_procsssing_topic = new RSTopic(name);
     post_procsssing_topic->StartTopicAssembly();
     post_procsssing_topic->InsertPass(tonemap);
-    post_procsssing_topic->InsertPass(fxaa);
+    if (!g_RenderEffectConfig.mFXAAOff)
+    {
+        post_procsssing_topic->InsertPass(fxaa);
+    }
     post_procsssing_topic->InsertPass(toswap);
     if (!g_RenderEffectConfig.mBloomOff)
     {
@@ -6720,9 +6743,25 @@ bool RSPass_FXAA::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
+    std::string threshouldStr = "(";
+    std::string minThreshouldStr = "(";
+    std::string searchStepStr = "(";
+    std::string borderGuessStr = "(";
+    threshouldStr += std::to_string(g_RenderEffectConfig.mFXAAThreshould) + "f)";
+    minThreshouldStr += std::to_string(g_RenderEffectConfig.mFXAAMinThreshould) + "f)";
+    searchStepStr += std::to_string(g_RenderEffectConfig.mFXAASearchStep) + ")";
+    borderGuessStr += std::to_string(g_RenderEffectConfig.mFXAAGuess) + ")";
+    D3D_SHADER_MACRO macro[] =
+    {
+        { "EDGE_THRESHOLD", threshouldStr.c_str() },
+        { "MIN_EDGE_THRESHOLD", minThreshouldStr.c_str() },
+        { "EDGE_SEARCH_STEP", searchStepStr.c_str() },
+        { "EDGE_GUESS", borderGuessStr.c_str() },
+        { nullptr, nullptr }
+    };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\fxaa_compute.hlsl",
-        "main", "cs_5_0", &shaderBlob);
+        "main", "cs_5_0", &shaderBlob, macro);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreateComputeShader(

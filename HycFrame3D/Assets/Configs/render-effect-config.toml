@@ -103,3 +103,25 @@ max-value = 10.0
 #   scene goes brighter when this value get samller,
 #   as (1 / "inverse-factor" / lumin).
 inverse-factor = 25.0
+
+# about anti-aliasing fxaa setting.
+[fxaa]
+# type : bool
+# whether disable fxaa effect or not.
+disable-fxaa = false
+# type : float, valid range : [0, +inf)
+# the final threshold of contrast will be
+#   (max("min-threshold", maxLumin * "threshold")).
+threshold = 0.125
+# type : float, valid range : [0, +inf)
+# the minimum constract that need to be processed.
+min-threshold = 0.0625
+# type : int, valid range : [0, 37]
+# the loop step count to found border of current pixel if it need aa,
+#   if set this value to 0 fxaa will be disabled,
+#   if set this value over 15 will disable [unroll] property in compute shader.
+# less than 37 because of cs_5_0 model's groupshared limit is 32768 bytes.
+search-step = 10
+# type : int, valid range : [0, "search-step"]
+# if fail to find border, this value will be setted as a virtual border.
+edge-guess = 8

@@ -48,7 +48,9 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
 {
     if (_groupId.x == 0)
     {
+#if (EDGE_SEARCH_STEP < 15)
         [unroll]
+#endif
         for (int i = 0; i < EDGE_SEARCH_STEP; ++i)
         {
             int2 texIndex = _dispatchId.xy;
@@ -60,7 +62,9 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
     }
     else if (_groupId.x == 15)
     {
+#if (EDGE_SEARCH_STEP < 15)
         [unroll]
+#endif
         for (int i = 1; i <= EDGE_SEARCH_STEP; ++i)
         {
             int2 texIndex = _dispatchId.xy;
@@ -73,7 +77,9 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
 
     if (_groupId.y == 0)
     {
+#if (EDGE_SEARCH_STEP < 15)
         [unroll]
+#endif
         for (int i = 0; i < EDGE_SEARCH_STEP; ++i)
         {
             int2 texIndex = _dispatchId.xy;
@@ -85,7 +91,9 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
     }
     else if (_groupId.y == 15)
     {
+#if (EDGE_SEARCH_STEP < 15)
         [unroll]
+#endif
         for (int i = 1; i <= EDGE_SEARCH_STEP; ++i)
         {
             int2 texIndex = _dispatchId.xy;
@@ -162,7 +170,9 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
         int2 pixelDir = sign(pixelStep);
         int i = 0;
 
+#if (EDGE_SEARCH_STEP < 15)
         [unroll]
+#endif
         for (i = 1; i <= EDGE_SEARCH_STEP; ++i)
         {
             float averageLumin = LuminCache[Index2DTo1DEx(cindex + pixelDir + i * edgeStep)];
@@ -177,10 +187,13 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
         }
         if (i == EDGE_SEARCH_STEP + 1)
         {
-            pDist = (float2)edgeStep * texelSize * (float)EDGE_GUESS;
+            float edgeStepS = (float)(edgeStep.x == 0 ? edgeStep.y * texelSize.y : edgeStep.x * texelSize.x);
+            pDist = edgeStepS * (float)EDGE_GUESS;
         }
 
+#if (EDGE_SEARCH_STEP < 15)
         [unroll]
+#endif
         for (i = 1; i <= EDGE_SEARCH_STEP; ++i)
         {
             float averageLumin = LuminCache[Index2DTo1DEx(cindex + pixelDir - i * edgeStep)];
@@ -195,7 +208,8 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
         }
         if (i == EDGE_SEARCH_STEP + 1)
         {
-            nDist = (float2)edgeStep * texelSize * (float)EDGE_GUESS;
+            float edgeStepS = (float)(edgeStep.x == 0 ? edgeStep.y * texelSize.y : edgeStep.x * texelSize.x);
+            nDist = edgeStepS * (float)EDGE_GUESS;
         }
 
         float edgeBlend = 0.f;
