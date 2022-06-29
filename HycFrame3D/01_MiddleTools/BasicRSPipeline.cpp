@@ -74,6 +74,8 @@ struct RENDER_EFFECT_CONFIG
     float mBloomIntensityFactor = 1.f;
     float mBloomLightPixelFactor = 0.02f;
 
+    bool mDynamicExpoOff = false;
+    float mStaticExpo = 0.2f;
     float mExpoTransSpeed = 0.05f;
     float mExpoMin = 0.01f;
     float mExpoMax = 10.f;
@@ -179,6 +181,8 @@ bool CreateBasicPipeline()
         {
             return false;
         }
+        g_RenderEffectConfig.mDynamicExpoOff = GetAs<bool>(node["disable-dynamic"]);
+        g_RenderEffectConfig.mStaticExpo = GetAs<float>(node["static-exposure"]);
         g_RenderEffectConfig.mExpoTransSpeed = GetAs<float>(node["trans-speed"]);
         g_RenderEffectConfig.mExpoMin = GetAs<float>(node["min-value"]);
         g_RenderEffectConfig.mExpoMax = GetAs<float>(node["max-value"]);
@@ -5877,9 +5881,21 @@ bool RSPass_Tonemapping::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
+    std::string staticV = "(";
+    D3D_SHADER_MACRO macro[2] = { { nullptr, nullptr }, { nullptr, nullptr } };
+    if (!g_RenderEffectConfig.mDynamicExpoOff)
+    {
+        macro[0] = { "DYNAMIC_EXPOSURE", "1" };
+    }
+    else
+    {
+        staticV += std::to_string(g_RenderEffectConfig.mStaticExpo);
+        staticV += "f)";
+        macro[0] = { "STATIC_EXPOSURE", staticV.c_str() };
+    }
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\tonemap_compute.hlsl",
-        "main", "cs_5_0", &shaderBlob);
+        "main", "cs_5_0", &shaderBlob, macro);
     if (FAILED(hr)) { return false; }
 
     hr = Device()->CreateComputeShader(
@@ -5919,7 +5935,7 @@ bool RSPass_Tonemapping::CreateViews()
     bfrDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bfrDesc.StructureByteStride = sizeof(float);
     float* data = new float[expoSize];
-    data[0] = 0.2f;
+    data[0] = g_RenderEffectConfig.mStaticExpo;
     initData.pSysMem = data;
     hr = Device()->CreateBuffer(&bfrDesc, &initData,
         &mAverageLuminBufferArray[0]);

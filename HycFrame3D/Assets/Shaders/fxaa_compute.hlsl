@@ -139,13 +139,90 @@ void main(int3 _groupId : SV_GroupThreadID, int3 _dispatchId : SV_DispatchThread
         float vert = abs(N + S - 2.f * M) * 2.f + abs(NE + SE - 2.f * E) + abs(NW + SW - 2.f * W);
         float hori = abs(E + W - 2.f * M) * 2.f + abs(NE + NW - 2.f * N) + abs(SE + SW - 2.f * S);
         bool isHori = vert > hori;
-        pixelStep = isHori ? float2(0, texelSize.y) : float2(texelSize.x, 0);
+        pixelStep = isHori ? float2(0.f, texelSize.y) : float2(texelSize.x, 0.f);
+        int2 edgeStep = isHori ? int2(1, 0) : float2(0, 1);
         float positive = abs((isHori ? N : E) - M);
         float negative = abs((isHori ? S : W) - M);
+        float gradient = 0.f, oppositeLumin = 0.f;
         if (positive < negative)
         {
             pixelStep *= -1.f;
+            gradient = negative;
+            oppositeLumin = isHori ? S : W;
         }
+        else
+        {
+            gradient = positive;
+            oppositeLumin = isHori ? N : E;
+        }
+
+        float edgeLumin = (M + oppositeLumin) * 0.5f;
+        float gradientThreshold = edgeLumin * 0.25f;
+        float pLuminDelta = 0.f, nLuminDelta = 0.f, pDist = 0.f, nDist = 0.f;
+        int2 pixelDir = sign(pixelStep);
+        int i = 0;
+
+        [unroll]
+        for (i = 1; i <= EDGE_SEARCH_STEP; ++i)
+        {
+            float averageLumin = LuminCache[Index2DTo1DEx(cindex + pixelDir + i * edgeStep)];
+            averageLumin += LuminCache[Index2DTo1DEx(cindex + i * edgeStep)];
+            averageLumin /= 2.f;
+            pLuminDelta = averageLumin - edgeLumin;
+            if (abs(pLuminDelta) > gradientThreshold)
+            {
+                pDist = (float)i * (isHori ? (float)edgeStep.x * texelSize.x : (float)edgeStep.y * texelSize.y);
+                break;
+            }
+        }
+        if (i == EDGE_SEARCH_STEP + 1)
+        {
+            pDist = (float2)edgeStep * texelSize * (float)EDGE_GUESS;
+        }
+
+        [unroll]
+        for (i = 1; i <= EDGE_SEARCH_STEP; ++i)
+        {
+            float averageLumin = LuminCache[Index2DTo1DEx(cindex + pixelDir - i * edgeStep)];
+            averageLumin += LuminCache[Index2DTo1DEx(cindex - i * edgeStep)];
+            averageLumin /= 2.f;
+            nLuminDelta = averageLumin - edgeLumin;
+            if (abs(nLuminDelta) > gradientThreshold)
+            {
+                nDist = (float)i * (isHori ? (float)edgeStep.x * texelSize.x : (float)edgeStep.y * texelSize.y);
+                break;
+            }
+        }
+        if (i == EDGE_SEARCH_STEP + 1)
+        {
+            nDist = (float2)edgeStep * texelSize * (float)EDGE_GUESS;
+        }
+
+        float edgeBlend = 0.f;
+        if (pDist < nDist)
+        {
+            if (sign(pLuminDelta) == sign(M - edgeLumin))
+            {
+                edgeBlend = 0.f;
+            }
+            else
+            {
+                edgeBlend = 0.5f - pDist / (pDist + nDist);
+            }
+        }
+        else
+        {
+            if (sign(nLuminDelta) == sign(M - edgeLumin))
+            {
+                edgeBlend = 0.f;
+            }
+            else
+            {
+                edgeBlend = 0.5f - nDist / (pDist + nDist);
+            }
+        }
+
+        pixelBlend = max(pixelBlend, edgeBlend);
     }
 
     GroupMemoryBarrierWithGroupSync();

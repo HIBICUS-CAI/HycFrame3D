@@ -80,6 +80,15 @@ light-source-factor = 0.02
 
 # about dynamic exposure setting.
 [exposure]
+# type : bool
+# whether disable dynamic exposure effect or not,
+#   if true exposure will always be "static-exposure".
+disable-dynamic = false
+# type : float, valid range : [0.0, +inf)
+# if dynamic is disabled, then exposure will always be this value,
+#   else if will be used to initialize exposure buffer's first element,
+#   but since loading scene doesn't have any light so it cannot affect anything.
+static-exposure = 0.2
 # type : float, valid range : [0.0 , 1.0]
 # the speed of exposure transform,
 #   as lerp(old, new, "trans-speed").
