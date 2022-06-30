@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "SceneNode.h"
 #include "ComponentContainer.h"
+#include "ComponentGetter.h"
 
 class UiObject :public Object
 {
@@ -19,19 +20,7 @@ public:
     {
         auto container = GetSceneNode().GetComponentContainer();
         std::string name = GetObjectName();
-
-        switch (_type)
-        {
-        case COMP_TYPE::U_TRANSFORM: name += "-transform"; break;
-        case COMP_TYPE::U_SPRITE: name += "-sprite"; break;
-        case COMP_TYPE::U_ANIMATE: name += "-animate"; break;
-        case COMP_TYPE::U_TIMER: name += "-timer"; break;
-        case COMP_TYPE::U_INPUT: name += "-input"; break;
-        case COMP_TYPE::U_INTERACT: name += "-interact"; break;
-        case COMP_TYPE::U_BUTTON: name += "-button"; break;
-        case COMP_TYPE::U_AUDIO: name += "-audio"; break;
-        default: break;
-        }
+        ComponentGetter::GenerateCompName<T>(name);
 
         return (T*)(container->GetComponent(name));
     }
