@@ -102,7 +102,7 @@ RSLight* ALightComponent::GetLightInfo()
 void ALightComponent::SyncDataFromTransform()
 {
     ATransformComponent* atc = GetActorOwner()->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+        GetComponent<ATransformComponent>();
 #ifdef _DEBUG
     assert(atc);
 #endif // _DEBUG

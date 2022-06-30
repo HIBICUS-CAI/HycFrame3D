@@ -126,7 +126,7 @@ void USpriteComponent::SetOffsetColor(DirectX::XMFLOAT4&& _offsetColor)
 void USpriteComponent::SyncTransformDataToInstance()
 {
     UTransformComponent* utc = GetUiOwner()->
-        GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
+        GetComponent<UTransformComponent>();
 #ifdef _DEBUG
     assert(utc);
 #endif // _DEBUG
@@ -170,7 +170,6 @@ void USpriteComponent::ResetTexture()
         break;
     }
 
-    auto uamc = GetUiOwner()->
-        GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE);
+    auto uamc = GetUiOwner()->GetComponent<UAnimateComponent>();
     if (uamc) { uamc->ClearCurrentAnimate(); }
 }

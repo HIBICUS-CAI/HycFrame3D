@@ -16,7 +16,7 @@ public:
     void AddAComponent(COMP_TYPE _compType);
 
     template <typename T>
-    inline T* GetAComponent(COMP_TYPE _type)
+    inline T* GetComponent()
     {
         auto container = GetSceneNode().GetComponentContainer();
         std::string name = GetObjectName();

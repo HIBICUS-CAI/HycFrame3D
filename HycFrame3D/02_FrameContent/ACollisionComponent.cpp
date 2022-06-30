@@ -68,7 +68,7 @@ bool ACollisionComponent::CheckCollisionWith(std::string&& _actorName,
         return false;
     }
 
-    auto acc = actor->GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION);
+    auto acc = actor->GetComponent<ACollisionComponent>();
     if (!acc)
     {
         P_LOG(LOG_ERROR, "doesnt exist a collision comp in actor name : %s\n",
@@ -101,7 +101,7 @@ bool ACollisionComponent::CheckCollisionWith(std::string& _actorName,
         return false;
     }
 
-    auto acc = actor->GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION);
+    auto acc = actor->GetComponent<ACollisionComponent>();
     if (!acc)
     {
         P_LOG(LOG_ERROR, "doesnt exist a collision comp in actor name : %s\n",
@@ -153,7 +153,7 @@ void ACollisionComponent::AddCollisionObjectToWorld()
 void ACollisionComponent::SyncDataFromTransform()
 {
     ATransformComponent* atc = GetActorOwner()->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+        GetComponent<ATransformComponent>();
 #ifdef _DEBUG
     assert(atc);
 #endif // _DEBUG

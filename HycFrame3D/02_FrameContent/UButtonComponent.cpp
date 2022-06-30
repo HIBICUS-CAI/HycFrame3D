@@ -101,7 +101,7 @@ void UButtonComponent::Update(Timer& _timer)
     if (g_ShouleUseMouseSelect)
     {
         auto utc = GetUiOwner()->
-            GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
+            GetComponent<UTransformComponent>();
 #ifdef _DEBUG
         assert(utc);
 #endif // _DEBUG
@@ -152,8 +152,7 @@ bool UButtonComponent::IsCursorOnBtn()
 {
     if (g_ShouleUseMouseSelect && mIsSelected)
     {
-        auto utc = GetUiOwner()->
-            GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
+        auto utc = GetUiOwner()->GetComponent<UTransformComponent>();
 #ifdef _DEBUG
         assert(utc);
 #endif // _DEBUG
@@ -188,8 +187,7 @@ void UButtonComponent::SelectUpBtn()
             GetUiObject(mSurroundBtnObjectNames[BTN_UP]);
         if (!upUi) { return; }
 
-        auto upUbc = upUi->
-            GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+        auto upUbc = upUi->GetComponent<UButtonComponent>();
         if (!upUbc) { return; }
 
         SetIsBeingSelected(false);
@@ -207,8 +205,7 @@ void UButtonComponent::SelectDownBtn()
             GetUiObject(mSurroundBtnObjectNames[BTN_DOWN]);
         if (!downUi) { return; }
 
-        auto downUbc = downUi->
-            GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+        auto downUbc = downUi->GetComponent<UButtonComponent>();
         if (!downUbc) { return; }
 
         SetIsBeingSelected(false);
@@ -227,7 +224,7 @@ void UButtonComponent::SelectLeftBtn()
         if (!leftUi) { return; }
 
         auto leftUbc = leftUi->
-            GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+            GetComponent<UButtonComponent>();
         if (!leftUbc) { return; }
 
         SetIsBeingSelected(false);
@@ -245,8 +242,7 @@ void UButtonComponent::SelectRightBtn()
             GetUiObject(mSurroundBtnObjectNames[BTN_RIGHT]);
         if (!rightUi) { return; }
 
-        auto rightUbc = rightUi->
-            GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+        auto rightUbc = rightUi->GetComponent<UButtonComponent>();
         if (!rightUbc) { return; }
 
         SetIsBeingSelected(false);
@@ -266,8 +262,7 @@ UButtonComponent* UButtonComponent::GetUpBtn()
         return nullptr;
     }
 
-    auto ubc = ui->
-        GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+    auto ubc = ui->GetComponent<UButtonComponent>();
     if (!ubc)
     {
         P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
@@ -291,8 +286,7 @@ UButtonComponent* UButtonComponent::GetDownBtn()
         return nullptr;
     }
 
-    auto ubc = ui->
-        GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+    auto ubc = ui->GetComponent<UButtonComponent>();
     if (!ubc)
     {
         P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
@@ -316,8 +310,7 @@ UButtonComponent* UButtonComponent::GetLeftBtn()
         return nullptr;
     }
 
-    auto ubc = ui->
-        GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+    auto ubc = ui->GetComponent<UButtonComponent>();
     if (!ubc)
     {
         P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
@@ -341,8 +334,7 @@ UButtonComponent* UButtonComponent::GetRightBtn()
         return nullptr;
     }
 
-    auto ubc = ui->
-        GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+    auto ubc = ui->GetComponent<UButtonComponent>();
     if (!ubc)
     {
         P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
@@ -378,7 +370,7 @@ void UButtonComponent::SetRightBtnObjName(std::string _rightBtn)
 void UButtonComponent::SyncDataFromTransform()
 {
     UTransformComponent* utc = GetUiOwner()->
-        GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
+        GetComponent<UTransformComponent>();
 #ifdef _DEBUG
     assert(utc);
 #endif // _DEBUG

@@ -37,8 +37,7 @@ AAnimateComponent::~AAnimateComponent()
 
 bool AAnimateComponent::Init()
 {
-    auto amc = GetActorOwner()->
-        GetAComponent<AMeshComponent>(COMP_TYPE::A_MESH);
+    auto amc = GetActorOwner()->GetComponent<AMeshComponent>();
     if (!amc) { return false; }
 
     std::string meshName = amc->mMeshesName[0];

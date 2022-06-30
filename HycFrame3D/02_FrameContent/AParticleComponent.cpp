@@ -66,7 +66,7 @@ RS_PARTICLE_EMITTER_INFO& AParticleComponent::GetEmitterInfo()
 void AParticleComponent::SyncDataFromTransform()
 {
     ATransformComponent* atc = GetActorOwner()->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+        GetComponent<ATransformComponent>();
 #ifdef _DEBUG
     assert(atc);
     assert(mRSParticleEmitterPtr);
