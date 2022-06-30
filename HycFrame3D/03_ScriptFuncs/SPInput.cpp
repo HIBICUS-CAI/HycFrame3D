@@ -62,25 +62,25 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     if (InputInterface::IsKeyDownInSingle(KB_W))
     {
         _aic->GetActorObject("sp-point-light-actor")->
-            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            GetComponent<ATransformComponent>()->
             TranslateZAsix(0.1f * _timer.FloatDeltaTime());
     }
     if (InputInterface::IsKeyDownInSingle(KB_A))
     {
         _aic->GetActorObject("sp-point-light-actor")->
-            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            GetComponent<ATransformComponent>()->
             TranslateXAsix(-0.1f * _timer.FloatDeltaTime());
     }
     if (InputInterface::IsKeyDownInSingle(KB_S))
     {
         _aic->GetActorObject("sp-point-light-actor")->
-            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            GetComponent<ATransformComponent>()->
             TranslateZAsix(-0.1f * _timer.FloatDeltaTime());
     }
     if (InputInterface::IsKeyDownInSingle(KB_D))
     {
         _aic->GetActorObject("sp-point-light-actor")->
-            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            GetComponent<ATransformComponent>()->
             TranslateXAsix(0.1f * _timer.FloatDeltaTime());
     }
     if (InputInterface::IsKeyPushedInSingle(KB_P))
@@ -105,7 +105,7 @@ bool TestASpInit(AInteractComponent* _aitc)
     P_LOG(LOG_DEBUG, "a sp init\n");
 
     _aitc->GetActorOwner()->
-        GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
+        GetComponent<ATimerComponent>()->
         StartTimer("timer1");
 
     return true;
@@ -114,20 +114,20 @@ void TestASpUpdate(AInteractComponent* _aitc, Timer&)
 {
     //P_LOG(LOG_DEBUG, "a sp update\n");
     /*float time0 = _aitc->GetActorOwner()->
-        GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
+        GetComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
         GetTimer("timer0")->mTime;
     float time1 = _aitc->GetActorOwner()->
-        GetAComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
+        GetComponent<ATimerComponent>(COMP_TYPE::A_TIMER)->
         GetTimer("timer1")->mTime;
     P_LOG(LOG_DEBUG, "timer0 : %f , timer1 : %f\n", time0, time1);*/
 
     CONTACT_PONT_PAIR contact = {};
     if (_aitc->GetActorObject("sp-point-light-actor")->
-        GetAComponent<ACollisionComponent>(COMP_TYPE::A_COLLISION)->
+        GetComponent<ACollisionComponent>()->
         CheckCollisionWith("sp-actor", &contact))
     {
         _aitc->GetActorObject("sp-point-light-actor")->
-            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            GetComponent<ATransformComponent>()->
             RollBackPosition();
         P_LOG(LOG_DEBUG, "a : %f, %f, %f ; b : %f, %f, %f\n",
             contact.first.x, contact.first.y, contact.first.z,
@@ -138,12 +138,12 @@ void TestASpUpdate(AInteractComponent* _aitc, Timer&)
     }
 
     _aitc->GetActorObject("sp-particle-actor")->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+        GetComponent<ATransformComponent>()->
         SetPosition(_aitc->GetActorObject("sp-point-light-actor")->
-            GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+            GetComponent<ATransformComponent>()->
             GetProcessingPosition());
     _aitc->GetActorObject("sp-particle-actor")->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+        GetComponent<ATransformComponent>()->
         TranslateYAsix(5.f);
 }
 
@@ -156,7 +156,7 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
 {
     float delta = _timer.FloatDeltaTime();
     auto utc = _uic->GetUiOwner()->
-        GetUComponent<UTransformComponent>(COMP_TYPE::U_TRANSFORM);
+        GetComponent<UTransformComponent>();
 
     if (InputInterface::IsKeyDownInSingle(KB_W))
     {
@@ -178,32 +178,32 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
     if (InputInterface::IsKeyPushedInSingle(KB_Z))
     {
         _uic->GetUiOwner()->
-            GetUComponent<USpriteComponent>(COMP_TYPE::U_SPRITE)->
+            GetComponent<USpriteComponent>()->
             ResetTexture();
     }
     if (InputInterface::IsKeyPushedInSingle(KB_X))
     {
         _uic->GetUiOwner()->
-            GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE)->
+            GetComponent<UAnimateComponent>()->
             ChangeAnimateTo("number");
     }
     if (InputInterface::IsKeyPushedInSingle(KB_C))
     {
         _uic->GetUiOwner()->
-            GetUComponent<UAnimateComponent>(COMP_TYPE::U_ANIMATE)->
+            GetComponent<UAnimateComponent>()->
             ChangeAnimateTo("runman");
     }
 
     if (InputInterface::IsKeyPushedInSingle(KB_N))
     {
         _uic->GetUiOwner()->
-            GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            GetComponent<UAudioComponent>()->
             PlayBgm("test", 0.8f);
     }
     if (InputInterface::IsKeyPushedInSingle(KB_M))
     {
         _uic->GetUiOwner()->
-            GetUComponent<UAudioComponent>(COMP_TYPE::U_AUDIO)->
+            GetComponent<UAudioComponent>()->
             PlayBgm("test", 0.4f);
     }
 
@@ -218,7 +218,7 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
 void TestUSpBtnInput(UInputComponent* _uic, Timer& _timer)
 {
     auto ubc = _uic->GetUiOwner()->
-        GetUComponent<UButtonComponent>(COMP_TYPE::U_BUTTON);
+        GetComponent<UButtonComponent>();
     if (!ubc) { return; }
 
     if (InputInterface::IsKeyPushedInSingle(KB_UP))
@@ -308,7 +308,7 @@ bool AniInit(AInteractComponent* _aitc)
     P_LOG(LOG_DEBUG, "animate init\n");
 
     g_Aanc = _aitc->GetActorOwner()->
-        GetAComponent<AAnimateComponent>(COMP_TYPE::A_ANIMATE);
+        GetComponent<AAnimateComponent>();
     if (!g_Aanc) { return false; }
 
     return true;
@@ -317,7 +317,7 @@ bool AniInit(AInteractComponent* _aitc)
 void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
     _aitc->GetActorOwner()->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM)->
+        GetComponent<ATransformComponent>()->
         RotateYAsix(_timer.FloatDeltaTime() / 1000.f);
 
     if (InputInterface::IsKeyPushedInSingle(KB_1))
@@ -365,7 +365,7 @@ bool BBInit(AInteractComponent* _aitc)
 {
     g_XFactor = -1.f;
     g_BBAtc = _aitc->GetActorOwner()->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+        GetComponent<ATransformComponent>();
     if (!g_BBAtc) { return false; }
 
     return true;

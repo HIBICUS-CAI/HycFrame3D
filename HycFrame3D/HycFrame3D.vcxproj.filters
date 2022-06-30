@@ -372,5 +372,8 @@
     <ClInclude Include="03_ScriptFuncs\01_MaterialEditor.h">
       <Filter>03_ScriptFuncs</Filter>
     </ClInclude>
+    <ClInclude Include="02_FrameContent\ComponentGetter.h">
+      <Filter>02_FrameContent\Container</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

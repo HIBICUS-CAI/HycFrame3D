@@ -283,11 +283,11 @@ bool MatEditorInit(AInteractComponent* _aitc)
     GetRSRoot_DX11_Singleton()->PipelinesManager()->SetPipeline(basic);
 
     g_PointLightAtc = _aitc->GetActorObject("point-light-actor")->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+        GetComponent<ATransformComponent>();
     if (!g_PointLightAtc) { return false; }
 
     g_MaterialBallAtc = _aitc->GetActorObject("mat-ball-actor")->
-        GetAComponent<ATransformComponent>(COMP_TYPE::A_TRANSFORM);
+        GetComponent<ATransformComponent>();
     if (!g_MaterialBallAtc) { return false; }
 
     g_MatBallMesh = &(*_aitc->GetSceneNode().GetAssetsPool()->

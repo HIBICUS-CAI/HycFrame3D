@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "SceneNode.h"
 #include "ComponentContainer.h"
+#include "ComponentGetter.h"
 
 class ActorObject :public Object
 {
@@ -15,26 +16,11 @@ public:
     void AddAComponent(COMP_TYPE _compType);
 
     template <typename T>
-    inline T* GetAComponent(COMP_TYPE _type)
+    inline T* GetComponent()
     {
         auto container = GetSceneNode().GetComponentContainer();
         std::string name = GetObjectName();
-
-        switch (_type)
-        {
-        case COMP_TYPE::A_TRANSFORM: name += "-transform"; break;
-        case COMP_TYPE::A_INPUT: name += "-input"; break;
-        case COMP_TYPE::A_INTERACT: name += "-interact"; break;
-        case COMP_TYPE::A_TIMER: name += "-timer"; break;
-        case COMP_TYPE::A_COLLISION: name += "-collision"; break;
-        case COMP_TYPE::A_MESH: name += "-mesh"; break;
-        case COMP_TYPE::A_LIGHT: name += "-light"; break;
-        case COMP_TYPE::A_AUDIO: name += "-audio"; break;
-        case COMP_TYPE::A_PARTICLE: name += "-particle"; break;
-        case COMP_TYPE::A_ANIMATE: name += "-animate"; break;
-        case COMP_TYPE::A_SPRITE: name += "-sprite"; break;
-        default: break;
-        }
+        ComponentGetter::GenerateCompName<T>(name);
 
         return (T*)(container->GetComponent(name));
     }

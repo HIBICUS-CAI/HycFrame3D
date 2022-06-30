@@ -230,6 +230,7 @@
     <ClInclude Include="02_FrameContent\CollisionSystem.h" />
     <ClInclude Include="02_FrameContent\Component.h" />
     <ClInclude Include="02_FrameContent\ComponentContainer.h" />
+    <ClInclude Include="02_FrameContent\ComponentGetter.h" />
     <ClInclude Include="02_FrameContent\FuncPtrAdapter.h" />
     <ClInclude Include="02_FrameContent\Hyc3DCommon.h" />
     <ClInclude Include="02_FrameContent\InputSystem.h" />

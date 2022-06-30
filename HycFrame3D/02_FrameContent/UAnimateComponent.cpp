@@ -201,7 +201,7 @@ void UAnimateComponent::ChangeAnimateTo(std::string& _aniName)
 void UAnimateComponent::SyncAniInfoToSprite()
 {
     std::string uscName = GetUiOwner()->
-        GetUComponent<USpriteComponent>(COMP_TYPE::U_SPRITE)->GetCompName();
+        GetComponent<USpriteComponent>()->GetCompName();
     auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
         GetSubMeshIfExisted(uscName);
 
