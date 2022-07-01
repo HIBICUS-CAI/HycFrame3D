@@ -19,12 +19,12 @@
             },
             "load-mode": "program-grid",
             "load-info": {
-                "tex-file": "white.jpg",
-                "grid-size": [
+                "g-tex-file": "white.jpg",
+                "g-size": [
                     150.0,
                     150.0
                 ],
-                "row-col-count": [
+                "g-row-col-count": [
                     2,
                     2
                 ]
@@ -40,8 +40,8 @@
                 "interpolate-factor": 0.0
             },
             "load-info": {
-                "model-file": "mat_ball.gltf.meshdata",
-                "file-type": "binary"
+                "m-file": "mat_ball.gltf.meshdata",
+                "m-file-type": "binary"
             }
         }
     ],

@@ -236,11 +236,11 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
             if (loadMode == "model-file")
             {
                 std::string fileName = GetJsonNode(_json,
-                    jsonPath + "/load-info/model-file")->GetString();
+                    jsonPath + "/load-info/m-file")->GetString();
                 std::string fileType = GetJsonNode(_json,
-                    jsonPath + "/load-info/file-type")->GetString();
+                    jsonPath + "/load-info/m-file-type")->GetString();
                 auto subIndexNode = GetJsonNode(_json,
-                    jsonPath + "/load-info/sub-mesh-index");
+                    jsonPath + "/load-info/m-sub-mesh-index");
                 if (subIndexNode && !subIndexNode->IsNull())
                 {
                     subIndex = subIndexNode->GetInt();
@@ -266,79 +266,79 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
             else if (loadMode == "program-box")
             {
                 float width = GetJsonNode(_json,
-                    jsonPath + "/load-info/box-size/0")->GetFloat();
+                    jsonPath + "/load-info/b-size/0")->GetFloat();
                 float height = GetJsonNode(_json,
-                    jsonPath + "/load-info/box-size/1")->GetFloat();
+                    jsonPath + "/load-info/b-size/1")->GetFloat();
                 float depth = GetJsonNode(_json,
-                    jsonPath + "/load-info/box-size/2")->GetFloat();
+                    jsonPath + "/load-info/b-size/2")->GetFloat();
                 UINT divide = GetJsonNode(_json,
-                    jsonPath + "/load-info/divide")->GetUint();
+                    jsonPath + "/load-info/b-divide")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateBox(width, height, depth, divide,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         GetJsonNode(_json,
-                            jsonPath + "/load-info/tex-file")->GetString());
+                            jsonPath + "/load-info/b-tex-file")->GetString());
             }
             else if (loadMode == "program-sphere")
             {
                 float radius = GetJsonNode(_json,
-                    jsonPath + "/load-info/radius")->GetFloat();
+                    jsonPath + "/load-info/s-radius")->GetFloat();
                 UINT slice = GetJsonNode(_json,
-                    jsonPath + "/load-info/slice-stack-count/0")->GetUint();
+                    jsonPath + "/load-info/s-slice-stack-count/0")->GetUint();
                 UINT stack = GetJsonNode(_json,
-                    jsonPath + "/load-info/slice-stack-count/1")->GetUint();
+                    jsonPath + "/load-info/s-slice-stack-count/1")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateSphere(radius, slice, stack,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         GetJsonNode(_json,
-                            jsonPath + "/load-info/tex-file")->GetString());
+                            jsonPath + "/load-info/s-tex-file")->GetString());
             }
             else if (loadMode == "program-geo-sphere")
             {
                 float radius = GetJsonNode(_json,
-                    jsonPath + "/load-info/radius")->GetFloat();
+                    jsonPath + "/load-info/gs-radius")->GetFloat();
                 UINT divide = GetJsonNode(_json,
-                    jsonPath + "/load-info/divide")->GetUint();
+                    jsonPath + "/load-info/gs-divide")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateGeometrySphere(radius, divide,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         GetJsonNode(_json,
-                            jsonPath + "/load-info/tex-file")->GetString());
+                            jsonPath + "/load-info/gs-tex-file")->GetString());
             }
             else if (loadMode == "program-cylinder")
             {
                 float topRadius = GetJsonNode(_json,
-                    jsonPath + "/load-info/top-btm-het-size/0")->GetFloat();
+                    jsonPath + "/load-info/c-top-btm-het-size/0")->GetFloat();
                 float bottomRadius = GetJsonNode(_json,
-                    jsonPath + "/load-info/top-btm-het-size/1")->GetFloat();
+                    jsonPath + "/load-info/c-top-btm-het-size/1")->GetFloat();
                 float height = GetJsonNode(_json,
-                    jsonPath + "/load-info/top-btm-het-size/2")->GetFloat();
+                    jsonPath + "/load-info/c-top-btm-het-size/2")->GetFloat();
                 UINT slice = GetJsonNode(_json,
-                    jsonPath + "/load-info/slice-stack-count/0")->GetUint();
+                    jsonPath + "/load-info/c-slice-stack-count/0")->GetUint();
                 UINT stack = GetJsonNode(_json,
-                    jsonPath + "/load-info/slice-stack-count/1")->GetUint();
+                    jsonPath + "/load-info/c-slice-stack-count/1")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateCylinder(bottomRadius, topRadius,
                         height, slice, stack, LAYOUT_TYPE::NORMAL_TANGENT_TEX,
                         false, {},
                         GetJsonNode(_json,
-                            jsonPath + "/load-info/tex-file")->GetString());
+                            jsonPath + "/load-info/c-tex-file")->GetString());
             }
             else if (loadMode == "program-grid")
             {
                 float width = GetJsonNode(_json,
-                    jsonPath + "/load-info/grid-size/0")->GetFloat();
+                    jsonPath + "/load-info/g-size/0")->GetFloat();
                 float depth = GetJsonNode(_json,
-                    jsonPath + "/load-info/grid-size/1")->GetFloat();
+                    jsonPath + "/load-info/g-size/1")->GetFloat();
                 UINT row = GetJsonNode(_json,
-                    jsonPath + "/load-info/row-col-count/0")->GetUint();
+                    jsonPath + "/load-info/g-row-col-count/0")->GetUint();
                 UINT col = GetJsonNode(_json,
-                    jsonPath + "/load-info/row-col-count/1")->GetUint();
+                    jsonPath + "/load-info/g-row-col-count/1")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateGrid(width, depth, row, col,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         GetJsonNode(_json,
-                            jsonPath + "/load-info/tex-file")->GetString());
+                            jsonPath + "/load-info/g-tex-file")->GetString());
             }
             else
             {

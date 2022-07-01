@@ -21,13 +21,13 @@
             "force-normal": "tile_nmap.dds",
             "load-mode": "program-box",
             "load-info": {
-                "tex-file": "sand.jpg",
-                "box-size": [
+                "b-tex-file": "sand.jpg",
+                "b-size": [
                     15.0,
                     15.0,
                     15.0
                 ],
-                "divide": 0
+                "b-divide": 0
             }
         },
         {
@@ -39,12 +39,12 @@
             },
             "load-mode": "program-grid",
             "load-info": {
-                "tex-file": "copper.png",
-                "grid-size": [
+                "g-tex-file": "copper.png",
+                "g-size": [
                     150.0,
                     150.0
                 ],
-                "row-col-count": [
+                "g-row-col-count": [
                     2,
                     2
                 ]
@@ -59,13 +59,13 @@
             },
             "load-mode": "program-cylinder",
             "load-info": {
-                "tex-file": "cloud.png",
-                "top-btm-het-size": [
+                "c-tex-file": "cloud.png",
+                "c-top-btm-het-size": [
                     10.0,
                     20.0,
                     30.0
                 ],
-                "slice-stack-count": [
+                "c-slice-stack-count": [
                     20,
                     4
                 ]
@@ -80,9 +80,9 @@
             },
             "load-mode": "program-sphere",
             "load-info": {
-                "tex-file": "cloud.png",
-                "radius": 8.0,
-                "slice-stack-count": [
+                "s-tex-file": "cloud.png",
+                "s-radius": 8.0,
+                "s-slice-stack-count": [
                     8,
                     8
                 ]
@@ -97,9 +97,9 @@
             },
             "load-mode": "program-geo-sphere",
             "load-info": {
-                "tex-file": "cloud.png",
-                "radius": 8.0,
-                "divide": 2
+                "gs-tex-file": "cloud.png",
+                "gs-radius": 8.0,
+                "gs-divide": 2
             }
         },
         {
@@ -111,8 +111,8 @@
             },
             "load-mode": "model-file",
             "load-info": {
-                "model-file": "Dragon.FBX.meshdata",
-                "file-type": "binary"
+                "m-file": "Dragon.FBX.meshdata",
+                "m-file-type": "binary"
             }
         },
         {
@@ -125,8 +125,8 @@
                 "interpolate-factor": 0.8
             },
             "load-info": {
-                "model-file": "rex_ani.gltf.meshdata",
-                "file-type": "binary"
+                "m-file": "rex_ani.gltf.meshdata",
+                "m-file-type": "binary"
             }
         },
         {
@@ -140,9 +140,9 @@
                 "interpolate-factor": 0.6
             },
             "load-info": {
-                "model-file": "fly_ani.fbx.meshdata",
-                "file-type": "binary",
-                "sub-mesh-index": 0
+                "m-file": "fly_ani.fbx.meshdata",
+                "m-file-type": "binary",
+                "m-sub-mesh-index": 0
             }
         },
         {
@@ -156,9 +156,9 @@
                 "interpolate-factor": 0.6
             },
             "load-info": {
-                "model-file": "fly_ani.fbx.meshdata",
-                "file-type": "binary",
-                "sub-mesh-index": 1
+                "m-file": "fly_ani.fbx.meshdata",
+                "m-file-type": "binary",
+                "m-sub-mesh-index": 1
             }
         }
     ],
