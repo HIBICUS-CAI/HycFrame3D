@@ -132,17 +132,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         -400.0,
                         300.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         200.0,
                         100.0,
                         1.0
@@ -150,17 +150,17 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         0.5,
                         1.0
                     ],
-                    "tex-file": "cloud.png"
+                    "usc-tex-file": "cloud.png"
                 },
                 {
                     "type": "animate",
-                    "animates": [
+                    "uac-animates": [
                         {
                             "name": "number",
                             "tex-file": "number.png",
@@ -184,28 +184,28 @@
                             "repeat-flag": true
                         }
                     ],
-                    "init-ani": null
+                    "uac-init-ani": null
                 },
                 {
                     "type": "input",
-                    "func-name": "TestUSpInput"
+                    "uic-func-name": "TestUSpInput"
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "TestUSpInit",
-                    "update-func-name": "TestUSpUpdate",
-                    "destory-func-name": "TestUSpDestory"
+                    "uitc-init-func-name": "TestUSpInit",
+                    "uitc-update-func-name": "TestUSpUpdate",
+                    "uitc-destory-func-name": "TestUSpDestory"
                 },
                 {
                     "type": "timer",
-                    "timers": [
+                    "utmc-timers": [
                         "timer0",
                         "timer1"
                     ]
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "uauc-sounds": [
                         "test"
                     ]
                 }
@@ -216,17 +216,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         -200.0,
                         200.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         100.0,
                         50.0,
                         1.0
@@ -234,22 +234,22 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "usc-tex-file": "basic_btn.png"
                 },
                 {
                     "type": "button",
-                    "init-selected": true,
-                    "right-btn": "btn2-ui"
+                    "ubc-init-selected": true,
+                    "ubc-right-btn": "btn2-ui"
                 },
                 {
                     "type": "input",
-                    "func-name": "TestUSpBtnInput"
+                    "uic-func-name": "TestUSpBtnInput"
                 }
             ]
         },
@@ -258,17 +258,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         0.0,
                         200.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         100.0,
                         50.0,
                         1.0
@@ -276,24 +276,24 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "usc-tex-file": "basic_btn.png"
                 },
                 {
                     "type": "button",
-                    "init-selected": false,
-                    "down-btn": "btn4-ui",
-                    "left-btn": "btn1-ui",
-                    "right-btn": "btn3-ui"
+                    "ubc-init-selected": false,
+                    "ubc-down-btn": "btn4-ui",
+                    "ubc-left-btn": "btn1-ui",
+                    "ubc-right-btn": "btn3-ui"
                 },
                 {
                     "type": "input",
-                    "func-name": "TestUSpBtnInput"
+                    "uic-func-name": "TestUSpBtnInput"
                 }
             ]
         },
@@ -302,17 +302,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         200.0,
                         200.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         100.0,
                         50.0,
                         1.0
@@ -320,22 +320,22 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "usc-tex-file": "basic_btn.png"
                 },
                 {
                     "type": "button",
-                    "init-selected": false,
-                    "left-btn": "btn2-ui"
+                    "ubc-init-selected": false,
+                    "ubc-left-btn": "btn2-ui"
                 },
                 {
                     "type": "input",
-                    "func-name": "TestUSpBtnInput"
+                    "uic-func-name": "TestUSpBtnInput"
                 }
             ]
         },
@@ -344,17 +344,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         100.0,
                         50.0,
                         1.0
@@ -362,23 +362,23 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "usc-tex-file": "basic_btn.png"
                 },
                 {
                     "type": "button",
-                    "init-selected": false,
-                    "up-btn": "btn2-ui",
-                    "down-btn": "btn5-ui"
+                    "ubc-init-selected": false,
+                    "ubc-up-btn": "btn2-ui",
+                    "ubc-down-btn": "btn5-ui"
                 },
                 {
                     "type": "input",
-                    "func-name": "TestUSpBtnInput"
+                    "uic-func-name": "TestUSpBtnInput"
                 }
             ]
         },
@@ -387,17 +387,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         0.0,
                         -200.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         100.0,
                         50.0,
                         1.0
@@ -405,22 +405,22 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "basic_btn.png"
+                    "usc-tex-file": "basic_btn.png"
                 },
                 {
                     "type": "button",
-                    "init-selected": false,
-                    "up-btn": "btn4-ui"
+                    "ubc-init-selected": false,
+                    "ubc-up-btn": "btn4-ui"
                 },
                 {
                     "type": "input",
-                    "func-name": "TestUSpBtnInput"
+                    "uic-func-name": "TestUSpBtnInput"
                 }
             ]
         }
