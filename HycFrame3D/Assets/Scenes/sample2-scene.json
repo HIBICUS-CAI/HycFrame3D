@@ -22,17 +22,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         30.0,
                         0.0,
                         50.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -40,25 +40,25 @@
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "intensity": 1.0,
-                    "albedo": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-intensity": 1.0,
+                    "alc-albedo": [
                         0.9,
                         0.9,
                         0.0
                     ],
-                    "direction": [
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 2.0
+                    "alc-spot-power": 2.0
                 }
             ]
         },
@@ -67,17 +67,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         30.0,
                         5.0,
                         50.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -85,43 +85,43 @@
                 },
                 {
                     "type": "particle",
-                    "emit-per-second": 800.0,
-                    "velocity": [
+                    "apc-emit-per-second": 800.0,
+                    "apc-velocity": [
                         0.0,
                         36.0,
                         0.0
                     ],
-                    "pos-variance": [
+                    "apc-pos-variance": [
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "vel-variance": 0.5,
-                    "acceleration": [
+                    "apc-vel-variance": 0.5,
+                    "apc-acceleration": [
                         0.0,
                         -360.0,
                         0.0
                     ],
-                    "particle-mass": 0.3,
-                    "life-span": 2.0,
-                    "start-end-size": [
+                    "apc-particle-mass": 0.3,
+                    "apc-life-span": 2.0,
+                    "apc-start-end-size": [
                         0.5,
                         0.0
                     ],
-                    "start-color": [
+                    "apc-start-color": [
                         0.2,
                         0.2,
                         1.0,
                         1.0
                     ],
-                    "end-color": [
+                    "apc-end-color": [
                         0.5,
                         0.5,
                         1.0,
                         1.0
                     ],
-                    "streak-flag": true,
-                    "texture-name": "circle"
+                    "apc-streak-flag": true,
+                    "apc-texture-name": "circle"
                 }
             ]
         }

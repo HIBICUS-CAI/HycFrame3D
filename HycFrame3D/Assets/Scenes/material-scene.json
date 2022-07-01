@@ -52,17 +52,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         0.0,
                         0.0,
                         100.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         1.57,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         2.5,
                         2.5,
                         2.5
@@ -70,7 +70,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "mat-ball",
                             "mesh-offset": null
@@ -84,17 +84,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         0.0,
                         -30.0,
                         100.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         2.5,
                         2.5,
                         2.5
@@ -102,7 +102,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "grid",
                             "mesh-offset": null
@@ -116,17 +116,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         15.0,
                         30.0,
                         -30.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -134,26 +134,26 @@
                 },
                 {
                     "type": "light",
-                    "light-type": "direct",
-                    "with-shadow": true,
-                    "with-bloom": false,
-                    "intensity": 1.0,
-                    "albedo": [
+                    "alc-light-type": "direct",
+                    "alc-with-shadow": true,
+                    "alc-with-bloom": false,
+                    "alc-intensity": 1.0,
+                    "alc-albedo": [
                         0.8,
                         0.8,
                         0.8
                     ],
-                    "direction": [
+                    "alc-direction": [
                         -0.5,
                         -1.0,
                         1.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         5.0,
                         15.0
                     ],
-                    "spot-power": 2.0,
-                    "cam-up-vec": [
+                    "alc-spot-power": 2.0,
+                    "alc-cam-up-vec": [
                         -0.5,
                         1.0,
                         1.0
@@ -166,17 +166,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         0.0,
                         0.0,
                         50.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -184,25 +184,25 @@
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "intensity": 3000.0,
-                    "albedo": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-intensity": 3000.0,
+                    "alc-albedo": [
                         0.9,
                         0.0,
                         0.9
                     ],
-                    "direction": [
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         0.0,
                         100.0
                     ],
-                    "spot-power": 2.0
+                    "alc-spot-power": 2.0
                 }
             ]
         },
@@ -211,13 +211,13 @@
             "components": [
                 {
                     "type": "input",
-                    "func-name": "MatEditorInput"
+                    "aic-func-name": "MatEditorInput"
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "MatEditorInit",
-                    "update-func-name": "MatEditorUpdate",
-                    "destory-func-name": "MatEditorDestory"
+                    "aitc-init-func-name": "MatEditorInit",
+                    "aitc-update-func-name": "MatEditorUpdate",
+                    "aitc-destory-func-name": "MatEditorDestory"
                 }
             ]
         }
