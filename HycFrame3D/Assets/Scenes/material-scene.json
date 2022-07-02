@@ -1,4 +1,5 @@
 {
+    "$schema": "../Configs/scene-file-json-schema.json",
     "scene-name": "material-scene",
     "ambient-factor": [
         1.0,
@@ -72,8 +73,7 @@
                     "type": "mesh",
                     "amc-meshes": [
                         {
-                            "mesh-name": "mat-ball",
-                            "mesh-offset": null
+                            "mesh-name": "mat-ball"
                         }
                     ]
                 }
@@ -104,8 +104,7 @@
                     "type": "mesh",
                     "amc-meshes": [
                         {
-                            "mesh-name": "grid",
-                            "mesh-offset": null
+                            "mesh-name": "grid"
                         }
                     ]
                 }

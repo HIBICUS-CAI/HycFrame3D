@@ -1,4 +1,5 @@
 {
+    "$schema": "../Configs/scene-file-json-schema.json",
     "scene-name": "loading-scene",
     "ambient-factor": [
         0.0,
@@ -8,6 +9,7 @@
     ],
     "model-assets": [],
     "audio-assets": [],
+    "actor": [],
     "ui": [
         {
             "ui-name": "loading-bg",

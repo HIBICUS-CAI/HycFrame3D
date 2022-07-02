@@ -1,4 +1,5 @@
 {
+    "$schema": "../Configs/scene-file-json-schema.json",
     "scene-name": "sample2-scene",
     "ambient-factor": [
         0.5,
@@ -183,8 +184,7 @@
                             "switch-time": 0.1,
                             "repeat-flag": true
                         }
-                    ],
-                    "uac-init-ani": null
+                    ]
                 },
                 {
                     "type": "input",

@@ -1,4 +1,5 @@
 {
+    "$schema": "../Configs/scene-file-json-schema.json",
     "scene-name": "sample1-scene",
     "ambient-factor": [
         0.8,
@@ -226,8 +227,7 @@
                     "type": "mesh",
                     "amc-meshes": [
                         {
-                            "mesh-name": "tile-box",
-                            "mesh-offset": null
+                            "mesh-name": "tile-box"
                         },
                         {
                             "mesh-name": "sand-grid",
@@ -465,8 +465,7 @@
                     "type": "mesh",
                     "amc-meshes": [
                         {
-                            "mesh-name": "bonetest",
-                            "mesh-offset": null
+                            "mesh-name": "bonetest"
                         }
                     ]
                 },
@@ -508,8 +507,7 @@
                     "type": "mesh",
                     "amc-meshes": [
                         {
-                            "mesh-name": "bonetest",
-                            "mesh-offset": null
+                            "mesh-name": "bonetest"
                         }
                     ]
                 },
@@ -545,8 +543,7 @@
                     "type": "mesh",
                     "amc-meshes": [
                         {
-                            "mesh-name": "fenghuang",
-                            "mesh-offset": null
+                            "mesh-name": "fenghuang"
                         }
                     ],
                     "amc-emissive-intensity": 3.0
