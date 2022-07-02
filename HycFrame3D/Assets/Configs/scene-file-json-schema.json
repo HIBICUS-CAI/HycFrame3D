@@ -1,0 +1,1291 @@
+{
+    "title": "Root Schema",
+    "description": "The root schema is the schema that comprises the entire JSON document.",
+    "type": "object",
+    "default": {},
+    "required": [
+        "scene-name",
+        "ambient-factor",
+        "actor",
+        "ui"
+    ],
+    "additionalProperties": true,
+    "properties": {
+        "scene-name": {
+            "title": "The scene-name Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "type": "string",
+            "default": ""
+        },
+        "ambient-factor": {
+            "title": "The ambient-factor Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "type": "array",
+            "default": [
+                0.8,
+                0.8,
+                0.8,
+                1.0
+            ],
+            "items": {
+                "title": "A Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "type": "number"
+            },
+            "examples": []
+        },
+        "ibl-environment": {
+            "title": "The ibl-environment Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "type": "string",
+            "default": ""
+        },
+        "ibl-diffuse": {
+            "title": "The ibl-diffuse Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "type": "string",
+            "default": ""
+        },
+        "ibl-specular": {
+            "title": "The ibl-specular Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "type": "string",
+            "default": ""
+        },
+        "model-assets": {
+            "title": "The model-assets Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "type": "array",
+            "default": [],
+            "items": {
+                "title": "A Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "type": "object",
+                "default": {},
+                "required": [
+                    "mesh-name",
+                    "material-info",
+                    "load-mode",
+                    "load-info"
+                ],
+                "additionalProperties": true,
+                "properties": {
+                    "mesh-name": {
+                        "title": "The mesh-name Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "material-info": {
+                        "title": "The material-info Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "object",
+                        "default": {},
+                        "required": [
+                            "major-material",
+                            "minor-material",
+                            "interpolate-factor"
+                        ],
+                        "additionalProperties": true,
+                        "properties": {
+                            "major-material": {
+                                "title": "The major-material Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "string",
+                                "default": "",
+                                "examples": [
+                                    "brushed-copper",
+                                    "rough-copper",
+                                    "gloss-copper",
+                                    "brushed-silver",
+                                    "rough-silver",
+                                    "gloss-silver",
+                                    "brushed-gold",
+                                    "rough-gold",
+                                    "gloss-gold",
+                                    "brushed-iron",
+                                    "rough-iron",
+                                    "gloss-iron",
+                                    "brushed-aluminum",
+                                    "rough-aluminum",
+                                    "gloss-aluminum",
+                                    "brushed-chromium",
+                                    "rough-chromium",
+                                    "gloss-chromium",
+                                    "refract-semi-rough-marble",
+                                    "rough-marble",
+                                    "gloss-marble",
+                                    "refract-semi-rough-plastic",
+                                    "rough-plastic",
+                                    "gloss-plastic",
+                                    "rough-gem",
+                                    "gloss-gem",
+                                    "rough-porcelain",
+                                    "gloss-porcelain",
+                                    "rough-soil",
+                                    "semi-rough-soil",
+                                    "rough-paper",
+                                    "semi-rough-paper",
+                                    "rough-wood",
+                                    "semi-rough-wood",
+                                    "rough-brick",
+                                    "semi-rough-brick",
+                                    "rough-rubber",
+                                    "semi-rough-rubber"
+                                ]
+                            },
+                            "minor-material": {
+                                "title": "The minor-material Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "string",
+                                "default": "",
+                                "examples": [
+                                    "brushed-copper",
+                                    "rough-copper",
+                                    "gloss-copper",
+                                    "brushed-silver",
+                                    "rough-silver",
+                                    "gloss-silver",
+                                    "brushed-gold",
+                                    "rough-gold",
+                                    "gloss-gold",
+                                    "brushed-iron",
+                                    "rough-iron",
+                                    "gloss-iron",
+                                    "brushed-aluminum",
+                                    "rough-aluminum",
+                                    "gloss-aluminum",
+                                    "brushed-chromium",
+                                    "rough-chromium",
+                                    "gloss-chromium",
+                                    "refract-semi-rough-marble",
+                                    "rough-marble",
+                                    "gloss-marble",
+                                    "refract-semi-rough-plastic",
+                                    "rough-plastic",
+                                    "gloss-plastic",
+                                    "rough-gem",
+                                    "gloss-gem",
+                                    "rough-porcelain",
+                                    "gloss-porcelain",
+                                    "rough-soil",
+                                    "semi-rough-soil",
+                                    "rough-paper",
+                                    "semi-rough-paper",
+                                    "rough-wood",
+                                    "semi-rough-wood",
+                                    "rough-brick",
+                                    "semi-rough-brick",
+                                    "rough-rubber",
+                                    "semi-rough-rubber"
+                                ]
+                            },
+                            "interpolate-factor": {
+                                "title": "The interpolate-factor Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "number",
+                                "default": 0.0
+                            }
+                        }
+                    },
+                    "force-diffuse": {
+                        "title": "The force-diffuse Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "force-normal": {
+                        "title": "The force-normal Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "force-metallic": {
+                        "title": "The force-metallic Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "force-roughness": {
+                        "title": "The force-roughness Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "force-emissive": {
+                        "title": "The force-emissive Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "load-mode": {
+                        "title": "The load-mode Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": "",
+                        "examples": [
+                            "program-box",
+                            "program-grid",
+                            "program-cylinder",
+                            "program-sphere",
+                            "program-geo-sphere",
+                            "model-file"
+                        ]
+                    },
+                    "load-info": {
+                        "title": "The load-info Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "object",
+                        "default": {},
+                        "required": [],
+                        "additionalProperties": true,
+                        "properties": {
+                            "b-tex-file": {
+                                "title": "The b-tex-file Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "string",
+                                "default": ""
+                            },
+                            "b-size": {
+                                "title": "The b-size Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "array",
+                                "default": [
+                                    5.0,
+                                    5.0,
+                                    5.0
+                                ],
+                                "items": {
+                                    "title": "A Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number"
+                                }
+                            },
+                            "b-divide": {
+                                "title": "The b-divide Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "integer",
+                                "default": 0
+                            },
+                            "g-tex-file": {
+                                "title": "The g-tex-file Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "string",
+                                "default": ""
+                            },
+                            "g-size": {
+                                "title": "The g-size Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "array",
+                                "default": [
+                                    5.0,
+                                    5.0
+                                ],
+                                "items": {
+                                    "title": "A Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number"
+                                }
+                            },
+                            "g-row-col-count": {
+                                "title": "The g-row-col-count Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "array",
+                                "default": [
+                                    2,
+                                    2
+                                ],
+                                "items": {
+                                    "title": "A Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "integer"
+                                }
+                            },
+                            "c-tex-file": {
+                                "title": "The c-tex-file Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "string",
+                                "default": ""
+                            },
+                            "c-top-btm-het-size": {
+                                "title": "The c-top-btm-het-size Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "array",
+                                "default": [
+                                    5.0,
+                                    10.0,
+                                    5.0
+                                ],
+                                "items": {
+                                    "title": "A Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number"
+                                }
+                            },
+                            "c-slice-stack-count": {
+                                "title": "The c-slice-stack-count Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "array",
+                                "default": [
+                                    10,
+                                    10
+                                ],
+                                "items": {
+                                    "title": "A Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "integer"
+                                }
+                            },
+                            "s-tex-file": {
+                                "title": "The s-tex-file Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "string",
+                                "default": ""
+                            },
+                            "s-radius": {
+                                "title": "The s-radius Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "number",
+                                "default": 5.0
+                            },
+                            "s-slice-stack-count": {
+                                "title": "The s-slice-stack-count Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "array",
+                                "default": [
+                                    8,
+                                    8
+                                ],
+                                "items": {
+                                    "title": "A Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "integer"
+                                }
+                            },
+                            "gs-tex-file": {
+                                "title": "The gs-tex-file Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "string",
+                                "default": ""
+                            },
+                            "gs-radius": {
+                                "title": "The gs-radius Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "number",
+                                "default": 5.0
+                            },
+                            "gs-divide": {
+                                "title": "The gs-divide Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "integer",
+                                "default": 2
+                            },
+                            "m-file": {
+                                "title": "The m-file Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "string",
+                                "default": ""
+                            },
+                            "m-file-type": {
+                                "title": "The m-file-type Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "string",
+                                "default": "",
+                                "examples": [
+                                    "binary",
+                                    "json"
+                                ]
+                            },
+                            "m-sub-mesh-index": {
+                                "title": "The m-sub-mesh-index Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "type": "integer",
+                                "default": 0
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "audio-assets": {
+            "title": "The audio-assets Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "type": "array",
+            "default": [],
+            "items": {
+                "title": "A Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "type": "object",
+                "default": {},
+                "required": [
+                    "audio-name",
+                    "audio-file"
+                ],
+                "additionalProperties": true,
+                "properties": {
+                    "audio-name": {
+                        "title": "The audio-name Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "audio-file": {
+                        "title": "The audio-file Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    }
+                }
+            }
+        },
+        "actor": {
+            "title": "The actor Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "type": "array",
+            "default": [],
+            "items": {
+                "title": "A Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "type": "object",
+                "default": {},
+                "required": [
+                    "actor-name",
+                    "components"
+                ],
+                "additionalProperties": true,
+                "properties": {
+                    "actor-name": {
+                        "title": "The actor-name Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "components": {
+                        "title": "The components Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "array",
+                        "default": [],
+                        "items": {
+                            "title": "A Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "type": "object",
+                            "default": {},
+                            "required": [
+                                "type"
+                            ],
+                            "additionalProperties": true,
+                            "properties": {
+                                "type": {
+                                    "title": "The type Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": "",
+                                    "examples": [
+                                        "transform",
+                                        "input",
+                                        "interact",
+                                        "timer",
+                                        "collision",
+                                        "mesh",
+                                        "light",
+                                        "audio",
+                                        "particle",
+                                        "animate",
+                                        "sprite"
+                                    ]
+                                },
+                                "atc-init-position": {
+                                    "title": "The atc-init-position Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "atc-init-angle": {
+                                    "title": "The atc-init-angle Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "atc-init-scale": {
+                                    "title": "The atc-init-scale Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "aic-func-name": {
+                                    "title": "The aic-func-name Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "aitc-init-func-name": {
+                                    "title": "The aitc-init-func-name Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "aitc-update-func-name": {
+                                    "title": "The aitc-update-func-name Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "aitc-destory-func-name": {
+                                    "title": "The aitc-destory-func-name Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "atmc-timers": {
+                                    "title": "The atmc-timers Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "aauc-sounds": {
+                                    "title": "The aauc-sounds Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "acc-collision-shape": {
+                                    "title": "The acc-collision-shape Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": "",
+                                    "examples": [
+                                        "box",
+                                        "sphere"
+                                    ]
+                                },
+                                "acc-collision-size": {
+                                    "title": "The acc-collision-size Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        5.0,
+                                        5.0,
+                                        5.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "amc-meshes": {
+                                    "title": "The amc-meshes Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "object",
+                                        "default": {},
+                                        "required": [
+                                            "mesh-name"
+                                        ],
+                                        "additionalProperties": true,
+                                        "properties": {
+                                            "mesh-name": {
+                                                "title": "The mesh-name Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "type": "string",
+                                                "default": ""
+                                            },
+                                            "mesh-offset": {
+                                                "title": "The mesh-offset Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "type": "array",
+                                                "default": [
+                                                    0.0,
+                                                    0.0,
+                                                    0.0
+                                                ],
+                                                "items": {
+                                                    "title": "A Schema",
+                                                    "description": "An explanation about the purpose of this instance.",
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "alc-light-type": {
+                                    "title": "The alc-light-type Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": "",
+                                    "examples": [
+                                        "direct",
+                                        "point",
+                                        "spot"
+                                    ]
+                                },
+                                "alc-with-shadow": {
+                                    "title": "The alc-with-shadow Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "boolean",
+                                    "default": false,
+                                    "examples": [
+                                        false,
+                                        true
+                                    ]
+                                },
+                                "alc-with-bloom": {
+                                    "title": "The alc-with-bloom Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "boolean",
+                                    "default": false,
+                                    "examples": [
+                                        false,
+                                        true
+                                    ]
+                                },
+                                "alc-intensity": {
+                                    "title": "The alc-intensity Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number",
+                                    "default": 1.0
+                                },
+                                "alc-albedo": {
+                                    "title": "The alc-albedo Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "alc-direction": {
+                                    "title": "The alc-direction Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "alc-fall-off-start-end": {
+                                    "title": "The alc-fall-off-start-end Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        5.0,
+                                        15.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "alc-spot-power": {
+                                    "title": "The alc-spot-power Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number",
+                                    "default": 2.0
+                                },
+                                "alc-cam-up-vec": {
+                                    "title": "The alc-cam-up-vec Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        1.0,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "apc-emit-per-second": {
+                                    "title": "The apc-emit-per-second Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number",
+                                    "default": 0.0
+                                },
+                                "apc-velocity": {
+                                    "title": "The apc-velocity Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        1.0,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "apc-pos-variance": {
+                                    "title": "The apc-pos-variance Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "apc-vel-variance": {
+                                    "title": "The apc-vel-variance Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number",
+                                    "default": 0.5
+                                },
+                                "apc-acceleration": {
+                                    "title": "The apc-acceleration Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        -9.8,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "apc-particle-mass": {
+                                    "title": "The apc-particle-mass Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number",
+                                    "default": 5.0
+                                },
+                                "apc-life-span": {
+                                    "title": "The apc-life-span Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number",
+                                    "default": 20.0
+                                },
+                                "apc-start-end-size": {
+                                    "title": "The apc-start-end-size Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.5,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "apc-start-color": {
+                                    "title": "The apc-start-color Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        30.0,
+                                        0.0,
+                                        0.0,
+                                        1.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "apc-end-color": {
+                                    "title": "The apc-end-color Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "apc-streak-flag": {
+                                    "title": "The apc-streak-flag Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "boolean",
+                                    "default": true,
+                                    "examples": [
+                                        true,
+                                        false
+                                    ]
+                                },
+                                "apc-texture-name": {
+                                    "title": "The apc-texture-name Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": "",
+                                    "examples": [
+                                        "circle",
+                                        "smoke"
+                                    ]
+                                },
+                                "aac-init-animation": {
+                                    "title": "The aac-init-animation Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "aac-speed-factor": {
+                                    "title": "The aac-speed-factor Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number",
+                                    "default": 1.0
+                                },
+                                "asc-texture": {
+                                    "title": "The asc-texture Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "asc-billboard": {
+                                    "title": "The asc-billboard Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "boolean",
+                                    "default": true,
+                                    "examples": [
+                                        true,
+                                        false
+                                    ]
+                                },
+                                "asc-size": {
+                                    "title": "The asc-size Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        5.0,
+                                        5.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "asc-tex-coord": {
+                                    "title": "The asc-tex-coord Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        0.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "asc-with-animation": {
+                                    "title": "The asc-with-animation Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "boolean",
+                                    "default": false,
+                                    "examples": [
+                                        true,
+                                        false
+                                    ]
+                                },
+                                "asc-stride": {
+                                    "title": "The asc-stride Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "asc-max-cut": {
+                                    "title": "The asc-max-cut Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "integer",
+                                    "default": 1
+                                },
+                                "asc-switch-time": {
+                                    "title": "The asc-switch-time Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "number",
+                                    "default": 0.02
+                                },
+                                "asc-repeat-flag": {
+                                    "title": "The asc-repeat-flag Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "boolean",
+                                    "default": false,
+                                    "examples": [
+                                        true,
+                                        false
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "ui": {
+            "title": "The ui Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "type": "array",
+            "default": [],
+            "items": {
+                "title": "A Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "type": "object",
+                "default": {},
+                "required": [
+                    "ui-name",
+                    "components"
+                ],
+                "additionalProperties": true,
+                "properties": {
+                    "ui-name": {
+                        "title": "The ui-name Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "string",
+                        "default": ""
+                    },
+                    "components": {
+                        "title": "The components Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "type": "array",
+                        "default": [],
+                        "items": {
+                            "title": "A Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "type": "object",
+                            "default": {},
+                            "required": [
+                                "type"
+                            ],
+                            "additionalProperties": true,
+                            "properties": {
+                                "type": {
+                                    "title": "The type Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": "",
+                                    "examples": [
+                                        "transform",
+                                        "input",
+                                        "interact",
+                                        "timer",
+                                        "audio",
+                                        "sprite",
+                                        "animate",
+                                        "button"
+                                    ]
+                                },
+                                "utc-init-position": {
+                                    "title": "The utc-init-position Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "utc-init-angle": {
+                                    "title": "The utc-init-angle Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        0.0,
+                                        0.0,
+                                        0.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "utc-init-scale": {
+                                    "title": "The utc-init-scale Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        100.0,
+                                        100.0,
+                                        1.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "usc-offset-color": {
+                                    "title": "The usc-offset-color Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [
+                                        1.0,
+                                        1.0,
+                                        1.0,
+                                        1.0
+                                    ],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "number"
+                                    }
+                                },
+                                "usc-tex-file": {
+                                    "title": "The usc-tex-file Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "uac-animates": {
+                                    "title": "The uac-animates Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "object",
+                                        "default": {},
+                                        "required": [
+                                            "name",
+                                            "tex-file",
+                                            "u-v-stride",
+                                            "max-count",
+                                            "switch-time",
+                                            "repeat-flag"
+                                        ],
+                                        "additionalProperties": true,
+                                        "properties": {
+                                            "name": {
+                                                "title": "The name Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "type": "string",
+                                                "default": ""
+                                            },
+                                            "tex-file": {
+                                                "title": "The tex-file Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "type": "string",
+                                                "default": ""
+                                            },
+                                            "u-v-stride": {
+                                                "title": "The u-v-stride Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "type": "array",
+                                                "default": [
+                                                    1.0,
+                                                    1.0
+                                                ],
+                                                "items": {
+                                                    "title": "A Schema",
+                                                    "description": "An explanation about the purpose of this instance.",
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "max-count": {
+                                                "title": "The max-count Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "type": "integer",
+                                                "default": 1
+                                            },
+                                            "switch-time": {
+                                                "title": "The switch-time Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "type": "number",
+                                                "default": 0.5
+                                            },
+                                            "repeat-flag": {
+                                                "title": "The repeat-flag Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "type": "boolean",
+                                                "default": false,
+                                                "examples": [
+                                                    false,
+                                                    true
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                "uac-init-ani": {
+                                    "title": "The uac-init-ani Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": "",
+                                    "examples": [
+                                        null,
+                                        ""
+                                    ]
+                                },
+                                "uic-func-name": {
+                                    "title": "The uic-func-name Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "uitc-init-func-name": {
+                                    "title": "The uitc-init-func-name Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "uitc-update-func-name": {
+                                    "title": "The uitc-update-func-name Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "uitc-destory-func-name": {
+                                    "title": "The uitc-destory-func-name Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "utmc-timers": {
+                                    "title": "The utmc-timers Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "uauc-sounds": {
+                                    "title": "The uauc-sounds Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "array",
+                                    "default": [],
+                                    "items": {
+                                        "title": "A Schema",
+                                        "description": "An explanation about the purpose of this instance.",
+                                        "type": "string",
+                                        "default": ""
+                                    }
+                                },
+                                "ubc-init-selected": {
+                                    "title": "The ubc-init-selected Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "boolean",
+                                    "default": false,
+                                    "examples": [
+                                        false,
+                                        true
+                                    ]
+                                },
+                                "ubc-left-btn": {
+                                    "title": "The ubc-left-btn Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "ubc-right-btn": {
+                                    "title": "The ubc-right-btn Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "ubc-up-btn": {
+                                    "title": "The ubc-up-btn Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                },
+                                "ubc-down-btn": {
+                                    "title": "The ubc-down-btn Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "type": "string",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
