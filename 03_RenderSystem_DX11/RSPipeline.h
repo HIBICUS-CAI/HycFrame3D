@@ -59,6 +59,7 @@ public:
 private:
     const std::string mName;
     bool mAssemblyFinishFlag;
+
     std::vector<class RSTopic*> mTopicVector;
     std::vector<TopicThread> mTopicThreads;
     std::vector<HANDLE> mFinishEvents;

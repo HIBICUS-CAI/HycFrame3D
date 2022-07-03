@@ -31,6 +31,7 @@ RSRoot_DX11* GetRSRoot_DX11_Singleton()
     {
         bool rs_root_dx11_hasnt_been_built = false;
         assert(rs_root_dx11_hasnt_been_built);
+        (void)rs_root_dx11_hasnt_been_built;
     }
     return g_RSRoot_DX11_Singleton;
 }
@@ -39,8 +40,8 @@ RSRoot_DX11::RSRoot_DX11() :
     mDevicesPtr(nullptr), mPipelinesManagerPtr(nullptr),
     mDrawCallsPoolPtr(nullptr), mResourceManagerPtr(nullptr),
     mStaticResourcesPtr(nullptr), mCamerasContainerPtr(nullptr),
-    mLightsContainerPtr(nullptr), mMeshHelperPtr(nullptr),
-    mParticlesContainerPtr(nullptr)
+    mLightsContainerPtr(nullptr), mParticlesContainerPtr(nullptr),
+    mMeshHelperPtr(nullptr)
 {
 
 }
@@ -110,6 +111,7 @@ bool RSRoot_DX11::StartUp(HWND _wndHandle)
     {
         bool rs_root_dx11_should_be_singleton = false;
         assert(rs_root_dx11_should_be_singleton);
+        (void)rs_root_dx11_should_be_singleton;
         return false;
     }
     g_RSRoot_DX11_Singleton = this;

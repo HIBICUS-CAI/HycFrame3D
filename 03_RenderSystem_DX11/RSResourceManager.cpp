@@ -70,6 +70,7 @@ void RSResourceManager::CleanAndStop()
         {
             bool unvalid_resource_type = false;
             assert(unvalid_resource_type);
+            (void)unvalid_resource_type;
             break;
         }
         }
@@ -168,6 +169,7 @@ void RSResourceManager::DeleteResource(std::string& _name)
         {
             bool unvalid_resource_type = false;
             assert(unvalid_resource_type);
+            (void)unvalid_resource_type;
             break;
         }
         }
@@ -216,6 +218,7 @@ void RSResourceManager::ClearResources()
         {
             bool unvalid_resource_type = false;
             assert(unvalid_resource_type);
+            (void)unvalid_resource_type;
             break;
         }
         }

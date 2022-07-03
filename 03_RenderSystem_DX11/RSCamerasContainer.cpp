@@ -15,7 +15,7 @@
 #define UNLOCK LeaveCriticalSection(&mDataLock)
 
 RSCamerasContainer::RSCamerasContainer() :
-    mRootPtr(nullptr), mCameraMap({}), mDataLock({})
+    mRootPtr(nullptr), mDataLock({}), mCameraMap({})
 {
 
 }

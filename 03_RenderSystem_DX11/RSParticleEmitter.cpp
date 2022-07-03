@@ -17,6 +17,7 @@ RSParticleEmitter::RSParticleEmitter(PARTICLE_EMITTER_INFO* _info)
     mActiveFlg(false), mStaticFlg(false)
 {
     ResetParticleEmitterInfo(_info);
+    (void)mStaticFlg;
 }
 
 RSParticleEmitter::~RSParticleEmitter()
@@ -31,6 +32,8 @@ void RSParticleEmitter::ResetParticleEmitterInfo(
     {
         bool didnt_pass_a_valid_info_to_particle_reset = false;
         assert(didnt_pass_a_valid_info_to_particle_reset);
+        (void)didnt_pass_a_valid_info_to_particle_reset;
+        return;
     }
 
     mRSParticleEmitterInfo.mEmitterIndex =

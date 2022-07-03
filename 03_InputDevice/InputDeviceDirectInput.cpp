@@ -40,7 +40,21 @@ InputDeviceDirectInput::~InputDeviceDirectInput()
 {
     if (mDeviceStatus)
     {
-        delete mDeviceStatus;
+        auto type = GetInputDeviceType();
+        switch (type)
+        {
+        case INPUT_DEVICE_TYPE::KEYBOARD:
+            delete static_cast<DIKEYBOARDSTATUSMINE*>(mDeviceStatus);
+            break;
+        case INPUT_DEVICE_TYPE::MOUSE:
+            delete static_cast<DIMOUSESTATE2*>(mDeviceStatus);
+            break;
+        case INPUT_DEVICE_TYPE::GAMEPAD:
+            delete static_cast<DIJOYSTATE2*>(mDeviceStatus);
+            break;
+        default:
+            break;
+        }
     }
 
     if (mDIDeviceHandle)

@@ -17,9 +17,10 @@
 unsigned __stdcall TopicThreadFunc(PVOID _argu);
 
 RSPipeline::RSPipeline(std::string& _name) :
-    mName(_name), mAssemblyFinishFlag(true), mTopicVector({}),
-    mTopicThreads({}), mImmediateContext(nullptr),
-    mMultipleThreadMode(false), mFinishEvents({})
+    mName(_name), mAssemblyFinishFlag(true),
+    mTopicVector({}), mTopicThreads({}), mFinishEvents({}),
+    mImmediateContext(nullptr),
+    mMultipleThreadMode(false)
 {
 
 }
@@ -27,10 +28,10 @@ RSPipeline::RSPipeline(std::string& _name) :
 RSPipeline::RSPipeline(const RSPipeline& _source) :
     mName(_source.mName),
     mAssemblyFinishFlag(_source.mAssemblyFinishFlag),
-    mImmediateContext(_source.mImmediateContext),
     mTopicVector({}), mTopicThreads({}),
-    mMultipleThreadMode(_source.mMultipleThreadMode),
-    mFinishEvents({})
+    mFinishEvents({}),
+    mImmediateContext(_source.mImmediateContext),
+    mMultipleThreadMode(_source.mMultipleThreadMode)
 {
     mTopicVector.reserve(_source.mTopicVector.size());
     for (auto& topic : _source.mTopicVector)
@@ -182,6 +183,7 @@ bool RSPipeline::InitAllTopics(RSDevices* _devices,
                 static_cast<DWORD_PTR>(1) << affinity);
             affinity = (++affinity) % coreCount;
         }
+        (void)mask;
 
         return true;
     }
@@ -277,6 +279,7 @@ unsigned __stdcall TopicThreadFunc(PVOID _argu)
 #endif // _DEBUG
         SetEvent(finish);
     }
+    (void)hr;
 
     return 0;
 }

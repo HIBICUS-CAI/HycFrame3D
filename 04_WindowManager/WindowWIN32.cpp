@@ -20,7 +20,7 @@ HRESULT WindowWIN32::CreateMyWindow(
     strcpy_s(className, sizeof(className), wndName);
     strcat_s(className, sizeof(className), " CLASS");
 
-    WNDCLASSEX wcex;
+    WNDCLASSEX wcex = {};
     wcex.cbSize = sizeof(WNDCLASSEX);
     wcex.style = CS_HREDRAW | CS_VREDRAW;
     wcex.lpfnWndProc = MyWndProc;
@@ -100,6 +100,8 @@ LRESULT CALLBACK WindowWIN32::MyWndProc(
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
+
+    (void)hdc;
 
     return 0;
 }

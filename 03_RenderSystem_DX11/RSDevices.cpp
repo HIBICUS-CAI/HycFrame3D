@@ -22,8 +22,8 @@ RSDevices::RSDevices() :
     mDevice1(nullptr), mImmediateContext1(nullptr),
     mDXGISwapChain(nullptr), mDXGISwapChain1(nullptr),
     mSwapChainRtv(nullptr), mFullWindowViewPort({}),
-    mHighDynamicTexture(nullptr), mHighDynamicUav(nullptr),
-    mHighDynamicRtv(nullptr), mHighDynamicSrv(nullptr),
+    mHighDynamicTexture(nullptr), mHighDynamicRtv(nullptr),
+    mHighDynamicSrv(nullptr), mHighDynamicUav(nullptr),
     mConcurrentCreateSupport(false), mCommandListSupport(false),
     mWndWidth(0), mWndHeight(0)
 {
@@ -145,6 +145,7 @@ void RSDevices::CleanAndStop()
         hr = pDebug->ReportLiveDeviceObjects(
             D3D11_RLDO_DETAIL);
         pDebug->Release();
+        (void)hr;
     }
 #endif // _DEBUG
 
@@ -296,6 +297,7 @@ bool RSDevices::CreateDevices(HWND _wnd,
     IDXGIFactory2* dxgiFactory2 = nullptr;
     hr = dxgiFactory1->QueryInterface(
         IID_PPV_ARGS(&dxgiFactory2));
+    (void)hr;
     if (dxgiFactory2)
     {
         // 11.1+

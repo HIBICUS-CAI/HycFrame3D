@@ -1,9 +1,15 @@
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpragma-once-outside-header"
 #pragma once
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #include <rapidjson\document.h>
 #include <rapidjson\pointer.h>
 #include <rapidjson\istreamwrapper.h>
 #include <rapidjson\filereadstream.h>
+#pragma clang diagnostic pop
 #include <string>
 #include <fstream>
 

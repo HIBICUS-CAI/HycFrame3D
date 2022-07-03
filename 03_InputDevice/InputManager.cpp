@@ -220,7 +220,7 @@ BOOL CALLBACK InputManager::DIEnumGamePadObjCallBack(
 
     if (pdiDeviceObjInst->dwType & DIDFT_AXIS)
     {
-        DIPROPRANGE diprg;
+        DIPROPRANGE diprg = {};
         diprg.diph.dwSize = sizeof(DIPROPRANGE);
         diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
         diprg.diph.dwHow = DIPH_BYID;
@@ -350,7 +350,7 @@ const bool InputManager::IsThisKeyHasBeenPushedInSingle(
 
 const MOUSE_OFFSET InputManager::GetMouseOffset()
 {
-    MOUSE_OFFSET mo;
+    MOUSE_OFFSET mo = {};
     mo.x = mpMouse->GetXPositionOffset();
     mo.y = mpMouse->GetYPositionOffset();
 
@@ -371,7 +371,7 @@ const STICK_OFFSET
 InputManager::GetGamePadLeftStickOffset(
     int gamepadOffset)
 {
-    STICK_OFFSET so;
+    STICK_OFFSET so = {};
     if (mpGamePads[gamepadOffset])
     {
         if (mpGamePads[gamepadOffset]->GetInputType() ==
@@ -409,7 +409,7 @@ const STICK_OFFSET
 InputManager::GetGamePadRightStickOffset(
     int gamepadOffset)
 {
-    STICK_OFFSET so;
+    STICK_OFFSET so = {};
     if (mpGamePads[gamepadOffset])
     {
         if (mpGamePads[gamepadOffset]->GetInputType() ==

@@ -2,8 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <fstream>
-#include "rapidjson\istreamwrapper.h"
-#include "rapidjson\filereadstream.h"
+#include <cassert>
 
 namespace Tool
 {

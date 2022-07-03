@@ -166,6 +166,7 @@ ID3D11Buffer* RSMeshHelper::CreateVertexBuffer(
     const void* const _vertices,
     LAYOUT_TYPE _layoutType)
 {
+    if (!_vertices) { return nullptr; }
     std::vector<VertexType::BasicVertex>* basic = nullptr;
     std::vector<VertexType::ColorVertex>* color = nullptr;
     std::vector<VertexType::TangentVertex>* tangent = nullptr;
@@ -353,6 +354,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
         {
             bool notUsingVertColor = false;
             assert(notUsingVertColor);
+            (void)notUsingVertColor;
         }
         color.resize(24);
         // front face
@@ -425,6 +427,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
         {
             bool usingVertColor = false;
             assert(usingVertColor);
+            (void)usingVertColor;
         }
         basic.resize(24);
         // front face
@@ -499,6 +502,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
         {
             bool usingVertColor = false;
             assert(usingVertColor);
+            (void)usingVertColor;
         }
         tangent.resize(24);
         // front face
@@ -571,6 +575,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
     default:
         bool nullLayout = false;
         assert(nullLayout);
+        (void)nullLayout;
     }
 
     return rsd;
@@ -598,6 +603,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
         {
             bool notUsingVertColor = false;
             assert(notUsingVertColor);
+            (void)notUsingVertColor;
         }
         VertexType::ColorVertex topVertex =
         {
@@ -694,6 +700,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
         {
             bool usingVertColor = false;
             assert(usingVertColor);
+            (void)usingVertColor;
         }
         VertexType::BasicVertex topVertex =
         {
@@ -793,6 +800,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
         {
             bool usingVertColor = false;
             assert(usingVertColor);
+            (void)usingVertColor;
         }
         VertexType::TangentVertex topVertex =
         {
@@ -894,6 +902,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
     default:
         bool nullLayout = false;
         assert(nullLayout);
+        (void)nullLayout;
     }
 
     return rsd;
@@ -921,6 +930,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
         {
             bool notUsingVertColor = false;
             assert(notUsingVertColor);
+            (void)notUsingVertColor;
         }
 
         if (_diviNum > 6) { _diviNum = 6; }
@@ -975,6 +985,8 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
 
             float phi = acosf(color[i].Position.y / _radius);
             color[i].Color = _vertColor;
+            (void)phi;
+            (void)theta;
         }
 
         si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
@@ -993,6 +1005,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
         {
             bool usingVertColor = false;
             assert(usingVertColor);
+            (void)usingVertColor;
         }
 
         if (_diviNum > 6) { _diviNum = 6; }
@@ -1069,6 +1082,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
         {
             bool usingVertColor = false;
             assert(usingVertColor);
+            (void)usingVertColor;
         }
 
         if (_diviNum > 6) { _diviNum = 6; }
@@ -1149,6 +1163,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
     default:
         bool nullLayout = false;
         assert(nullLayout);
+        (void)nullLayout;
     }
 
     return rsd;
@@ -1388,6 +1403,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateCylinder(
     default:
         bool nullLayout = false;
         assert(nullLayout);
+        (void)nullLayout;
     }
 
     return rsd;
@@ -1419,6 +1435,8 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
         float dz = _depth / (_rowCount - 1);
         float du = 1.f / (_colCount - 1);
         float dv = 1.f / (_rowCount - 1);
+        (void)du;
+        (void)dv;
 
         color.resize(vertexCount);
         for (UINT i = 0; i < _rowCount; i++)
@@ -1589,6 +1607,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
     default:
         bool nullLayout = false;
         assert(nullLayout);
+        (void)nullLayout;
     }
 
     return rsd;
@@ -1660,6 +1679,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         si.mMaterial = &mi;
         mMeshHelperPtr->ProcessSubMesh(&g_SpriteData, &si, _layout);
         g_SpriteRectHasBuilt = true;
+        (void)nullLayout;
     }
 
     static std::wstring wstr = L"";
@@ -1684,6 +1704,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         {
             bool texture_load_fail = false;
             assert(texture_load_fail);
+            (void)texture_load_fail;
         }
     }
     else
@@ -1701,6 +1722,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         {
             bool texture_load_fail = false;
             assert(texture_load_fail);
+            (void)texture_load_fail;
         }
     }
 
@@ -1773,6 +1795,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         si.mMaterial = &mi;
         mMeshHelperPtr->ProcessSubMesh(&g_SpriteData, &si, _layout);
         g_SpriteRectHasBuilt = true;
+        (void)nullLayout;
     }
 
     static std::wstring wstr = L"";
@@ -1797,6 +1820,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         {
             bool texture_load_fail = false;
             assert(texture_load_fail);
+            (void)texture_load_fail;
         }
     }
     else
@@ -1814,6 +1838,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         {
             bool texture_load_fail = false;
             assert(texture_load_fail);
+            (void)texture_load_fail;
         }
     }
 
@@ -1969,6 +1994,7 @@ void RSGeometryGenerator::SubDivide(LAYOUT_TYPE _layout,
     default:
         bool nullLayout = false;
         assert(nullLayout);
+        (void)nullLayout;
     }
 }
 
@@ -2070,6 +2096,7 @@ void RSGeometryGenerator::BuildCylinderTopCap(
             float z = _topRadius * sinf(i * dTheta);
             float u = x / _height + 0.5f;
             float v = z / _height + 0.5f;
+            (void)u; (void)v;
 
             VertexType::ColorVertex vert =
             {
@@ -2183,6 +2210,7 @@ void RSGeometryGenerator::BuildCylinderTopCap(
     default:
         bool nullLayout = false;
         assert(nullLayout);
+        (void)nullLayout;
     }
 }
 
@@ -2210,6 +2238,7 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
             float z = _bottomRadius * sinf(i * dTheta);
             float u = x / _height + 0.5f;
             float v = z / _height + 0.5f;
+            (void)u; (void)v;
 
             VertexType::ColorVertex vert =
             {
@@ -2323,6 +2352,7 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
     default:
         bool nullLayout = false;
         assert(nullLayout);
+        (void)nullLayout;
     }
 }
 
@@ -2359,6 +2389,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreatePointWithTexture(LAYOUT_TYPE _layout,
     default:
         bool unvalidLayout = false;
         assert(unvalidLayout);
+        (void)unvalidLayout;
     }
 
     return rsd;

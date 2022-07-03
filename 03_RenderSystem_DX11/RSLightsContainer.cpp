@@ -17,10 +17,9 @@
 #define UNLOCK LeaveCriticalSection(&mDataLock)
 
 RSLightsContainer::RSLightsContainer() :
-    mRootPtr(nullptr), mLightMap({}), mShadowLights({}),
-    mShadowLightIndeices({}),
-    mAmbientLights({}), mCurrentAmbient({ 0.f,0.f,0.f,0.f }),
-    mDataLock({})
+    mRootPtr(nullptr), mLightMap({}), mAmbientLights({}),
+    mCurrentAmbient({ 0.f,0.f,0.f,0.f }), mLights({}), mShadowLights({}),
+    mShadowLightIndeices({}), mDataLock({})
 {
 
 }

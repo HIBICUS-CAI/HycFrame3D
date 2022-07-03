@@ -66,6 +66,7 @@ RSParticleEmitter* RSParticlesContainer::CreateRSParticleEmitter(
     std::string& _name, PARTICLE_EMITTER_INFO* _info)
 {
     auto size = mParticleEmitterVec.size();
+    (void)size;
     RSParticleEmitter* emitter = new RSParticleEmitter(_info);
     LOCK;
     mParticleEmitterVec.push_back(emitter);
