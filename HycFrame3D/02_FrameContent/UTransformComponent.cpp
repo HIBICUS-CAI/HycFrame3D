@@ -6,10 +6,15 @@ using namespace DirectX;
 UTransformComponent::UTransformComponent(std::string&& _compName,
     UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
-    mPosition({ 0.f,0.f,0.f }), mProcessingPosition({ 0.f,0.f,0.f }),
-    mRotation({ 0.f,0.f,0.f }), mProcessingRotation({ 0.f,0.f,0.f }),
-    mScaling({ 0.f,0.f,0.f }), mProcessingScaling({ 0.f,0.f,0.f }),
-    mPositionDirtyFlg(false), mRotationDirtyFlg(false), mScalingDirtyFlg(false)
+    mPosition({ 0.f,0.f,0.f }),
+    mRotation({ 0.f,0.f,0.f }),
+    mScaling({ 0.f,0.f,0.f }),
+    mProcessingPosition({ 0.f,0.f,0.f }),
+    mProcessingRotation({ 0.f,0.f,0.f }),
+    mProcessingScaling({ 0.f,0.f,0.f }),
+    mPositionDirtyFlg(false),
+    mRotationDirtyFlg(false),
+    mScalingDirtyFlg(false)
 {
 
 }
@@ -17,10 +22,15 @@ UTransformComponent::UTransformComponent(std::string&& _compName,
 UTransformComponent::UTransformComponent(std::string& _compName,
     UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
-    mPosition({ 0.f,0.f,0.f }), mProcessingPosition({ 0.f,0.f,0.f }),
-    mRotation({ 0.f,0.f,0.f }), mProcessingRotation({ 0.f,0.f,0.f }),
-    mScaling({ 0.f,0.f,0.f }), mProcessingScaling({ 0.f,0.f,0.f }),
-    mPositionDirtyFlg(false), mRotationDirtyFlg(false), mScalingDirtyFlg(false)
+    mPosition({ 0.f,0.f,0.f }),
+    mRotation({ 0.f,0.f,0.f }),
+    mScaling({ 0.f,0.f,0.f }),
+    mProcessingPosition({ 0.f,0.f,0.f }),
+    mProcessingRotation({ 0.f,0.f,0.f }),
+    mProcessingScaling({ 0.f,0.f,0.f }),
+    mPositionDirtyFlg(false),
+    mRotationDirtyFlg(false),
+    mScalingDirtyFlg(false)
 {
 
 }

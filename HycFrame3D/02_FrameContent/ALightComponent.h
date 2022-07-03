@@ -4,7 +4,12 @@
 #include <DirectXMath.h>
 #include "RSCommon.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+
 constexpr auto BOX_BLOOM_MESH_NAME = "box-bloom-mesh";
+
+#pragma clang diagnostic pop
 
 class ALightComponent :public ActorComponent
 {

@@ -6,10 +6,15 @@ using namespace DirectX;
 ATransformComponent::ATransformComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
-    mPosition({ 0.f,0.f,0.f }), mProcessingPosition({ 0.f,0.f,0.f }),
-    mRotation({ 0.f,0.f,0.f }), mProcessingRotation({ 0.f,0.f,0.f }),
-    mScaling({ 0.f,0.f,0.f }), mProcessingScaling({ 0.f,0.f,0.f }),
-    mPositionDirtyFlg(false), mRotationDirtyFlg(false), mScalingDirtyFlg(false)
+    mPosition({ 0.f,0.f,0.f }),
+    mRotation({ 0.f,0.f,0.f }),
+    mScaling({ 0.f,0.f,0.f }),
+    mProcessingPosition({ 0.f,0.f,0.f }),
+    mProcessingRotation({ 0.f,0.f,0.f }),
+    mProcessingScaling({ 0.f,0.f,0.f }),
+    mPositionDirtyFlg(false),
+    mRotationDirtyFlg(false),
+    mScalingDirtyFlg(false)
 {
 
 }
@@ -17,10 +22,15 @@ ATransformComponent::ATransformComponent(std::string&& _compName,
 ATransformComponent::ATransformComponent(std::string& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
-    mPosition({ 0.f,0.f,0.f }), mProcessingPosition({ 0.f,0.f,0.f }),
-    mRotation({ 0.f,0.f,0.f }), mProcessingRotation({ 0.f,0.f,0.f }),
-    mScaling({ 0.f,0.f,0.f }), mProcessingScaling({ 0.f,0.f,0.f }),
-    mPositionDirtyFlg(false), mRotationDirtyFlg(false), mScalingDirtyFlg(false)
+    mPosition({ 0.f,0.f,0.f }),
+    mRotation({ 0.f,0.f,0.f }),
+    mScaling({ 0.f,0.f,0.f }),
+    mProcessingPosition({ 0.f,0.f,0.f }),
+    mProcessingRotation({ 0.f,0.f,0.f }),
+    mProcessingScaling({ 0.f,0.f,0.f }),
+    mPositionDirtyFlg(false),
+    mRotationDirtyFlg(false),
+    mScalingDirtyFlg(false)
 {
 
 }

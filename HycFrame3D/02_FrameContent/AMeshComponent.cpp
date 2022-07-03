@@ -8,16 +8,22 @@
 
 AMeshComponent::AMeshComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mSubMeshesName({}),
-    mMeshesName({}), mOffsetPosition({}), mEmissiveIntensity(0.f)
+    ActorComponent(_compName, _actorOwner),
+    mMeshesName({}),
+    mSubMeshesName({}),
+    mOffsetPosition({}),
+    mEmissiveIntensity(0.f)
 {
 
 }
 
 AMeshComponent::AMeshComponent(std::string& _compName,
     ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mSubMeshesName({}),
-    mMeshesName({}), mOffsetPosition({}), mEmissiveIntensity(0.f)
+    ActorComponent(_compName, _actorOwner),
+    mMeshesName({}),
+    mSubMeshesName({}),
+    mOffsetPosition({}),
+    mEmissiveIntensity(0.f)
 {
 
 }

@@ -14,7 +14,9 @@
 #include "AnimationSystem.h"
 
 SystemExecutive::SystemExecutive() :
-    mSceneManagerPtr(nullptr), mSystemsVec({}), mCurrentSceneNode(nullptr) {}
+    mSceneManagerPtr(nullptr),
+    mCurrentSceneNode(nullptr),
+    mSystemsVec({}) {}
 
 SystemExecutive::~SystemExecutive() {}
 
@@ -102,5 +104,6 @@ void SystemExecutive::CheckCurrentScene()
 #ifdef _DEBUG
         assert(next_scene_init);
 #endif // _DEBUG
+        (void)next_scene_init;
     }
 }

@@ -10,8 +10,9 @@
 USpriteComponent::USpriteComponent(std::string&& _compName,
     UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
-    mMeshesName(""), mOffsetColor({ 1.f,1.f,1.f,1.f }),
-    mOriginTextureName("")
+    mMeshesName(""),
+    mOriginTextureName(""),
+    mOffsetColor({ 1.f,1.f,1.f,1.f })
 {
 
 }
@@ -19,8 +20,9 @@ USpriteComponent::USpriteComponent(std::string&& _compName,
 USpriteComponent::USpriteComponent(std::string& _compName,
     UiObject* _uiOwner) :
     UiComponent(_compName, _uiOwner),
-    mMeshesName(""), mOffsetColor({ 1.f,1.f,1.f,1.f }),
-    mOriginTextureName("")
+    mMeshesName(""),
+    mOriginTextureName(""),
+    mOffsetColor({ 1.f,1.f,1.f,1.f })
 {
 
 }

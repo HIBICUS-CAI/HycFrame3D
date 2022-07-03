@@ -499,41 +499,43 @@ bool CreateBasicPipeline()
 RSPass_MRT::RSPass_MRT(std::string& _name, PASS_TYPE _type,
     RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
+    mVertexShader(nullptr), mAniVertexShader(nullptr),
+    mPixelShader(nullptr), mNDPixelShader(nullptr),
     mDrawCallType(DRAWCALL_TYPE::OPACITY), mDrawCallPipe(nullptr),
-    mVertexShader(nullptr), mPixelShader(nullptr),
-    mNDPixelShader(nullptr), mAniVertexShader(nullptr),
     mViewProjStructedBuffer(nullptr),
     mViewProjStructedBufferSrv(nullptr),
     mInstanceStructedBuffer(nullptr),
     mInstanceStructedBufferSrv(nullptr),
     mBonesStructedBuffer(nullptr),
     mBonesStructedBufferSrv(nullptr),
-    mLinearSampler(nullptr), mDepthDsv(nullptr),
-    mRSCameraInfo(nullptr),
-    mGeoBufferRtv(nullptr), mAnisotropicRtv(nullptr)
+    mLinearSampler(nullptr),
+    mGeoBufferRtv(nullptr),
+    mAnisotropicRtv(nullptr),
+    mDepthDsv(nullptr),
+    mRSCameraInfo(nullptr)
 {
 
 }
 
 RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
     RSPass_Base(_source),
-    mDrawCallType(_source.mDrawCallType),
-    mDrawCallPipe(_source.mDrawCallPipe),
     mVertexShader(_source.mVertexShader),
     mAniVertexShader(_source.mAniVertexShader),
     mPixelShader(_source.mPixelShader),
     mNDPixelShader(_source.mNDPixelShader),
+    mDrawCallType(_source.mDrawCallType),
+    mDrawCallPipe(_source.mDrawCallPipe),
     mViewProjStructedBuffer(_source.mViewProjStructedBuffer),
-    mInstanceStructedBuffer(_source.mInstanceStructedBuffer),
-    mBonesStructedBuffer(_source.mBonesStructedBuffer),
     mViewProjStructedBufferSrv(_source.mViewProjStructedBufferSrv),
+    mInstanceStructedBuffer(_source.mInstanceStructedBuffer),
     mInstanceStructedBufferSrv(_source.mInstanceStructedBufferSrv),
+    mBonesStructedBuffer(_source.mBonesStructedBuffer),
     mBonesStructedBufferSrv(_source.mBonesStructedBufferSrv),
     mLinearSampler(_source.mLinearSampler),
-    mDepthDsv(_source.mDepthDsv),
-    mRSCameraInfo(_source.mRSCameraInfo),
     mGeoBufferRtv(_source.mGeoBufferRtv),
-    mAnisotropicRtv(_source.mAnisotropicRtv)
+    mAnisotropicRtv(_source.mAnisotropicRtv),
+    mDepthDsv(_source.mDepthDsv),
+    mRSCameraInfo(_source.mRSCameraInfo)
 {
     if (mHasBeenInited)
     {
@@ -620,7 +622,6 @@ void RSPass_MRT::ExecuatePass()
     STContext()->PSSetSamplers(0, 1, &mLinearSampler);
 
     DirectX::XMMATRIX mat = {};
-    DirectX::XMFLOAT4X4 flt44 = {};
     UINT stride = sizeof(VertexType::TangentVertex);
     UINT aniStride = sizeof(VertexType::AnimationVertex);
     UINT offset = 0;
@@ -762,7 +763,7 @@ bool RSPass_MRT::CreateShaders()
     if (FAILED(hr)) { return false; }
 
     D3D_SHADER_MACRO macro[] =
-    { "ANIMATION_VERTEX","1",nullptr,nullptr };
+    { { "ANIMATION_VERTEX", "1" }, { nullptr, nullptr } };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\mrt_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob, macro);
@@ -1023,31 +1024,39 @@ bool RSPass_MRT::CreateSamplers()
 RSPass_Ssao::RSPass_Ssao(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mVertexShader(nullptr), mPixelShader(nullptr),
+    mVertexShader(nullptr),
+    mPixelShader(nullptr),
+    mCompressVertexShader(nullptr),
+    mCompressPixelShader(nullptr),
     mRenderTargetView(nullptr),
+    mNotCompressSrv(nullptr),
+    mCompressRtv(nullptr),
+    mSamplePointClamp(nullptr),
+    mSampleLinearClamp(nullptr),
+    mSampleDepthMap(nullptr),
+    mSampleLinearWrap(nullptr),
     mSsaoInfoStructedBuffer(nullptr),
     mSsaoInfoStructedBufferSrv(nullptr),
     mGeoBufferSrv(nullptr),
     mDepthMapSrv(nullptr),
     mRandomMapSrv(nullptr),
-    mSamplePointClamp(nullptr), mSampleLinearClamp(nullptr),
-    mSampleDepthMap(nullptr), mSampleLinearWrap(nullptr),
-    mVertexBuffer(nullptr), mIndexBuffer(nullptr),
-    mRSCameraInfo(nullptr), mCompressVertexShader(nullptr),
-    mCompressPixelShader(nullptr), mNotCompressSrv(nullptr),
-    mCompressRtv(nullptr)
+    mOffsetVec({ {} }),
+    mVertexBuffer(nullptr),
+    mIndexBuffer(nullptr),
+    mRSCameraInfo(nullptr)
 {
-    for (UINT i = 0; i < 14; i++)
-    {
-        mOffsetVec[i] = {};
-    }
+
 }
 
 RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao& _source) :
     RSPass_Base(_source),
     mVertexShader(_source.mVertexShader),
     mPixelShader(_source.mPixelShader),
+    mCompressVertexShader(_source.mCompressVertexShader),
+    mCompressPixelShader(_source.mCompressPixelShader),
     mRenderTargetView(_source.mRenderTargetView),
+    mNotCompressSrv(_source.mNotCompressSrv),
+    mCompressRtv(_source.mCompressRtv),
     mSamplePointClamp(_source.mSamplePointClamp),
     mSampleLinearClamp(_source.mSampleLinearClamp),
     mSampleDepthMap(_source.mSampleDepthMap),
@@ -1057,19 +1066,11 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao& _source) :
     mGeoBufferSrv(_source.mGeoBufferSrv),
     mDepthMapSrv(_source.mDepthMapSrv),
     mRandomMapSrv(_source.mRandomMapSrv),
+    mOffsetVec(_source.mOffsetVec),
     mVertexBuffer(_source.mVertexBuffer),
     mIndexBuffer(_source.mIndexBuffer),
-    mRSCameraInfo(_source.mRSCameraInfo),
-    mCompressVertexShader(_source.mCompressVertexShader),
-    mCompressPixelShader(_source.mCompressPixelShader),
-    mNotCompressSrv(_source.mNotCompressSrv),
-    mCompressRtv(_source.mCompressRtv)
+    mRSCameraInfo(_source.mRSCameraInfo)
 {
-    for (UINT i = 0; i < 14; i++)
-    {
-        mOffsetVec[i] = _source.mOffsetVec[i];
-    }
-
     if (mHasBeenInited)
     {
         RS_ADDREF(mVertexShader);
@@ -1181,7 +1182,6 @@ void RSPass_Ssao::ExecuatePass()
     STContext()->RSSetState(nullptr);
 
     DirectX::XMMATRIX mat = {};
-    DirectX::XMFLOAT4X4 flt44 = {};
     UINT stride = sizeof(VertexType::TangentVertex);
     UINT offset = 0;
 
@@ -1661,7 +1661,8 @@ bool RSPass_Ssao::CreateSamplers()
 RSPass_KBBlur::RSPass_KBBlur(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mHoriBlurShader(nullptr), mVertBlurShader(nullptr),
+    mHoriBlurShader(nullptr),
+    mVertBlurShader(nullptr),
     mSsaoTexUav(nullptr),
     mGeoBufferSrv(nullptr),
     mDepthMapSrv(nullptr)
@@ -1809,7 +1810,7 @@ RSPass_Shadow::RSPass_Shadow(
     mVertexShader(nullptr),
     mAniVertexShader(nullptr),
     mRasterizerState(nullptr),
-    mDepthStencilView({ nullptr,nullptr,nullptr,nullptr }),
+    mDepthStencilView({ nullptr }),
     mDrawCallType(DRAWCALL_TYPE::OPACITY),
     mDrawCallPipe(nullptr),
     mViewProjStructedBuffer(nullptr),
@@ -1899,7 +1900,6 @@ void RSPass_Shadow::ExecuatePass()
     STContext()->RSSetState(mRasterizerState);
 
     DirectX::XMMATRIX mat = {};
-    DirectX::XMFLOAT4X4 flt44 = {};
     UINT stride = sizeof(VertexType::TangentVertex);
     UINT aniStride = sizeof(VertexType::AnimationVertex);
     UINT offset = 0;
@@ -2057,7 +2057,7 @@ bool RSPass_Shadow::CreateShaders()
     if (FAILED(hr)) { return false; }
 
     D3D_SHADER_MACRO macro[] =
-    { "ANIMATION_VERTEX","1",nullptr,nullptr };
+    { { "ANIMATION_VERTEX", "1" }, { nullptr, nullptr } };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\light_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob, macro);
@@ -2233,24 +2233,29 @@ bool RSPass_Shadow::CreateSamplers()
 RSPass_Defered::RSPass_Defered(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mVertexShader(nullptr), mPixelShader(nullptr),
-    mLinearWrapSampler(nullptr), mRenderTargetView(nullptr),
-    mShadowTexSampler(nullptr), mPointClampSampler(nullptr),
-    mLightStructedBuffer(nullptr),
-    mLightStructedBufferSrv(nullptr),
+    mVertexShader(nullptr),
+    mPixelShader(nullptr),
+    mRenderTargetView(nullptr),
+    mLinearWrapSampler(nullptr),
+    mPointClampSampler(nullptr),
+    mShadowTexSampler(nullptr),
     mLightInfoStructedBuffer(nullptr),
     mLightInfoStructedBufferSrv(nullptr),
+    mLightStructedBuffer(nullptr),
+    mLightStructedBufferSrv(nullptr),
     mAmbientStructedBuffer(nullptr),
     mAmbientStructedBufferSrv(nullptr),
     mShadowStructedBuffer(nullptr),
     mShadowStructedBufferSrv(nullptr),
     mCameraStructedBuffer(nullptr),
     mCameraStructedBufferSrv(nullptr),
-    mSsaoSrv(nullptr),
-    mVertexBuffer(nullptr), mIndexBuffer(nullptr),
     mGeoBufferSrv(nullptr),
     mAnisotropicSrv(nullptr),
-    mRSCameraInfo(nullptr), mShadowDepthSrv(nullptr)
+    mSsaoSrv(nullptr),
+    mShadowDepthSrv(nullptr),
+    mVertexBuffer(nullptr),
+    mIndexBuffer(nullptr),
+    mRSCameraInfo(nullptr)
 {
 
 }
@@ -2263,23 +2268,23 @@ RSPass_Defered::RSPass_Defered(const RSPass_Defered& _source) :
     mLinearWrapSampler(_source.mLinearWrapSampler),
     mPointClampSampler(_source.mPointClampSampler),
     mShadowTexSampler(_source.mShadowTexSampler),
-    mLightStructedBuffer(_source.mLightStructedBuffer),
-    mLightStructedBufferSrv(_source.mLightStructedBufferSrv),
     mLightInfoStructedBuffer(_source.mLightInfoStructedBuffer),
     mLightInfoStructedBufferSrv(_source.mLightInfoStructedBufferSrv),
+    mLightStructedBuffer(_source.mLightStructedBuffer),
+    mLightStructedBufferSrv(_source.mLightStructedBufferSrv),
     mAmbientStructedBuffer(_source.mAmbientStructedBuffer),
     mAmbientStructedBufferSrv(_source.mAmbientStructedBufferSrv),
     mShadowStructedBuffer(_source.mShadowStructedBuffer),
     mShadowStructedBufferSrv(_source.mShadowStructedBufferSrv),
     mCameraStructedBuffer(_source.mCameraStructedBuffer),
     mCameraStructedBufferSrv(_source.mCameraStructedBufferSrv),
-    mSsaoSrv(_source.mSsaoSrv),
-    mVertexBuffer(_source.mVertexBuffer),
-    mIndexBuffer(_source.mIndexBuffer),
     mGeoBufferSrv(_source.mGeoBufferSrv),
     mAnisotropicSrv(_source.mAnisotropicSrv),
-    mRSCameraInfo(_source.mRSCameraInfo),
-    mShadowDepthSrv(_source.mShadowDepthSrv)
+    mSsaoSrv(_source.mSsaoSrv),
+    mShadowDepthSrv(_source.mShadowDepthSrv),
+    mVertexBuffer(_source.mVertexBuffer),
+    mIndexBuffer(_source.mIndexBuffer),
+    mRSCameraInfo(_source.mRSCameraInfo)
 {
 
 }
@@ -2342,7 +2347,6 @@ void RSPass_Defered::ExecuatePass()
     STContext()->PSSetShader(mPixelShader, nullptr, 0);
 
     DirectX::XMMATRIX mat = {};
-    DirectX::XMFLOAT4X4 flt44 = {};
     UINT stride = sizeof(VertexType::TangentVertex);
     UINT offset = 0;
 
@@ -2749,12 +2753,17 @@ bool RSPass_Defered::CreateSamplers()
 RSPass_SkyShpere::RSPass_SkyShpere(std::string& _name,
     PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mVertexShader(nullptr), mPixelShader(nullptr),
-    mRasterizerState(nullptr), mDepthStencilState(nullptr),
-    mRenderTargerView(nullptr), mDepthStencilView(nullptr),
-    /*mSkyShpereSrv(nullptr), */mSkyShpereInfoStructedBuffer(nullptr),
-    mSkyShpereInfoStructedBufferSrv(nullptr), mSkySphereMesh({}),
-    mLinearWrapSampler(nullptr), mRSCameraInfo(nullptr)
+    mVertexShader(nullptr),
+    mPixelShader(nullptr),
+    mRasterizerState(nullptr),
+    mDepthStencilState(nullptr),
+    mLinearWrapSampler(nullptr),
+    mRenderTargerView(nullptr),
+    mDepthStencilView(nullptr),
+    mSkyShpereInfoStructedBuffer(nullptr),
+    mSkyShpereInfoStructedBufferSrv(nullptr),
+    mSkySphereMesh({}),
+    mRSCameraInfo(nullptr)
 {
 
 }
@@ -2766,13 +2775,12 @@ RSPass_SkyShpere::RSPass_SkyShpere(
     mPixelShader(_source.mPixelShader),
     mRasterizerState(_source.mRasterizerState),
     mDepthStencilState(_source.mDepthStencilState),
+    mLinearWrapSampler(_source.mLinearWrapSampler),
     mRenderTargerView(_source.mRenderTargerView),
     mDepthStencilView(_source.mDepthStencilView),
-    //mSkyShpereSrv(_source.mSkyShpereSrv),
     mSkyShpereInfoStructedBuffer(_source.mSkyShpereInfoStructedBuffer),
     mSkyShpereInfoStructedBufferSrv(_source.mSkyShpereInfoStructedBufferSrv),
     mSkySphereMesh(_source.mSkySphereMesh),
-    mLinearWrapSampler(_source.mLinearWrapSampler),
     mRSCameraInfo(_source.mRSCameraInfo)
 {
 
@@ -2843,7 +2851,6 @@ void RSPass_SkyShpere::ExecuatePass()
     STContext()->OMSetDepthStencilState(mDepthStencilState, 0);
 
     DirectX::XMMATRIX mat = {};
-    DirectX::XMFLOAT4X4 flt44 = {};
     UINT stride = sizeof(VertexType::TangentVertex);
     UINT offset = 0;
 
@@ -3009,14 +3016,19 @@ bool RSPass_SkyShpere::CreateSamplers()
 
 RSPass_Bloom::RSPass_Bloom(std::string& _name, PASS_TYPE _type,
     RSRoot_DX11* _root) :RSPass_Base(_name, _type, _root),
-    mVertexShader(nullptr), mPixelShader(nullptr),
-    mDrawCallType(DRAWCALL_TYPE::LIGHT), mDrawCallPipe(nullptr),
+    mVertexShader(nullptr),
+    mPixelShader(nullptr),
+    mDrawCallType(DRAWCALL_TYPE::LIGHT),
+    mDrawCallPipe(nullptr),
     mViewProjStructedBuffer(nullptr),
     mViewProjStructedBufferSrv(nullptr),
     mInstanceStructedBuffer(nullptr),
     mInstanceStructedBufferSrv(nullptr),
-    mRtv(nullptr), mDepthDsv(nullptr), mRSCameraInfo(nullptr),
-    mVertexBuffer(nullptr), mIndexBuffer(nullptr),
+    mRtv(nullptr),
+    mDepthDsv(nullptr),
+    mRSCameraInfo(nullptr),
+    mVertexBuffer(nullptr),
+    mIndexBuffer(nullptr),
     mSampler(nullptr)
 {
 
@@ -3098,7 +3110,6 @@ void RSPass_Bloom::ExecuatePass()
     STContext()->PSSetShader(mPixelShader, nullptr, 0);
 
     DirectX::XMMATRIX mat = {};
-    DirectX::XMFLOAT4X4 flt44 = {};
     UINT stride = sizeof(VertexType::ColorVertex);
     UINT offset = 0;
 
@@ -3186,8 +3197,8 @@ bool RSPass_Bloom::CreateShaders()
     {
         D3D_SHADER_MACRO macro[] =
         {
-            "PIXEL_FACTOR", pixelFactor.c_str(),
-            nullptr, nullptr
+            { "PIXEL_FACTOR", pixelFactor.c_str() },
+            { nullptr, nullptr }
         };
         hr = Tool::CompileShaderFromFile(
             L".\\Assets\\Shaders\\bloom_pixel.hlsl",
@@ -3198,9 +3209,9 @@ bool RSPass_Bloom::CreateShaders()
     {
         D3D_SHADER_MACRO macro[] =
         {
-            "BLOOM_ON", "1",
-            "PIXEL_FACTOR", pixelFactor.c_str(),
-            nullptr, nullptr
+            { "BLOOM_ON", "1" },
+            { "PIXEL_FACTOR", pixelFactor.c_str() },
+            { nullptr, nullptr }
         };
         hr = Tool::CompileShaderFromFile(
             L".\\Assets\\Shaders\\bloom_pixel.hlsl",
@@ -3317,13 +3328,7 @@ bool RSPass_Bloom::CreateBuffers()
 bool RSPass_Bloom::CreateViews()
 {
     HRESULT hr = S_OK;
-    D3D11_TEXTURE2D_DESC texDesc = {};
-    D3D11_RENDER_TARGET_VIEW_DESC rtvDesc = {};
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
-    ID3D11Texture2D* texture = nullptr;
-    ID3D11ShaderResourceView* srv = nullptr;
-    ID3D11UnorderedAccessView* uav = nullptr;
     std::string name = "";
 
     mRtv = g_Root->Devices()->GetHighDynamicRtv();
@@ -3356,34 +3361,44 @@ RSPass_PriticleSetUp::RSPass_PriticleSetUp(
     RSPass_Base(_name, _type, _root),
     mTilingConstant({}),
     mParticleRenderBuffer(nullptr),
-    mParticleRender_Srv(nullptr), mParticleRender_Uav(nullptr),
-    mParticleRandomTexture(nullptr), mParticleRandom_Srv(nullptr),
-    mParticlePartA(nullptr), mPartA_Srv(nullptr), mPartA_Uav(nullptr),
-    mParticlePartB(nullptr), mPartB_Uav(nullptr),
+    mParticleRender_Srv(nullptr),
+    mParticleRender_Uav(nullptr),
+    mParticlePartA(nullptr),
+    mPartA_Srv(nullptr),
+    mPartA_Uav(nullptr),
+    mParticlePartB(nullptr),
+    mPartB_Uav(nullptr),
     mViewspacePosBuffer(nullptr),
-    mViewSpacePos_Srv(nullptr), mViewSpacePos_Uav(nullptr),
+    mViewSpacePos_Srv(nullptr),
+    mViewSpacePos_Uav(nullptr),
     mMaxRadiusBuffer(nullptr),
-    mMaxRadius_Srv(nullptr), mMaxRadius_Uav(nullptr),
+    mMaxRadius_Srv(nullptr),
+    mMaxRadius_Uav(nullptr),
     mStridedCoarseCullBuffer(nullptr),
-    mStridedCoarseCull_Srv(nullptr), mStridedCoarseCull_Uav(nullptr),
+    mStridedCoarseCull_Srv(nullptr),
+    mStridedCoarseCull_Uav(nullptr),
     mStridedCoarseCullCounterBuffer(nullptr),
     mStridedCoarseCullCounter_Srv(nullptr),
     mStridedCoarseCullCounter_Uav(nullptr),
     mTiledIndexBuffer(nullptr),
     mTiledIndex_Srv(nullptr),
     mTiledIndex_Uav(nullptr),
-    mDeadListBuffer(nullptr), mDeadList_Uav(nullptr),
+    mDeadListBuffer(nullptr),
+    mDeadList_Uav(nullptr),
     mAliveIndexBuffer(nullptr),
-    mAliveIndex_Srv(nullptr), mAliveIndex_Uav(nullptr),
+    mAliveIndex_Srv(nullptr),
+    mAliveIndex_Uav(nullptr),
     mDeadListConstantBuffer(nullptr),
     mActiveListConstantBuffer(nullptr),
     mEmitterConstantBuffer(nullptr),
     mCameraConstantBuffer(nullptr),
     mTilingConstantBuffer(nullptr),
+    mTimeConstantBuffer(nullptr),
     mDebugCounterBuffer(nullptr),
+    mParticleRandomTexture(nullptr),
+    mParticleRandom_Srv(nullptr),
     mSimulEmitterStructedBuffer(nullptr),
-    mSimulEmitterStructedBuffer_Srv(nullptr),
-    mTimeConstantBuffer(nullptr)
+    mSimulEmitterStructedBuffer_Srv(nullptr)
 {
     g_ParticleSetUpPass = this;
 }
@@ -3395,8 +3410,6 @@ RSPass_PriticleSetUp::RSPass_PriticleSetUp(
     mParticleRenderBuffer(_source.mParticleRenderBuffer),
     mParticleRender_Srv(_source.mParticleRender_Srv),
     mParticleRender_Uav(_source.mParticleRender_Uav),
-    mParticleRandomTexture(_source.mParticleRandomTexture),
-    mParticleRandom_Srv(_source.mParticleRandom_Srv),
     mParticlePartA(_source.mParticlePartA),
     mPartA_Srv(_source.mPartA_Srv),
     mPartA_Uav(_source.mPartA_Uav),
@@ -3427,10 +3440,12 @@ RSPass_PriticleSetUp::RSPass_PriticleSetUp(
     mEmitterConstantBuffer(_source.mEmitterConstantBuffer),
     mCameraConstantBuffer(_source.mCameraConstantBuffer),
     mTilingConstantBuffer(_source.mTilingConstantBuffer),
+    mTimeConstantBuffer(_source.mTimeConstantBuffer),
     mDebugCounterBuffer(_source.mDebugCounterBuffer),
+    mParticleRandomTexture(_source.mParticleRandomTexture),
+    mParticleRandom_Srv(_source.mParticleRandom_Srv),
     mSimulEmitterStructedBuffer(_source.mSimulEmitterStructedBuffer),
-    mSimulEmitterStructedBuffer_Srv(_source.mSimulEmitterStructedBuffer_Srv),
-    mTimeConstantBuffer(_source.mTimeConstantBuffer)
+    mSimulEmitterStructedBuffer_Srv(_source.mSimulEmitterStructedBuffer_Srv)
 {
     g_ParticleSetUpPass = this;
 }
@@ -3968,17 +3983,26 @@ RSPass_PriticleEmitSimulate::RSPass_PriticleEmitSimulate(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
     mRSParticleContainerPtr(nullptr),
-    mInitDeadListShader(nullptr), mResetParticlesShader(nullptr),
-    mEmitParticleShader(nullptr), mSimulateShader(nullptr),
-    mDeadList_Uav(nullptr), mPartA_Uav(nullptr), mPartB_Uav(nullptr),
-    mRandomTex_Srv(nullptr), mEmitterConstantBuffer(nullptr),
+    mInitDeadListShader(nullptr),
+    mResetParticlesShader(nullptr),
+    mEmitParticleShader(nullptr),
+    mSimulateShader(nullptr),
+    mDepthTex_Srv(nullptr),
+    mRandomTex_Srv(nullptr),
+    mSimulEmitterStructedBuffer_Srv(nullptr),
+    mDeadList_Uav(nullptr),
+    mPartA_Uav(nullptr),
+    mPartB_Uav(nullptr),
+    mAliveIndex_Uav(nullptr),
+    mViewSpacePos_Uav(nullptr),
+    mMaxRadius_Uav(nullptr),
+    mEmitterConstantBuffer(nullptr),
+    mCameraConstantBuffer(nullptr),
     mDeadListConstantBuffer(nullptr),
+    mSimulEmitterStructedBuffer(nullptr),
+    mTimeConstantBuffer(nullptr),
     mLinearWrapSampler(nullptr),
-    mDepthTex_Srv(nullptr), mSimulEmitterStructedBuffer_Srv(nullptr),
-    mAliveIndex_Uav(nullptr), mViewSpacePos_Uav(nullptr),
-    mMaxRadius_Uav(nullptr), mSimulEmitterStructedBuffer(nullptr),
-    mRSCameraInfo(nullptr), mCameraConstantBuffer(nullptr),
-    mTimeConstantBuffer(nullptr)
+    mRSCameraInfo(nullptr)
 {
 
 }
@@ -3991,21 +4015,22 @@ RSPass_PriticleEmitSimulate::RSPass_PriticleEmitSimulate(
     mResetParticlesShader(_source.mResetParticlesShader),
     mEmitParticleShader(_source.mEmitParticleShader),
     mSimulateShader(_source.mSimulateShader),
-    mDeadList_Uav(_source.mDeadList_Uav),
-    mPartA_Uav(_source.mPartA_Uav), mPartB_Uav(_source.mPartB_Uav),
-    mRandomTex_Srv(_source.mRandomTex_Srv),
-    mEmitterConstantBuffer(_source.mEmitterConstantBuffer),
-    mDeadListConstantBuffer(_source.mDeadListConstantBuffer),
-    mLinearWrapSampler(_source.mLinearWrapSampler),
     mDepthTex_Srv(_source.mDepthTex_Srv),
+    mRandomTex_Srv(_source.mRandomTex_Srv),
     mSimulEmitterStructedBuffer_Srv(_source.mSimulEmitterStructedBuffer_Srv),
+    mDeadList_Uav(_source.mDeadList_Uav),
+    mPartA_Uav(_source.mPartA_Uav),
+    mPartB_Uav(_source.mPartB_Uav),
     mAliveIndex_Uav(_source.mAliveIndex_Uav),
     mViewSpacePos_Uav(_source.mViewSpacePos_Uav),
     mMaxRadius_Uav(_source.mMaxRadius_Uav),
-    mSimulEmitterStructedBuffer(_source.mSimulEmitterStructedBuffer),
-    mRSCameraInfo(_source.mRSCameraInfo),
+    mEmitterConstantBuffer(_source.mEmitterConstantBuffer),
     mCameraConstantBuffer(_source.mCameraConstantBuffer),
-    mTimeConstantBuffer(_source.mTimeConstantBuffer)
+    mDeadListConstantBuffer(_source.mDeadListConstantBuffer),
+    mSimulEmitterStructedBuffer(_source.mSimulEmitterStructedBuffer),
+    mTimeConstantBuffer(_source.mTimeConstantBuffer),
+    mLinearWrapSampler(_source.mLinearWrapSampler),
+    mRSCameraInfo(_source.mRSCameraInfo)
 {
 
 }
@@ -4369,19 +4394,32 @@ bool RSPass_PriticleEmitSimulate::CheckResources()
 RSPass_PriticleTileRender::RSPass_PriticleTileRender(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mCoarseCullingShader(nullptr), mTileCullingShader(nullptr),
-    mTileRenderShader(nullptr), mAliveIndex_Uav(nullptr),
-    mCameraConstantBuffer(nullptr), mTilingConstantBuffer(nullptr),
-    mActiveListConstantBuffer(nullptr), mDepthTex_Srv(nullptr),
-    mViewSpacePos_Srv(nullptr), mMaxRadius_Srv(nullptr),
-    mAliveIndex_Srv(nullptr), mPartA_Srv(nullptr),
-    mCoarseTileIndex_Srv(nullptr), mCoarseTileIndex_Uav(nullptr),
-    mCoarseTileIndexCounter_Srv(nullptr), mCoarseTileIndexCounter_Uav(nullptr),
-    mTiledIndex_Srv(nullptr), mTiledIndex_Uav(nullptr),
-    mParticleRender_Srv(nullptr), mParticleRender_Uav(nullptr),
-    mLinearClampSampler(nullptr), mParticleTex_Srv(nullptr),
-    mRSCameraInfo(nullptr), mParticleBlendState(nullptr),
-    mBlendVertexShader(nullptr), mBlendPixelShader(nullptr)
+    mCoarseCullingShader(nullptr),
+    mTileCullingShader(nullptr),
+    mTileRenderShader(nullptr),
+    mBlendVertexShader(nullptr),
+    mBlendPixelShader(nullptr),
+    mCameraConstantBuffer(nullptr),
+    mTilingConstantBuffer(nullptr),
+    mActiveListConstantBuffer(nullptr),
+    mDepthTex_Srv(nullptr),
+    mViewSpacePos_Srv(nullptr),
+    mMaxRadius_Srv(nullptr),
+    mPartA_Srv(nullptr),
+    mAliveIndex_Srv(nullptr),
+    mAliveIndex_Uav(nullptr),
+    mCoarseTileIndex_Srv(nullptr),
+    mCoarseTileIndex_Uav(nullptr),
+    mCoarseTileIndexCounter_Srv(nullptr),
+    mCoarseTileIndexCounter_Uav(nullptr),
+    mTiledIndex_Srv(nullptr),
+    mTiledIndex_Uav(nullptr),
+    mParticleRender_Srv(nullptr),
+    mParticleRender_Uav(nullptr),
+    mLinearClampSampler(nullptr),
+    mParticleBlendState(nullptr),
+    mParticleTex_Srv(nullptr),
+    mRSCameraInfo(nullptr)
 {
 
 }
@@ -4392,14 +4430,17 @@ RSPass_PriticleTileRender::RSPass_PriticleTileRender(
     mCoarseCullingShader(_source.mCoarseCullingShader),
     mTileCullingShader(_source.mTileCullingShader),
     mTileRenderShader(_source.mTileRenderShader),
+    mBlendVertexShader(_source.mBlendVertexShader),
+    mBlendPixelShader(_source.mBlendPixelShader),
     mCameraConstantBuffer(_source.mCameraConstantBuffer),
     mTilingConstantBuffer(_source.mTilingConstantBuffer),
     mActiveListConstantBuffer(_source.mActiveListConstantBuffer),
     mDepthTex_Srv(_source.mDepthTex_Srv),
     mViewSpacePos_Srv(_source.mViewSpacePos_Srv),
     mMaxRadius_Srv(_source.mMaxRadius_Srv),
-    mAliveIndex_Srv(_source.mAliveIndex_Srv),
     mPartA_Srv(_source.mPartA_Srv),
+    mAliveIndex_Srv(_source.mAliveIndex_Srv),
+    mAliveIndex_Uav(_source.mAliveIndex_Uav),
     mCoarseTileIndex_Srv(_source.mCoarseTileIndex_Srv),
     mCoarseTileIndex_Uav(_source.mCoarseTileIndex_Uav),
     mCoarseTileIndexCounter_Srv(_source.mCoarseTileIndexCounter_Srv),
@@ -4409,12 +4450,9 @@ RSPass_PriticleTileRender::RSPass_PriticleTileRender(
     mParticleRender_Srv(_source.mParticleRender_Srv),
     mParticleRender_Uav(_source.mParticleRender_Uav),
     mLinearClampSampler(_source.mLinearClampSampler),
+    mParticleBlendState(_source.mParticleBlendState),
     mParticleTex_Srv(_source.mParticleTex_Srv),
-    mAliveIndex_Uav(_source.mAliveIndex_Uav),
-    mRSCameraInfo(_source.mRSCameraInfo),
-    mBlendVertexShader(_source.mBlendVertexShader),
-    mBlendPixelShader(_source.mBlendPixelShader),
-    mParticleBlendState(_source.mParticleBlendState)
+    mRSCameraInfo(_source.mRSCameraInfo)
 {
 
 }
@@ -4874,13 +4912,18 @@ bool RSPass_PriticleTileRender::CheckResources()
 RSPass_Sprite::RSPass_Sprite(std::string& _name,
     PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mVertexShader(nullptr), mPixelShader(nullptr),
-    mDepthStencilState(nullptr), mRenderTargetView(nullptr),
-    mProjStructedBuffer(nullptr), mProjStructedBufferSrv(nullptr),
+    mVertexShader(nullptr),
+    mPixelShader(nullptr),
+    mDepthStencilState(nullptr),
+    mBlendState(nullptr),
+    mRenderTargetView(nullptr),
+    mDrawCallType(DRAWCALL_TYPE::MAX),
+    mDrawCallPipe(nullptr),
+    mProjStructedBuffer(nullptr),
+    mProjStructedBufferSrv(nullptr),
     mInstanceStructedBuffer(nullptr),
     mInstanceStructedBufferSrv(nullptr),
-    mLinearSampler(nullptr), mBlendState(nullptr),
-    mDrawCallType(DRAWCALL_TYPE::MAX), mDrawCallPipe(nullptr),
+    mLinearSampler(nullptr),
     mRSCameraInfo(nullptr)
 {
 
@@ -4975,7 +5018,6 @@ void RSPass_Sprite::ExecuatePass()
     STContext()->PSSetSamplers(0, 1, &mLinearSampler);
 
     DirectX::XMMATRIX mat = {};
-    DirectX::XMFLOAT4X4 flt44 = {};
     UINT stride = sizeof(VertexType::TangentVertex);
     UINT offset = 0;
 
@@ -5181,11 +5223,14 @@ bool RSPass_Sprite::CreateSamplers()
 RSPass_SimpleLight::RSPass_SimpleLight(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mVertexShader(nullptr), mPixelShader(nullptr),
-    mLinearWrapSampler(nullptr), mRenderTargetView(nullptr),
-    mVertexBuffer(nullptr), mIndexBuffer(nullptr),
+    mVertexShader(nullptr),
+    mPixelShader(nullptr),
+    mRenderTargetView(nullptr),
+    mLinearWrapSampler(nullptr),
+    mGeoBufferSrv(nullptr),
     mSsaoSrv(nullptr),
-    mGeoBufferSrv(nullptr)
+    mVertexBuffer(nullptr),
+    mIndexBuffer(nullptr)
 {
 
 }
@@ -5196,10 +5241,10 @@ RSPass_SimpleLight::RSPass_SimpleLight(const RSPass_SimpleLight& _source) :
     mPixelShader(_source.mPixelShader),
     mRenderTargetView(_source.mRenderTargetView),
     mLinearWrapSampler(_source.mLinearWrapSampler),
+    mGeoBufferSrv(_source.mGeoBufferSrv),
     mSsaoSrv(_source.mSsaoSrv),
     mVertexBuffer(_source.mVertexBuffer),
-    mIndexBuffer(_source.mIndexBuffer),
-    mGeoBufferSrv(_source.mGeoBufferSrv)
+    mIndexBuffer(_source.mIndexBuffer)
 {
 
 }
@@ -5410,13 +5455,21 @@ bool RSPass_SimpleLight::CreateSamplers()
 RSPass_Billboard::RSPass_Billboard(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mVertexShader(nullptr), mGeometryShader(nullptr), mPixelShader(nullptr),
-    mLinearWrapSampler(nullptr), mRenderTargetView(nullptr),
-    mBlendState(nullptr), mDrawCallType(DRAWCALL_TYPE::TRANSPARENCY),
-    mDrawCallPipe(nullptr), mRSCameraInfo(nullptr),
-    mViewProjStructedBuffer(nullptr), mViewProjStructedBufferSrv(nullptr),
-    mInstanceStructedBuffer(nullptr), mInstanceStructedBufferSrv(nullptr),
-    mDepthStencilView(nullptr), mRSCamera(nullptr)
+    mVertexShader(nullptr),
+    mGeometryShader(nullptr),
+    mPixelShader(nullptr),
+    mBlendState(nullptr),
+    mRenderTargetView(nullptr),
+    mDepthStencilView(nullptr),
+    mLinearWrapSampler(nullptr),
+    mViewProjStructedBuffer(nullptr),
+    mViewProjStructedBufferSrv(nullptr),
+    mInstanceStructedBuffer(nullptr),
+    mInstanceStructedBufferSrv(nullptr),
+    mDrawCallType(DRAWCALL_TYPE::TRANSPARENCY),
+    mDrawCallPipe(nullptr),
+    mRSCameraInfo(nullptr),
+    mRSCamera(nullptr)
 {
 
 }
@@ -5426,10 +5479,10 @@ RSPass_Billboard::RSPass_Billboard(const RSPass_Billboard& _source) :
     mVertexShader(_source.mVertexShader),
     mGeometryShader(_source.mGeometryShader),
     mPixelShader(_source.mPixelShader),
+    mBlendState(_source.mBlendState),
     mRenderTargetView(_source.mRenderTargetView),
     mDepthStencilView(_source.mDepthStencilView),
     mLinearWrapSampler(_source.mLinearWrapSampler),
-    mBlendState(_source.mBlendState),
     mViewProjStructedBuffer(_source.mViewProjStructedBuffer),
     mViewProjStructedBufferSrv(_source.mViewProjStructedBufferSrv),
     mInstanceStructedBuffer(_source.mInstanceStructedBuffer),
@@ -5510,7 +5563,6 @@ void RSPass_Billboard::ExecuatePass()
     STContext()->PSSetSamplers(0, 1, &mLinearWrapSampler);
 
     DirectX::XMMATRIX mat = {};
-    DirectX::XMFLOAT4X4 flt44 = {};
     UINT stride = sizeof(VertexType::TangentVertex);
     UINT offset = 0;
 
@@ -5743,10 +5795,12 @@ RSPass_Tonemapping::RSPass_Tonemapping(
     RSPass_Base(_name, _type, _root),
     mAverLuminShader(nullptr),
     mDynamicExposureShader(nullptr),
-    mToneMapShader(nullptr), mHdrUav(nullptr), mHdrSrv(nullptr),
+    mToneMapShader(nullptr),
+    mHdrUav(nullptr),
+    mHdrSrv(nullptr),
     mAverageLuminBufferArray({ nullptr,nullptr }),
-    mAverageLuminUavArray({ nullptr,nullptr }),
-    mAverageLuminSrvArray({ nullptr,nullptr })
+    mAverageLuminSrvArray({ nullptr,nullptr }),
+    mAverageLuminUavArray({ nullptr,nullptr })
 {
 
 }
@@ -5885,11 +5939,11 @@ bool RSPass_Tonemapping::CreateShaders()
         std::to_string(g_RenderEffectConfig.mExpoInvFactor) + "f)";
     D3D_SHADER_MACRO expoMacro[] =
     {
-        "TRANS_SPEED", transSpdStr.c_str(),
-        "EXPO_MIN", expoMinStr.c_str(),
-        "EXPO_MAX", expoMaxStr.c_str(),
-        "INV_FACTOR", invFactorStr.c_str(),
-        nullptr, nullptr
+        { "TRANS_SPEED", transSpdStr.c_str() },
+        { "EXPO_MIN", expoMinStr.c_str() },
+        { "EXPO_MAX", expoMaxStr.c_str() },
+        { "INV_FACTOR", invFactorStr.c_str() },
+        { nullptr, nullptr }
     };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\dynamic_exposure_compute.hlsl",
@@ -5996,44 +6050,48 @@ bool RSPass_Tonemapping::CreateViews()
 RSPass_BloomHdr::RSPass_BloomHdr(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mUpSampleShader(nullptr),
-    mBlurHoriShader(nullptr),
-    mBlurVertShader(nullptr),
+    mFilterPixelShader(nullptr),
     mKABlurHoriShader(nullptr),
     mKABlurVertShader(nullptr),
+    mBlurHoriShader(nullptr),
+    mBlurVertShader(nullptr),
+    mUpSampleShader(nullptr),
     mBlendShader(nullptr),
+    mLinearBorderSampler(nullptr),
     mBlurConstBuffer(nullptr),
     mIntensityConstBuffer(nullptr),
-    mLinearBorderSampler(nullptr),
-    mFilterPixelShader(nullptr), mHdrUav(nullptr),
-    mNeedBloomTexture(nullptr), mHdrSrv(nullptr),
-    mNeedBloomSrv(nullptr), mNeedBloomUavArray({ nullptr }),
+    mHdrSrv(nullptr),
+    mHdrUav(nullptr),
+    mNeedBloomTexture(nullptr),
+    mNeedBloomSrv(nullptr),
+    mNeedBloomUavArray({ nullptr }),
     mUpSampleTexture(nullptr),
-    mUpSampleSrv(nullptr), mUpSampleUavArray({ nullptr })
+    mUpSampleSrv(nullptr),
+    mUpSampleUavArray({ nullptr })
 {
 
 }
 
 RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
     RSPass_Base(_source),
-    mUpSampleShader(_source.mUpSampleShader),
-    mBlurHoriShader(_source.mBlurHoriShader),
-    mBlurVertShader(_source.mBlurVertShader),
+    mFilterPixelShader(_source.mFilterPixelShader),
     mKABlurHoriShader(_source.mKABlurHoriShader),
     mKABlurVertShader(_source.mKABlurVertShader),
-    mFilterPixelShader(_source.mFilterPixelShader),
+    mBlurHoriShader(_source.mBlurHoriShader),
+    mBlurVertShader(_source.mBlurVertShader),
+    mUpSampleShader(_source.mUpSampleShader),
     mBlendShader(_source.mBlendShader),
+    mLinearBorderSampler(_source.mLinearBorderSampler),
     mBlurConstBuffer(_source.mBlurConstBuffer),
     mIntensityConstBuffer(_source.mIntensityConstBuffer),
-    mLinearBorderSampler(_source.mLinearBorderSampler),
     mHdrSrv(_source.mHdrSrv),
     mHdrUav(_source.mHdrUav),
     mNeedBloomTexture(_source.mNeedBloomTexture),
     mNeedBloomSrv(_source.mNeedBloomSrv),
-    mNeedBloomUavArray(_source.mNeedBloomUavArray),
+    mNeedBloomUavArray({ _source.mNeedBloomUavArray }),
     mUpSampleTexture(_source.mUpSampleTexture),
     mUpSampleSrv(_source.mUpSampleSrv),
-    mUpSampleUavArray(_source.mUpSampleUavArray)
+    mUpSampleUavArray({ _source.mUpSampleUavArray })
 {
     if (mHasBeenInited)
     {
@@ -6249,8 +6307,8 @@ bool RSPass_BloomHdr::CreateShaders()
         g_RenderEffectConfig.mBloomMinValue);
     D3D_SHADER_MACRO pickMacro[] =
     {
-        "MIN_VALUE", pickMinValue.c_str(),
-        nullptr, nullptr
+        { "MIN_VALUE", pickMinValue.c_str() },
+        { nullptr, nullptr }
     };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\bloom_pick_compute.hlsl",
@@ -6287,10 +6345,10 @@ bool RSPass_BloomHdr::CreateShaders()
     }
     D3D_SHADER_MACRO blurMacro[] =
     {
-        "KERNEL_SIZE", kernelSize.c_str(),
-        "KERNEL_HALF", kernelHalf.c_str(),
-        "WEIGHT_ARRAY", weightArray.c_str(),
-        nullptr, nullptr
+        { "KERNEL_SIZE", kernelSize.c_str() },
+        { "KERNEL_HALF", kernelHalf.c_str() },
+        { "WEIGHT_ARRAY", weightArray.c_str() },
+        { nullptr, nullptr }
     };
     hr = Tool::CompileShaderFromFile(
         L".\\Assets\\Shaders\\gauss_blur_compute.hlsl",
@@ -6494,20 +6552,23 @@ bool RSPass_BloomHdr::CreateSampler()
 RSPass_ToSwapChain::RSPass_ToSwapChain(
     std::string& _name, PASS_TYPE _type, RSRoot_DX11* _root) :
     RSPass_Base(_name, _type, _root),
-    mVertexBuffer(nullptr), mIndexBuffer(nullptr),
-    mVertexShader(nullptr), mPixelShader(nullptr),
-    mLinearWrapSampler(nullptr), mSwapChainRtv(nullptr),
-    mHdrSrv(nullptr)
+    mVertexShader(nullptr),
+    mPixelShader(nullptr),
+    mVertexBuffer(nullptr),
+    mIndexBuffer(nullptr),
+    mSwapChainRtv(nullptr),
+    mHdrSrv(nullptr),
+    mLinearWrapSampler(nullptr)
 {
 
 }
 
 RSPass_ToSwapChain::RSPass_ToSwapChain(const RSPass_ToSwapChain& _source) :
     RSPass_Base(_source),
-    mVertexBuffer(_source.mVertexBuffer),
-    mIndexBuffer(_source.mIndexBuffer),
     mVertexShader(_source.mVertexShader),
     mPixelShader(_source.mPixelShader),
+    mVertexBuffer(_source.mVertexBuffer),
+    mIndexBuffer(_source.mIndexBuffer),
     mSwapChainRtv(_source.mSwapChainRtv),
     mHdrSrv(_source.mHdrSrv),
     mLinearWrapSampler(_source.mLinearWrapSampler)

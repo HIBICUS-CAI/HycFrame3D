@@ -185,6 +185,7 @@ void ObjectContainer::InitAllNewObjects()
 #ifdef _DEBUG
         assert(result);
 #endif // _DEBUG
+        (void)result;
     }
     mNewActorObjVector.clear();
 
@@ -197,6 +198,7 @@ void ObjectContainer::InitAllNewObjects()
 #ifdef _DEBUG
         assert(result);
 #endif // _DEBUG
+        (void)result;
     }
     mNewUiObjVector.clear();
 }

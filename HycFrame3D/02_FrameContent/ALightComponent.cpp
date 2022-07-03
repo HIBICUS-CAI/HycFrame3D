@@ -11,18 +11,28 @@
 
 ALightComponent::ALightComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mRSLightPtr(nullptr),
-    mLightName(""), mLightInfoForInit({}), mLightCamInfoForInit({}),
-    mIsBloom(false), mIsCamera(false), mCanCreateLight(false)
+    ActorComponent(_compName, _actorOwner),
+    mLightName(""),
+    mRSLightPtr(nullptr),
+    mCanCreateLight(false),
+    mLightInfoForInit({}),
+    mLightCamInfoForInit({}),
+    mIsBloom(false),
+    mIsCamera(false)
 {
 
 }
 
 ALightComponent::ALightComponent(std::string& _compName,
     ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mRSLightPtr(nullptr),
-    mLightName(""), mLightInfoForInit({}), mLightCamInfoForInit({}),
-    mIsBloom(false), mIsCamera(false), mCanCreateLight(false)
+    ActorComponent(_compName, _actorOwner),
+    mLightName(""),
+    mRSLightPtr(nullptr),
+    mCanCreateLight(false),
+    mLightInfoForInit({}),
+    mLightCamInfoForInit({}),
+    mIsBloom(false),
+    mIsCamera(false)
 {
 
 }
@@ -86,6 +96,7 @@ void ALightComponent::CreateLight()
 #ifdef _DEBUG
         assert(cam_create);
 #endif // _DEBUG
+        (void)cam_create;
     }
 }
 

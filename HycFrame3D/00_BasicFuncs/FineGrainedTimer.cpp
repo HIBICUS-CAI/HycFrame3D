@@ -3,7 +3,9 @@
 
 Timer::Timer(void) :
     mLitmp({}), mQt1(0), mQt2(0), mDft(0.), mDff(0.), mDfm(0.), mActiveFlg(false)
-{}
+{
+    (void)mActiveFlg;
+}
 
 
 Timer::~Timer(void) {}

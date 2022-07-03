@@ -7,12 +7,17 @@
 AAnimateComponent::AAnimateComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
-    mMeshAnimationDataPtr(nullptr), mSubMeshBoneDataPtrVec({}),
-    mAnimationNames({}), mCurrentAnimationInfo(nullptr),
-    mCurrentAnimationName(""), mNextAnimationName(""),
-    mResetTimeStampFlag(false), mShareBoneData(true),
-    mTotalTime(0.f), mAnimationSpeedFactor(1.f),
-    mSubMeshNameVec({})
+    mMeshAnimationDataPtr(nullptr),
+    mSubMeshNameVec({}),
+    mSubMeshBoneDataPtrVec({}),
+    mShareBoneData(true),
+    mAnimationNames({}),
+    mCurrentAnimationInfo(nullptr),
+    mCurrentAnimationName(""),
+    mNextAnimationName(""),
+    mResetTimeStampFlag(false),
+    mTotalTime(0.f),
+    mAnimationSpeedFactor(1.f)
 {
 
 }
@@ -20,12 +25,17 @@ AAnimateComponent::AAnimateComponent(std::string&& _compName,
 AAnimateComponent::AAnimateComponent(std::string& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
-    mMeshAnimationDataPtr(nullptr), mSubMeshBoneDataPtrVec({}),
-    mAnimationNames({}), mCurrentAnimationInfo(nullptr),
-    mCurrentAnimationName(""), mNextAnimationName(""),
-    mResetTimeStampFlag(false), mShareBoneData(true),
-    mTotalTime(0.f), mAnimationSpeedFactor(1.f),
-    mSubMeshNameVec({})
+    mMeshAnimationDataPtr(nullptr),
+    mSubMeshNameVec({}),
+    mSubMeshBoneDataPtrVec({}),
+    mShareBoneData(true),
+    mAnimationNames({}),
+    mCurrentAnimationInfo(nullptr),
+    mCurrentAnimationName(""),
+    mNextAnimationName(""),
+    mResetTimeStampFlag(false),
+    mTotalTime(0.f),
+    mAnimationSpeedFactor(1.f)
 {
 
 }
@@ -60,7 +70,7 @@ bool AAnimateComponent::Init()
         if (!mesh->mMeshData.mWithAnimation)
         {
             P_LOG(LOG_ERROR, "this mesh doesn't have animation info : %s\n",
-                meshName);
+                meshName.c_str());
             return false;
         }
         mesh->mBonesMap.insert({ GetCompName(),mesh->mOriginBoneData });
@@ -293,8 +303,7 @@ void AAnimateComponent::ProcessNodes(float _aniTime, const MESH_NODE* _node,
         DirectX::XMMATRIX boneSpace = DirectX::XMLoadFloat4x4(
             &bone->mLocalToBone);
         boneSpace = DirectX::XMMatrixTranspose(boneSpace);
-        DirectX::XMMATRIX glbInv = DirectX::XMLoadFloat4x4(&_glbInvTrans);
-        DirectX::XMMATRIX finalTrans = boneSpace * glbTrans/* * glbInv*/;
+        DirectX::XMMATRIX finalTrans = boneSpace * glbTrans;
         DirectX::XMStoreFloat4x4(&bone->mBoneTransform, finalTrans);
     }
 

@@ -5,8 +5,12 @@
 #include "UButtonComponent.h"
 
 AssetsPool::AssetsPool(SceneNode& _sceneNode) :
-    mSceneNodeOwner(_sceneNode), mSubMeshPool({}), mSoundPool({}),
-    mMeshAnimationsPool({}), mMeshPool({}), mSubMeshToMesh({})
+    mSceneNodeOwner(_sceneNode),
+    mSubMeshPool({}),
+    mSubMeshToMesh({}),
+    mMeshPool({}),
+    mMeshAnimationsPool({}),
+    mSoundPool({})
 {
     mSubMeshPool.reserve(256);
     mMeshPool.reserve(256);

@@ -428,7 +428,7 @@ void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile& _json,
         }
         else
         {
-            P_LOG(LOG_ERROR, "invalid actor name in : %s\n", _jsonPath);
+            P_LOG(LOG_ERROR, "invalid actor name in : %s\n", _jsonPath.c_str());
             return;
         }
     }
@@ -469,7 +469,7 @@ void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile& _json,
         }
         else
         {
-            P_LOG(LOG_ERROR, "invalid ui name in : %s\n", _jsonPath);
+            P_LOG(LOG_ERROR, "invalid ui name in : %s\n", _jsonPath.c_str());
             return;
         }
     }
@@ -493,7 +493,6 @@ void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile& _json,
 void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     JsonFile& _json, std::string _jsonPath)
 {
-    JsonNode compRoot = GetJsonNode(_json, _jsonPath);
     std::string compType = GetJsonNode(_json, _jsonPath + "/type")->GetString();
     std::string compName = _actor->GetObjectName() + "-" + compType;
 
@@ -946,7 +945,6 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
 void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
     JsonFile& _json, std::string _jsonPath)
 {
-    JsonNode compRoot = GetJsonNode(_json, _jsonPath);
     std::string compType = GetJsonNode(_json, _jsonPath + "/type")->GetString();
     std::string compName = _ui->GetObjectName() + "-" + compType;
 

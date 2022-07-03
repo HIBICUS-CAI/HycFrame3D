@@ -37,8 +37,9 @@ int DebugPrintF(int level, const char* format, ...)
         default:
             assert(invalid_log_level); break;
         }
+        (void)invalid_log_level;
 
-        va_list argList;
+        va_list argList = {};
         va_start(argList, format);
 
         int charsWritten = VDebugPrintF(format, argList);
@@ -62,7 +63,7 @@ int MyPrintF(int level, const char* format, ...)
 {
     if (level >= LOG_LEVEL_FOR_SETTING)
     {
-        va_list argList;
+        va_list argList = {};
         va_start(argList, format);
 
         int charsWritten = VMyPrintF(format, argList);

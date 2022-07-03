@@ -9,11 +9,18 @@
 ASpriteComponent::ASpriteComponent(std::string&& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
-    mGeoPointName(""), mTextureName(""), mIsBillboard(false),
-    mSize({ 10.f,10.f }), mTexCoord({ 0.f,0.f,1.f,1.f }),
-    mWithAnimation(false), mStride({ 0.f,0.f }), mMaxCut(0),
-    mRepeatFlg(false), mSwitchTime(0.f), mTimeCounter(0.f),
-    mCurrentAnimateCut(0)
+    mGeoPointName(""),
+    mTextureName(""),
+    mIsBillboard(false),
+    mSize({ 10.f,10.f }),
+    mTexCoord({ 0.f,0.f,1.f,1.f }),
+    mWithAnimation(false),
+    mStride({ 0.f,0.f }),
+    mMaxCut(0),
+    mCurrentAnimateCut(0),
+    mRepeatFlg(false),
+    mSwitchTime(0.f),
+    mTimeCounter(0.f)
 {
 
 }
@@ -21,11 +28,18 @@ ASpriteComponent::ASpriteComponent(std::string&& _compName,
 ASpriteComponent::ASpriteComponent(std::string& _compName,
     ActorObject* _actorOwner) :
     ActorComponent(_compName, _actorOwner),
-    mGeoPointName(""), mTextureName(""), mIsBillboard(false),
-    mSize({ 10.f,10.f }), mTexCoord({ 0.f,0.f,1.f,1.f }),
-    mWithAnimation(false), mStride({ 0.f,0.f }), mMaxCut(0),
-    mRepeatFlg(false), mSwitchTime(0.f), mTimeCounter(0.f),
-    mCurrentAnimateCut(0)
+    mGeoPointName(""),
+    mTextureName(""),
+    mIsBillboard(false),
+    mSize({ 10.f,10.f }),
+    mTexCoord({ 0.f,0.f,1.f,1.f }),
+    mWithAnimation(false),
+    mStride({ 0.f,0.f }),
+    mMaxCut(0),
+    mCurrentAnimateCut(0),
+    mRepeatFlg(false),
+    mSwitchTime(0.f),
+    mTimeCounter(0.f)
 {
 
 }

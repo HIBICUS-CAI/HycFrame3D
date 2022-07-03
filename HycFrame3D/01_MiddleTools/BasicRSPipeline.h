@@ -6,6 +6,9 @@
 
 bool CreateBasicPipeline();
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
+
 constexpr auto PTC_RENDER_BUFFER_NAME = "particle-render-buffer";
 constexpr auto PTC_A_NAME = "particle-part-a";
 constexpr auto PTC_B_NAME = "particle-part-b";
@@ -34,6 +37,8 @@ constexpr UINT PTC_TILE_BUFFER_SIZE = PTC_NUM_PER_TILE + 1;
 constexpr UINT PTC_TILE_X_SIZE = 32;
 constexpr UINT PTC_TILE_Y_SIZE = 32;
 constexpr UINT PTC_COARSE_CULLING_THREADS = 256;
+
+#pragma clang diagnostic pop
 
 struct BLM_BLUR_INFO
 {
@@ -192,11 +197,11 @@ public:
 public:
     virtual RSPass_MRT* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -235,11 +240,11 @@ public:
 public:
     virtual RSPass_Ssao* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -265,7 +270,7 @@ private:
     ID3D11ShaderResourceView* mGeoBufferSrv;
     ID3D11ShaderResourceView* mDepthMapSrv;
     ID3D11ShaderResourceView* mRandomMapSrv;
-    DirectX::XMFLOAT4 mOffsetVec[14];
+    std::array<DirectX::XMFLOAT4, 14> mOffsetVec;
     ID3D11Buffer* mVertexBuffer;
     ID3D11Buffer* mIndexBuffer;
     RS_CAM_INFO* mRSCameraInfo;
@@ -282,11 +287,11 @@ public:
 public:
     virtual RSPass_KBBlur* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -311,11 +316,11 @@ public:
 public:
     virtual RSPass_Shadow* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -350,11 +355,11 @@ public:
 public:
     virtual RSPass_Defered* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -399,11 +404,11 @@ public:
 public:
     virtual RSPass_SkyShpere* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -437,11 +442,11 @@ public:
 public:
     virtual RSPass_Bloom* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -479,11 +484,11 @@ public:
 public:
     virtual RSPass_PriticleSetUp* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateBuffers();
@@ -558,11 +563,11 @@ public:
 public:
     virtual RSPass_PriticleEmitSimulate* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -608,11 +613,11 @@ public:
 public:
     virtual RSPass_PriticleTileRender* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -665,11 +670,11 @@ public:
 public:
     virtual RSPass_Sprite* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -705,11 +710,11 @@ public:
 public:
     virtual RSPass_SimpleLight* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -739,11 +744,11 @@ public:
 public:
     virtual RSPass_Billboard* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateStates();
@@ -781,11 +786,11 @@ public:
 public:
     virtual RSPass_Tonemapping* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -813,11 +818,11 @@ public:
 public:
     virtual RSPass_BloomHdr* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -857,11 +862,11 @@ public:
 public:
     virtual RSPass_FXAA* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateShaders();
@@ -887,11 +892,11 @@ public:
 public:
     virtual RSPass_ToSwapChain* ClonePass() override;
 
-    virtual bool InitPass();
+    virtual bool InitPass() override;
 
-    virtual void ReleasePass();
+    virtual void ReleasePass() override;
 
-    virtual void ExecuatePass();
+    virtual void ExecuatePass() override;
 
 private:
     bool CreateBuffers();
@@ -900,10 +905,10 @@ private:
     bool CreateSamplers();
 
 private:
-    ID3D11Buffer* mVertexBuffer;
-    ID3D11Buffer* mIndexBuffer;
     ID3D11VertexShader* mVertexShader;
     ID3D11PixelShader* mPixelShader;
+    ID3D11Buffer* mVertexBuffer;
+    ID3D11Buffer* mIndexBuffer;
     ID3D11RenderTargetView* mSwapChainRtv;
     ID3D11ShaderResourceView* mHdrSrv;
     ID3D11SamplerState* mLinearWrapSampler;

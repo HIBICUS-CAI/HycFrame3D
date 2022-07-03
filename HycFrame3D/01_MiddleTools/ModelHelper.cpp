@@ -5,9 +5,7 @@
 #include <fstream>
 #include <cstdio>
 #include <cstring>
-#include "rapidjson\filereadstream.h"
-#include "rapidjson\writer.h"
-#include "rapidjson\document.h"
+#include <TextUtility.h>
 #include "DDSTextureLoader11.h"
 #include "WICTextureLoader11.h"
 #include "RSRoot_DX11.h"
@@ -478,6 +476,7 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
 #ifdef _DEBUG
     assert(subSize == subArraySize);
 #endif // _DEBUG
+    (void)subArraySize;
 
     std::vector<UINT> index = {};
     std::vector<VertexType::TangentVertex> vertex = {};
@@ -863,6 +862,7 @@ void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
         {
             bool texture_load_fail = false;
             assert(texture_load_fail);
+            (void)texture_load_fail;
         }
     }
     else
@@ -878,6 +878,7 @@ void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
         {
             bool texture_load_fail = false;
             assert(texture_load_fail);
+            (void)texture_load_fail;
         }
     }
 

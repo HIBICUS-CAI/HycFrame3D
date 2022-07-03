@@ -21,18 +21,28 @@
 #include "UAudioComponent.h"
 
 ComponentContainer::ComponentContainer(SceneNode& _sceneNode) :
-    mSceneNodeOwner(_sceneNode), mCompMap({}),
-    mATransformCompVector({}), mAInputCompVector({}),
-    mAInteractCompVector({}), mATimerCompVector({}),
-    mACollisionCompVector({}), mAMeshCompVector({}),
-    mALightCompVector({}), mAAudioCompVector({}),
-    mAParticleCompVector({}), mAAnimateCompVector({}),
+    mSceneNodeOwner(_sceneNode),
+    mATransformCompVector({}),
+    mAInputCompVector({}),
+    mAInteractCompVector({}),
+    mATimerCompVector({}),
+    mACollisionCompVector({}),
+    mAMeshCompVector({}),
+    mALightCompVector({}),
+    mAAudioCompVector({}),
+    mAParticleCompVector({}),
+    mAAnimateCompVector({}),
     mASpriteCompVector({}),
-    mUTransformCompVector({}), mUSpriteCompVector({}),
-    mUAnimateCompVector({}), mUTimerCompVector({}),
-    mUInputCompVector({}), mUInteractCompVector({}),
-    mUButtonCompVector({}), mUAudioCompVector({}),
-    mInsertFlag({})
+    mUTransformCompVector({}),
+    mUSpriteCompVector({}),
+    mUAnimateCompVector({}),
+    mUTimerCompVector({}),
+    mUInputCompVector({}),
+    mUInteractCompVector({}),
+    mUButtonCompVector({}),
+    mUAudioCompVector({}),
+    mInsertFlag({}),
+    mCompMap({})
 {
     mATransformCompVector.reserve(1024);
     mAInputCompVector.reserve(1024);
@@ -494,6 +504,7 @@ void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string&& _compNam
     {
         bool invalid_comp_to_delete = false;
         assert(invalid_comp_to_delete);
+        (void)invalid_comp_to_delete;
         break;
     }
     }
@@ -655,6 +666,7 @@ void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string& _compName
     {
         bool invalid_comp_to_delete = false;
         assert(invalid_comp_to_delete);
+        (void)invalid_comp_to_delete;
         break;
     }
     }

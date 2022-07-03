@@ -1,15 +1,24 @@
 #define BT_NO_SIMD_OPERATOR_OVERLOADS
 
 #include "PhysicsWorld.h"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmicrosoft-include"
+#pragma clang diagnostic ignored "-Wunused-but-set-variable"
+#pragma clang diagnostic ignored "-Wreorder-ctor"
+#pragma clang diagnostic ignored "-Wbraced-scalar-init"
 #include "bullet/btBulletCollisionCommon.h"
+#pragma clang diagnostic pop
 
 using namespace DirectX;
 
 PhysicsWorld::PhysicsWorld(class SceneNode& _sceneNode) :
-    mSceneNodeOwner(_sceneNode), mCollisionWorld(nullptr),
-    mCollisionConfig(nullptr), mCollisionDispatcher(nullptr),
-    mBroadphaseInterface(nullptr), mColliedPair({}),
-    mContactPointMap({})
+    mSceneNodeOwner(_sceneNode),
+    mColliedPair({}),
+    mContactPointMap({}),
+    mCollisionWorld(nullptr),
+    mCollisionConfig(nullptr),
+    mCollisionDispatcher(nullptr),
+    mBroadphaseInterface(nullptr)
 {
     CreatePhysicsWorld();
 }

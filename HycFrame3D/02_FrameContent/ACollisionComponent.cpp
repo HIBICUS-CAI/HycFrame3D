@@ -5,7 +5,13 @@
 #include "SceneNode.h"
 #include "PhysicsWorld.h"
 #include "ATransformComponent.h"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmicrosoft-include"
+#pragma clang diagnostic ignored "-Wunused-but-set-variable"
+#pragma clang diagnostic ignored "-Wreorder-ctor"
+#pragma clang diagnostic ignored "-Wbraced-scalar-init"
 #include "bullet/btBulletCollisionCommon.h"
+#pragma clang diagnostic pop
 
 using namespace DirectX;
 
@@ -133,7 +139,7 @@ void ACollisionComponent::CreateCollisionShape(COLLISION_SHAPE _type,
             { _size.x / 2.f,_size.y / 2.f,_size.z / 2.f });
         break;
     case COLLISION_SHAPE::SPHERE:
-        mCollisionShape = new btSphereShape({ _size.x });
+        mCollisionShape = new btSphereShape(_size.x);
         break;
     default:
         assert(mCollisionShape);
@@ -179,7 +185,7 @@ DirectX::XMFLOAT3 ACollisionComponent::CalcCenterOfContact(
     DirectX::XMFLOAT3 center = {};
     DirectX::XMVECTOR contactA = DirectX::XMLoadFloat3(&_pair.first);
     DirectX::XMVECTOR contactB = DirectX::XMLoadFloat3(&_pair.second);
-    DirectX::XMVECTOR centerV = DirectX::XMLoadFloat3(&_pair.second);
+    DirectX::XMVECTOR centerV = {};
     centerV = (contactA + contactB) / 2.f;
     DirectX::XMStoreFloat3(&center, centerV);
     return center;

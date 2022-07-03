@@ -2,15 +2,17 @@
 #include "SceneNode.h"
 
 Object::Object(std::string&& _objName, SceneNode& _sceneNode) :
-    mObjectName(_objName), mSceneNodeOwner(_sceneNode),
-    mObjectStatus(STATUS::NEED_INIT)
+    mObjectName(_objName),
+    mObjectStatus(STATUS::NEED_INIT),
+    mSceneNodeOwner(_sceneNode)
 {
 
 }
 
 Object::Object(std::string& _objName, SceneNode& _sceneNode) :
-    mObjectName(_objName), mSceneNodeOwner(_sceneNode),
-    mObjectStatus(STATUS::NEED_INIT)
+    mObjectName(_objName),
+    mObjectStatus(STATUS::NEED_INIT),
+    mSceneNodeOwner(_sceneNode)
 {
 
 }

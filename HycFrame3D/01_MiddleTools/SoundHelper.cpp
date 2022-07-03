@@ -275,7 +275,7 @@ void LoadSound(std::string name, LOAD_HANDLE path)
             "failed to check wav sound by ReadChunkData\n");
         return;
     }
-    if (dwFiletype != 'EVAW')
+    if (dwFiletype != static_cast<DWORD>('EVAW'))
     {
         P_LOG(LOG_ERROR,
             "failed to check wav sound by dwFiletype\n");

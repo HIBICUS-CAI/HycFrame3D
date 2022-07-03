@@ -28,6 +28,7 @@ SceneNode::SceneNode(std::string&& _sceneName, SceneManager* _sceneManager) :
         bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
             mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
         assert(new_scene_fail);
+        (void)new_scene_fail;
     }
 }
 
@@ -49,6 +50,7 @@ SceneNode::SceneNode(std::string& _sceneName, SceneManager* _sceneManager) :
         bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
             mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
         assert(new_scene_fail);
+        (void)new_scene_fail;
     }
 }
 
@@ -125,6 +127,7 @@ void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string 
             GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
             wstr.c_str(), nullptr, &srv);
         assert(!FAILED(hr));
+        (void)hr;
         mCameraAmbientInfo.mIBLEnvTex = srv;
     }
 
@@ -136,6 +139,7 @@ void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string 
             GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
             wstr.c_str(), nullptr, &srv);
         assert(!FAILED(hr));
+        (void)hr;
         mCameraAmbientInfo.mIBLDiffTex = srv;
     }
 
@@ -147,6 +151,7 @@ void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string 
             GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
             wstr.c_str(), nullptr, &srv);
         assert(!FAILED(hr));
+        (void)hr;
         mCameraAmbientInfo.mIBLSpecTex = srv;
     }    
 }
