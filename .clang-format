@@ -1,0 +1,6 @@
+# Format Style Options - Created with Clang Power Tools
+---
+AlwaysBreakTemplateDeclarations: Yes
+BasedOnStyle: LLVM
+Language: Cpp
+...
