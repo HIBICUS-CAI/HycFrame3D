@@ -1,6 +1,8 @@
 # Format Style Options - Created with Clang Power Tools
 ---
+Language: Cpp
+AllowAllParametersOfDeclarationOnNextLine: false
 AlwaysBreakTemplateDeclarations: Yes
 BasedOnStyle: LLVM
-Language: Cpp
+BinPackParameters: false
 ...
