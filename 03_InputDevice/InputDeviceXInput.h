@@ -10,20 +10,20 @@ public:
 
     ~InputDeviceXInput();
 
-    virtual INPUT_TYPE GetInputType();
+    virtual INPUT_TYPE getInputType();
 
     virtual HRESULT PollDeviceStatus();
 
-    virtual const LPVOID GetDeviceStatus();
+    virtual const LPVOID getDeviceStatus();
 
-    virtual const bool IsKeyBeingPushed(UINT keyCode);
-    virtual const bool HasKeyPushedInLastFrame(UINT keyCode);
-    virtual const LONG GetXPositionOffset();
-    virtual const LONG GetYPositionOffset();
-    virtual const LONG GetZPositionOffset();
-    virtual const LONG GetXRotationOffset();
-    virtual const LONG GetYRotationOffset();
-    virtual const LONG GetZRotationOffset();
+    virtual const bool isKeyBeingPushed(UINT keyCode);
+    virtual const bool hasKeyPushedInLastFrame(UINT keyCode);
+    virtual const LONG getXPositionOffset();
+    virtual const LONG getYPositionOffset();
+    virtual const LONG getZPositionOffset();
+    virtual const LONG getXRotationOffset();
+    virtual const LONG getYRotationOffset();
+    virtual const LONG getZRotationOffset();
 
 private:
     XINPUT_STATE* mDeviceStatus;

@@ -65,7 +65,7 @@ void ButtonSystem::Run(Timer& _timer)
 #endif // _DEBUG
     UButtonComponent::SetScreenSpaceCursorPos(cursorX, cursorY);
 
-    auto mouseOffset = InputInterface::GetMouseOffset();
+    auto mouseOffset = input::getMouseOffset();
     if (mouseOffset.x || mouseOffset.y)
     {
         UButtonComponent::SetShouldUseMouse(true);

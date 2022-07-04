@@ -83,7 +83,7 @@ InputDeviceXInput::~InputDeviceXInput()
     }
 }
 
-INPUT_TYPE InputDeviceXInput::GetInputType()
+INPUT_TYPE InputDeviceXInput::getInputType()
 {
     return INPUT_TYPE::XINPUT;
 }
@@ -100,7 +100,7 @@ HRESULT InputDeviceXInput::PollDeviceStatus()
     }
 
     DWORD result = XInputGetState(
-        GetXIDeviceHandle(), mDeviceStatus);
+        getXIDeviceHandle(), mDeviceStatus);
 
     if (result == ERROR_SUCCESS)
     {
@@ -112,12 +112,12 @@ HRESULT InputDeviceXInput::PollDeviceStatus()
     }
 }
 
-const LPVOID InputDeviceXInput::GetDeviceStatus()
+const LPVOID InputDeviceXInput::getDeviceStatus()
 {
     return (LPVOID)mDeviceStatus;
 }
 
-const bool InputDeviceXInput::IsKeyBeingPushed(UINT keyCode)
+const bool InputDeviceXInput::isKeyBeingPushed(UINT keyCode)
 {
     if (!mDeviceStatus)
     {
@@ -127,10 +127,10 @@ const bool InputDeviceXInput::IsKeyBeingPushed(UINT keyCode)
     switch (keyCode)
     {
     case GP_LEFTBACKSHDBTN:
-        return (GetZPositionOffset() > 0) ? true : false;
+        return (getZPositionOffset() > 0) ? true : false;
 
     case GP_RIGHTBACKSHDBTN:
-        return (GetZRotationOffset() > 0) ? true : false;
+        return (getZRotationOffset() > 0) ? true : false;
 
     case GP_UPRIGHTDIRBTN:
         return
@@ -188,7 +188,7 @@ const bool InputDeviceXInput::IsKeyBeingPushed(UINT keyCode)
     }
 }
 
-const bool InputDeviceXInput::HasKeyPushedInLastFrame(
+const bool InputDeviceXInput::hasKeyPushedInLastFrame(
     UINT keyCode)
 {
     if (!mDeviceStatusBeforeThisPoll)
@@ -263,7 +263,7 @@ const bool InputDeviceXInput::HasKeyPushedInLastFrame(
     }
 }
 
-const LONG InputDeviceXInput::GetXPositionOffset()
+const LONG InputDeviceXInput::getXPositionOffset()
 {
     if (!mDeviceStatus)
     {
@@ -279,7 +279,7 @@ const LONG InputDeviceXInput::GetXPositionOffset()
     return (LONG)((FLOAT)xOffset / (FLOAT)(0x7FFF) * 1000.f);
 }
 
-const LONG InputDeviceXInput::GetYPositionOffset()
+const LONG InputDeviceXInput::getYPositionOffset()
 {
     if (!mDeviceStatus)
     {
@@ -295,7 +295,7 @@ const LONG InputDeviceXInput::GetYPositionOffset()
     return -(LONG)((FLOAT)yOffset / (FLOAT)(0x7FFF) * 1000.f);
 }
 
-const LONG InputDeviceXInput::GetZPositionOffset()
+const LONG InputDeviceXInput::getZPositionOffset()
 {
     if (!mDeviceStatus)
     {
@@ -306,7 +306,7 @@ const LONG InputDeviceXInput::GetZPositionOffset()
         (FLOAT)(255) * 1000.f);
 }
 
-const LONG InputDeviceXInput::GetXRotationOffset()
+const LONG InputDeviceXInput::getXRotationOffset()
 {
     if (!mDeviceStatus)
     {
@@ -322,7 +322,7 @@ const LONG InputDeviceXInput::GetXRotationOffset()
     return (LONG)((FLOAT)xOffset / (FLOAT)(0x7FFF) * 1000.f);
 }
 
-const LONG InputDeviceXInput::GetYRotationOffset()
+const LONG InputDeviceXInput::getYRotationOffset()
 {
     if (!mDeviceStatus)
     {
@@ -338,7 +338,7 @@ const LONG InputDeviceXInput::GetYRotationOffset()
     return -(LONG)((FLOAT)yOffset / (FLOAT)(0x7FFF) * 1000.f);
 }
 
-const LONG InputDeviceXInput::GetZRotationOffset()
+const LONG InputDeviceXInput::getZRotationOffset()
 {
     if (!mDeviceStatus)
     {

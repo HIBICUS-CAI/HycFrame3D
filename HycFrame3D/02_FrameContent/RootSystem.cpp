@@ -32,7 +32,7 @@ bool RootSystem::StartUp(HINSTANCE _hInstance, int _iCmdShow)
         P_LOG(LOG_ERROR, "failed to create window\n");
         return false;
     }
-    if (!InputInterface::StartUp())
+    if (!input::startUp())
     {
         P_LOG(LOG_ERROR, "failed to start up input system\n");
         return false;
@@ -76,7 +76,7 @@ void RootSystem::CleanAndStop()
     delete mObjectFactoryPtr; mObjectFactoryPtr = nullptr;
     delete mSystemExecutivePtr; mSystemExecutivePtr = nullptr;
 
-    InputInterface::CleanAndStop();
+    input::cleanAndStop();
     window::cleanAndStop();
 }
 

@@ -45,45 +45,45 @@ void RegisterSPInput(ObjectFactory* _factory)
 
 void TestASpInput(AInputComponent* _aic, Timer& _timer)
 {
-    if (InputInterface::IsKeyDownInSingle(M_LEFTBTN))
+    if (input::isKeyDownInSingle(M_LEFTBTN))
     {
-        auto mouseOffset = InputInterface::GetMouseOffset();
+        auto mouseOffset = input::getMouseOffset();
         float horiR = -mouseOffset.x * _timer.FloatDeltaTime() / 800.f;
         _aic->GetSceneNode().GetMainCamera()->RotateRSCamera(0.f, horiR);
     }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
+    if (input::isKeyPushedInSingle(KB_RETURN))
     {
         P_LOG(LOG_DEBUG, "to test2\n");
         _aic->GetSceneNode().GetSceneManager()->
             LoadSceneNode("sample2-scene", "sample2-scene.json");
     }
 
-    if (InputInterface::IsKeyDownInSingle(KB_W))
+    if (input::isKeyDownInSingle(KB_W))
     {
         _aic->GetActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
             TranslateZAsix(0.1f * _timer.FloatDeltaTime());
     }
-    if (InputInterface::IsKeyDownInSingle(KB_A))
+    if (input::isKeyDownInSingle(KB_A))
     {
         _aic->GetActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
             TranslateXAsix(-0.1f * _timer.FloatDeltaTime());
     }
-    if (InputInterface::IsKeyDownInSingle(KB_S))
+    if (input::isKeyDownInSingle(KB_S))
     {
         _aic->GetActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
             TranslateZAsix(-0.1f * _timer.FloatDeltaTime());
     }
-    if (InputInterface::IsKeyDownInSingle(KB_D))
+    if (input::isKeyDownInSingle(KB_D))
     {
         _aic->GetActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
             TranslateXAsix(0.1f * _timer.FloatDeltaTime());
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_P))
+    if (input::isKeyPushedInSingle(KB_P))
     {
         static bool simp = true;
         std::string basic = "light-pipeline";
@@ -158,56 +158,56 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
     auto utc = _uic->GetUiOwner()->
         GetComponent<UTransformComponent>();
 
-    if (InputInterface::IsKeyDownInSingle(KB_W))
+    if (input::isKeyDownInSingle(KB_W))
     {
         utc->TranslateYAsix(0.1f * delta);
     }
-    if (InputInterface::IsKeyDownInSingle(KB_A))
+    if (input::isKeyDownInSingle(KB_A))
     {
         utc->TranslateXAsix(-0.1f * delta);
     }
-    if (InputInterface::IsKeyDownInSingle(KB_S))
+    if (input::isKeyDownInSingle(KB_S))
     {
         utc->TranslateYAsix(-0.1f * delta);
     }
-    if (InputInterface::IsKeyDownInSingle(KB_D))
+    if (input::isKeyDownInSingle(KB_D))
     {
         utc->TranslateXAsix(0.1f * delta);
     }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_Z))
+    if (input::isKeyPushedInSingle(KB_Z))
     {
         _uic->GetUiOwner()->
             GetComponent<USpriteComponent>()->
             ResetTexture();
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_X))
+    if (input::isKeyPushedInSingle(KB_X))
     {
         _uic->GetUiOwner()->
             GetComponent<UAnimateComponent>()->
             ChangeAnimateTo("number");
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_C))
+    if (input::isKeyPushedInSingle(KB_C))
     {
         _uic->GetUiOwner()->
             GetComponent<UAnimateComponent>()->
             ChangeAnimateTo("runman");
     }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_N))
+    if (input::isKeyPushedInSingle(KB_N))
     {
         _uic->GetUiOwner()->
             GetComponent<UAudioComponent>()->
             PlayBgm("test", 0.8f);
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_M))
+    if (input::isKeyPushedInSingle(KB_M))
     {
         _uic->GetUiOwner()->
             GetComponent<UAudioComponent>()->
             PlayBgm("test", 0.4f);
     }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
+    if (input::isKeyPushedInSingle(KB_RETURN))
     {
         P_LOG(LOG_DEBUG, "to test1\n");
         _uic->GetSceneNode().GetSceneManager()->
@@ -221,24 +221,24 @@ void TestUSpBtnInput(UInputComponent* _uic, Timer& _timer)
         GetComponent<UButtonComponent>();
     if (!ubc) { return; }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_UP))
+    if (input::isKeyPushedInSingle(KB_UP))
     {
         ubc->SelectUpBtn();
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_LEFT))
+    if (input::isKeyPushedInSingle(KB_LEFT))
     {
         ubc->SelectLeftBtn();
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
+    if (input::isKeyPushedInSingle(KB_DOWN))
     {
         ubc->SelectDownBtn();
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_RIGHT))
+    if (input::isKeyPushedInSingle(KB_RIGHT))
     {
         ubc->SelectRightBtn();
     }
 
-    if (ubc->IsCursorOnBtn() && InputInterface::IsKeyPushedInSingle(M_LEFTBTN))
+    if (ubc->IsCursorOnBtn() && input::isKeyPushedInSingle(M_LEFTBTN))
     {
         P_LOG(LOG_DEBUG, "this btn has been click : %s\n", ubc->GetCompName().c_str());
     }
@@ -262,7 +262,7 @@ void TestUSpDestory(UInteractComponent* _uitc)
 
 void TempToTitle(AInputComponent* _aic, Timer&)
 {
-    if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
+    if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to title\n");
         _aic->GetSceneNode().GetSceneManager()->
@@ -272,7 +272,7 @@ void TempToTitle(AInputComponent* _aic, Timer&)
 
 void TempToSelect(AInputComponent* _aic, Timer&)
 {
-    if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
+    if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to select\n");
         _aic->GetSceneNode().GetSceneManager()->
@@ -282,7 +282,7 @@ void TempToSelect(AInputComponent* _aic, Timer&)
 
 void TempToRun(AInputComponent* _aic, Timer&)
 {
-    if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
+    if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to run\n");
         _aic->GetSceneNode().GetSceneManager()->
@@ -292,7 +292,7 @@ void TempToRun(AInputComponent* _aic, Timer&)
 
 void TempToResult(AInputComponent* _aic, Timer&)
 {
-    if (InputInterface::IsKeyPushedInSingle(KB_RCONTROL))
+    if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to result\n");
         _aic->GetSceneNode().GetSceneManager()->
@@ -320,32 +320,32 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
         GetComponent<ATransformComponent>()->
         RotateYAsix(_timer.FloatDeltaTime() / 1000.f);
 
-    if (InputInterface::IsKeyPushedInSingle(KB_1))
+    if (input::isKeyPushedInSingle(KB_1))
     {
         g_Aanc->ChangeAnimationTo("run");
     }
-    else if (InputInterface::IsKeyPushedInSingle(KB_2))
+    else if (input::isKeyPushedInSingle(KB_2))
     {
         g_Aanc->ChangeAnimationTo("bite");
     }
-    else if (InputInterface::IsKeyPushedInSingle(KB_3))
+    else if (input::isKeyPushedInSingle(KB_3))
     {
         g_Aanc->ChangeAnimationTo("roar");
     }
-    else if (InputInterface::IsKeyPushedInSingle(KB_4))
+    else if (input::isKeyPushedInSingle(KB_4))
     {
         g_Aanc->ChangeAnimationTo("attack_tail");
     }
-    else if (InputInterface::IsKeyPushedInSingle(KB_5))
+    else if (input::isKeyPushedInSingle(KB_5))
     {
         g_Aanc->ChangeAnimationTo("idle");
     }
-    else if (InputInterface::IsKeyPushedInSingle(KB_UP))
+    else if (input::isKeyPushedInSingle(KB_UP))
     {
         g_AniSpdFactor += 10.f;
         g_Aanc->SetSpeedFactor(g_AniSpdFactor);
     }
-    else if (InputInterface::IsKeyPushedInSingle(KB_DOWN))
+    else if (input::isKeyPushedInSingle(KB_DOWN))
     {
         g_AniSpdFactor -= 10.f;
         g_Aanc->SetSpeedFactor(g_AniSpdFactor);

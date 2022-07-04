@@ -1,60 +1,85 @@
 #pragma once
 
 #include "ID_BasicMacro.h"
-#include <Windows.h>
-#include <dinput.h>
-#include <Xinput.h>
-#include "WindowWIN32.h"
+
 #include "InputDeviceBase.h"
+#include "WindowWIN32.h"
 
-typedef POINT MOUSE_OFFSET;
-typedef POINT STICK_OFFSET;
-typedef LONG BACKSHD_OFFSET;
+#include <Windows.h>
+#include <Xinput.h>
+#include <dinput.h>
 
-class InputManager
-{
+using MOUSE_OFFSET = POINT;
+using STICK_OFFSET = POINT;
+using BACKSHD_OFFSET = LONG;
+
+class InputManager {
+private:
+  HINSTANCE Instance;
+  HWND WndHandle;
+
+  static LPDIRECTINPUT8 DirectInputPtr;
+
+  InputDeviceBase *KeyBoardPtr;
+  InputDeviceBase *MousePtr;
+  InputDeviceBase *GamePadPtrs[MAX_INPUTDEVICE_NUM];
+
 public:
-    InputManager(WindowWIN32* wnd);
+  InputManager(WindowWIN32 *Wnd);
 
-    HRESULT CreateDirectInputMain();
-    void CloseDirectInputMain();
+  HRESULT
+  createDirectInputMain();
 
-    void EnumAllInputDevices();
-    HRESULT PollAllInputDevices();
+  void
+  closeDirectInputMain();
 
-    const bool IsThisKeyBeingPushedInSingle(UINT keyCode);
-    const bool IsThisKeyHasBeenPushedInSingle(UINT keyCode);
-    const STICK_OFFSET GetGamePadLeftStickOffset(
-        int gamepadOffset = 0);
-    const STICK_OFFSET GetGamePadRightStickOffset(
-        int gamepadOffset = 0);
-    const BACKSHD_OFFSET GetGamePadLeftBackShdBtnOffset(
-        int gamepadOffset = 0);
-    const BACKSHD_OFFSET GetGamePadRightBackShdBtnOffset(
-        int gamepadOffset = 0);
-    const MOUSE_OFFSET GetMouseOffset();
-    const bool IsMouseScrollingUp();
-    const bool IsMouseScrollingDown();
+  void
+  enumAllInputDevices();
 
-    InputDeviceBase* GetKeyBoard();
-    InputDeviceBase* GetMouse();
-    InputDeviceBase* GetGamePadByOffset(int offset = 0);
+  HRESULT
+  pollAllInputDevices();
+
+  bool
+  isThisKeyBeingPushedInSingle(UINT KeyCode);
+
+  bool
+  isThisKeyHasBeenPushedInSingle(UINT KeyCode);
+
+  STICK_OFFSET
+  getGamePadLeftStickOffset(int GamepadIndex = 0);
+
+  STICK_OFFSET
+  getGamePadRightStickOffset(int GamepadIndex = 0);
+
+  BACKSHD_OFFSET
+  getGamePadLeftBackShdBtnOffset(int GamepadIndex = 0);
+
+  BACKSHD_OFFSET
+  getGamePadRightBackShdBtnOffset(int GamepadIndex = 0);
+
+  MOUSE_OFFSET
+  getMouseOffset();
+
+  bool
+  isMouseScrollingUp();
+
+  bool
+  isMouseScrollingDown();
+
+  InputDeviceBase *
+  getKeyBoard();
+
+  InputDeviceBase *
+  getMouse();
+
+  InputDeviceBase *
+  getGamePadByIndex(int Index = 0);
 
 private:
-    static BOOL CALLBACK EnumGamePadCallBack(
-        const DIDEVICEINSTANCE* pdiDeviceInst,
-        VOID* pContext);
-    static BOOL CALLBACK DIEnumGamePadObjCallBack(
-        const DIDEVICEOBJECTINSTANCE* pdiDeviceObjInst,
-        VOID* pContext);
+  static BOOL CALLBACK
+  enumGamePadCallBack(const DIDEVICEINSTANCE *DIDeviceInst, VOID *ContextPtr);
 
-    HINSTANCE mhInstance;
-    HWND mhWindow;
-
-    static LPDIRECTINPUT8 mpDirectInput;
-
-    InputDeviceBase* mpKeyBoard;
-    InputDeviceBase* mpMouse;
-    InputDeviceBase* mpGamePads[MAX_INPUTDEVICE_NUM];
+  static BOOL CALLBACK
+  diEnumGamePadObjCallBack(const DIDEVICEOBJECTINSTANCE *DIDeviceObjInst,
+                           VOID *ContextPtr);
 };
-

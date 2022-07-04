@@ -15,8 +15,8 @@ InputDeviceDirectInput::InputDeviceDirectInput(
     switch (deviceType)
     {
     case INPUT_DEVICE_TYPE::KEYBOARD:
-        mDeviceStatus = new DIKEYBOARDSTATUSMINE();
-        mDeviceStatusSize = sizeof(DIKEYBOARDSTATUSMINE);
+        mDeviceStatus = new DI_KEYBOARD_STATUS_MINE();
+        mDeviceStatusSize = sizeof(DI_KEYBOARD_STATUS_MINE);
         break;
     case INPUT_DEVICE_TYPE::MOUSE:
         mDeviceStatus = new DIMOUSESTATE2();
@@ -40,11 +40,11 @@ InputDeviceDirectInput::~InputDeviceDirectInput()
 {
     if (mDeviceStatus)
     {
-        auto type = GetInputDeviceType();
+        auto type = getInputDeviceType();
         switch (type)
         {
         case INPUT_DEVICE_TYPE::KEYBOARD:
-            delete static_cast<DIKEYBOARDSTATUSMINE*>(mDeviceStatus);
+            delete static_cast<DI_KEYBOARD_STATUS_MINE*>(mDeviceStatus);
             break;
         case INPUT_DEVICE_TYPE::MOUSE:
             delete static_cast<DIMOUSESTATE2*>(mDeviceStatus);
@@ -57,19 +57,19 @@ InputDeviceDirectInput::~InputDeviceDirectInput()
         }
     }
 
-    if (mDIDeviceHandle)
+    if (DIDeviceHandle)
     {
-        mDIDeviceHandle->Unacquire();
-        mDIDeviceHandle->Release();
+        DIDeviceHandle->Unacquire();
+        DIDeviceHandle->Release();
     }
 }
 
-INPUT_TYPE InputDeviceDirectInput::GetInputType()
+INPUT_TYPE InputDeviceDirectInput::getInputType()
 {
     return INPUT_TYPE::DIRECTINPUT;
 }
 
-const LPVOID InputDeviceDirectInput::GetDeviceStatus()
+const LPVOID InputDeviceDirectInput::getDeviceStatus()
 {
     return mDeviceStatus;
 }
@@ -77,28 +77,28 @@ const LPVOID InputDeviceDirectInput::GetDeviceStatus()
 HRESULT InputDeviceDirectInput::PollDeviceStatus()
 {
     HRESULT hr = S_OK;
-    hr = mDIDeviceHandle->Poll();
+    hr = DIDeviceHandle->Poll();
     if (FAILED(hr))
     {
-        hr = mDIDeviceHandle->Acquire();
+        hr = DIDeviceHandle->Acquire();
         while (hr == DIERR_INPUTLOST)
         {
-            hr = mDIDeviceHandle->Acquire();
+            hr = DIDeviceHandle->Acquire();
         }
 
         return S_OK;
     }
 
     // store this status to backup before being updated
-    switch (GetInputDeviceType())
+    switch (getInputDeviceType())
     {
     case INPUT_DEVICE_TYPE::KEYBOARD:
         for (UINT i = KB_ESCAPE;
             i < KB_MEDIASELECT + KB_ESCAPE;
             i++)
         {
-            DIKEYBOARDSTATUSMINE* status =
-                (DIKEYBOARDSTATUSMINE*)mDeviceStatus;
+            DI_KEYBOARD_STATUS_MINE* status =
+                (DI_KEYBOARD_STATUS_MINE*)mDeviceStatus;
             if (status->Status[i] & 0x80)
             {
                 mButtonsStatusBeforeThisPoll[i] = true;
@@ -171,7 +171,7 @@ HRESULT InputDeviceDirectInput::PollDeviceStatus()
         break;
     }
 
-    hr = mDIDeviceHandle->GetDeviceState(
+    hr = DIDeviceHandle->GetDeviceState(
         mDeviceStatusSize, mDeviceStatus);
     if (FAILED(hr))
     {
@@ -181,15 +181,15 @@ HRESULT InputDeviceDirectInput::PollDeviceStatus()
     return hr;
 }
 
-const bool InputDeviceDirectInput::HasKeyPushedInLastFrame(
+const bool InputDeviceDirectInput::hasKeyPushedInLastFrame(
     UINT keyCode)
 {
     return mButtonsStatusBeforeThisPoll[keyCode];
 }
 
-const bool InputDeviceDirectInput::IsKeyBeingPushed(UINT keyCode)
+const bool InputDeviceDirectInput::isKeyBeingPushed(UINT keyCode)
 {
-    switch (GetInputDeviceType())
+    switch (getInputDeviceType())
     {
     case INPUT_DEVICE_TYPE::KEYBOARD:
         if (keyCode < 0x01 || keyCode > 0xED)
@@ -198,8 +198,8 @@ const bool InputDeviceDirectInput::IsKeyBeingPushed(UINT keyCode)
         }
         else
         {
-            DIKEYBOARDSTATUSMINE* status =
-                (DIKEYBOARDSTATUSMINE*)mDeviceStatus;
+            DI_KEYBOARD_STATUS_MINE* status =
+                (DI_KEYBOARD_STATUS_MINE*)mDeviceStatus;
             if (status->Status[keyCode] & 0x80)
             {
                 return true;
@@ -320,10 +320,10 @@ const bool InputDeviceDirectInput::IsKeyBeingPushed(UINT keyCode)
     return false;
 }
 
-const LONG InputDeviceDirectInput::GetXPositionOffset()
+const LONG InputDeviceDirectInput::getXPositionOffset()
 {
     LONG offsetX = 0;
-    switch (GetInputDeviceType())
+    switch (getInputDeviceType())
     {
     case INPUT_DEVICE_TYPE::MOUSE:
     {
@@ -349,10 +349,10 @@ const LONG InputDeviceDirectInput::GetXPositionOffset()
     return offsetX;
 }
 
-const LONG InputDeviceDirectInput::GetYPositionOffset()
+const LONG InputDeviceDirectInput::getYPositionOffset()
 {
     LONG offsetY = 0;
-    switch (GetInputDeviceType())
+    switch (getInputDeviceType())
     {
     case INPUT_DEVICE_TYPE::MOUSE:
     {
@@ -378,10 +378,10 @@ const LONG InputDeviceDirectInput::GetYPositionOffset()
     return offsetY;
 }
 
-const LONG InputDeviceDirectInput::GetZPositionOffset()
+const LONG InputDeviceDirectInput::getZPositionOffset()
 {
     LONG offsetZ = 0;
-    switch (GetInputDeviceType())
+    switch (getInputDeviceType())
     {
     case INPUT_DEVICE_TYPE::MOUSE:
     {
@@ -407,11 +407,11 @@ const LONG InputDeviceDirectInput::GetZPositionOffset()
     return offsetZ;
 }
 
-const LONG InputDeviceDirectInput::GetXRotationOffset()
+const LONG InputDeviceDirectInput::getXRotationOffset()
 {
     LONG offsetX = 0;
 
-    if (GetInputDeviceType() != INPUT_DEVICE_TYPE::GAMEPAD)
+    if (getInputDeviceType() != INPUT_DEVICE_TYPE::GAMEPAD)
     {
         return offsetX;
     }
@@ -422,11 +422,11 @@ const LONG InputDeviceDirectInput::GetXRotationOffset()
     return offsetX;
 }
 
-const LONG InputDeviceDirectInput::GetYRotationOffset()
+const LONG InputDeviceDirectInput::getYRotationOffset()
 {
     LONG offsetY = 0;
 
-    if (GetInputDeviceType() != INPUT_DEVICE_TYPE::GAMEPAD)
+    if (getInputDeviceType() != INPUT_DEVICE_TYPE::GAMEPAD)
     {
         return offsetY;
     }
@@ -437,11 +437,11 @@ const LONG InputDeviceDirectInput::GetYRotationOffset()
     return offsetY;
 }
 
-const LONG InputDeviceDirectInput::GetZRotationOffset()
+const LONG InputDeviceDirectInput::getZRotationOffset()
 {
     LONG offsetZ = 0;
 
-    if (GetInputDeviceType() != INPUT_DEVICE_TYPE::GAMEPAD)
+    if (getInputDeviceType() != INPUT_DEVICE_TYPE::GAMEPAD)
     {
         return offsetZ;
     }

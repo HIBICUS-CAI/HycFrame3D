@@ -1,31 +1,19 @@
 #include "ID_Common.h"
+
 #include "InputDeviceBase.h"
 
 InputDeviceBase::InputDeviceBase(INPUT_DEVICE_TYPE deviceType,
-    DWORD xiDeviceHandle) :
-    mDIDeviceHandle(nullptr),
-    mXIDeviceHandle(xiDeviceHandle),
-    mDeviceType(deviceType)
-{
-    
-}
+                                 DWORD xiDeviceHandle)
+    : DIDeviceHandle(nullptr), XIDeviceHandle(xiDeviceHandle),
+      DeviceType(deviceType) {}
 
-InputDeviceBase::~InputDeviceBase()
-{
-    
-}
+InputDeviceBase::~InputDeviceBase() {}
 
-LPDIRECTINPUTDEVICE8 InputDeviceBase::GetDIDeviceHandle()
-{
-    return mDIDeviceHandle;
-}
+LPDIRECTINPUTDEVICE8
+InputDeviceBase::getDIDeviceHandle() { return DIDeviceHandle; }
 
-DWORD InputDeviceBase::GetXIDeviceHandle()
-{
-    return mXIDeviceHandle;
-}
+DWORD
+InputDeviceBase::getXIDeviceHandle() { return XIDeviceHandle; }
 
-INPUT_DEVICE_TYPE InputDeviceBase::GetInputDeviceType()
-{
-    return mDeviceType;
-}
+INPUT_DEVICE_TYPE
+InputDeviceBase::getInputDeviceType() { return DeviceType; }

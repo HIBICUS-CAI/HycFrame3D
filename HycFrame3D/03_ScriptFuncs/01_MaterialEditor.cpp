@@ -62,13 +62,13 @@ void OutputThisMaterialInfo()
 
 void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 {
-    if (InputInterface::IsKeyPushedInSingle(KB_F5))
+    if (input::isKeyPushedInSingle(KB_F5))
     {
         _aic->GetSceneNode().GetSceneManager()->
             LoadSceneNode("material-scene", "material-scene.json");
     }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_P))
+    if (input::isKeyPushedInSingle(KB_P))
     {
         static bool simp = false;
         std::string basic = "light-pipeline";
@@ -88,35 +88,35 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 
     const float deltatime = _timer.FloatDeltaTime();
 
-    if (InputInterface::IsKeyDownInSingle(M_LEFTBTN))
+    if (input::isKeyDownInSingle(M_LEFTBTN))
     {
-        auto mouseOffset = InputInterface::GetMouseOffset();
+        auto mouseOffset = input::getMouseOffset();
         float horiR = -mouseOffset.x * deltatime / 500.f;
         float vertR = -mouseOffset.y * deltatime / 500.f;
         g_MaterialBallAtc->Rotate({ vertR,horiR,0.f });
     }
 
-    if (InputInterface::IsKeyDownInSingle(KB_W))
+    if (input::isKeyDownInSingle(KB_W))
     {
         g_PointLightAtc->TranslateZAsix(0.1f * deltatime);
     }
-    if (InputInterface::IsKeyDownInSingle(KB_S))
+    if (input::isKeyDownInSingle(KB_S))
     {
         g_PointLightAtc->TranslateZAsix(-0.1f * deltatime);
     }
-    if (InputInterface::IsKeyDownInSingle(KB_D))
+    if (input::isKeyDownInSingle(KB_D))
     {
         g_PointLightAtc->TranslateXAsix(0.1f * deltatime);
     }
-    if (InputInterface::IsKeyDownInSingle(KB_A))
+    if (input::isKeyDownInSingle(KB_A))
     {
         g_PointLightAtc->TranslateXAsix(-0.1f * deltatime);
     }
-    if (InputInterface::IsKeyDownInSingle(KB_E))
+    if (input::isKeyDownInSingle(KB_E))
     {
         g_PointLightAtc->TranslateYAsix(0.1f * deltatime);
     }
-    if (InputInterface::IsKeyDownInSingle(KB_Q))
+    if (input::isKeyDownInSingle(KB_Q))
     {
         g_PointLightAtc->TranslateYAsix(-0.1f * deltatime);
     }
@@ -126,7 +126,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
     {
     case MAT_TYPE::SUBSURFACE:
         check = (UINT)MAT_TYPE::SUBSURFACE;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing subsurface\n");
@@ -134,7 +134,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         }
     case MAT_TYPE::METALLIC:
         check = (UINT)MAT_TYPE::METALLIC;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing metallic\n");
@@ -142,7 +142,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         }
     case MAT_TYPE::SPECULAR:
         check = (UINT)MAT_TYPE::SPECULAR;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing specular\n");
@@ -150,7 +150,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         }
     case MAT_TYPE::SPECULARTINT:
         check = (UINT)MAT_TYPE::SPECULARTINT;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing specular tint\n");
@@ -158,7 +158,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         }
     case MAT_TYPE::ROUGHNESS:
         check = (UINT)MAT_TYPE::ROUGHNESS;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing roughness\n");
@@ -166,7 +166,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         }
     case MAT_TYPE::ANISOTROPIC:
         check = (UINT)MAT_TYPE::ANISOTROPIC;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing anisotropic\n");
@@ -174,7 +174,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         }
     case MAT_TYPE::SHEEN:
         check = (UINT)MAT_TYPE::SHEEN;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing sheen\n");
@@ -182,7 +182,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         }
     case MAT_TYPE::SHEENTINT:
         check = (UINT)MAT_TYPE::SHEENTINT;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing sheen tint\n");
@@ -190,7 +190,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         }
     case MAT_TYPE::CLEARCOAT:
         check = (UINT)MAT_TYPE::CLEARCOAT;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing clearcoat\n");
@@ -198,7 +198,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         }
     case MAT_TYPE::CLEARCOATGLOSS:
         check = (UINT)MAT_TYPE::CLEARCOATGLOSS;
-        if (InputInterface::IsKeyPushedInSingle(check))
+        if (input::isKeyPushedInSingle(check))
         {
             g_EditingMatTerm = (MAT_TYPE)check;
             P_LOG(LOG_DEBUG, "editing clearcoat gloss\n");
@@ -241,13 +241,13 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         break;
     }
     assert(editValue);
-    if (InputInterface::IsKeyDownInSingle(KB_RIGHT))
+    if (input::isKeyDownInSingle(KB_RIGHT))
     {
         *editValue += deltatime / 1000.f;
         if (*editValue > 1.f) { *editValue = 1.f; }
         GetRSRoot_DX11_Singleton()->StaticResources()->MapMaterialData();
     }
-    if (InputInterface::IsKeyDownInSingle(KB_LEFT))
+    if (input::isKeyDownInSingle(KB_LEFT))
     {
         *editValue -= deltatime / 1000.f;
         if (*editValue < 0.f) { *editValue = 0.f; }
@@ -256,22 +256,22 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 
     float& factor = g_MatBallMesh->mInstanceMap.begin()->
         second.mMaterialData.mInterpolateFactor;
-    if (InputInterface::IsKeyDownInSingle(KB_COMMA))
+    if (input::isKeyDownInSingle(KB_COMMA))
     {
         factor -= deltatime / 1000.f;
         if (factor < 0.f) { factor = 0.f; }
     }
-    if (InputInterface::IsKeyDownInSingle(KB_PERIOD))
+    if (input::isKeyDownInSingle(KB_PERIOD))
     {
         factor += deltatime / 1000.f;
         if (factor > 1.f) { factor = 1.f; }
     }
-    if (InputInterface::IsKeyPushedInSingle(KB_SLASH))
+    if (input::isKeyPushedInSingle(KB_SLASH))
     {
         P_LOG(LOG_DEBUG, "current material factor : %f\n", factor);
     }
 
-    if (InputInterface::IsKeyPushedInSingle(KB_RETURN))
+    if (input::isKeyPushedInSingle(KB_RETURN))
     {
         OutputThisMaterialInfo();
     }

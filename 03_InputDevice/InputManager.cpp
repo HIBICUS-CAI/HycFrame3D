@@ -1,494 +1,373 @@
 #include "ID_Common.h"
+
 #include "InputManager.h"
+
 #include "InputDeviceDirectInput.h"
 #include "InputDeviceXInput.h"
 
-LPDIRECTINPUT8 InputManager::mpDirectInput = nullptr;
+LPDIRECTINPUT8 InputManager::DirectInputPtr = nullptr;
 
-InputManager::InputManager(WindowWIN32* wnd) :
-    mhInstance(wnd->getWndInstance()),
-    mhWindow(wnd->getWndHandle()),
-    mpKeyBoard(nullptr), mpMouse(nullptr)
-{
-    for (int i = 0; i < MAX_INPUTDEVICE_NUM; i++)
-    {
-        mpGamePads[i] = nullptr;
-    }
+InputManager::InputManager(WindowWIN32 *Wnd)
+    : Instance(Wnd->getWndInstance()), WndHandle(Wnd->getWndHandle()),
+      KeyBoardPtr(nullptr), MousePtr(nullptr) {
+  for (int I = 0; I < MAX_INPUTDEVICE_NUM; I++) {
+    GamePadPtrs[I] = nullptr;
+  }
 }
 
-HRESULT InputManager::CreateDirectInputMain()
-{
-    return DirectInput8Create(
-        GetModuleHandle(nullptr), DIRECTINPUT_VERSION,
-        IID_IDirectInput8, (VOID**)&mpDirectInput, nullptr);
+HRESULT
+InputManager::createDirectInputMain() {
+  return DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION,
+                            IID_IDirectInput8, (VOID **)&DirectInputPtr,
+                            nullptr);
 }
 
-void InputManager::CloseDirectInputMain()
-{
-    for (int i = 0; i < MAX_INPUTDEVICE_NUM; i++)
-    {
-        if (mpGamePads[i] &&
-            (mpGamePads[i]->GetInputType() ==
-                INPUT_TYPE::DIRECTINPUT))
-        {
-            mpGamePads[i]->GetDIDeviceHandle()->Release();
-        }
+void
+InputManager::closeDirectInputMain() {
+  for (int I = 0; I < MAX_INPUTDEVICE_NUM; I++) {
+    if (GamePadPtrs[I] &&
+        (GamePadPtrs[I]->getInputType() == INPUT_TYPE::DIRECTINPUT)) {
+      GamePadPtrs[I]->getDIDeviceHandle()->Release();
     }
-    if (mpMouse)
-    {
-        mpMouse->mDIDeviceHandle->Release();
-    }
-    if (mpKeyBoard)
-    {
-        mpKeyBoard->mDIDeviceHandle->Release();
-    }
+  }
+  if (MousePtr) {
+    MousePtr->DIDeviceHandle->Release();
+  }
+  if (KeyBoardPtr) {
+    KeyBoardPtr->DIDeviceHandle->Release();
+  }
 
-    if (mpDirectInput)
-    {
-        mpDirectInput->Release();
-    }
+  if (DirectInputPtr) {
+    DirectInputPtr->Release();
+  }
 }
 
-void InputManager::EnumAllInputDevices()
-{
-    if (!mpDirectInput)
-    {
-        return;
-    }
+void
+InputManager::enumAllInputDevices() {
+  if (!DirectInputPtr) {
+    return;
+  }
 
-    HRESULT hr = S_OK;
+  HRESULT Hr = S_OK;
 
-    // keyboard
-    mpKeyBoard = new InputDeviceDirectInput(
-        INPUT_DEVICE_TYPE::KEYBOARD);
-    hr = mpDirectInput->CreateDevice(GUID_SysKeyboard,
-        &(mpKeyBoard->mDIDeviceHandle), nullptr);
-    if (FAILED(hr))
-    {
-        delete mpKeyBoard;
-        mpKeyBoard = nullptr;
+  // keyboard
+  KeyBoardPtr = new InputDeviceDirectInput(INPUT_DEVICE_TYPE::KEYBOARD);
+  Hr = DirectInputPtr->CreateDevice(GUID_SysKeyboard,
+                                    &(KeyBoardPtr->DIDeviceHandle), nullptr);
+  if (FAILED(Hr)) {
+    delete KeyBoardPtr;
+    KeyBoardPtr = nullptr;
+  } else {
+    Hr = KeyBoardPtr->DIDeviceHandle->SetCooperativeLevel(
+        WndHandle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+    if (FAILED(Hr)) {
+      delete KeyBoardPtr;
+      KeyBoardPtr = nullptr;
+    } else {
+      Hr = KeyBoardPtr->DIDeviceHandle->SetDataFormat(&c_dfDIKeyboard);
+      if (FAILED(Hr)) {
+        delete KeyBoardPtr;
+        KeyBoardPtr = nullptr;
+      }
     }
-    else
-    {
-        hr = mpKeyBoard->mDIDeviceHandle->SetCooperativeLevel(
-            mhWindow, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-        if (FAILED(hr))
-        {
-            delete mpKeyBoard;
-            mpKeyBoard = nullptr;
-        }
-        else
-        {
-            hr = mpKeyBoard->mDIDeviceHandle->SetDataFormat(
-                &c_dfDIKeyboard);
-            if (FAILED(hr))
-            {
-                delete mpKeyBoard;
-                mpKeyBoard = nullptr;
-            }
-        }
-    }
+  }
 
-    // mouse
-    mpMouse = new InputDeviceDirectInput(
-        INPUT_DEVICE_TYPE::MOUSE);
-    hr = mpDirectInput->CreateDevice(GUID_SysMouse,
-        &(mpMouse->mDIDeviceHandle), nullptr);
-    if (FAILED(hr))
-    {
-        delete mpMouse;
-        mpMouse = nullptr;
+  // mouse
+  MousePtr = new InputDeviceDirectInput(INPUT_DEVICE_TYPE::MOUSE);
+  Hr = DirectInputPtr->CreateDevice(GUID_SysMouse, &(MousePtr->DIDeviceHandle),
+                                    nullptr);
+  if (FAILED(Hr)) {
+    delete MousePtr;
+    MousePtr = nullptr;
+  } else {
+    Hr = MousePtr->DIDeviceHandle->SetCooperativeLevel(
+        WndHandle, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+    if (FAILED(Hr)) {
+      delete MousePtr;
+      MousePtr = nullptr;
+    } else {
+      Hr = MousePtr->DIDeviceHandle->SetDataFormat(&c_dfDIMouse2);
+      if (FAILED(Hr)) {
+        delete MousePtr;
+        MousePtr = nullptr;
+      }
     }
-    else
-    {
-        hr = mpMouse->mDIDeviceHandle->SetCooperativeLevel(
-            mhWindow, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-        if (FAILED(hr))
-        {
-            delete mpMouse;
-            mpMouse = nullptr;
-        }
-        else
-        {
-            hr = mpMouse->mDIDeviceHandle->SetDataFormat(
-                &c_dfDIMouse2);
-            if (FAILED(hr))
-            {
-                delete mpMouse;
-                mpMouse = nullptr;
-            }
-        }
-    }
+  }
 
-    // gamepads
-    // 1 - xinput
-    // 2 - directinput
-    hr = mpDirectInput->EnumDevices(
-        DI8DEVCLASS_GAMECTRL,
-        EnumGamePadCallBack,
-        &mpGamePads, DIEDFL_ATTACHEDONLY
-    );
-    if (FAILED(hr))
-    {
-        return;
-    }
-    for (int i = 0; i < MAX_INPUTDEVICE_NUM; i++)
-    {
-        if (mpGamePads[i] &&
-            mpGamePads[i]->GetInputType() ==
-            INPUT_TYPE::DIRECTINPUT)
-        {
-            if (
-                FAILED(hr =
-                    mpGamePads[i]->mDIDeviceHandle->
-                    SetDataFormat(&c_dfDIJoystick2)) ||
-                FAILED(hr =
-                    mpGamePads[i]->mDIDeviceHandle->
-                    SetCooperativeLevel(mhWindow,
-                        DISCL_EXCLUSIVE | DISCL_FOREGROUND)) ||
-                FAILED(hr =
-                    mpGamePads[i]->mDIDeviceHandle->
-                    EnumObjects(DIEnumGamePadObjCallBack,
-                        &mpGamePads[i], DIDFT_ALL)))
-            {
-                delete mpGamePads[i];
-                for (int j = i; j < MAX_INPUTDEVICE_NUM - 1; j++)
-                {
-                    mpGamePads[j] = mpGamePads[j + 1];
-                }
-                mpGamePads[MAX_INPUTDEVICE_NUM - 1] = nullptr;
-                --i;
-            }
+  // gamepads
+  // 1 - xinput
+  // 2 - directinput
+  Hr = DirectInputPtr->EnumDevices(DI8DEVCLASS_GAMECTRL, enumGamePadCallBack,
+                                   &GamePadPtrs, DIEDFL_ATTACHEDONLY);
+  if (FAILED(Hr)) {
+    return;
+  }
+  for (int I = 0; I < MAX_INPUTDEVICE_NUM; I++) {
+    if (GamePadPtrs[I] &&
+        GamePadPtrs[I]->getInputType() == INPUT_TYPE::DIRECTINPUT) {
+      if (FAILED(GamePadPtrs[I]->DIDeviceHandle->SetDataFormat(
+              &c_dfDIJoystick2)) ||
+          FAILED(GamePadPtrs[I]->DIDeviceHandle->SetCooperativeLevel(
+              WndHandle, DISCL_EXCLUSIVE | DISCL_FOREGROUND)) ||
+          FAILED(GamePadPtrs[I]->DIDeviceHandle->EnumObjects(
+              diEnumGamePadObjCallBack, &GamePadPtrs[I], DIDFT_ALL))) {
+        delete GamePadPtrs[I];
+        for (int J = I; J < MAX_INPUTDEVICE_NUM - 1; J++) {
+          GamePadPtrs[J] = GamePadPtrs[J + 1];
         }
+        GamePadPtrs[MAX_INPUTDEVICE_NUM - 1] = nullptr;
+        --I;
+      }
     }
+  }
 }
 
-BOOL CALLBACK InputManager::EnumGamePadCallBack(
-    const DIDEVICEINSTANCE* pdiDeviceInst,
-    VOID* pContext)
-{
-    auto pGamePads =
-        reinterpret_cast<InputDeviceBase**>(pContext);
+BOOL CALLBACK
+InputManager::enumGamePadCallBack(const DIDEVICEINSTANCE *DIDeviceInst,
+                                  VOID *ContextPtr) {
+  auto GamePadPtrs = reinterpret_cast<InputDeviceBase **>(ContextPtr);
 
-    int index = -1;
-    bool inXI = false;
-    for (int i = 0; i < MAX_INPUTDEVICE_NUM; i++)
-    {
-        if (!pGamePads[i])
-        {
-            static int xiIndex = 0;
-            XINPUT_STATE xs;
-            DWORD xResult = XInputGetState(i, &xs);
-            if (xResult == ERROR_SUCCESS)
-            {
-                pGamePads[i] = new InputDeviceXInput(xiIndex);
-                ++xiIndex;
-                index = i;
-                inXI = true;
-                break;
-            }
+  int Index = -1;
+  bool InXI = false;
+  for (int I = 0; I < MAX_INPUTDEVICE_NUM; I++) {
+    if (!GamePadPtrs[I]) {
+      static int XIIndex = 0;
+      XINPUT_STATE Xs;
+      DWORD XResult = XInputGetState(I, &Xs);
+      if (XResult == ERROR_SUCCESS) {
+        GamePadPtrs[I] = new InputDeviceXInput(XIIndex);
+        ++XIIndex;
+        Index = I;
+        InXI = true;
+        break;
+      }
 
-            pGamePads[i] =
-                new InputDeviceDirectInput(
-                    INPUT_DEVICE_TYPE::GAMEPAD);
-            index = i;
-            break;
-        }
+      GamePadPtrs[I] = new InputDeviceDirectInput(INPUT_DEVICE_TYPE::GAMEPAD);
+      Index = I;
+      break;
     }
+  }
 
-    if (index == -1)
-    {
-        return DIENUM_STOP;
-    }
+  if (Index == -1) {
+    return DIENUM_STOP;
+  }
 
-    if (!inXI)
-    {
-        mpDirectInput->CreateDevice(
-            pdiDeviceInst->guidInstance,
-            &(pGamePads[index]->mDIDeviceHandle), nullptr);
-    }
+  if (!InXI) {
+    DirectInputPtr->CreateDevice(DIDeviceInst->guidInstance,
+                                 &(GamePadPtrs[Index]->DIDeviceHandle),
+                                 nullptr);
+  }
 
-    return DIENUM_CONTINUE;
+  return DIENUM_CONTINUE;
 }
 
-BOOL CALLBACK InputManager::DIEnumGamePadObjCallBack(
-    const DIDEVICEOBJECTINSTANCE* pdiDeviceObjInst,
-    VOID* pContext)
-{
-    auto pGamePad =
-        reinterpret_cast<InputDeviceBase**>(pContext);
+BOOL CALLBACK
+InputManager::diEnumGamePadObjCallBack(
+    const DIDEVICEOBJECTINSTANCE *DIDeviceObjInst,
+    VOID *ContextPtr) {
+  auto GamePad = reinterpret_cast<InputDeviceBase **>(ContextPtr);
 
-    if (pdiDeviceObjInst->dwType & DIDFT_AXIS)
-    {
-        DIPROPRANGE diprg = {};
-        diprg.diph.dwSize = sizeof(DIPROPRANGE);
-        diprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-        diprg.diph.dwHow = DIPH_BYID;
-        diprg.diph.dwObj = pdiDeviceObjInst->dwType;
-        diprg.lMin = -1000;
-        diprg.lMax = +1000;
+  if (DIDeviceObjInst->dwType & DIDFT_AXIS) {
+    DIPROPRANGE DIprg = {};
+    DIprg.diph.dwSize = sizeof(DIPROPRANGE);
+    DIprg.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+    DIprg.diph.dwHow = DIPH_BYID;
+    DIprg.diph.dwObj = DIDeviceObjInst->dwType;
+    DIprg.lMin = -1000;
+    DIprg.lMax = +1000;
 
-        // Set the range for the axis
-        if (FAILED((*pGamePad)->mDIDeviceHandle->
-            SetProperty(DIPROP_RANGE, &diprg.diph)))
-        {
-            return DIENUM_STOP;
-        }
+    // Set the range for the axis
+    if (FAILED((*GamePad)->DIDeviceHandle->SetProperty(DIPROP_RANGE,
+                                                       &DIprg.diph))) {
+      return DIENUM_STOP;
     }
+  }
 
-    return DIENUM_CONTINUE;
+  return DIENUM_CONTINUE;
 }
 
-InputDeviceBase* InputManager::GetKeyBoard()
-{
-    return mpKeyBoard;
+InputDeviceBase *
+InputManager::getKeyBoard() {
+  return KeyBoardPtr;
 }
 
-InputDeviceBase* InputManager::GetMouse()
-{
-    return mpMouse;
+InputDeviceBase *
+InputManager::getMouse() {
+  return MousePtr;
 }
 
-InputDeviceBase* InputManager::GetGamePadByOffset(int offset)
-{
-    if (offset >= MAX_INPUTDEVICE_NUM)
-    {
-        return nullptr;
-    }
+InputDeviceBase *
+InputManager::getGamePadByIndex(int Index) {
+  if (Index >= MAX_INPUTDEVICE_NUM) {
+    return nullptr;
+  }
 
-    return mpGamePads[offset];
+  return GamePadPtrs[Index];
 }
 
-HRESULT InputManager::PollAllInputDevices()
-{
-    HRESULT hr = S_OK;
-    HRESULT fhr = S_OK;
+HRESULT
+InputManager::pollAllInputDevices() {
+  HRESULT Hr = S_OK;
+  HRESULT FHr = S_OK;
 
-    if (mpKeyBoard)
-    {
-        hr = mpKeyBoard->PollDeviceStatus();
-        if (FAILED(hr))
-        {
-            fhr = hr;
-        }
+  if (KeyBoardPtr) {
+    Hr = KeyBoardPtr->PollDeviceStatus();
+    if (FAILED(Hr)) {
+      FHr = Hr;
     }
-    if (mpMouse)
-    {
-        hr = mpMouse->PollDeviceStatus();
-        if (FAILED(hr))
-        {
-            fhr = hr;
-        }
+  }
+  if (MousePtr) {
+    Hr = MousePtr->PollDeviceStatus();
+    if (FAILED(Hr)) {
+      FHr = Hr;
     }
-    for (int i = 0; i < MAX_INPUTDEVICE_NUM; i++)
-    {
-        if (mpGamePads[i])
-        {
-            hr = mpGamePads[i]->PollDeviceStatus();
-        }
-        if (FAILED(hr))
-        {
-            fhr = hr;
-        }
+  }
+  for (int I = 0; I < MAX_INPUTDEVICE_NUM; I++) {
+    if (GamePadPtrs[I]) {
+      Hr = GamePadPtrs[I]->PollDeviceStatus();
     }
+    if (FAILED(Hr)) {
+      FHr = Hr;
+    }
+  }
 
-    return fhr;
+  return FHr;
 }
 
-const bool InputManager::IsThisKeyBeingPushedInSingle(
-    UINT keyCode)
-{
-    bool keyboard = false;
-    bool mouse = false;
-    bool gamepad = false;
-    if (mpKeyBoard)
-    {
-        keyboard = mpKeyBoard->IsKeyBeingPushed(keyCode);
-    }
-    if (mpMouse)
-    {
-        mouse = mpMouse->IsKeyBeingPushed(keyCode);
-    }
-    if (mpGamePads[0])
-    {
-        gamepad = mpGamePads[0]->IsKeyBeingPushed(keyCode);
-    }
+bool
+InputManager::isThisKeyBeingPushedInSingle(UINT KeyCode) {
+  bool Keyboard = false;
+  bool Mouse = false;
+  bool Gamepad = false;
+  if (KeyBoardPtr) {
+    Keyboard = KeyBoardPtr->isKeyBeingPushed(KeyCode);
+  }
+  if (MousePtr) {
+    Mouse = MousePtr->isKeyBeingPushed(KeyCode);
+  }
+  if (GamePadPtrs[0]) {
+    Gamepad = GamePadPtrs[0]->isKeyBeingPushed(KeyCode);
+  }
 
-    return (keyboard || mouse || gamepad);
+  return (Keyboard || Mouse || Gamepad);
 }
 
-const bool InputManager::IsThisKeyHasBeenPushedInSingle(
-    UINT keyCode)
-{
-    bool confirm1 = IsThisKeyBeingPushedInSingle(keyCode);
+bool
+InputManager::isThisKeyHasBeenPushedInSingle(UINT KeyCode) {
+  bool Confirm1 = isThisKeyBeingPushedInSingle(KeyCode);
 
-    if (!confirm1)
-    {
-        return confirm1;
-    }
+  if (!Confirm1) {
+    return Confirm1;
+  }
 
-    bool kconfirm2 = false;
-    bool mconfirm2 = false;
-    bool gconfirm2 = false;
+  bool KConfirm2 = false;
+  bool MConfirm2 = false;
+  bool GConfirm2 = false;
 
-    if (mpKeyBoard)
-    {
-        kconfirm2 = mpKeyBoard->HasKeyPushedInLastFrame(keyCode);
-    }
-    if (mpMouse)
-    {
-        mconfirm2 = mpMouse->HasKeyPushedInLastFrame(keyCode);
-    }
-    if (mpGamePads[0])
-    {
-        gconfirm2 = mpGamePads[0]->
-            HasKeyPushedInLastFrame(keyCode);
-    }
+  if (KeyBoardPtr) {
+    KConfirm2 = KeyBoardPtr->hasKeyPushedInLastFrame(KeyCode);
+  }
+  if (MousePtr) {
+    MConfirm2 = MousePtr->hasKeyPushedInLastFrame(KeyCode);
+  }
+  if (GamePadPtrs[0]) {
+    GConfirm2 = GamePadPtrs[0]->hasKeyPushedInLastFrame(KeyCode);
+  }
 
-    return (!(kconfirm2 || mconfirm2 || gconfirm2) && confirm1);
+  return (!(KConfirm2 || MConfirm2 || GConfirm2) && Confirm1);
 }
 
-const MOUSE_OFFSET InputManager::GetMouseOffset()
-{
-    MOUSE_OFFSET mo = {};
-    mo.x = mpMouse->GetXPositionOffset();
-    mo.y = mpMouse->GetYPositionOffset();
+MOUSE_OFFSET
+InputManager::getMouseOffset() {
+  MOUSE_OFFSET Mo = {};
+  Mo.x = MousePtr->getXPositionOffset();
+  Mo.y = MousePtr->getYPositionOffset();
 
-    return mo;
+  return Mo;
 }
 
-const bool InputManager::IsMouseScrollingUp()
-{
-    return mpMouse->GetZPositionOffset() > 0;
+bool
+InputManager::isMouseScrollingUp() {
+  return MousePtr->getZPositionOffset() > 0;
 }
 
-const bool InputManager::IsMouseScrollingDown()
-{
-    return mpMouse->GetZPositionOffset() < 0;
+bool
+InputManager::isMouseScrollingDown() {
+  return MousePtr->getZPositionOffset() < 0;
 }
 
-const STICK_OFFSET
-InputManager::GetGamePadLeftStickOffset(
-    int gamepadOffset)
-{
-    STICK_OFFSET so = {};
-    if (mpGamePads[gamepadOffset])
-    {
-        if (mpGamePads[gamepadOffset]->GetInputType() ==
-            INPUT_TYPE::DIRECTINPUT)
-        {
-            so.x = mpGamePads[gamepadOffset]->
-                GetXPositionOffset();
-            so.y = mpGamePads[gamepadOffset]->
-                GetYPositionOffset();
-        }
-        else if (mpGamePads[gamepadOffset]->GetInputType() ==
-            INPUT_TYPE::XINPUT)
-        {
-            so.x = mpGamePads[gamepadOffset]->
-                GetXPositionOffset();
-            so.y = mpGamePads[gamepadOffset]->
-                GetYPositionOffset();
-        }
-        else
-        {
-            so.x = 0;
-            so.y = 0;
-        }
+STICK_OFFSET
+InputManager::getGamePadLeftStickOffset(int GamepadIndex) {
+  STICK_OFFSET So = {};
+  if (GamePadPtrs[GamepadIndex]) {
+    if (GamePadPtrs[GamepadIndex]->getInputType() == INPUT_TYPE::DIRECTINPUT) {
+      So.x = GamePadPtrs[GamepadIndex]->getXPositionOffset();
+      So.y = GamePadPtrs[GamepadIndex]->getYPositionOffset();
+    } else if (GamePadPtrs[GamepadIndex]->getInputType() ==
+               INPUT_TYPE::XINPUT) {
+      So.x = GamePadPtrs[GamepadIndex]->getXPositionOffset();
+      So.y = GamePadPtrs[GamepadIndex]->getYPositionOffset();
+    } else {
+      So.x = 0;
+      So.y = 0;
     }
-    else
-    {
-        so.x = 0;
-        so.y = 0;
-    }
+  } else {
+    So.x = 0;
+    So.y = 0;
+  }
 
-    return so;
+  return So;
 }
 
-const STICK_OFFSET
-InputManager::GetGamePadRightStickOffset(
-    int gamepadOffset)
-{
-    STICK_OFFSET so = {};
-    if (mpGamePads[gamepadOffset])
-    {
-        if (mpGamePads[gamepadOffset]->GetInputType() ==
-            INPUT_TYPE::DIRECTINPUT)
-        {
-            so.x = mpGamePads[gamepadOffset]->
-                GetZPositionOffset();
-            so.y = mpGamePads[gamepadOffset]->
-                GetZRotationOffset();
-        }
-        else if (mpGamePads[gamepadOffset]->GetInputType() ==
-            INPUT_TYPE::XINPUT)
-        {
-            so.x = mpGamePads[gamepadOffset]->
-                GetXRotationOffset();
-            so.y = mpGamePads[gamepadOffset]->
-                GetYRotationOffset();
-        }
-        else
-        {
-            so.x = 0;
-            so.y = 0;
-        }
+STICK_OFFSET
+InputManager::getGamePadRightStickOffset(int GamepadIndex) {
+  STICK_OFFSET So = {};
+  if (GamePadPtrs[GamepadIndex]) {
+    if (GamePadPtrs[GamepadIndex]->getInputType() == INPUT_TYPE::DIRECTINPUT) {
+      So.x = GamePadPtrs[GamepadIndex]->getZPositionOffset();
+      So.y = GamePadPtrs[GamepadIndex]->getZRotationOffset();
+    } else if (GamePadPtrs[GamepadIndex]->getInputType() ==
+               INPUT_TYPE::XINPUT) {
+      So.x = GamePadPtrs[GamepadIndex]->getXRotationOffset();
+      So.y = GamePadPtrs[GamepadIndex]->getYRotationOffset();
+    } else {
+      So.x = 0;
+      So.y = 0;
     }
-    else
-    {
-        so.x = 0;
-        so.y = 0;
-    }
+  } else {
+    So.x = 0;
+    So.y = 0;
+  }
 
-    return so;
+  return So;
 }
 
-const BACKSHD_OFFSET
-InputManager::GetGamePadLeftBackShdBtnOffset(
-    int gamepadOffset)
-{
-    if (!mpGamePads[gamepadOffset])
-    {
-        return 0;
-    }
+BACKSHD_OFFSET
+InputManager::getGamePadLeftBackShdBtnOffset(int GamepadIndex) {
+  if (!GamePadPtrs[GamepadIndex]) {
+    return 0;
+  }
 
-    if (mpGamePads[gamepadOffset]->GetInputType() ==
-        INPUT_TYPE::DIRECTINPUT)
-    {
-        return mpGamePads[gamepadOffset]->GetXRotationOffset();
-    }
-    else if (mpGamePads[gamepadOffset]->GetInputType() ==
-        INPUT_TYPE::XINPUT)
-    {
-        return mpGamePads[gamepadOffset]->GetZPositionOffset();
-    }
-    else
-    {
-        return 0;
-    }
+  if (GamePadPtrs[GamepadIndex]->getInputType() == INPUT_TYPE::DIRECTINPUT) {
+    return GamePadPtrs[GamepadIndex]->getXRotationOffset();
+  } else if (GamePadPtrs[GamepadIndex]->getInputType() == INPUT_TYPE::XINPUT) {
+    return GamePadPtrs[GamepadIndex]->getZPositionOffset();
+  } else {
+    return 0;
+  }
 }
 
-const BACKSHD_OFFSET
-InputManager::GetGamePadRightBackShdBtnOffset(
-    int gamepadOffset)
-{
-    if (!mpGamePads[gamepadOffset])
-    {
-        return 0;
-    }
+BACKSHD_OFFSET
+InputManager::getGamePadRightBackShdBtnOffset(int GamepadIndex) {
+  if (!GamePadPtrs[GamepadIndex]) {
+    return 0;
+  }
 
-    if (mpGamePads[gamepadOffset]->GetInputType() ==
-        INPUT_TYPE::DIRECTINPUT)
-    {
-        return mpGamePads[gamepadOffset]->GetYRotationOffset();
-    }
-    else if (mpGamePads[gamepadOffset]->GetInputType() ==
-        INPUT_TYPE::XINPUT)
-    {
-        return mpGamePads[gamepadOffset]->GetZRotationOffset();
-    }
-    else
-    {
-        return 0;
-    }
+  if (GamePadPtrs[GamepadIndex]->getInputType() == INPUT_TYPE::DIRECTINPUT) {
+    return GamePadPtrs[GamepadIndex]->getYRotationOffset();
+  } else if (GamePadPtrs[GamepadIndex]->getInputType() == INPUT_TYPE::XINPUT) {
+    return GamePadPtrs[GamepadIndex]->getZRotationOffset();
+  } else {
+    return 0;
+  }
 }

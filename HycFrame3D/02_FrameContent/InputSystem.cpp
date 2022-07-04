@@ -40,17 +40,17 @@ bool InputSystem::Init()
 
 void InputSystem::Run(Timer& _timer)
 {
-    InputInterface::PollDevices();
+    input::pollDevices();
 
-    bool up = InputInterface::IsKeyPushedInSingle(KB_UP);
-    bool down = InputInterface::IsKeyPushedInSingle(KB_DOWN);
-    bool left = InputInterface::IsKeyPushedInSingle(KB_LEFT);
-    bool right = InputInterface::IsKeyPushedInSingle(KB_RIGHT);
-    bool gp_up = InputInterface::IsKeyPushedInSingle(GP_UPDIRBTN);
-    bool gp_down = InputInterface::IsKeyPushedInSingle(GP_DOWNDIRBTN);
-    bool gp_left = InputInterface::IsKeyPushedInSingle(GP_LEFTDIRBTN);
-    bool gp_right = InputInterface::IsKeyPushedInSingle(GP_RIGHTDIRBTN);
-    bool click = InputInterface::IsKeyPushedInSingle(M_LEFTBTN);
+    bool up = input::isKeyPushedInSingle(KB_UP);
+    bool down = input::isKeyPushedInSingle(KB_DOWN);
+    bool left = input::isKeyPushedInSingle(KB_LEFT);
+    bool right = input::isKeyPushedInSingle(KB_RIGHT);
+    bool gp_up = input::isKeyPushedInSingle(GP_UPDIRBTN);
+    bool gp_down = input::isKeyPushedInSingle(GP_DOWNDIRBTN);
+    bool gp_left = input::isKeyPushedInSingle(GP_LEFTDIRBTN);
+    bool gp_right = input::isKeyPushedInSingle(GP_RIGHTDIRBTN);
+    bool click = input::isKeyPushedInSingle(M_LEFTBTN);
     if (up || down || left || right ||
         gp_up || gp_down || gp_left || gp_right)
     {
@@ -72,8 +72,8 @@ void InputSystem::Run(Timer& _timer)
     }
 
     // TEMP----------------------------------
-    if (InputInterface::IsKeyDownInSingle(KB_RALT) &&
-        InputInterface::IsKeyDownInSingle(KB_BACKSPACE))
+    if (input::isKeyDownInSingle(KB_RALT) &&
+        input::isKeyDownInSingle(KB_BACKSPACE))
     {
         PostQuitMessage(0);
     }

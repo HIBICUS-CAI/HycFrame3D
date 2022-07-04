@@ -1,95 +1,97 @@
 #include "ID_Common.h"
+
 #include "ID_Interface.h"
+
 #include "WM_Interface.h"
 
-namespace InputInterface
-{
-    InputManager* g_InputManager = nullptr;
+namespace input {
 
-    bool StartUp()
-    {
-        g_InputManager = new InputManager(
-            window::getWindowPtr());
+InputManager *G_InputManager = nullptr;
 
-        HRESULT hr = g_InputManager->CreateDirectInputMain();
-        if (FAILED(hr))
-        {
-            delete g_InputManager;
-            g_InputManager = nullptr;
-            return false;
-        }
+bool
+startUp() {
+  G_InputManager = new InputManager(window::getWindowPtr());
+  if (!G_InputManager) {
+    return false;
+  }
 
-        g_InputManager->EnumAllInputDevices();
+  HRESULT Hr = G_InputManager->createDirectInputMain();
+  if (FAILED(Hr)) {
+    delete G_InputManager;
+    G_InputManager = nullptr;
+    return false;
+  }
 
-        return true;
-    }
+  G_InputManager->enumAllInputDevices();
 
-    void CleanAndStop()
-    {
-        if (g_InputManager)
-        {
-            g_InputManager->CloseDirectInputMain();
-            delete g_InputManager;
-            g_InputManager = nullptr;
-        }
-    }
-
-    InputManager* GetInputManagerPtr()
-    {
-        return g_InputManager;
-    }
-
-    bool PollDevices()
-    {
-        HRESULT hr = g_InputManager->PollAllInputDevices();
-        if (FAILED(hr))
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    bool IsKeyDownInSingle(UINT keyCode)
-    {
-        return g_InputManager->IsThisKeyBeingPushedInSingle(
-            keyCode);
-    }
-    bool IsKeyPushedInSingle(UINT keyCode)
-    {
-        return g_InputManager->IsThisKeyHasBeenPushedInSingle(
-            keyCode);
-    }
-    STICK_OFFSET LeftStickOffset(int gamepadOffset)
-    {
-        return g_InputManager->GetGamePadLeftStickOffset(
-            gamepadOffset);
-    }
-    STICK_OFFSET RightStickOffset(int gamepadOffset)
-    {
-        return g_InputManager->GetGamePadRightStickOffset(
-            gamepadOffset);
-    }
-    BACKSHD_OFFSET LeftBackShdBtnOffset(int gamepadOffset)
-    {
-        return g_InputManager->GetGamePadLeftBackShdBtnOffset(
-            gamepadOffset);
-    }
-    BACKSHD_OFFSET RightBackShdBtnOffset(int gamepadOffset)
-    {
-        return g_InputManager->GetGamePadRightBackShdBtnOffset(
-            gamepadOffset);
-    }
-    MOUSE_OFFSET GetMouseOffset()
-    {
-        return g_InputManager->GetMouseOffset();
-    }
-    bool IsMouseScrollingUp()
-    {
-        return g_InputManager->IsMouseScrollingUp();
-    }
-    bool IsMouseScrollingDown()
-    {
-        return g_InputManager->IsMouseScrollingDown();
-    }
+  return true;
 }
+
+void
+cleanAndStop() {
+  if (G_InputManager) {
+    G_InputManager->closeDirectInputMain();
+    delete G_InputManager;
+    G_InputManager = nullptr;
+  }
+}
+
+InputManager *
+getInputManagerPtr() {
+  return G_InputManager;
+}
+
+bool
+pollDevices() {
+  HRESULT Hr = G_InputManager->pollAllInputDevices();
+  if (FAILED(Hr)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool
+isKeyDownInSingle(UINT KeyCode) {
+  return G_InputManager->isThisKeyBeingPushedInSingle(KeyCode);
+}
+
+bool
+isKeyPushedInSingle(UINT KeyCode) {
+  return G_InputManager->isThisKeyHasBeenPushedInSingle(KeyCode);
+}
+
+STICK_OFFSET
+leftStickOffset(int GamepadIndex) {
+  return G_InputManager->getGamePadLeftStickOffset(GamepadIndex);
+}
+
+STICK_OFFSET
+rightStickOffset(int GamepadIndex) {
+  return G_InputManager->getGamePadRightStickOffset(GamepadIndex);
+}
+
+BACKSHD_OFFSET
+leftBackShdBtnOffset(int GamepadIndex) {
+  return G_InputManager->getGamePadLeftBackShdBtnOffset(GamepadIndex);
+}
+
+BACKSHD_OFFSET
+rightBackShdBtnOffset(int GamepadIndex) {
+  return G_InputManager->getGamePadRightBackShdBtnOffset(GamepadIndex);
+}
+
+MOUSE_OFFSET
+getMouseOffset() { return G_InputManager->getMouseOffset(); }
+
+bool
+isMouseScrollingUp() {
+  return G_InputManager->isMouseScrollingUp();
+}
+
+bool
+isMouseScrollingDown() {
+  return G_InputManager->isMouseScrollingDown();
+}
+
+} // namespace input
