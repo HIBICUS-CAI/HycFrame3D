@@ -42,38 +42,38 @@ bool RSDevices::StartUp(RSRoot_DX11* _root, HWND _wnd)
     mRootPtr = _root;
 
     {
-        using namespace Hyc;
-        using namespace Hyc::Text;
+        using namespace hyc;
+        using namespace hyc::text;
         TomlNode configRoot = {};
         TomlNode node = {};
         std::string errorMess = "";
-        if (!LoadTomlAndParse(configRoot,
+        if (!loadTomlAndParse(configRoot,
             ".\\Assets\\Configs\\render-device-config.toml",
             errorMess))
         {
             return false;
         }
 
-        if (!GetTomlNode(configRoot, "device.adapter.manual-setting", node))
+        if (!getTomlNode(configRoot, "device.adapter.manual-setting", node))
         {
             return false;
         }
         else
         {
-            if (GetAs<bool>(node) &&
-                GetTomlNode(configRoot, "device.adapter.index-designation", node))
+            if (getAs<bool>(node) &&
+                getTomlNode(configRoot, "device.adapter.index-designation", node))
             {
-                mRenderDeivceConfig.mForceAdapterIndex = GetAs<uint>(node);
+                mRenderDeivceConfig.mForceAdapterIndex = getAs<uint>(node);
             }
         }
 
-        if (!GetTomlNode(configRoot, "device.single-thread", node))
+        if (!getTomlNode(configRoot, "device.single-thread", node))
         {
             return false;
         }
         else
         {
-            mRenderDeivceConfig.mForceSingleThread = GetAs<bool>(node);
+            mRenderDeivceConfig.mForceSingleThread = getAs<bool>(node);
         }
     }
 

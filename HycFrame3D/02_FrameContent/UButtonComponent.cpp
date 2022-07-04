@@ -57,10 +57,10 @@ bool UButtonComponent::Init()
     {
         if (g_SelectFlagTexture == "")
         {
-            using namespace Hyc::Text;
+            using namespace hyc::text;
             TomlNode btnFlgConfig = {};
             std::string errorMess = "";
-            if (!LoadTomlAndParse(btnFlgConfig,
+            if (!loadTomlAndParse(btnFlgConfig,
                 ".\\Assets\\Configs\\selected-flag-config.toml",
                 errorMess))
             {
@@ -69,7 +69,7 @@ bool UButtonComponent::Init()
                 return false;
             }
             g_SelectFlagTexture =
-                GetAs<std::string>(btnFlgConfig["flag-texture"]["file"]);
+                getAs<std::string>(btnFlgConfig["flag-texture"]["file"]);
         }
 
         RS_SUBMESH_DATA btnSelect = GetRSRoot_DX11_Singleton()->

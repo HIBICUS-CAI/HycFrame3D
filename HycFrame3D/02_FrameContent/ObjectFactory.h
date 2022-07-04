@@ -38,17 +38,17 @@ public:
         GetUDestoryMapPtr() { return &mUiInteractDestoryFuncPtrMap; }
 
 private:
-    void CreateSceneAssets(class SceneNode* _node, Hyc::Text::JsonFile& _json);
+    void CreateSceneAssets(class SceneNode* _node, hyc::text::JsonFile& _json);
 
-    void CreateActorObject(class SceneNode* _node, Hyc::Text::JsonFile& _json,
+    void CreateActorObject(class SceneNode* _node, hyc::text::JsonFile& _json,
         std::string _jsonPath);
-    void CreateUiObject(class SceneNode* _node, Hyc::Text::JsonFile& _json,
+    void CreateUiObject(class SceneNode* _node, hyc::text::JsonFile& _json,
         std::string _jsonPath);
 
     void CreateActorComp(class SceneNode* _node, class ActorObject* _actor,
-        Hyc::Text::JsonFile& _json, std::string _jsonPath);
+        hyc::text::JsonFile& _json, std::string _jsonPath);
     void CreateUiComp(class SceneNode* _node, class UiObject* _ui,
-        Hyc::Text::JsonFile& _json, std::string _jsonPath);
+        hyc::text::JsonFile& _json, std::string _jsonPath);
 
 private:
     class SceneManager* mSceneManagerPtr;

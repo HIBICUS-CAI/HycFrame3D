@@ -3,64 +3,65 @@
 #pragma once
 #pragma clang diagnostic pop
 
+#include "HycType.h"
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #include <rapidjson\document.h>
-#include <rapidjson\pointer.h>
-#include <rapidjson\istreamwrapper.h>
 #include <rapidjson\filereadstream.h>
+#include <rapidjson\istreamwrapper.h>
+#include <rapidjson\pointer.h>
 #pragma clang diagnostic pop
-#include <string>
+
 #include <fstream>
+#include <string>
 
-#include "HycType.h"
+namespace hyc {
+namespace text {
 
-namespace Hyc
-{
-    namespace Text
-    {
-        using JsonFile = rapidjson::Document;
-        using JsonNode = rapidjson::Value*;
+using JsonFile = rapidjson::Document;
+using JsonNode = rapidjson::Value *;
 
-        inline bool LoadJsonAndParse(JsonFile& _outFile, const std::string& _path)
-        {
-            std::ifstream ifs(_path);
-            rapidjson::IStreamWrapper isw(ifs);
-            _outFile.ParseStream(isw);
+inline bool
+loadJsonAndParse(JsonFile &OutFile, const std::string &Path) {
+  std::ifstream IfS(Path);
+  rapidjson::IStreamWrapper ISW(IfS);
+  OutFile.ParseStream(ISW);
 
-            return !_outFile.HasParseError();
-        }
-
-        inline bool LoadJsonAndParse(JsonFile& _outFile, cstring _path)
-        {
-            std::ifstream ifs(_path);
-            rapidjson::IStreamWrapper isw(ifs);
-            _outFile.ParseStream(isw);
-
-            return !_outFile.HasParseError();
-        }
-
-        inline uint GetJsonParseError(const JsonFile& _file)
-        {
-            return static_cast<uint>(_file.GetParseError());
-        }
-
-        inline JsonNode GetJsonNode(JsonFile& _file, const std::string& _path)
-        {
-            rapidjson::Pointer ptr(_path.c_str());
-            return rapidjson::GetValueByPointer(_file, ptr);
-        }
-
-        inline JsonNode GetJsonNode(JsonFile& _file, cstring _path)
-        {
-            rapidjson::Pointer ptr(_path);
-            return rapidjson::GetValueByPointer(_file, ptr);
-        }
-
-        template <typename T>
-        T GetAs(const JsonNode& _node)
-        {
-            return _node->Get<T>();
-        }
-    }
+  return !OutFile.HasParseError();
 }
+
+inline bool
+loadJsonAndParse(JsonFile &OutFile, cstring Path) {
+  std::ifstream IfS(Path);
+  rapidjson::IStreamWrapper ISW(IfS);
+  OutFile.ParseStream(ISW);
+
+  return !OutFile.HasParseError();
+}
+
+inline uint
+getJsonParseError(const JsonFile &File) {
+  return static_cast<uint>(File.GetParseError());
+}
+
+inline JsonNode
+getJsonNode(JsonFile &File, const std::string &Path) {
+  rapidjson::Pointer Ptr(Path.c_str());
+  return rapidjson::GetValueByPointer(File, Ptr);
+}
+
+inline JsonNode
+getJsonNode(JsonFile &File, cstring Path) {
+  rapidjson::Pointer Ptr(Path);
+  return rapidjson::GetValueByPointer(File, Ptr);
+}
+
+template <typename T>
+T
+GetAs(const JsonNode &Node) {
+  return Node->Get<T>();
+}
+
+} // namespace text
+} // namespace hyc

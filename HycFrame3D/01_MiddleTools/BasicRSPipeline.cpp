@@ -107,102 +107,102 @@ void SetPipelineIBLTextures(ID3D11ShaderResourceView* _envSrv,
 bool CreateBasicPipeline()
 {
     {
-        using namespace Hyc;
-        using namespace Hyc::Text;
+        using namespace hyc;
+        using namespace hyc::text;
         TomlNode config = {};
         TomlNode node = {};
         std::string errorMess = "";
-        if (!LoadTomlAndParse(config,
+        if (!loadTomlAndParse(config,
             ".\\Assets\\Configs\\render-effect-config.toml",
             errorMess))
         {
             return false;
         }
 
-        if (!GetTomlNode(config, "pipeline", node))
+        if (!getTomlNode(config, "pipeline", node))
         {
             return false;
         }
-        g_RenderEffectConfig.mSimplyLitOn = GetAs<bool>(node["simply-lit"]);
-        g_RenderEffectConfig.mLightModel = GetAs<std::string>(node["light-model"]);
+        g_RenderEffectConfig.mSimplyLitOn = getAs<bool>(node["simply-lit"]);
+        g_RenderEffectConfig.mLightModel = getAs<std::string>(node["light-model"]);
         if (g_RenderEffectConfig.mLightModel != "brdf_disney" &&
             g_RenderEffectConfig.mLightModel != "blinn_phong")
         {
             g_RenderEffectConfig.mLightModel = "brdf_disney";
         }
 
-        if (!GetTomlNode(config, "ssao", node))
+        if (!getTomlNode(config, "ssao", node))
         {
             return false;
         }
-        g_RenderEffectConfig.mSsaoRadius = GetAs<float>(node["radius"]);
-        g_RenderEffectConfig.mSsaoStart = GetAs<float>(node["range-start"]);
-        g_RenderEffectConfig.mSsaoEnd = GetAs<float>(node["range-end"]);
-        g_RenderEffectConfig.mSsaoEpsilon = GetAs<float>(node["epsilon"]);
-        g_RenderEffectConfig.mSsaoBlurCount = GetAs<uint>(node["blur-count"]);
+        g_RenderEffectConfig.mSsaoRadius = getAs<float>(node["radius"]);
+        g_RenderEffectConfig.mSsaoStart = getAs<float>(node["range-start"]);
+        g_RenderEffectConfig.mSsaoEnd = getAs<float>(node["range-end"]);
+        g_RenderEffectConfig.mSsaoEpsilon = getAs<float>(node["epsilon"]);
+        g_RenderEffectConfig.mSsaoBlurCount = getAs<uint>(node["blur-count"]);
 
-        if (!GetTomlNode(config, "sampler", node))
+        if (!getTomlNode(config, "sampler", node))
         {
             return false;
         }
         g_RenderEffectConfig.mSamplerLevel =
-            (SAMPLER_LEVEL)(GetAs<uint>(node["filter-level"]));
+            (SAMPLER_LEVEL)(getAs<uint>(node["filter-level"]));
         if ((UINT)g_RenderEffectConfig.mSamplerLevel < 0 ||
             (UINT)g_RenderEffectConfig.mSamplerLevel > 3)
         {
             return false;
         }
 
-        if (!GetTomlNode(config, "particle", node))
+        if (!getTomlNode(config, "particle", node))
         {
             return false;
         }
-        g_RenderEffectConfig.mParticleOff = GetAs<bool>(node["disable-particle"]);
+        g_RenderEffectConfig.mParticleOff = getAs<bool>(node["disable-particle"]);
 
-        if (!GetTomlNode(config, "bloom", node))
+        if (!getTomlNode(config, "bloom", node))
         {
             return false;
         }
-        g_RenderEffectConfig.mBloomOff = GetAs<bool>(node["disable-bloom"]);
+        g_RenderEffectConfig.mBloomOff = getAs<bool>(node["disable-bloom"]);
         if (g_RenderEffectConfig.mLightModel == "blinn_phong")
         {
             g_RenderEffectConfig.mBloomOff = true;
         }
         g_RenderEffectConfig.mBloomMinValue =
-            GetAs<float>(node["min-luminous"]);
+            getAs<float>(node["min-luminous"]);
         g_RenderEffectConfig.mBloomDownSamplingCount =
-            GetAs<uint>(node["downsampling-count"]);
+            getAs<uint>(node["downsampling-count"]);
         g_RenderEffectConfig.mBloomBlurCount =
-            GetAs<uint>(node["downsampling-blur-count"]);
+            getAs<uint>(node["downsampling-blur-count"]);
         g_RenderEffectConfig.mBloomBlurKernel =
-            GetAs<uint>(node["gauss-kernel-size"]);
+            getAs<uint>(node["gauss-kernel-size"]);
         g_RenderEffectConfig.mBloomBlurSigma =
-            GetAs<float>(node["gauss-sigma"]);
+            getAs<float>(node["gauss-sigma"]);
         g_RenderEffectConfig.mBloomIntensityFactor =
-            GetAs<float>(node["intensity-factor"]);
+            getAs<float>(node["intensity-factor"]);
         g_RenderEffectConfig.mBloomLightPixelFactor =
-            GetAs<float>(node["light-source-factor"]);
+            getAs<float>(node["light-source-factor"]);
 
-        if (!GetTomlNode(config, "exposure", node))
+        if (!getTomlNode(config, "exposure", node))
         {
             return false;
         }
-        g_RenderEffectConfig.mDynamicExpoOff = GetAs<bool>(node["disable-dynamic"]);
-        g_RenderEffectConfig.mStaticExpo = GetAs<float>(node["static-exposure"]);
-        g_RenderEffectConfig.mExpoTransSpeed = GetAs<float>(node["trans-speed"]);
-        g_RenderEffectConfig.mExpoMin = GetAs<float>(node["min-value"]);
-        g_RenderEffectConfig.mExpoMax = GetAs<float>(node["max-value"]);
-        g_RenderEffectConfig.mExpoInvFactor = GetAs<float>(node["inverse-factor"]);
+        g_RenderEffectConfig.mDynamicExpoOff = getAs<bool>(node["disable-dynamic"]);
+        g_RenderEffectConfig.mStaticExpo = getAs<float>(node["static-exposure"]);
+        g_RenderEffectConfig.mExpoTransSpeed = getAs<float>(node["trans-speed"]);
+        g_RenderEffectConfig.mExpoMin = getAs<float>(node["min-value"]);
+        g_RenderEffectConfig.mExpoMax = getAs<float>(node["max-value"]);
+        g_RenderEffectConfig.mExpoInvFactor = getAs<float>(node["inverse-factor"]);
 
-        if (!GetTomlNode(config, "fxaa", node))
+        if (!getTomlNode(config, "fxaa", node))
         {
             return false;
         }
-        g_RenderEffectConfig.mFXAAOff = GetAs<bool>(node["disable-fxaa"]);
-        g_RenderEffectConfig.mFXAAThreshould = GetAs<float>(node["threshold"]);
-        g_RenderEffectConfig.mFXAAMinThreshould = GetAs<float>(node["min-threshold"]);
-        g_RenderEffectConfig.mFXAASearchStep = GetAs<uint>(node["search-step"]);
-        g_RenderEffectConfig.mFXAAGuess = GetAs<uint>(node["edge-guess"]);
+        g_RenderEffectConfig.mFXAAOff = getAs<bool>(node["disable-fxaa"]);
+        g_RenderEffectConfig.mFXAAThreshould = getAs<float>(node["threshold"]);
+        g_RenderEffectConfig.mFXAAMinThreshould = getAs<float>(node["min-threshold"]);
+        g_RenderEffectConfig.mFXAASearchStep = getAs<uint>(node["search-step"]);
+        g_RenderEffectConfig.mFXAAGuess = getAs<uint>(node["edge-guess"]);
         if (!g_RenderEffectConfig.mFXAASearchStep)
         {
             g_RenderEffectConfig.mFXAAOff = true;

@@ -347,9 +347,9 @@ bool RSStaticResources::BuildStaticPipelines()
 
 bool RSStaticResources::BuildStaticMaterials()
 {
-    using namespace Hyc::Text;
+    using namespace hyc::text;
     JsonFile matFile = {};
-    if (!LoadJsonAndParse(matFile,
+    if (!loadJsonAndParse(matFile,
         "RenderSystem_StaticResources\\Materials\\static-materials.json"))
     {
         return false;

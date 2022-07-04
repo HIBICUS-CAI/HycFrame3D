@@ -3,6 +3,7 @@
 Language: Cpp
 AllowAllParametersOfDeclarationOnNextLine: false
 AlwaysBreakTemplateDeclarations: Yes
+AlwaysBreakAfterReturnType: All
 BasedOnStyle: LLVM
 BinPackParameters: false
 ...

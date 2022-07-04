@@ -3,156 +3,130 @@
 #pragma once
 #pragma clang diagnostic pop
 
-#include <toml11\toml.hpp>
-#include <string>
-
 #include "HycType.h"
 #include "StdStringUtility.h"
 
-namespace Hyc
-{
-    namespace Text
-    {
-        using TomlNode = toml::value;
+#include <string>
+#include <toml11\toml.hpp>
 
-        inline bool LoadTomlAndParse(TomlNode& _outRoot,
-            const std::string& _path,
-            std::string& _outErrorMessage)
-        {
-            bool result = true;
+namespace hyc {
+namespace text {
 
-            try
-            {
-                _outRoot = toml::parse(_path);
-            }
-            catch (const std::runtime_error& err)
-            {
-                _outErrorMessage = err.what();
-                result = false;
-            }
-            catch (const toml::syntax_error& err)
-            {
-                _outErrorMessage = err.what();
-                result = false;
-            }
-            catch (...)
-            {
-                _outErrorMessage = "parse failed with unhandled exception";
-                result = false;
-            }
+using TomlNode = toml::value;
 
-            return result;
-        }
+inline bool
+loadTomlAndParse(TomlNode &OutRoot,
+                 const std::string &Path,
+                 std::string &OutErrorMessage) {
+  bool Result = true;
 
-        inline bool LoadTomlAndParse(TomlNode& _outRoot,
-            cstring _path,
-            std::string& _outErrorMessage)
-        {
-            bool result = true;
+  try {
+    OutRoot = toml::parse(Path);
+  } catch (const std::runtime_error &err) {
+    OutErrorMessage = err.what();
+    Result = false;
+  } catch (const toml::syntax_error &err) {
+    OutErrorMessage = err.what();
+    Result = false;
+  } catch (...) {
+    OutErrorMessage = "parse failed with unhandled exception";
+    Result = false;
+  }
 
-            try
-            {
-                _outRoot = toml::parse(_path);
-            }
-            catch (const std::runtime_error& err)
-            {
-                _outErrorMessage = err.what();
-                result = false;
-            }
-            catch (const toml::syntax_error& err)
-            {
-                _outErrorMessage = err.what();
-                result = false;
-            }
-            catch (...)
-            {
-                _outErrorMessage = "parse failed with unhandled exception";
-                result = false;
-            }
-
-            return result;
-        }
-
-        inline bool GetNextTomlNode(const TomlNode& _from, const std::string& _to,
-            TomlNode& _outNode)
-        {
-            bool exist = _from.contains(_to);
-            if (!exist)
-            {
-                return false;
-            }
-
-            _outNode = toml::find(_from, _to);
-            return true;
-        }
-
-        inline bool GetNextTomlNode(const TomlNode& _from, cstring _to,
-            TomlNode& _outNode)
-        {
-            bool exist = _from.contains(_to);
-            if (!exist)
-            {
-                return false;
-            }
-
-            _outNode = toml::find(_from, _to);
-            return true;
-        }
-
-        inline bool GetTomlNode(const TomlNode& _from, const std::string& _to,
-            TomlNode& _outNode)
-        {
-            std::vector<std::string> paths = {};
-            Hyc::String::Split(_to, '.', paths);
-
-            TomlNode now = _from;
-            TomlNode next = {};
-
-            for (const auto& path : paths)
-            {
-                if (!GetNextTomlNode(now, path, next))
-                {
-                    return false;
-                }
-                else
-                {
-                    now = next;
-                }
-            }
-
-            _outNode = next;
-            return true;
-        }
-
-        inline bool GetTomlNode(const TomlNode& _from, cstring _to,
-            TomlNode& _outNode)
-        {
-            std::vector<std::string> paths = {};
-            Hyc::String::Split(_to, '.', paths);
-
-            TomlNode now = _from;
-            TomlNode next = {};
-
-            for (const auto& path : paths)
-            {
-                if (!GetNextTomlNode(now, path, next))
-                {
-                    return false;
-                }
-                else
-                {
-                    now = next;
-                }
-            }
-
-            _outNode = next;
-            return true;
-        }
-
-        template <typename T>
-        T GetAs(const TomlNode& _node)
-        {
-            return toml::get<T>(_node);
-        }
-    }
+  return Result;
 }
+
+inline bool
+loadTomlAndParse(TomlNode &OutRoot,
+                 cstring CPath,
+                 std::string &OutErrorMessage) {
+  bool Result = true;
+
+  try {
+    OutRoot = toml::parse(CPath);
+  } catch (const std::runtime_error &err) {
+    OutErrorMessage = err.what();
+    Result = false;
+  } catch (const toml::syntax_error &err) {
+    OutErrorMessage = err.what();
+    Result = false;
+  } catch (...) {
+    OutErrorMessage = "parse failed with unhandled exception";
+    Result = false;
+  }
+
+  return Result;
+}
+
+inline bool
+getNextTomlNode(const TomlNode &From,
+                const std::string &To,
+                TomlNode &OutNode) {
+  bool Exist = From.contains(To);
+  if (!Exist) {
+    return false;
+  }
+
+  OutNode = toml::find(From, To);
+  return true;
+}
+
+inline bool
+getNextTomlNode(const TomlNode &From, cstring To, TomlNode &OutNode) {
+  bool Exist = From.contains(To);
+  if (!Exist) {
+    return false;
+  }
+
+  OutNode = toml::find(From, To);
+  return true;
+}
+
+inline bool
+getTomlNode(const TomlNode &From, const std::string &To, TomlNode &OutNode) {
+  std::vector<std::string> Paths = {};
+  hyc::string::split(To, '.', Paths);
+
+  TomlNode Now = From;
+  TomlNode Next = {};
+
+  for (const auto &Path : Paths) {
+    if (!getNextTomlNode(Now, Path, Next)) {
+      return false;
+    } else {
+      Now = Next;
+    }
+  }
+
+  OutNode = Next;
+  return true;
+}
+
+inline bool
+getTomlNode(const TomlNode &From, cstring To, TomlNode &OutNode) {
+  std::vector<std::string> Paths = {};
+  hyc::string::split(To, '.', Paths);
+
+  TomlNode Now = From;
+  TomlNode Next = {};
+
+  for (const auto &Path : Paths) {
+    if (!getNextTomlNode(Now, Path, Next)) {
+      return false;
+    } else {
+      Now = Next;
+    }
+  }
+
+  OutNode = Next;
+  return true;
+}
+
+template <typename T>
+T
+getAs(const TomlNode &Node) {
+  return toml::get<T>(Node);
+}
+
+} // namespace text
+} // namespace hyc

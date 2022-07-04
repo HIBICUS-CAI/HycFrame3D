@@ -46,11 +46,11 @@ bool SceneManager::DeferedStartUp()
         return false;
     }
 
-    using namespace Hyc;
-    using namespace Hyc::Text;
+    using namespace hyc;
+    using namespace hyc::text;
     TomlNode entryInfo = {};
     std::string errorMess = "";
-    if (!LoadTomlAndParse(entryInfo,
+    if (!loadTomlAndParse(entryInfo,
         ".\\Assets\\Configs\\scene-entry-config.toml",
         errorMess))
     {
@@ -59,8 +59,8 @@ bool SceneManager::DeferedStartUp()
         return false;
     }
 
-    LoadSceneNode(GetAs<std::string>(entryInfo["entry-scene"]["name"]),
-        GetAs<std::string>(entryInfo["entry-scene"]["file"]));
+    LoadSceneNode(getAs<std::string>(entryInfo["entry-scene"]["name"]),
+        getAs<std::string>(entryInfo["entry-scene"]["file"]));
 
     return true;
 }

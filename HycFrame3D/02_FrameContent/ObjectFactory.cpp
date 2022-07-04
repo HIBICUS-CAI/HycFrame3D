@@ -9,7 +9,7 @@
 #include "RSStaticResources.h"
 #include <TextUtility.h>
 
-using namespace Hyc::Text;
+using namespace hyc::text;
 
 ObjectFactory::ObjectFactory() :mSceneManagerPtr(nullptr),
 mActorInputFuncPtrMap({}), mActorInteractInitFuncPtrMap({}),
@@ -52,11 +52,11 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
     }
 
     JsonFile sceneConfig = {};
-    if (!LoadJsonAndParse(sceneConfig, _path))
+    if (!loadJsonAndParse(sceneConfig, _path))
     {
         P_LOG(LOG_ERROR,
             "failed to parse scene config name %s with error code : %d\n",
-            _path.c_str(), GetJsonParseError(sceneConfig));
+            _path.c_str(), getJsonParseError(sceneConfig));
         delete newNode;
         return nullptr;
     }
@@ -98,9 +98,9 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
         std::string iblDiffTexName = "";
         std::string iblSpecTexName = "";
 
-        JsonNode iblEnvNode = GetJsonNode(sceneConfig, "/ibl-environment");
-        JsonNode iblDiffNode = GetJsonNode(sceneConfig, "/ibl-diffuse");
-        JsonNode iblSpecNode = GetJsonNode(sceneConfig, "/ibl-specular");
+        JsonNode iblEnvNode = getJsonNode(sceneConfig, "/ibl-environment");
+        JsonNode iblDiffNode = getJsonNode(sceneConfig, "/ibl-diffuse");
+        JsonNode iblSpecNode = getJsonNode(sceneConfig, "/ibl-specular");
 
         if (iblEnvNode) { iblEnvTexName = iblEnvNode->GetString(); }
         if (iblDiffNode) { iblDiffTexName = iblDiffNode->GetString(); }
@@ -133,7 +133,7 @@ SceneNode* ObjectFactory::CreateSceneNode(std::string _name, std::string _path)
 
 void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
 {
-    JsonNode modelRoot = GetJsonNode(_json, "/model-assets");
+    JsonNode modelRoot = getJsonNode(_json, "/model-assets");
     std::string jsonPath = "";
     if (modelRoot && modelRoot->Size())
     {
@@ -162,18 +162,18 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
 
             jsonPath = "/model-assets/" + std::to_string(i);
 
-            meshName = GetJsonNode(_json,
+            meshName = getJsonNode(_json,
                 jsonPath + "/mesh-name")->GetString();
 
-            JsonNode matInfoNode = GetJsonNode(_json,
+            JsonNode matInfoNode = getJsonNode(_json,
                 jsonPath + "/material-info");
             if (matInfoNode && !matInfoNode->IsNull())
             {
-                JsonNode majorNode = GetJsonNode(_json,
+                JsonNode majorNode = getJsonNode(_json,
                     jsonPath + "/material-info/major-material");
-                JsonNode minorNode = GetJsonNode(_json,
+                JsonNode minorNode = getJsonNode(_json,
                     jsonPath + "/material-info/minor-material");
-                JsonNode factorNode = GetJsonNode(_json,
+                JsonNode factorNode = getJsonNode(_json,
                     jsonPath + "/material-info/interpolate-factor");
                 auto staticResPtr = GetRSRoot_DX11_Singleton()->
                     StaticResources();
@@ -195,51 +195,51 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                     meshName.c_str());
             }
 
-            JsonNode diffuseNode = GetJsonNode(_json,
+            JsonNode diffuseNode = getJsonNode(_json,
                 jsonPath + "/force-diffuse");
             if (diffuseNode && !diffuseNode->IsNull())
             {
                 forceDiffuse = diffuseNode->GetString();
             }
 
-            JsonNode normalNode = GetJsonNode(_json,
+            JsonNode normalNode = getJsonNode(_json,
                 jsonPath + "/force-normal");
             if (normalNode && !normalNode->IsNull())
             {
                 forceNormal = normalNode->GetString();
             }
 
-            JsonNode metalNode = GetJsonNode(_json,
+            JsonNode metalNode = getJsonNode(_json,
                 jsonPath + "/force-metallic");
             if (metalNode && !metalNode->IsNull())
             {
                 forceMetal = metalNode->GetString();
             }
 
-            JsonNode roughNode = GetJsonNode(_json,
+            JsonNode roughNode = getJsonNode(_json,
                 jsonPath + "/force-roughness");
             if (roughNode && !roughNode->IsNull())
             {
                 forceRough = roughNode->GetString();
             }
 
-            JsonNode emissNode = GetJsonNode(_json,
+            JsonNode emissNode = getJsonNode(_json,
                 jsonPath + "/force-emissive");
             if (emissNode && !emissNode->IsNull())
             {
                 forceEmiss = emissNode->GetString();
             }
 
-            loadMode = GetJsonNode(_json,
+            loadMode = getJsonNode(_json,
                 jsonPath + "/load-mode")->GetString();
 
             if (loadMode == "model-file")
             {
-                std::string fileName = GetJsonNode(_json,
+                std::string fileName = getJsonNode(_json,
                     jsonPath + "/load-info/m-file")->GetString();
-                std::string fileType = GetJsonNode(_json,
+                std::string fileType = getJsonNode(_json,
                     jsonPath + "/load-info/m-file-type")->GetString();
-                auto subIndexNode = GetJsonNode(_json,
+                auto subIndexNode = getJsonNode(_json,
                     jsonPath + "/load-info/m-sub-mesh-index");
                 if (subIndexNode && !subIndexNode->IsNull())
                 {
@@ -265,79 +265,79 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
             }
             else if (loadMode == "program-box")
             {
-                float width = GetJsonNode(_json,
+                float width = getJsonNode(_json,
                     jsonPath + "/load-info/b-size/0")->GetFloat();
-                float height = GetJsonNode(_json,
+                float height = getJsonNode(_json,
                     jsonPath + "/load-info/b-size/1")->GetFloat();
-                float depth = GetJsonNode(_json,
+                float depth = getJsonNode(_json,
                     jsonPath + "/load-info/b-size/2")->GetFloat();
-                UINT divide = GetJsonNode(_json,
+                UINT divide = getJsonNode(_json,
                     jsonPath + "/load-info/b-divide")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateBox(width, height, depth, divide,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
-                        GetJsonNode(_json,
+                        getJsonNode(_json,
                             jsonPath + "/load-info/b-tex-file")->GetString());
             }
             else if (loadMode == "program-sphere")
             {
-                float radius = GetJsonNode(_json,
+                float radius = getJsonNode(_json,
                     jsonPath + "/load-info/s-radius")->GetFloat();
-                UINT slice = GetJsonNode(_json,
+                UINT slice = getJsonNode(_json,
                     jsonPath + "/load-info/s-slice-stack-count/0")->GetUint();
-                UINT stack = GetJsonNode(_json,
+                UINT stack = getJsonNode(_json,
                     jsonPath + "/load-info/s-slice-stack-count/1")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateSphere(radius, slice, stack,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
-                        GetJsonNode(_json,
+                        getJsonNode(_json,
                             jsonPath + "/load-info/s-tex-file")->GetString());
             }
             else if (loadMode == "program-geo-sphere")
             {
-                float radius = GetJsonNode(_json,
+                float radius = getJsonNode(_json,
                     jsonPath + "/load-info/gs-radius")->GetFloat();
-                UINT divide = GetJsonNode(_json,
+                UINT divide = getJsonNode(_json,
                     jsonPath + "/load-info/gs-divide")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateGeometrySphere(radius, divide,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
-                        GetJsonNode(_json,
+                        getJsonNode(_json,
                             jsonPath + "/load-info/gs-tex-file")->GetString());
             }
             else if (loadMode == "program-cylinder")
             {
-                float topRadius = GetJsonNode(_json,
+                float topRadius = getJsonNode(_json,
                     jsonPath + "/load-info/c-top-btm-het-size/0")->GetFloat();
-                float bottomRadius = GetJsonNode(_json,
+                float bottomRadius = getJsonNode(_json,
                     jsonPath + "/load-info/c-top-btm-het-size/1")->GetFloat();
-                float height = GetJsonNode(_json,
+                float height = getJsonNode(_json,
                     jsonPath + "/load-info/c-top-btm-het-size/2")->GetFloat();
-                UINT slice = GetJsonNode(_json,
+                UINT slice = getJsonNode(_json,
                     jsonPath + "/load-info/c-slice-stack-count/0")->GetUint();
-                UINT stack = GetJsonNode(_json,
+                UINT stack = getJsonNode(_json,
                     jsonPath + "/load-info/c-slice-stack-count/1")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateCylinder(bottomRadius, topRadius,
                         height, slice, stack, LAYOUT_TYPE::NORMAL_TANGENT_TEX,
                         false, {},
-                        GetJsonNode(_json,
+                        getJsonNode(_json,
                             jsonPath + "/load-info/c-tex-file")->GetString());
             }
             else if (loadMode == "program-grid")
             {
-                float width = GetJsonNode(_json,
+                float width = getJsonNode(_json,
                     jsonPath + "/load-info/g-size/0")->GetFloat();
-                float depth = GetJsonNode(_json,
+                float depth = getJsonNode(_json,
                     jsonPath + "/load-info/g-size/1")->GetFloat();
-                UINT row = GetJsonNode(_json,
+                UINT row = getJsonNode(_json,
                     jsonPath + "/load-info/g-row-col-count/0")->GetUint();
-                UINT col = GetJsonNode(_json,
+                UINT col = getJsonNode(_json,
                     jsonPath + "/load-info/g-row-col-count/1")->GetUint();
                 meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
                     GeoGenerate()->CreateGrid(width, depth, row, col,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
-                        GetJsonNode(_json,
+                        getJsonNode(_json,
                             jsonPath + "/load-info/g-tex-file")->GetString());
             }
             else
@@ -391,15 +391,15 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
         }
     }
 
-    JsonNode audioRoot = GetJsonNode(_json, "/audio-assets");
+    JsonNode audioRoot = getJsonNode(_json, "/audio-assets");
     if (audioRoot && audioRoot->Size())
     {
         for (UINT i = 0; i < audioRoot->Size(); i++)
         {
-            JsonNode audio = GetJsonNode(_json,
+            JsonNode audio = getJsonNode(_json,
                 "/audio-assets/" + std::to_string(i) + "/audio-name");
             std::string name = audio->GetString();
-            audio = GetJsonNode(_json,
+            audio = getJsonNode(_json,
                 "/audio-assets/" + std::to_string(i) + "/audio-file");
             std::string file = audio->GetString();
             LoadSound(name, file);
@@ -411,7 +411,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
 void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile& _json,
     std::string _jsonPath)
 {
-    JsonNode actorRoot = GetJsonNode(_json, _jsonPath);
+    JsonNode actorRoot = getJsonNode(_json, _jsonPath);
     if (!actorRoot)
     {
         P_LOG(LOG_ERROR, "failed to get actor root node : %s\n",
@@ -421,7 +421,7 @@ void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile& _json,
 
     std::string actorName = "";
     {
-        JsonNode actorNameNode = GetJsonNode(_json, _jsonPath + "/actor-name");
+        JsonNode actorNameNode = getJsonNode(_json, _jsonPath + "/actor-name");
         if (actorNameNode && actorNameNode->IsString())
         {
             actorName = actorNameNode->GetString();
@@ -435,7 +435,7 @@ void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile& _json,
 
     ActorObject actor(actorName, *_node);
 
-    JsonNode compsRoot = GetJsonNode(_json, _jsonPath + "/components");
+    JsonNode compsRoot = getJsonNode(_json, _jsonPath + "/components");
     if (compsRoot)
     {
         for (UINT i = 0; i < compsRoot->Size(); i++)
@@ -452,7 +452,7 @@ void ObjectFactory::CreateActorObject(SceneNode* _node, JsonFile& _json,
 void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile& _json,
     std::string _jsonPath)
 {
-    JsonNode uiRoot = GetJsonNode(_json, _jsonPath);
+    JsonNode uiRoot = getJsonNode(_json, _jsonPath);
     if (!uiRoot)
     {
         P_LOG(LOG_ERROR, "failed to get ui root node : %s\n",
@@ -462,7 +462,7 @@ void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile& _json,
 
     std::string uiName = "";
     {
-        JsonNode uiNameNode = GetJsonNode(_json, _jsonPath + "/ui-name");
+        JsonNode uiNameNode = getJsonNode(_json, _jsonPath + "/ui-name");
         if (uiNameNode && uiNameNode->IsString())
         {
             uiName = uiNameNode->GetString();
@@ -476,7 +476,7 @@ void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile& _json,
 
     UiObject ui(uiName, *_node);
 
-    JsonNode compsRoot = GetJsonNode(_json, _jsonPath + "/components");
+    JsonNode compsRoot = getJsonNode(_json, _jsonPath + "/components");
     if (compsRoot)
     {
         for (UINT i = 0; i < compsRoot->Size(); i++)
@@ -493,7 +493,7 @@ void ObjectFactory::CreateUiObject(SceneNode* _node, JsonFile& _json,
 void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     JsonFile& _json, std::string _jsonPath)
 {
-    std::string compType = GetJsonNode(_json, _jsonPath + "/type")->GetString();
+    std::string compType = getJsonNode(_json, _jsonPath + "/type")->GetString();
     std::string compName = _actor->GetObjectName() + "-" + compType;
 
     if (compType == "transform")
@@ -505,11 +505,11 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         float sca[3] = { 0.f };
         for (UINT i = 0; i < ARRAYSIZE(pos); i++)
         {
-            pos[i] = GetJsonNode(_json,
+            pos[i] = getJsonNode(_json,
                 _jsonPath + "/atc-init-position/" + std::to_string(i))->GetFloat();
-            ang[i] = GetJsonNode(_json,
+            ang[i] = getJsonNode(_json,
                 _jsonPath + "/atc-init-angle/" + std::to_string(i))->GetFloat();
-            sca[i] = GetJsonNode(_json,
+            sca[i] = getJsonNode(_json,
                 _jsonPath + "/atc-init-scale/" + std::to_string(i))->GetFloat();
         }
         atc.ForcePosition({ pos[0],pos[1],pos[2] });
@@ -524,7 +524,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         AInputComponent aic(compName, nullptr);
 
-        std::string inputFuncName = GetJsonNode(_json,
+        std::string inputFuncName = getJsonNode(_json,
             _jsonPath + "/aic-func-name")->GetString();
         auto found = mActorInputFuncPtrMap.find(inputFuncName);
         if (found == mActorInputFuncPtrMap.end())
@@ -543,11 +543,11 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         AInteractComponent aitc(compName, nullptr);
 
-        std::string initFuncName = GetJsonNode(_json,
+        std::string initFuncName = getJsonNode(_json,
             _jsonPath + "/aitc-init-func-name")->GetString();
-        std::string updateFuncName = GetJsonNode(_json,
+        std::string updateFuncName = getJsonNode(_json,
             _jsonPath + "/aitc-update-func-name")->GetString();
-        std::string destoryFuncName = GetJsonNode(_json,
+        std::string destoryFuncName = getJsonNode(_json,
             _jsonPath + "/aitc-destory-func-name")->GetString();
         auto foundInit = mActorInteractInitFuncPtrMap.find(initFuncName);
         if (foundInit == mActorInteractInitFuncPtrMap.end())
@@ -582,10 +582,10 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         ATimerComponent atmc(compName, nullptr);
 
-        UINT timerSize = GetJsonNode(_json, _jsonPath + "/atmc-timers")->Size();
+        UINT timerSize = getJsonNode(_json, _jsonPath + "/atmc-timers")->Size();
         for (UINT i = 0; i < timerSize; i++)
         {
-            std::string timerName = GetJsonNode(_json,
+            std::string timerName = getJsonNode(_json,
                 _jsonPath + "/atmc-timers/" + std::to_string(i))->GetString();
             atmc.AddTimer(timerName);
         }
@@ -598,14 +598,14 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         ACollisionComponent acc(compName, nullptr);
 
-        std::string shapeType = GetJsonNode(_json,
+        std::string shapeType = getJsonNode(_json,
             _jsonPath + "/acc-collision-shape")->GetString();
-        UINT valueSize = GetJsonNode(_json,
+        UINT valueSize = getJsonNode(_json,
             _jsonPath + "/acc-collision-size")->Size();
         float value[3] = { 0.f };
         for (UINT i = 0; i < valueSize; i++)
         {
-            value[i] = GetJsonNode(_json,
+            value[i] = getJsonNode(_json,
                 _jsonPath + "/acc-collision-size/" + std::to_string(i))->GetFloat();
         }
         COLLISION_SHAPE shape = COLLISION_SHAPE::SIZE;
@@ -627,27 +627,27 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         AMeshComponent amc(compName, nullptr);
 
-        UINT meshSize = GetJsonNode(_json,
+        UINT meshSize = getJsonNode(_json,
             _jsonPath + "/amc-meshes")->Size();
         for (UINT i = 0; i < meshSize; i++)
         {
-            std::string meshName = GetJsonNode(_json,
+            std::string meshName = getJsonNode(_json,
                 _jsonPath + "/amc-meshes/" + std::to_string(i) + "/mesh-name")->
                 GetString();
-            JsonNode offsetNode = GetJsonNode(_json,
+            JsonNode offsetNode = getJsonNode(_json,
                 _jsonPath + "/amc-meshes/" + std::to_string(i) + "/mesh-offset");
             DirectX::XMFLOAT3 offset = { 0.f,0.f,0.f };
             if (offsetNode && !offsetNode->IsNull())
             {
                 offset =
                 {
-                    GetJsonNode(_json,
+                    getJsonNode(_json,
                 _jsonPath + "/amc-meshes/" + std::to_string(i) +
                 "/mesh-offset/0")->GetFloat(),
-                    GetJsonNode(_json,
+                    getJsonNode(_json,
                 _jsonPath + "/amc-meshes/" + std::to_string(i) +
                 "/mesh-offset/1")->GetFloat(),
-                    GetJsonNode(_json,
+                    getJsonNode(_json,
                 _jsonPath + "/amc-meshes/" + std::to_string(i) +
                 "/mesh-offset/2")->GetFloat()
                 };
@@ -655,7 +655,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             amc.AddMeshInfo(meshName, offset);
         }
 
-        JsonNode intensityNode = GetJsonNode(_json,
+        JsonNode intensityNode = getJsonNode(_json,
             _jsonPath + "/amc-emissive-intensity");
         if (intensityNode && intensityNode->IsFloat())
         {
@@ -670,7 +670,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         ALightComponent alc(compName, nullptr);
 
-        std::string lightTypeStr = GetJsonNode(_json,
+        std::string lightTypeStr = getJsonNode(_json,
             _jsonPath + "/alc-light-type")->GetString();
         LIGHT_TYPE lightType = LIGHT_TYPE::POINT;
         if (lightTypeStr == "direct")
@@ -691,12 +691,12 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             return;
         }
 
-        bool bloomFlag = GetJsonNode(_json,
+        bool bloomFlag = getJsonNode(_json,
             _jsonPath + "/alc-with-bloom")->GetBool();
         bool shadowFlag = false;
         if (lightType == LIGHT_TYPE::DIRECT)
         {
-            shadowFlag = GetJsonNode(_json,
+            shadowFlag = getJsonNode(_json,
                 _jsonPath + "/alc-with-shadow")->GetBool();
         }
 
@@ -705,27 +705,27 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         li.mType = lightType;
         li.mPosition = { 0.f,0.f,0.f };
         li.mWithShadow = shadowFlag;
-        li.mDirection.x = GetJsonNode(_json,
+        li.mDirection.x = getJsonNode(_json,
             _jsonPath + "/alc-direction/0")->GetFloat();
-        li.mDirection.y = GetJsonNode(_json,
+        li.mDirection.y = getJsonNode(_json,
             _jsonPath + "/alc-direction/1")->GetFloat();
-        li.mDirection.z = GetJsonNode(_json,
+        li.mDirection.z = getJsonNode(_json,
             _jsonPath + "/alc-direction/2")->GetFloat();
-        li.mTempIntensity = GetJsonNode(_json,
+        li.mTempIntensity = getJsonNode(_json,
             _jsonPath + "/alc-intensity")->GetFloat();
-        li.mAlbedo.x = GetJsonNode(_json,
+        li.mAlbedo.x = getJsonNode(_json,
             _jsonPath + "/alc-albedo/0")->GetFloat();
-        li.mAlbedo.y = GetJsonNode(_json,
+        li.mAlbedo.y = getJsonNode(_json,
             _jsonPath + "/alc-albedo/1")->GetFloat();
-        li.mAlbedo.z = GetJsonNode(_json,
+        li.mAlbedo.z = getJsonNode(_json,
             _jsonPath + "/alc-albedo/2")->GetFloat();
-        li.mFalloffStart = GetJsonNode(_json,
+        li.mFalloffStart = getJsonNode(_json,
             _jsonPath + "/alc-fall-off-start-end/0")->GetFloat();
-        li.mFalloffEnd = GetJsonNode(_json,
+        li.mFalloffEnd = getJsonNode(_json,
             _jsonPath + "/alc-fall-off-start-end/1")->GetFloat();
-        li.mSpotPower = GetJsonNode(_json,
+        li.mSpotPower = getJsonNode(_json,
             _jsonPath + "/alc-spot-power")->GetFloat();
-        if (GetJsonNode(_json, _jsonPath + "/alc-cam-up-vec"))
+        if (getJsonNode(_json, _jsonPath + "/alc-cam-up-vec"))
         {
             ci.mType = LENS_TYPE::ORTHOGRAPHIC;
             ci.mPosition = li.mPosition;
@@ -733,11 +733,11 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             ci.mNearFarZ = { 0.f,1000.f };
             ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
             ci.mOWidthAndHeight = { 128.f * 9.5f,72.f * 9.5f };
-            ci.mUpVec.x = GetJsonNode(_json,
+            ci.mUpVec.x = getJsonNode(_json,
                 _jsonPath + "/alc-cam-up-vec/0")->GetFloat();
-            ci.mUpVec.y = GetJsonNode(_json,
+            ci.mUpVec.y = getJsonNode(_json,
                 _jsonPath + "/alc-cam-up-vec/1")->GetFloat();
-            ci.mUpVec.z = GetJsonNode(_json,
+            ci.mUpVec.z = getJsonNode(_json,
                 _jsonPath + "/alc-cam-up-vec/2")->GetFloat();
         }
 
@@ -751,10 +751,10 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         AAudioComponent aauc(compName, nullptr);
 
-        UINT audioSize = GetJsonNode(_json, _jsonPath + "/aauc-sounds")->Size();
+        UINT audioSize = getJsonNode(_json, _jsonPath + "/aauc-sounds")->Size();
         for (UINT i = 0; i < audioSize; i++)
         {
-            std::string soundName = GetJsonNode(_json,
+            std::string soundName = getJsonNode(_json,
                 _jsonPath + "/aauc-sounds/" + std::to_string(i))->GetString();
             aauc.AddAudio(soundName, *_node);
         }
@@ -767,7 +767,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         AParticleComponent apc(compName, nullptr);
 
-        std::string ptcTexName = GetJsonNode(_json,
+        std::string ptcTexName = getJsonNode(_json,
             _jsonPath + "/apc-texture-name")->GetString();
         PARTICLE_TEXTURE ptcTex = PARTICLE_TEXTURE::PARTICLE_TEXTURE_SIZE;
         if (ptcTexName == "circle")
@@ -785,68 +785,68 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             return;
         }
 
-        float emitPreSec = GetJsonNode(_json,
+        float emitPreSec = getJsonNode(_json,
             _jsonPath + "/apc-emit-per-second")->GetFloat();
         DirectX::XMFLOAT3 velocity =
         {
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-velocity/0")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-velocity/1")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-velocity/2")->GetFloat()
         };
         DirectX::XMFLOAT3 posVariance =
         {
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-pos-variance/0")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-pos-variance/1")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-pos-variance/2")->GetFloat()
         };
-        float velVariance = GetJsonNode(_json,
+        float velVariance = getJsonNode(_json,
             _jsonPath + "/apc-vel-variance")->GetFloat();
         DirectX::XMFLOAT3 acceleration =
         {
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-acceleration/0")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-acceleration/1")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-acceleration/2")->GetFloat()
         };
-        float mass = GetJsonNode(_json,
+        float mass = getJsonNode(_json,
             _jsonPath + "/apc-particle-mass")->GetFloat();
-        float lifeSpan = GetJsonNode(_json,
+        float lifeSpan = getJsonNode(_json,
             _jsonPath + "/apc-life-span")->GetFloat();
-        float startSize = GetJsonNode(_json,
+        float startSize = getJsonNode(_json,
             _jsonPath + "/apc-start-end-size/0")->GetFloat();
-        float endSize = GetJsonNode(_json,
+        float endSize = getJsonNode(_json,
             _jsonPath + "/apc-start-end-size/1")->GetFloat();
         DirectX::XMFLOAT4 startColor =
         {
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-start-color/0")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-start-color/1")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-start-color/2")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-start-color/3")->GetFloat()
         };
         DirectX::XMFLOAT4 endColor =
         {
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-end-color/0")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-end-color/1")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-end-color/2")->GetFloat(),
-            GetJsonNode(_json,
+            getJsonNode(_json,
             _jsonPath + "/apc-end-color/3")->GetFloat()
         };
-        bool streakFlg = GetJsonNode(_json,
+        bool streakFlg = getJsonNode(_json,
             _jsonPath + "/apc-streak-flag")->GetBool();
 
         PARTICLE_EMITTER_INFO pei = {};
@@ -874,12 +874,12 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         AAnimateComponent aac(compName, nullptr);
 
-        std::string initAni = GetJsonNode(_json, _jsonPath + "/aac-init-animation")->
+        std::string initAni = getJsonNode(_json, _jsonPath + "/aac-init-animation")->
             GetString();
         float spdFactor = 1.f;
-        if (!GetJsonNode(_json, _jsonPath + "/aac-speed-factor")->IsNull())
+        if (!getJsonNode(_json, _jsonPath + "/aac-speed-factor")->IsNull())
         {
-            spdFactor = GetJsonNode(_json, _jsonPath + "/aac-speed-factor")->GetFloat();
+            spdFactor = getJsonNode(_json, _jsonPath + "/aac-speed-factor")->GetFloat();
         }
         aac.ChangeAnimationTo(initAni);
         aac.SetSpeedFactor(spdFactor);
@@ -892,14 +892,14 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
     {
         ASpriteComponent asc(compName, nullptr);
 
-        JsonNode texNameNode = GetJsonNode(_json, _jsonPath + "/asc-texture");
-        JsonNode billFlgNode = GetJsonNode(_json, _jsonPath + "/asc-billboard");
-        JsonNode sizeXNode = GetJsonNode(_json, _jsonPath + "/asc-size/0");
-        JsonNode sizeYNode = GetJsonNode(_json, _jsonPath + "/asc-size/1");
-        JsonNode texCUNode = GetJsonNode(_json, _jsonPath + "/asc-tex-coord/0");
-        JsonNode texCVNode = GetJsonNode(_json, _jsonPath + "/asc-tex-coord/1");
-        JsonNode texCULenNode = GetJsonNode(_json, _jsonPath + "/asc-tex-coord/2");
-        JsonNode texCVLenNode = GetJsonNode(_json, _jsonPath + "/asc-tex-coord/3");
+        JsonNode texNameNode = getJsonNode(_json, _jsonPath + "/asc-texture");
+        JsonNode billFlgNode = getJsonNode(_json, _jsonPath + "/asc-billboard");
+        JsonNode sizeXNode = getJsonNode(_json, _jsonPath + "/asc-size/0");
+        JsonNode sizeYNode = getJsonNode(_json, _jsonPath + "/asc-size/1");
+        JsonNode texCUNode = getJsonNode(_json, _jsonPath + "/asc-tex-coord/0");
+        JsonNode texCVNode = getJsonNode(_json, _jsonPath + "/asc-tex-coord/1");
+        JsonNode texCULenNode = getJsonNode(_json, _jsonPath + "/asc-tex-coord/2");
+        JsonNode texCVLenNode = getJsonNode(_json, _jsonPath + "/asc-tex-coord/3");
 
         assert(texNameNode && billFlgNode && sizeXNode && sizeYNode &&
             texCUNode && texCVNode && texCULenNode && texCVLenNode);
@@ -910,14 +910,14 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             texCULenNode->GetFloat(),texCVLenNode->GetFloat() },
             billFlgNode->GetBool());
 
-        JsonNode aniFlgNode = GetJsonNode(_json, _jsonPath + "/asc-with-animation");
+        JsonNode aniFlgNode = getJsonNode(_json, _jsonPath + "/asc-with-animation");
         if (aniFlgNode && !aniFlgNode->IsNull() && aniFlgNode->GetBool())
         {
-            JsonNode strideUNode = GetJsonNode(_json, _jsonPath + "/asc-stride/0");
-            JsonNode strideVNode = GetJsonNode(_json, _jsonPath + "/asc-stride/1");
-            JsonNode maxCutNode = GetJsonNode(_json, _jsonPath + "/asc-max-cut");
-            JsonNode switchTimeNode = GetJsonNode(_json, _jsonPath + "/asc-switch-time");
-            JsonNode repeatFlgNode = GetJsonNode(_json, _jsonPath + "/asc-repeat-flag");
+            JsonNode strideUNode = getJsonNode(_json, _jsonPath + "/asc-stride/0");
+            JsonNode strideVNode = getJsonNode(_json, _jsonPath + "/asc-stride/1");
+            JsonNode maxCutNode = getJsonNode(_json, _jsonPath + "/asc-max-cut");
+            JsonNode switchTimeNode = getJsonNode(_json, _jsonPath + "/asc-switch-time");
+            JsonNode repeatFlgNode = getJsonNode(_json, _jsonPath + "/asc-repeat-flag");
 
             assert(strideUNode && strideVNode && maxCutNode &&
                 switchTimeNode && repeatFlgNode);
@@ -945,7 +945,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
 void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
     JsonFile& _json, std::string _jsonPath)
 {
-    std::string compType = GetJsonNode(_json, _jsonPath + "/type")->GetString();
+    std::string compType = getJsonNode(_json, _jsonPath + "/type")->GetString();
     std::string compName = _ui->GetObjectName() + "-" + compType;
 
     if (compType == "transform")
@@ -957,11 +957,11 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
         float sca[3] = { 0.f };
         for (UINT i = 0; i < ARRAYSIZE(pos); i++)
         {
-            pos[i] = GetJsonNode(_json,
+            pos[i] = getJsonNode(_json,
                 _jsonPath + "/utc-init-position/" + std::to_string(i))->GetFloat();
-            ang[i] = GetJsonNode(_json,
+            ang[i] = getJsonNode(_json,
                 _jsonPath + "/utc-init-angle/" + std::to_string(i))->GetFloat();
-            sca[i] = GetJsonNode(_json,
+            sca[i] = getJsonNode(_json,
                 _jsonPath + "/utc-init-scale/" + std::to_string(i))->GetFloat();
         }
         utc.ForcePosition({ pos[0],pos[1],pos[2] });
@@ -976,7 +976,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
     {
         UInputComponent uic(compName, nullptr);
 
-        std::string inputFuncName = GetJsonNode(_json,
+        std::string inputFuncName = getJsonNode(_json,
             _jsonPath + "/uic-func-name")->GetString();
         auto found = mUiInputFuncPtrMap.find(inputFuncName);
         if (found == mUiInputFuncPtrMap.end())
@@ -995,11 +995,11 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
     {
         UInteractComponent uitc(compName, nullptr);
 
-        std::string initFuncName = GetJsonNode(_json,
+        std::string initFuncName = getJsonNode(_json,
             _jsonPath + "/uitc-init-func-name")->GetString();
-        std::string updateFuncName = GetJsonNode(_json,
+        std::string updateFuncName = getJsonNode(_json,
             _jsonPath + "/uitc-update-func-name")->GetString();
-        std::string destoryFuncName = GetJsonNode(_json,
+        std::string destoryFuncName = getJsonNode(_json,
             _jsonPath + "/uitc-destory-func-name")->GetString();
         auto foundInit = mUiInteractInitFuncPtrMap.find(initFuncName);
         if (foundInit == mUiInteractInitFuncPtrMap.end())
@@ -1034,10 +1034,10 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
     {
         UTimerComponent utmc(compName, nullptr);
 
-        UINT timerSize = GetJsonNode(_json, _jsonPath + "/utmc-timers")->Size();
+        UINT timerSize = getJsonNode(_json, _jsonPath + "/utmc-timers")->Size();
         for (UINT i = 0; i < timerSize; i++)
         {
-            std::string timerName = GetJsonNode(_json,
+            std::string timerName = getJsonNode(_json,
                 _jsonPath + "/utmc-timers/" + std::to_string(i))->GetString();
             utmc.AddTimer(timerName);
         }
@@ -1050,10 +1050,10 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
     {
         UAudioComponent uauc(compName, nullptr);
 
-        UINT audioSize = GetJsonNode(_json, _jsonPath + "/uauc-sounds")->Size();
+        UINT audioSize = getJsonNode(_json, _jsonPath + "/uauc-sounds")->Size();
         for (UINT i = 0; i < audioSize; i++)
         {
-            std::string soundName = GetJsonNode(_json,
+            std::string soundName = getJsonNode(_json,
                 _jsonPath + "/uauc-sounds/" + std::to_string(i))->GetString();
             uauc.AddAudio(soundName, *_node);
         }
@@ -1068,12 +1068,12 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
 
         DirectX::XMFLOAT4 offsetColor =
         {
-            GetJsonNode(_json, _jsonPath + "/usc-offset-color/0")->GetFloat(),
-            GetJsonNode(_json, _jsonPath + "/usc-offset-color/1")->GetFloat(),
-            GetJsonNode(_json, _jsonPath + "/usc-offset-color/2")->GetFloat(),
-            GetJsonNode(_json, _jsonPath + "/usc-offset-color/3")->GetFloat()
+            getJsonNode(_json, _jsonPath + "/usc-offset-color/0")->GetFloat(),
+            getJsonNode(_json, _jsonPath + "/usc-offset-color/1")->GetFloat(),
+            getJsonNode(_json, _jsonPath + "/usc-offset-color/2")->GetFloat(),
+            getJsonNode(_json, _jsonPath + "/usc-offset-color/3")->GetFloat()
         };
-        std::string texFile = GetJsonNode(_json,
+        std::string texFile = getJsonNode(_json,
             _jsonPath + "/usc-tex-file")->GetString();
 
         usc.CreateSpriteMesh(_node, offsetColor, texFile);
@@ -1086,33 +1086,33 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
     {
         UAnimateComponent uac(compName, nullptr);
 
-        UINT aniSize = GetJsonNode(_json, _jsonPath + "/uac-animates")->Size();
+        UINT aniSize = getJsonNode(_json, _jsonPath + "/uac-animates")->Size();
         std::string aniArrayPath = _jsonPath + "/uac-animates/";
         for (UINT i = 0; i < aniSize; i++)
         {
             aniArrayPath = _jsonPath + "/uac-animates/" + std::to_string(i);
 
-            std::string aniName = GetJsonNode(_json,
+            std::string aniName = getJsonNode(_json,
                 aniArrayPath + "/name")->GetString();
-            std::string aniFile = GetJsonNode(_json,
+            std::string aniFile = getJsonNode(_json,
                 aniArrayPath + "/tex-file")->GetString();
             DirectX::XMFLOAT2 stride =
             {
-                GetJsonNode(_json, aniArrayPath + "/u-v-stride/0")->GetFloat(),
-                GetJsonNode(_json, aniArrayPath + "/u-v-stride/1")->GetFloat()
+                getJsonNode(_json, aniArrayPath + "/u-v-stride/0")->GetFloat(),
+                getJsonNode(_json, aniArrayPath + "/u-v-stride/1")->GetFloat()
             };
-            UINT maxCount = GetJsonNode(_json,
+            UINT maxCount = getJsonNode(_json,
                 aniArrayPath + "/max-count")->GetUint();
-            float switchTime = GetJsonNode(_json,
+            float switchTime = getJsonNode(_json,
                 aniArrayPath + "/switch-time")->GetFloat();
-            bool repeatFlg = GetJsonNode(_json,
+            bool repeatFlg = getJsonNode(_json,
                 aniArrayPath + "/repeat-flag")->GetBool();
 
             uac.LoadAnimate(aniName, aniFile, stride, maxCount,
                 repeatFlg, switchTime);
         }
 
-        JsonNode initNode = GetJsonNode(_json,
+        JsonNode initNode = getJsonNode(_json,
             _jsonPath + "/uac-init-ani");
         if (initNode && !initNode->IsNull())
         {
@@ -1127,25 +1127,25 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
     {
         UButtonComponent ubc(compName, nullptr);
 
-        bool selected = GetJsonNode(_json,
+        bool selected = getJsonNode(_json,
             _jsonPath + "/ubc-init-selected")->GetBool();
         ubc.SetIsBeingSelected(selected);
-        JsonNode surdBtn = GetJsonNode(_json, _jsonPath + "/ubc-up-btn");
+        JsonNode surdBtn = getJsonNode(_json, _jsonPath + "/ubc-up-btn");
         if (surdBtn && !surdBtn->IsNull())
         {
             ubc.SetUpBtnObjName(surdBtn->GetString());
         }
-        surdBtn = GetJsonNode(_json, _jsonPath + "/ubc-down-btn");
+        surdBtn = getJsonNode(_json, _jsonPath + "/ubc-down-btn");
         if (surdBtn && !surdBtn->IsNull())
         {
             ubc.SetDownBtnObjName(surdBtn->GetString());
         }
-        surdBtn = GetJsonNode(_json, _jsonPath + "/ubc-left-btn");
+        surdBtn = getJsonNode(_json, _jsonPath + "/ubc-left-btn");
         if (surdBtn && !surdBtn->IsNull())
         {
             ubc.SetLeftBtnObjName(surdBtn->GetString());
         }
-        surdBtn = GetJsonNode(_json, _jsonPath + "/ubc-right-btn");
+        surdBtn = getJsonNode(_json, _jsonPath + "/ubc-right-btn");
         if (surdBtn && !surdBtn->IsNull())
         {
             ubc.SetRightBtnObjName(surdBtn->GetString());
