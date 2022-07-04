@@ -3,6 +3,7 @@
 #include "ID_BasicMacro.h"
 
 #include <Xinput.h>
+#include <array>
 #include <dinput.h>
 
 enum class INPUT_TYPE { DIRECTINPUT, XINPUT, UNKNOWN };
@@ -10,7 +11,7 @@ enum class INPUT_TYPE { DIRECTINPUT, XINPUT, UNKNOWN };
 enum class INPUT_DEVICE_TYPE { KEYBOARD, MOUSE, GAMEPAD };
 
 struct DI_KEYBOARD_STATUS_MINE {
-  UCHAR Status[MAX_KEYBOARDS_KEY_NUM];
+  std::array<UCHAR, MAX_KEYBOARDS_KEY_NUM> Status;
 };
 
 class InputDeviceBase {
@@ -24,7 +25,7 @@ private:
 
 public:
   InputDeviceBase(INPUT_DEVICE_TYPE DeviceType,
-                  DWORD XiDeviceHandle = MAX_INPUTDEVICE_NUM);
+                  DWORD XIDeviceHandle = MAX_INPUTDEVICE_NUM);
 
   virtual ~InputDeviceBase();
 
@@ -41,32 +42,32 @@ public:
   getXIDeviceHandle();
 
   virtual HRESULT
-  PollDeviceStatus() = 0;
+  pollDeviceStatus() = 0;
 
   virtual const LPVOID
   getDeviceStatus() = 0;
 
-  virtual const bool
-  isKeyBeingPushed(UINT keyCode) = 0;
+  virtual bool
+  isKeyBeingPushed(UINT KeyCode) = 0;
 
-  virtual const bool
-  hasKeyPushedInLastFrame(UINT keyCode) = 0;
+  virtual bool
+  hasKeyPushedInLastFrame(UINT KeyCode) = 0;
 
-  virtual const LONG
+  virtual LONG
   getXPositionOffset() = 0;
 
-  virtual const LONG
+  virtual LONG
   getYPositionOffset() = 0;
 
-  virtual const LONG
+  virtual LONG
   getZPositionOffset() = 0;
 
-  virtual const LONG
+  virtual LONG
   getXRotationOffset() = 0;
 
-  virtual const LONG
+  virtual LONG
   getYRotationOffset() = 0;
 
-  virtual const LONG
+  virtual LONG
   getZRotationOffset() = 0;
 };

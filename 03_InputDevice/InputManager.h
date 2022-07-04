@@ -7,6 +7,7 @@
 
 #include <Windows.h>
 #include <Xinput.h>
+#include <array>
 #include <dinput.h>
 
 using MOUSE_OFFSET = POINT;
@@ -22,7 +23,7 @@ private:
 
   InputDeviceBase *KeyBoardPtr;
   InputDeviceBase *MousePtr;
-  InputDeviceBase *GamePadPtrs[MAX_INPUTDEVICE_NUM];
+  std::array<InputDeviceBase *, MAX_INPUTDEVICE_NUM> GamePadPtrs;
 
 public:
   InputManager(WindowWIN32 *Wnd);

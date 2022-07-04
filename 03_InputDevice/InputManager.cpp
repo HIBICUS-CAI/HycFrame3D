@@ -9,11 +9,7 @@ LPDIRECTINPUT8 InputManager::DirectInputPtr = nullptr;
 
 InputManager::InputManager(WindowWIN32 *Wnd)
     : Instance(Wnd->getWndInstance()), WndHandle(Wnd->getWndHandle()),
-      KeyBoardPtr(nullptr), MousePtr(nullptr) {
-  for (int I = 0; I < MAX_INPUTDEVICE_NUM; I++) {
-    GamePadPtrs[I] = nullptr;
-  }
-}
+      KeyBoardPtr(nullptr), MousePtr(nullptr), GamePadPtrs({nullptr}) {}
 
 HRESULT
 InputManager::createDirectInputMain() {
@@ -113,7 +109,7 @@ InputManager::enumAllInputDevices() {
               diEnumGamePadObjCallBack, &GamePadPtrs[I], DIDFT_ALL))) {
         delete GamePadPtrs[I];
         for (int J = I; J < MAX_INPUTDEVICE_NUM - 1; J++) {
-          GamePadPtrs[J] = GamePadPtrs[J + 1];
+          GamePadPtrs[J] = GamePadPtrs[J + 1ULL];
         }
         GamePadPtrs[MAX_INPUTDEVICE_NUM - 1] = nullptr;
         --I;
@@ -211,20 +207,20 @@ InputManager::pollAllInputDevices() {
   HRESULT FHr = S_OK;
 
   if (KeyBoardPtr) {
-    Hr = KeyBoardPtr->PollDeviceStatus();
+    Hr = KeyBoardPtr->pollDeviceStatus();
     if (FAILED(Hr)) {
       FHr = Hr;
     }
   }
   if (MousePtr) {
-    Hr = MousePtr->PollDeviceStatus();
+    Hr = MousePtr->pollDeviceStatus();
     if (FAILED(Hr)) {
       FHr = Hr;
     }
   }
   for (int I = 0; I < MAX_INPUTDEVICE_NUM; I++) {
     if (GamePadPtrs[I]) {
-      Hr = GamePadPtrs[I]->PollDeviceStatus();
+      Hr = GamePadPtrs[I]->pollDeviceStatus();
     }
     if (FAILED(Hr)) {
       FHr = Hr;

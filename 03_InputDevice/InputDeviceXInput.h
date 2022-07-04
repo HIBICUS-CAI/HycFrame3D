@@ -1,34 +1,51 @@
 #pragma once
+
 #include "InputDeviceBase.h"
+
 #include <map>
 
-class InputDeviceXInput :
-    public InputDeviceBase
-{
-public:
-    InputDeviceXInput(DWORD xiDeviceHandle);
-
-    ~InputDeviceXInput();
-
-    virtual INPUT_TYPE getInputType();
-
-    virtual HRESULT PollDeviceStatus();
-
-    virtual const LPVOID getDeviceStatus();
-
-    virtual const bool isKeyBeingPushed(UINT keyCode);
-    virtual const bool hasKeyPushedInLastFrame(UINT keyCode);
-    virtual const LONG getXPositionOffset();
-    virtual const LONG getYPositionOffset();
-    virtual const LONG getZPositionOffset();
-    virtual const LONG getXRotationOffset();
-    virtual const LONG getYRotationOffset();
-    virtual const LONG getZRotationOffset();
-
+class InputDeviceXInput : public InputDeviceBase {
 private:
-    XINPUT_STATE* mDeviceStatus;
-    XINPUT_STATE* mDeviceStatusBeforeThisPoll;
+  XINPUT_STATE *DeviceStatus;
+  XINPUT_STATE *DeviceStatusBeforeThisPoll;
 
-    std::map<UINT, WORD> mXIKeyCodeToNorm;
+  std::map<UINT, WORD> XIKeyCodeToNorm;
+
+public:
+  InputDeviceXInput(DWORD XIDeviceHandle);
+
+  ~InputDeviceXInput();
+
+  virtual INPUT_TYPE
+  getInputType();
+
+  virtual HRESULT
+  pollDeviceStatus();
+
+  virtual const LPVOID
+  getDeviceStatus();
+
+  virtual bool
+  isKeyBeingPushed(UINT KeyCode);
+
+  virtual bool
+  hasKeyPushedInLastFrame(UINT KeyCode);
+
+  virtual LONG
+  getXPositionOffset();
+
+  virtual LONG
+  getYPositionOffset();
+
+  virtual LONG
+  getZPositionOffset();
+
+  virtual LONG
+  getXRotationOffset();
+
+  virtual LONG
+  getYRotationOffset();
+
+  virtual LONG
+  getZRotationOffset();
 };
-
