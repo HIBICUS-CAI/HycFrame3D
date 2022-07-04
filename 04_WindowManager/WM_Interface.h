@@ -1,23 +1,28 @@
 #pragma once
 
-#include <Windows.h>
 #include "WM_ExportMacro.h"
+
 #include "WindowWIN32.h"
 
-namespace WindowInterface
-{
-    bool WINDOWMANAGER_EXPORT StartUp();
+#include <Windows.h>
 
-    bool WINDOWMANAGER_EXPORT CreateInitWindow(
-        const char* wndName,
-        HINSTANCE hInstance,
-        int cmdShow,
-        UINT width,
-        UINT height,
-        bool inFullScr = false
-    );
+namespace window {
 
-    WindowWIN32 WINDOWMANAGER_EXPORT* GetWindowPtr();
+bool WINDOWMANAGER_EXPORT
+startUp();
 
-    void WINDOWMANAGER_EXPORT CleanAndStop();
-}
+bool WINDOWMANAGER_EXPORT
+createWindow(const char *WndName,
+             HINSTANCE HInstance,
+             int CmdShow,
+             UINT Width,
+             UINT Height,
+             bool AsFullScreen = false);
+
+WindowWIN32 WINDOWMANAGER_EXPORT *
+getWindowPtr();
+
+void WINDOWMANAGER_EXPORT
+cleanAndStop();
+
+} // namespace window

@@ -35,7 +35,7 @@ bool RenderSystem::Init()
     {
         mRenderSystemRoot = new RSRoot_DX11();
         if (!mRenderSystemRoot->
-            StartUp(WindowInterface::GetWindowPtr()->GetWndHandle()))
+            StartUp(window::getWindowPtr()->getWndHandle()))
         {
             return false;
         }

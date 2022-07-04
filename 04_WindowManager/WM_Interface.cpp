@@ -1,55 +1,56 @@
 #include "WM_Common.h"
+
 #include "WM_Interface.h"
 
-namespace WindowInterface
-{
-    WindowWIN32* g_Wnd = nullptr;
+namespace window {
 
-    bool StartUp()
-    {
-        g_Wnd = new WindowWIN32();
+WindowWIN32 *G_Wnd = nullptr;
 
-        return true;
-    }
+bool
+startUp() {
+  G_Wnd = new WindowWIN32();
 
-    bool CreateInitWindow(
-        const char* wndName,
-        HINSTANCE hInstance,
-        int cmdShow,
-        UINT width,
-        UINT height,
-        bool inFullScr
-    )
-    {
-        if (!g_Wnd)
-        {
-            return false;
-        }
-
-        HRESULT hr = g_Wnd->CreateMyWindow(
-            wndName, hInstance, cmdShow,
-            width, height, inFullScr);
-        if (FAILED(hr))
-        {
-            delete g_Wnd;
-            g_Wnd = nullptr;
-            return false;
-        }
-
-        return true;
-    }
-
-    WindowWIN32* GetWindowPtr()
-    {
-        return g_Wnd;
-    }
-
-    void CleanAndStop()
-    {
-        if (g_Wnd)
-        {
-            delete g_Wnd;
-            g_Wnd = nullptr;
-        }
-    }
+  if (G_Wnd) {
+    return true;
+  } else {
+    return false;
+  }
 }
+
+bool
+createWindow(const char *WndName,
+             HINSTANCE HInstance,
+             int CmdShow,
+             UINT Width,
+             UINT Height,
+             bool AsFullScreen) {
+  if (!G_Wnd) {
+    return false;
+  }
+
+  HRESULT Hr = G_Wnd->createWindow(WndName, HInstance, CmdShow, Width, Height,
+                                   AsFullScreen);
+
+  if (FAILED(Hr)) {
+    delete G_Wnd;
+    G_Wnd = nullptr;
+    return false;
+  }
+
+  return true;
+}
+
+WindowWIN32 *
+getWindowPtr() {
+  return G_Wnd;
+}
+
+void
+cleanAndStop() {
+  if (G_Wnd) {
+    delete G_Wnd;
+    G_Wnd = nullptr;
+  }
+}
+
+} // namespace window

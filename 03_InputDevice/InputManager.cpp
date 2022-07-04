@@ -6,8 +6,8 @@
 LPDIRECTINPUT8 InputManager::mpDirectInput = nullptr;
 
 InputManager::InputManager(WindowWIN32* wnd) :
-    mhInstance(wnd->GetWndInstance()),
-    mhWindow(wnd->GetWndHandle()),
+    mhInstance(wnd->getWndInstance()),
+    mhWindow(wnd->getWndHandle()),
     mpKeyBoard(nullptr), mpMouse(nullptr)
 {
     for (int i = 0; i < MAX_INPUTDEVICE_NUM; i++)

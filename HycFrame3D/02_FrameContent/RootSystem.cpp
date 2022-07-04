@@ -17,12 +17,12 @@ RootSystem::~RootSystem() {}
 
 bool RootSystem::StartUp(HINSTANCE _hInstance, int _iCmdShow)
 {
-    if (!WindowInterface::StartUp())
+    if (!window::startUp())
     {
         P_LOG(LOG_ERROR, "failed to start up windows system\n");
         return false;
     }
-    if (!WindowInterface::CreateInitWindow("a game wnd dont know how to name",
+    if (!window::createWindow("a game wnd dont know how to name",
 #ifdef _DEBUG
         _hInstance, _iCmdShow, 1280, 720, false))
 #else
@@ -77,7 +77,7 @@ void RootSystem::CleanAndStop()
     delete mSystemExecutivePtr; mSystemExecutivePtr = nullptr;
 
     InputInterface::CleanAndStop();
-    WindowInterface::CleanAndStop();
+    window::cleanAndStop();
 }
 
 void RootSystem::RunGameLoop()

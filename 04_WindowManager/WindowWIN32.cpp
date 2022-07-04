@@ -1,156 +1,117 @@
 #include "WM_Common.h"
+
 #include "WindowWIN32.h"
+
 #include <string.h>
 
-WindowWIN32::WindowWIN32() :
-    mInstance(nullptr), mWndHandle(nullptr), mbFullScr(false)
-{
+HRESULT
+WindowWIN32::createWindow(const char *WndName,
+                          HINSTANCE HInstance,
+                          int CmdShow,
+                          UINT Width,
+                          UINT Height,
+                          bool AsFullScreen) {
+  char ClassName[128] = "";
+  strcpy_s(ClassName, sizeof(ClassName), WndName);
+  strcat_s(ClassName, sizeof(ClassName), " CLASS");
 
+  WNDCLASSEX Wcex = {};
+  Wcex.cbSize = sizeof(WNDCLASSEX);
+  Wcex.style = CS_HREDRAW | CS_VREDRAW;
+  Wcex.lpfnWndProc = wndProc;
+  Wcex.cbClsExtra = 0;
+  Wcex.cbWndExtra = 0;
+  Wcex.hInstance = HInstance;
+  Wcex.hIcon = LoadIcon(HInstance, IDI_APPLICATION);
+  Wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+  Wcex.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
+  Wcex.lpszMenuName = nullptr;
+  Wcex.lpszClassName = ClassName;
+  Wcex.hIconSm = LoadIcon(Wcex.hInstance, IDI_APPLICATION);
+
+  if (!RegisterClassEx(&Wcex)) {
+    return E_FAIL;
+  }
+
+  this->Instance = HInstance;
+
+  RECT Rc = {0, 0, (LONG)Width, (LONG)Height};
+  AdjustWindowRect(&Rc, WS_OVERLAPPEDWINDOW, FALSE);
+  this->WndHandle =
+      CreateWindow(ClassName, WndName,
+                   WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
+                   CW_USEDEFAULT, CW_USEDEFAULT, Rc.right - Rc.left,
+                   Rc.bottom - Rc.top, nullptr, nullptr, HInstance, nullptr);
+
+  if (!this->WndHandle) {
+    return E_FAIL;
+  }
+
+  ShowWindow(this->WndHandle, CmdShow);
+  HWND HDesk = GetDesktopWindow();
+  GetWindowRect(HDesk, &Rc);
+  UINT OffsetX = Rc.right / 2;
+  UINT OffsetY = Rc.bottom / 2;
+  SetWindowLong(this->WndHandle, GWL_STYLE, WS_OVERLAPPED);
+  SetWindowPos(this->WndHandle, HWND_NOTOPMOST, OffsetX - Width / 2,
+               OffsetY - Height / 2, Width, Height, SWP_SHOWWINDOW);
+
+  if (AsFullScreen) {
+    return switchWindowSize();
+  }
+
+  return S_OK;
 }
 
-HRESULT WindowWIN32::CreateMyWindow(
-    const char* wndName,
-    HINSTANCE hInstance,
-    int cmdShow,
-    UINT width,
-    UINT height,
-    bool inFullScr)
-{
-    char className[128] = "";
-    strcpy_s(className, sizeof(className), wndName);
-    strcat_s(className, sizeof(className), " CLASS");
+LRESULT CALLBACK
+WindowWIN32::wndProc(HWND HWnd, UINT Message, WPARAM WParam, LPARAM LParam) {
+  PAINTSTRUCT Ps = {};
+  HDC Hdc = {};
 
-    WNDCLASSEX wcex = {};
-    wcex.cbSize = sizeof(WNDCLASSEX);
-    wcex.style = CS_HREDRAW | CS_VREDRAW;
-    wcex.lpfnWndProc = MyWndProc;
-    wcex.cbClsExtra = 0;
-    wcex.cbWndExtra = 0;
-    wcex.hInstance = hInstance;
-    wcex.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
-    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wcex.lpszMenuName = nullptr;
-    wcex.lpszClassName = className;
-    wcex.hIconSm = LoadIcon(wcex.hInstance, IDI_APPLICATION);
-    if (!RegisterClassEx(&wcex))
-    {
-        return E_FAIL;
-    }
+  switch (Message) {
+  case WM_PAINT:
+    Hdc = BeginPaint(HWnd, &Ps);
+    EndPaint(HWnd, &Ps);
+    break;
 
-    this->mInstance = hInstance;
+  case WM_DESTROY:
+    PostQuitMessage(0);
+    break;
 
-    RECT rc = {
-        0,0,(LONG)width,(LONG)height
-    };
-    AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-    this->mWndHandle = CreateWindow(
-        className, wndName,
-        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        rc.right - rc.left, rc.bottom - rc.top,
-        nullptr, nullptr, hInstance,
-        nullptr
-    );
-    if (!this->mWndHandle)
-    {
-        return E_FAIL;
-    }
+  default:
+    return DefWindowProc(HWnd, Message, WParam, LParam);
+  }
 
-    ShowWindow(this->mWndHandle, cmdShow);
-    HWND hDesk;
-    hDesk = GetDesktopWindow();
-    GetWindowRect(hDesk, &rc);
-    UINT offsetX = rc.right / 2;
-    UINT offsetY = rc.bottom / 2;
-    SetWindowLong(this->mWndHandle, GWL_STYLE,
-        WS_OVERLAPPED);
-    SetWindowPos(this->mWndHandle, HWND_NOTOPMOST,
-        offsetX - width / 2, offsetY - height / 2,
-        width, height, SWP_SHOWWINDOW);
+  (void)Hdc;
 
-    if (inFullScr)
-    {
-        return SwitchWindowSize();
-    }
-
-    return S_OK;
+  return 0;
 }
 
-LRESULT CALLBACK WindowWIN32::MyWndProc(
-    HWND hWnd,
-    UINT message,
-    WPARAM wParam,
-    LPARAM lParam)
-{
-    PAINTSTRUCT ps;
-    HDC hdc;
+HRESULT
+WindowWIN32::switchWindowSize() {
+  if (this->FullScreenFlag) {
+    HWND HDesk = GetDesktopWindow();
+    RECT Rc = {};
+    GetWindowRect(HDesk, &Rc);
+    UINT OffsetX = Rc.right / 2;
+    UINT OffsetY = Rc.bottom / 2;
+    UINT Width = 1280;
+    UINT Height = 720;
 
-    switch (message)
-    {
-    case WM_PAINT:
-        hdc = BeginPaint(hWnd, &ps);
-        EndPaint(hWnd, &ps);
-        break;
+    SetWindowLong(this->WndHandle, GWL_STYLE, WS_OVERLAPPED);
+    SetWindowPos(this->WndHandle, HWND_NOTOPMOST, OffsetX - Width / 2,
+                 OffsetY - Height / 2, Width, Height, SWP_SHOWWINDOW);
+  } else {
+    HWND HDesk = GetDesktopWindow();
+    RECT Rc = {};
+    GetWindowRect(HDesk, &Rc);
 
-    case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
+    SetWindowLong(this->WndHandle, GWL_STYLE, WS_POPUP);
+    SetWindowPos(this->WndHandle, HWND_NOTOPMOST, 0, 0, Rc.right, Rc.bottom,
+                 SWP_SHOWWINDOW);
+  }
 
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
+  FullScreenFlag = !FullScreenFlag;
 
-    (void)hdc;
-
-    return 0;
-}
-
-HRESULT WindowWIN32::SwitchWindowSize()
-{
-    if (this->mbFullScr)
-    {
-        HWND hDesk;
-        RECT rc;
-        hDesk = GetDesktopWindow();
-        GetWindowRect(hDesk, &rc);
-        UINT offsetX = rc.right / 2;
-        UINT offsetY = rc.bottom / 2;
-        UINT width = 1280;
-        UINT height = 720;
-        SetWindowLong(this->mWndHandle, GWL_STYLE,
-            WS_OVERLAPPED);
-        SetWindowPos(this->mWndHandle, HWND_NOTOPMOST,
-            offsetX - width / 2, offsetY - height / 2,
-            width, height, SWP_SHOWWINDOW);
-    }
-    else
-    {
-        HWND hDesk;
-        RECT rc;
-        hDesk = GetDesktopWindow();
-        GetWindowRect(hDesk, &rc);
-        SetWindowLong(this->mWndHandle, GWL_STYLE, WS_POPUP);
-        SetWindowPos(this->mWndHandle, HWND_NOTOPMOST, 0, 0,
-            rc.right, rc.bottom, SWP_SHOWWINDOW);
-    }
-
-    mbFullScr = !mbFullScr;
-
-    return S_OK;
-}
-
-HINSTANCE WindowWIN32::GetWndInstance()
-{
-    return this->mInstance;
-}
-
-HWND WindowWIN32::GetWndHandle()
-{
-    return this->mWndHandle;
-}
-
-bool WindowWIN32::IsFullScreen()
-{
-    return this->mbFullScr;
+  return S_OK;
 }

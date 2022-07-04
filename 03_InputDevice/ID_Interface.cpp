@@ -9,7 +9,7 @@ namespace InputInterface
     bool StartUp()
     {
         g_InputManager = new InputManager(
-            WindowInterface::GetWindowPtr());
+            window::getWindowPtr());
 
         HRESULT hr = g_InputManager->CreateDirectInputMain();
         if (FAILED(hr))

@@ -28,7 +28,7 @@ ButtonSystem::~ButtonSystem()
 bool ButtonSystem::Init()
 {
     RECT wndRect = {};
-    g_WndHandle = WindowInterface::GetWindowPtr()->GetWndHandle();
+    g_WndHandle = window::getWindowPtr()->getWndHandle();
     GetClientRect(g_WndHandle, &wndRect);
     g_WndWidth = (float)(wndRect.right - wndRect.left);
     g_WndHeight = (float)(wndRect.bottom - wndRect.top);

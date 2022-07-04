@@ -2,31 +2,44 @@
 
 #include "WM_ExportMacro.h"
 
-class WINDOWMANAGER_EXPORT WindowWIN32
-{
-public:
-    WindowWIN32();
-    HRESULT CreateMyWindow(
-        const char* wndName,
-        HINSTANCE hInstance,
-        int cmdShow,
-        UINT width,
-        UINT height,
-        bool inFullScr
-    );
-    static LRESULT CALLBACK MyWndProc(
-        HWND hWnd,
-        UINT message,
-        WPARAM wParam,
-        LPARAM lParam
-    );
-    HRESULT SwitchWindowSize();
-    HINSTANCE GetWndInstance();
-    HWND GetWndHandle();
-    bool IsFullScreen();
+#include <Windows.h>
 
+class WINDOWMANAGER_EXPORT WindowWIN32 {
 private:
-    HINSTANCE mInstance;
-    HWND mWndHandle;
-    bool mbFullScr;
+  HINSTANCE Instance;
+  HWND WndHandle;
+  bool FullScreenFlag;
+
+public:
+  WindowWIN32()
+      : Instance(nullptr), WndHandle(nullptr), FullScreenFlag(false) {}
+
+  ~WindowWIN32() {}
+
+  HRESULT
+  createWindow(const char *WndName,
+               HINSTANCE HInstance,
+               int CmdShow,
+               UINT Width,
+               UINT Height,
+               bool AsFullScreen);
+
+  static LRESULT CALLBACK
+  wndProc(HWND HWnd, UINT Message, WPARAM WParam, LPARAM LParam);
+
+  HRESULT
+  switchWindowSize();
+
+  HINSTANCE
+  getWndInstance() const { return Instance; }
+
+  HWND
+  getWndHandle() const {
+    return WndHandle;
+  }
+
+  bool
+  isFullScreen() const {
+    return FullScreenFlag;
+  }
 };
