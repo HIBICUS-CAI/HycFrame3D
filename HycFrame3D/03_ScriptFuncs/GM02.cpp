@@ -265,7 +265,7 @@ void BulletUpdate(AInteractComponent* _aitc, Timer& _timer)
     using namespace DirectX;
     XMFLOAT3 dir = g_BulletDirMap[_aitc->GetCompName()];
     XMVECTOR dirVec = XMLoadFloat3(&dir);
-    dirVec = XMVector3Normalize(dirVec) * 0.1f;
+    dirVec = XMVector3Normalize(dirVec) * _timer.FloatDeltaTime() / 5.f;
     DirectX::XMStoreFloat3(&dir, dirVec);
     atc->Translate(dir);
 
