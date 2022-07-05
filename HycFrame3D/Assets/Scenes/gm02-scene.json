@@ -231,6 +231,12 @@
                     "init-func-name": "PlayerInit",
                     "update-func-name": "PlayerUpdate",
                     "destory-func-name": "PlayerDestory"
+                },
+                {
+                    "type": "timer",
+                    "timers": [
+                        "to-result"
+                    ]
                 }
             ]
         },
