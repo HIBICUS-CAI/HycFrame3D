@@ -108,7 +108,7 @@ void RSStaticResources::CleanAndStop()
 
     for (auto& pipeline : mStaticPipelineMap)
     {
-        pipeline.second->ReleasePipeline();
+        pipeline.second->releasePipeline();
         delete pipeline.second;
         pipeline.second = nullptr;
     }
@@ -116,7 +116,7 @@ void RSStaticResources::CleanAndStop()
 
     for (auto& topic : mStaticTopicMap)
     {
-        topic.second->ReleaseTopic();
+        topic.second->releaseTopic();
         delete topic.second;
         topic.second = nullptr;
     }
@@ -149,7 +149,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
     HRESULT hr = S_OK;
 
     {
-        hr = Tool::CompileShaderFromFile(
+        hr = rs_tool::compileShaderFromFile(
             L"RenderSystem_StaticResources\\InputLayouts\\input_layout_basic.hlsl",
             "main", "vs_5_0", &shaderBlob);
         FAIL_HR_RETURN(hr);
@@ -174,7 +174,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
         };
         UINT numInputLayouts = ARRAYSIZE(layout);
 
-        hr = mRootPtr->Devices()->GetDevice()->
+        hr = mRootPtr->getDevices()->GetDevice()->
             CreateInputLayout(
                 layout, numInputLayouts,
                 shaderBlob->GetBufferPointer(),
@@ -189,7 +189,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
     }
 
     {
-        hr = Tool::CompileShaderFromFile(
+        hr = rs_tool::compileShaderFromFile(
             L"RenderSystem_StaticResources\\InputLayouts\\input_layout_color.hlsl",
             "main", "vs_5_0", &shaderBlob);
         FAIL_HR_RETURN(hr);
@@ -214,7 +214,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
         };
         UINT numInputLayouts = ARRAYSIZE(layout);
 
-        hr = mRootPtr->Devices()->GetDevice()->
+        hr = mRootPtr->getDevices()->GetDevice()->
             CreateInputLayout(
                 layout, numInputLayouts,
                 shaderBlob->GetBufferPointer(),
@@ -229,7 +229,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
     }
 
     {
-        hr = Tool::CompileShaderFromFile(
+        hr = rs_tool::compileShaderFromFile(
             L"RenderSystem_StaticResources\\InputLayouts\\input_layout_tangent.hlsl",
             "main", "vs_5_0", &shaderBlob);
         FAIL_HR_RETURN(hr);
@@ -259,7 +259,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
         };
         UINT numInputLayouts = ARRAYSIZE(layout);
 
-        hr = mRootPtr->Devices()->GetDevice()->
+        hr = mRootPtr->getDevices()->GetDevice()->
             CreateInputLayout(
                 layout, numInputLayouts,
                 shaderBlob->GetBufferPointer(),
@@ -274,7 +274,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
     }
 
     {
-        hr = Tool::CompileShaderFromFile(
+        hr = rs_tool::compileShaderFromFile(
             L"RenderSystem_StaticResources\\InputLayouts\\input_layout_animation.hlsl",
             "main", "vs_5_0", &shaderBlob);
         FAIL_HR_RETURN(hr);
@@ -314,7 +314,7 @@ bool RSStaticResources::BuildStaticInputLayouts()
         };
         UINT numInputLayouts = ARRAYSIZE(layout);
 
-        hr = mRootPtr->Devices()->GetDevice()->
+        hr = mRootPtr->getDevices()->GetDevice()->
             CreateInputLayout(
                 layout, numInputLayouts,
                 shaderBlob->GetBufferPointer(),
@@ -361,31 +361,31 @@ bool RSStaticResources::BuildStaticMaterials()
 
     for (UINT i = 0; i < matSize; i++)
     {
-        mMaterialVector[i].mFresnelR0.x =
+        mMaterialVector[i].FresnelR0.x =
             matFile["static-material"][i]["fresnel-r0"][0].GetFloat();
-        mMaterialVector[i].mFresnelR0.y =
+        mMaterialVector[i].FresnelR0.y =
             matFile["static-material"][i]["fresnel-r0"][1].GetFloat();
-        mMaterialVector[i].mFresnelR0.z =
+        mMaterialVector[i].FresnelR0.z =
             matFile["static-material"][i]["fresnel-r0"][2].GetFloat();
-        mMaterialVector[i].mSubSurface =
+        mMaterialVector[i].SubSurface =
             matFile["static-material"][i]["subsurface"].GetFloat();
-        mMaterialVector[i].mMetallic =
+        mMaterialVector[i].Metallic =
             matFile["static-material"][i]["metallic"].GetFloat();
-        mMaterialVector[i].mSpecular =
+        mMaterialVector[i].Specular =
             matFile["static-material"][i]["specular"].GetFloat();
-        mMaterialVector[i].mSpecularTint =
+        mMaterialVector[i].SpecularTint =
             matFile["static-material"][i]["specular-tint"].GetFloat();
-        mMaterialVector[i].mRoughness =
+        mMaterialVector[i].Roughness =
             matFile["static-material"][i]["roughness"].GetFloat();
-        mMaterialVector[i].mAnisotropic =
+        mMaterialVector[i].Anisotropic =
             matFile["static-material"][i]["anisotropic"].GetFloat();
-        mMaterialVector[i].mSheen =
+        mMaterialVector[i].Sheen =
             matFile["static-material"][i]["sheen"].GetFloat();
-        mMaterialVector[i].mSheenTint =
+        mMaterialVector[i].SheenTint =
             matFile["static-material"][i]["sheen-tint"].GetFloat();
-        mMaterialVector[i].mClearcoat =
+        mMaterialVector[i].Clearcoat =
             matFile["static-material"][i]["clearcoat"].GetFloat();
-        mMaterialVector[i].mClearcoatGloss =
+        mMaterialVector[i].ClearcoatGloss =
             matFile["static-material"][i]["clearcoat-gloss"].GetFloat();
 
         matName = matFile["static-material"][i]["name"].GetString();
@@ -395,7 +395,7 @@ bool RSStaticResources::BuildStaticMaterials()
     HRESULT hr = S_OK;
     D3D11_BUFFER_DESC bufDesc = {};
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-    auto devicePtr = mRootPtr->Devices()->GetDevice();
+    auto devicePtr = mRootPtr->getDevices()->GetDevice();
     ZeroMemory(&bufDesc, sizeof(bufDesc));
     ZeroMemory(&srvDesc, sizeof(srvDesc));
 
@@ -583,7 +583,7 @@ UINT RSStaticResources::GetStaticMaterialIndex(std::string& _materialName)
 
 void RSStaticResources::MapMaterialData()
 {
-    auto contextPtr = mRootPtr->Devices()->GetSTContext();
+    auto contextPtr = mRootPtr->getDevices()->GetSTContext();
     D3D11_MAPPED_SUBRESOURCE msr = {};
     contextPtr->Map(mMaterialBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);

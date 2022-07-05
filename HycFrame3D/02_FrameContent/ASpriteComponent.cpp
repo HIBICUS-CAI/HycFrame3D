@@ -90,8 +90,8 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
 {
     if (!_scene) { return false; }
 
-    RS_SUBMESH_DATA point = GetRSRoot_DX11_Singleton()->
-        MeshHelper()->GeoGenerate()->
+    RS_SUBMESH_DATA point = getRSDX11RootInstance()->
+        getMeshHelper()->GeoGenerate()->
         CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
             _texName.c_str());
     mGeoPointName = GetCompName();
@@ -105,8 +105,8 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
-    id.mCustomizedData1 = { mSize.x, mSize.y, (mIsBillboard ? 1.f : 0.f), 0.f };
-    id.mCustomizedData2 = mTexCoord;
+    id.CustomizedData1 = { mSize.x, mSize.y, (mIsBillboard ? 1.f : 0.f), 0.f };
+    id.CustomizedData2 = mTexCoord;
     spriteRect->mInstanceMap.insert({ mGeoPointName,id });
 
     return true;
@@ -117,8 +117,8 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
 {
     if (!_scene) { return false; }
 
-    RS_SUBMESH_DATA point = GetRSRoot_DX11_Singleton()->
-        MeshHelper()->GeoGenerate()->
+    RS_SUBMESH_DATA point = getRSDX11RootInstance()->
+        getMeshHelper()->GeoGenerate()->
         CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
             _texName.c_str());
     mGeoPointName = GetCompName();
@@ -132,8 +132,8 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
-    id.mCustomizedData1 = { mSize.x, mSize.y, (mIsBillboard ? 1.f : 0.f), 0.f };
-    id.mCustomizedData2 = mTexCoord;
+    id.CustomizedData1 = { mSize.x, mSize.y, (mIsBillboard ? 1.f : 0.f), 0.f };
+    id.CustomizedData2 = mTexCoord;
     spriteRect->mInstanceMap.insert({ mGeoPointName,id });
 
     return true;
@@ -187,9 +187,9 @@ void ASpriteComponent::SyncTransformDataToInstance()
             DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
         mat = DirectX::XMMatrixMultiply(mat,
             DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-        DirectX::XMStoreFloat4x4(&(ins_data.mWorldMat), mat);
+        DirectX::XMStoreFloat4x4(&(ins_data.WorldMatrix), mat);
 
-        ins_data.mCustomizedData2 = mTexCoord;
+        ins_data.CustomizedData2 = mTexCoord;
 
         break;
     }

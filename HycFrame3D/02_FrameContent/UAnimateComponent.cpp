@@ -83,7 +83,7 @@ bool UAnimateComponent::LoadAnimate(std::string _aniName, std::string _aniPath,
     texPathWStr = std::wstring(_aniPath.begin(), _aniPath.end());
     texPathWStr = L".\\Assets\\Textures\\" + texPathWStr;
 
-    auto resourceManager = GetRSRoot_DX11_Singleton()->ResourceManager();
+    auto resourceManager = getRSDX11RootInstance()->getResourceManager();
     auto ifExist = resourceManager->GetMeshSrv(_aniPath);
 
     if (ifExist) {}
@@ -91,11 +91,11 @@ bool UAnimateComponent::LoadAnimate(std::string _aniName, std::string _aniPath,
         _aniPath.find(".DDS") != std::string::npos)
     {
         hr = DirectX::CreateDDSTextureFromFile(
-            GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->GetDevice(),
             texPathWStr.c_str(), nullptr, &srv);
         if (SUCCEEDED(hr))
         {
-            GetRSRoot_DX11_Singleton()->ResourceManager()->
+            getRSDX11RootInstance()->getResourceManager()->
                 AddMeshSrv(_aniPath, srv);
         }
         else
@@ -107,11 +107,11 @@ bool UAnimateComponent::LoadAnimate(std::string _aniName, std::string _aniPath,
     else
     {
         hr = DirectX::CreateWICTextureFromFile(
-            GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->GetDevice(),
             texPathWStr.c_str(), nullptr, &srv);
         if (SUCCEEDED(hr))
         {
-            GetRSRoot_DX11_Singleton()->ResourceManager()->
+            getRSDX11RootInstance()->getResourceManager()->
                 AddMeshSrv(_aniPath, srv);
         }
         else
@@ -205,7 +205,7 @@ void UAnimateComponent::SyncAniInfoToSprite()
     auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
         GetSubMeshIfExisted(uscName);
 
-    mesh->mMeshData.mTextures[0] = mCurrentAnimate->mTexName;
+    mesh->mMeshData.Textures[0] = mCurrentAnimate->mTexName;
 
     float startX = 0.f;
     float startY = 0.f;
@@ -220,6 +220,6 @@ void UAnimateComponent::SyncAniInfoToSprite()
 
     for (auto& ins : mesh->mInstanceMap)
     {
-        ins.second.mCustomizedData2 = uv; break;
+        ins.second.CustomizedData2 = uv; break;
     }
 }

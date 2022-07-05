@@ -67,7 +67,7 @@ bool AAnimateComponent::Init()
 #ifdef _DEBUG
         assert(mesh);
 #endif // _DEBUG
-        if (!mesh->mMeshData.mWithAnimation)
+        if (!mesh->mMeshData.AnimationFlag)
         {
             P_LOG(LOG_ERROR, "this mesh doesn't have animation info : %s\n",
                 meshName.c_str());

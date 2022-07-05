@@ -11,35 +11,57 @@
 
 #include "RSCommon.h"
 
-class RSTopic
-{
-public:
-    RSTopic(std::string& _name);
-    RSTopic(const RSTopic& _source);
-    ~RSTopic();
-
-    const std::string& GetTopicName() const;
-    void StartTopicAssembly();
-    void FinishTopicAssembly();
-    void SetExecuateOrder(UINT _order);
-    UINT GetExecuateOrder() const;
-    void SetMTContext(ID3D11DeviceContext* _mtContext);
-
-    void InsertPass(class RSPass_Base* _pass);
-    void ErasePass(class RSPass_Base* _pass);
-    void ErasePass(std::string& _passName);
-    bool HasPass(std::string& _passName);
-
-    bool InitAllPasses();
-
-    void ExecuateTopic();
-
-    void ReleaseTopic();
-
+class RSTopic {
 private:
-    const std::string mName;
-    bool mAssemblyFinishFlag;
-    UINT mExecuateOrderInPipeline;
-    std::vector<class RSPass_Base*> mPassVector;
-    ID3D11DeviceContext* mMTContext;
+  const std::string TopicName;
+  bool AssemblyFinishFlag;
+  UINT ExecuateOrderInPipeline;
+  std::vector<class RSPass_Base *> PassArray;
+  ID3D11DeviceContext *MTContext;
+
+public:
+  RSTopic(const std::string &Name);
+
+  RSTopic(const RSTopic &Source);
+
+  ~RSTopic();
+
+  const std::string &
+  getTopicName() const;
+
+  void
+  startAssembly();
+
+  void
+  finishAssembly();
+
+  void
+  setExecuateOrder(UINT Order);
+
+  UINT
+  getExecuateOrder() const;
+
+  void
+  setMTContext(ID3D11DeviceContext *ContextPtr);
+
+  void
+  insertPass(class RSPass_Base *Pass);
+
+  void
+  erasePass(class RSPass_Base *Pass);
+
+  void
+  erasePass(const std::string &PassName);
+
+  bool
+  hasPass(const std::string &PassName);
+
+  bool
+  initAllPasses();
+
+  void
+  execuateTopic();
+
+  void
+  releaseTopic();
 };

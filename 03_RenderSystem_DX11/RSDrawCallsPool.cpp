@@ -34,14 +34,14 @@ void RSDrawCallsPool::CleanAndStop()
 {
     for (auto& pipe : mDrawCallsArray)
     {
-        pipe.mDatas.clear();
+        pipe.Data.clear();
     }
 }
 
 void RSDrawCallsPool::AddDrawCallToPipe(
     DRAWCALL_TYPE _type, RS_DRAWCALL_DATA& _data)
 {
-    mDrawCallsArray[(size_t)_type].mDatas.emplace_back(_data);
+    mDrawCallsArray[(size_t)_type].Data.emplace_back(_data);
 }
 
 RSDrawCallsPipe* RSDrawCallsPool::GetDrawCallsPipe(
@@ -54,6 +54,6 @@ void RSDrawCallsPool::ClearAllDrawCallsInPipes()
 {
     for (auto& pipe : mDrawCallsArray)
     {
-        pipe.mDatas.clear();
+        pipe.Data.clear();
     }
 }

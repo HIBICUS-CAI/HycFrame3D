@@ -72,8 +72,8 @@ bool UButtonComponent::Init()
                 getAs<std::string>(btnFlgConfig["flag-texture"]["file"]);
         }
 
-        RS_SUBMESH_DATA btnSelect = GetRSRoot_DX11_Singleton()->
-            MeshHelper()->GeoGenerate()->CreateSpriteRect(
+        RS_SUBMESH_DATA btnSelect = getRSDX11RootInstance()->
+            getMeshHelper()->GeoGenerate()->CreateSpriteRect(
                 LAYOUT_TYPE::NORMAL_TANGENT_TEX, g_SelectFlagTexture);
         GetUiOwner()->GetSceneNode().GetAssetsPool()->InsertNewSubMesh(
             SELECTED_BTN_SPRITE_NAME, btnSelect, MESH_TYPE::UI_SPRITE);
@@ -81,8 +81,8 @@ bool UButtonComponent::Init()
             GetSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
 
         RS_INSTANCE_DATA id = {};
-        id.mCustomizedData1 = { 1.f,1.f,1.f,1.f };
-        id.mCustomizedData2 = { 0.f,0.f,1.f,1.f };
+        id.CustomizedData1 = { 1.f,1.f,1.f,1.f };
+        id.CustomizedData2 = { 0.f,0.f,1.f,1.f };
         mesh->mInstanceMap.insert({ SELECTED_BTN_SPRITE_NAME,id });
 
         g_SelectTexMeshPtr = mesh;
@@ -392,7 +392,7 @@ void UButtonComponent::SyncDataFromTransform()
             DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
         mat = DirectX::XMMatrixMultiply(mat,
             DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-        DirectX::XMStoreFloat4x4(&(ins_data.mWorldMat), mat);
+        DirectX::XMStoreFloat4x4(&(ins_data.WorldMatrix), mat);
 
         break;
     }

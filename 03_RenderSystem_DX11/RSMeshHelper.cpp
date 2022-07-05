@@ -37,7 +37,7 @@ bool RSMeshHelper::StartUp(
 
     mRootPtr = _root;
     mTexManagerPtr = _texManager;
-    mDevicesPtr = _root->Devices();
+    mDevicesPtr = _root->getDevices();
     mGeoGeneratorPtr = new RSGeometryGenerator(_root);
 
     return true;
@@ -63,44 +63,44 @@ void RSMeshHelper::ProcessSubMesh(
 {
     assert(_info);
 
-    auto type = _info->mTopologyType;
+    auto type = _info->TopologyType;
     switch (type)
     {
     case TOPOLOGY_TYPE::POINTLIST:
-        _result->mTopologyType =
+        _result->TopologyType =
             D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
         break;
     case TOPOLOGY_TYPE::LINELIST:
-        _result->mTopologyType =
+        _result->TopologyType =
             D3D_PRIMITIVE_TOPOLOGY_LINELIST;
         break;
     case TOPOLOGY_TYPE::LINESTRIP:
-        _result->mTopologyType =
+        _result->TopologyType =
             D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
         break;
     case TOPOLOGY_TYPE::TRIANGLELIST:
-        _result->mTopologyType =
+        _result->TopologyType =
             D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
         break;
     case TOPOLOGY_TYPE::TRIANGLESTRIP:
-        _result->mTopologyType =
+        _result->TopologyType =
             D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
         break;
     default:
-        _result->mTopologyType =
+        _result->TopologyType =
             D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
         break;
     }
-    _result->mWithAnimation = _info->mWithAnimation;
-    _result->mLayout = RefStaticInputLayout(_layoutType);
-    _result->mIndexBuffer = CreateIndexBuffer(_info->mIndeices);
-    _result->mVertexBuffer = CreateVertexBuffer(_info->mVerteices,
+    _result->AnimationFlag = _info->AnimationFlag;
+    _result->InputLayout = RefStaticInputLayout(_layoutType);
+    _result->IndexBuffer = CreateIndexBuffer(_info->IndeicesPtr);
+    _result->VertexBuffer = CreateVertexBuffer(_info->VerteicesPtr,
         _layoutType);
-    _result->mIndexCount = (UINT)_info->mIndeices->size();
-    CreateTexSrv(_result, _info->mTextures);
-    if (_info->mMaterial)
+    _result->IndexSize = (UINT)_info->IndeicesPtr->size();
+    CreateTexSrv(_result, _info->TexturesPtr);
+    if (_info->MaterialPtr)
     {
-        CreateSubMeshMaterial(_result, _info->mMaterial);
+        CreateSubMeshMaterial(_result, _info->MaterialPtr);
     }
 }
 
@@ -126,7 +126,7 @@ ID3D11InputLayout* RSMeshHelper::RefStaticInputLayout(
     default:
         return nullptr;
     }
-    layout = mRootPtr->StaticResources()->
+    layout = mRootPtr->getStaticResources()->
         GetStaticInputLayout(name);
 
     return layout;
@@ -167,10 +167,10 @@ ID3D11Buffer* RSMeshHelper::CreateVertexBuffer(
     LAYOUT_TYPE _layoutType)
 {
     if (!_vertices) { return nullptr; }
-    std::vector<VertexType::BasicVertex>* basic = nullptr;
-    std::vector<VertexType::ColorVertex>* color = nullptr;
-    std::vector<VertexType::TangentVertex>* tangent = nullptr;
-    std::vector<VertexType::AnimationVertex>* animated = nullptr;
+    std::vector<vertex_type::BasicVertex>* basic = nullptr;
+    std::vector<vertex_type::ColorVertex>* color = nullptr;
+    std::vector<vertex_type::TangentVertex>* tangent = nullptr;
+    std::vector<vertex_type::AnimationVertex>* animated = nullptr;
     UINT size = 0;
     UINT vertexSize = 0;
     void* vertArray = nullptr;
@@ -179,30 +179,30 @@ ID3D11Buffer* RSMeshHelper::CreateVertexBuffer(
     {
     case LAYOUT_TYPE::NORMAL_COLOR:
         color =
-            (std::vector<VertexType::ColorVertex>*)_vertices;
+            (std::vector<vertex_type::ColorVertex>*)_vertices;
         size = (UINT)color->size();
-        vertexSize = (UINT)sizeof(VertexType::ColorVertex);
+        vertexSize = (UINT)sizeof(vertex_type::ColorVertex);
         vertArray = &((*color)[0]);
         break;
     case LAYOUT_TYPE::NORMAL_TEX:
         basic =
-            (std::vector<VertexType::BasicVertex>*)_vertices;
+            (std::vector<vertex_type::BasicVertex>*)_vertices;
         size = (UINT)basic->size();
-        vertexSize = (UINT)sizeof(VertexType::BasicVertex);
+        vertexSize = (UINT)sizeof(vertex_type::BasicVertex);
         vertArray = &((*basic)[0]);
         break;
     case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
         tangent =
-            (std::vector<VertexType::TangentVertex>*)_vertices;
+            (std::vector<vertex_type::TangentVertex>*)_vertices;
         size = (UINT)tangent->size();
-        vertexSize = (UINT)sizeof(VertexType::TangentVertex);
+        vertexSize = (UINT)sizeof(vertex_type::TangentVertex);
         vertArray = &((*tangent)[0]);
         break;
     case LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE:
         animated =
-            (std::vector<VertexType::AnimationVertex>*)_vertices;
+            (std::vector<vertex_type::AnimationVertex>*)_vertices;
         size = (UINT)animated->size();
-        vertexSize = (UINT)sizeof(VertexType::AnimationVertex);
+        vertexSize = (UINT)sizeof(vertex_type::AnimationVertex);
         vertArray = &((*animated)[0]);
         break;
     default:
@@ -239,7 +239,7 @@ void RSMeshHelper::CreateTexSrv(
     RS_SUBMESH_DATA* _result,
     const std::vector<std::string>* const _textures)
 {
-    auto& texVec = _result->mTextures;
+    auto& texVec = _result->Textures;
     static std::wstring wstr = L"";
     static std::string name = "";
     static HRESULT hr = S_OK;
@@ -303,29 +303,29 @@ void RSMeshHelper::CreateSubMeshMaterial(
 {
     assert(_info);
 
-    RS_MATERIAL_INFO* material = &(_result->mMaterial);
+    RS_MATERIAL_INFO* material = &(_result->Material);
     memcpy_s(material, sizeof(RS_MATERIAL_INFO),
         _info, sizeof(MATERIAL_INFO));
 }
 
 void RSMeshHelper::ReleaseSubMesh(RS_SUBMESH_DATA& _result)
 {
-    SAFE_RELEASE(_result.mIndexBuffer);
-    SAFE_RELEASE(_result.mVertexBuffer);
+    SAFE_RELEASE(_result.IndexBuffer);
+    SAFE_RELEASE(_result.VertexBuffer);
 }
 
 static bool g_SpriteRectHasBuilt = false;
 static RS_SUBMESH_DATA g_SpriteData = {};
 
 RSGeometryGenerator::RSGeometryGenerator(RSRoot_DX11* _root) :
-    mMeshHelperPtr(_root->MeshHelper()),
-    mDevicesPtr(_root->Devices()),
-    mTexManagerPtr(_root->ResourceManager()) {}
+    mMeshHelperPtr(_root->getMeshHelper()),
+    mDevicesPtr(_root->getDevices()),
+    mTexManagerPtr(_root->getResourceManager()) {}
 
 RSGeometryGenerator::~RSGeometryGenerator()
 {
-    SAFE_RELEASE(g_SpriteData.mIndexBuffer);
-    SAFE_RELEASE(g_SpriteData.mVertexBuffer);
+    SAFE_RELEASE(g_SpriteData.IndexBuffer);
+    SAFE_RELEASE(g_SpriteData.VertexBuffer);
 }
 
 RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
@@ -337,9 +337,9 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
     SUBMESH_INFO si = {};
     MATERIAL_INFO mi = {};
     std::vector<UINT> indeices = {};
-    std::vector<VertexType::BasicVertex> basic = {};
-    std::vector<VertexType::TangentVertex> tangent = {};
-    std::vector<VertexType::ColorVertex> color = {};
+    std::vector<vertex_type::BasicVertex> basic = {};
+    std::vector<vertex_type::TangentVertex> tangent = {};
+    std::vector<vertex_type::ColorVertex> color = {};
     std::vector<std::string> textures = {};
     std::string str = "";
     float hw = 0.5f * _width;
@@ -413,11 +413,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
             SubDivide(_layout, &color, &indeices);
         }
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &color;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &color;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -488,11 +488,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &basic;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &basic;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -563,11 +563,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &tangent;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &tangent;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -590,9 +590,9 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
     SUBMESH_INFO si = {};
     MATERIAL_INFO mi = {};
     std::vector<UINT> indeices = {};
-    std::vector<VertexType::BasicVertex> basic = {};
-    std::vector<VertexType::TangentVertex> tangent = {};
-    std::vector<VertexType::ColorVertex> color = {};
+    std::vector<vertex_type::BasicVertex> basic = {};
+    std::vector<vertex_type::TangentVertex> tangent = {};
+    std::vector<vertex_type::ColorVertex> color = {};
     std::vector<std::string> textures = {};
 
     switch (_layout)
@@ -605,12 +605,12 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
             assert(notUsingVertColor);
             (void)notUsingVertColor;
         }
-        VertexType::ColorVertex topVertex =
+        vertex_type::ColorVertex topVertex =
         {
             { 0.0f, +_radius, 0.0f }, { 0.0f, +1.0f, 0.0f },
             _vertColor
         };
-        VertexType::ColorVertex bottomVertex =
+        vertex_type::ColorVertex bottomVertex =
         {
             { 0.0f, -_radius, 0.0f }, { 0.0f, -1.0f, 0.0f },
             _vertColor
@@ -628,7 +628,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
             for (UINT j = 0; j <= _sliceCount; j++)
             {
                 float theta = j * thetaStep;
-                VertexType::ColorVertex v = {};
+                vertex_type::ColorVertex v = {};
 
                 v.Position.x = _radius * sinf(phi) * cosf(theta);
                 v.Position.y = _radius * cosf(phi);
@@ -684,11 +684,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
             indeices.emplace_back(baseIndex + i + 1);
         }
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &color;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &color;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -702,12 +702,12 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
             assert(usingVertColor);
             (void)usingVertColor;
         }
-        VertexType::BasicVertex topVertex =
+        vertex_type::BasicVertex topVertex =
         {
             { 0.0f, +_radius, 0.0f }, { 0.0f, +1.0f, 0.0f },
             { 0.0f, 0.0f }
         };
-        VertexType::BasicVertex bottomVertex =
+        vertex_type::BasicVertex bottomVertex =
         {
             { 0.0f, -_radius, 0.0f }, { 0.0f, -1.0f, 0.0f },
             { 0.0f, 1.0f }
@@ -725,7 +725,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
             for (UINT j = 0; j <= _sliceCount; j++)
             {
                 float theta = j * thetaStep;
-                VertexType::BasicVertex v = {};
+                vertex_type::BasicVertex v = {};
 
                 v.Position.x = _radius * sinf(phi) * cosf(theta);
                 v.Position.y = _radius * cosf(phi);
@@ -784,11 +784,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &basic;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &basic;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -802,12 +802,12 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
             assert(usingVertColor);
             (void)usingVertColor;
         }
-        VertexType::TangentVertex topVertex =
+        vertex_type::TangentVertex topVertex =
         {
             { 0.0f, +_radius, 0.0f }, { 0.0f, +1.0f, 0.0f },
             { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }
         };
-        VertexType::TangentVertex bottomVertex =
+        vertex_type::TangentVertex bottomVertex =
         {
             { 0.0f, -_radius, 0.0f }, { 0.0f, -1.0f, 0.0f },
             { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }
@@ -825,7 +825,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
             for (UINT j = 0; j <= _sliceCount; j++)
             {
                 float theta = j * thetaStep;
-                VertexType::TangentVertex v = {};
+                vertex_type::TangentVertex v = {};
 
                 v.Position.x = _radius * sinf(phi) * cosf(theta);
                 v.Position.y = _radius * cosf(phi);
@@ -889,11 +889,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &tangent;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &tangent;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -917,9 +917,9 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
     SUBMESH_INFO si = {};
     MATERIAL_INFO mi = {};
     std::vector<UINT> indeices = {};
-    std::vector<VertexType::BasicVertex> basic = {};
-    std::vector<VertexType::TangentVertex> tangent = {};
-    std::vector<VertexType::ColorVertex> color = {};
+    std::vector<vertex_type::BasicVertex> basic = {};
+    std::vector<vertex_type::TangentVertex> tangent = {};
+    std::vector<vertex_type::ColorVertex> color = {};
     std::vector<std::string> textures = {};
 
     switch (_layout)
@@ -989,11 +989,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
             (void)theta;
         }
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &color;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &color;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -1066,11 +1066,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &basic;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &basic;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -1150,11 +1150,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &tangent;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &tangent;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -1179,9 +1179,9 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateCylinder(
     SUBMESH_INFO si = {};
     MATERIAL_INFO mi = {};
     std::vector<UINT> indeices = {};
-    std::vector<VertexType::BasicVertex> basic = {};
-    std::vector<VertexType::TangentVertex> tangent = {};
-    std::vector<VertexType::ColorVertex> color = {};
+    std::vector<vertex_type::BasicVertex> basic = {};
+    std::vector<vertex_type::TangentVertex> tangent = {};
+    std::vector<vertex_type::ColorVertex> color = {};
     std::vector<std::string> textures = {};
 
     switch (_layout)
@@ -1200,7 +1200,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateCylinder(
 
             for (UINT j = 0; j <= _sliceCount; j++)
             {
-                VertexType::ColorVertex vertex = {};
+                vertex_type::ColorVertex vertex = {};
 
                 float c = cosf(j * dTheta);
                 float s = sinf(j * dTheta);
@@ -1246,11 +1246,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateCylinder(
             _sliceCount, _stackCount, _layout,
             &color, &indeices, _vertColor);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &color;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &color;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -1270,7 +1270,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateCylinder(
 
             for (UINT j = 0; j <= _sliceCount; j++)
             {
-                VertexType::BasicVertex vertex = {};
+                vertex_type::BasicVertex vertex = {};
 
                 float c = cosf(j * dTheta);
                 float s = sinf(j * dTheta);
@@ -1319,11 +1319,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateCylinder(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &basic;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &basic;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -1343,7 +1343,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateCylinder(
 
             for (UINT j = 0; j <= _sliceCount; j++)
             {
-                VertexType::TangentVertex vertex = {};
+                vertex_type::TangentVertex vertex = {};
 
                 float c = cosf(j * dTheta);
                 float s = sinf(j * dTheta);
@@ -1390,11 +1390,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateCylinder(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &tangent;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &tangent;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -1418,9 +1418,9 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
     SUBMESH_INFO si = {};
     MATERIAL_INFO mi = {};
     std::vector<UINT> indeices = {};
-    std::vector<VertexType::BasicVertex> basic = {};
-    std::vector<VertexType::TangentVertex> tangent = {};
-    std::vector<VertexType::ColorVertex> color = {};
+    std::vector<vertex_type::BasicVertex> basic = {};
+    std::vector<vertex_type::TangentVertex> tangent = {};
+    std::vector<vertex_type::ColorVertex> color = {};
     std::vector<std::string> textures = {};
 
     switch (_layout)
@@ -1446,11 +1446,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
             {
                 float x = -halfWidth + j * dx;
 
-                color[static_cast<std::vector<VertexType::ColorVertex, std::allocator<VertexType::ColorVertex>>::size_type>(i) * _colCount + j].Position =
+                color[static_cast<std::vector<vertex_type::ColorVertex, std::allocator<vertex_type::ColorVertex>>::size_type>(i) * _colCount + j].Position =
                     DirectX::XMFLOAT3(x, 0.f, z);
-                color[static_cast<std::vector<VertexType::ColorVertex, std::allocator<VertexType::ColorVertex>>::size_type>(i) * _colCount + j].Normal =
+                color[static_cast<std::vector<vertex_type::ColorVertex, std::allocator<vertex_type::ColorVertex>>::size_type>(i) * _colCount + j].Normal =
                     DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-                color[static_cast<std::vector<VertexType::ColorVertex, std::allocator<VertexType::ColorVertex>>::size_type>(i) * _colCount + j].Color = _vertColor;
+                color[static_cast<std::vector<vertex_type::ColorVertex, std::allocator<vertex_type::ColorVertex>>::size_type>(i) * _colCount + j].Color = _vertColor;
             }
         }
 
@@ -1473,11 +1473,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
             }
         }
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &color;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &color;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -1502,12 +1502,12 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
             {
                 float x = -halfWidth + j * dx;
 
-                basic[static_cast<std::vector<VertexType::BasicVertex, std::allocator<VertexType::BasicVertex>>::size_type>(i) * _colCount + j].Position =
+                basic[static_cast<std::vector<vertex_type::BasicVertex, std::allocator<vertex_type::BasicVertex>>::size_type>(i) * _colCount + j].Position =
                     DirectX::XMFLOAT3(x, 0.f, z);
-                basic[static_cast<std::vector<VertexType::BasicVertex, std::allocator<VertexType::BasicVertex>>::size_type>(i) * _colCount + j].Normal =
+                basic[static_cast<std::vector<vertex_type::BasicVertex, std::allocator<vertex_type::BasicVertex>>::size_type>(i) * _colCount + j].Normal =
                     DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-                basic[static_cast<std::vector<VertexType::BasicVertex, std::allocator<VertexType::BasicVertex>>::size_type>(i) * _colCount + j].TexCoord.x = j * du;
-                basic[static_cast<std::vector<VertexType::BasicVertex, std::allocator<VertexType::BasicVertex>>::size_type>(i) * _colCount + j].TexCoord.y = i * dv;
+                basic[static_cast<std::vector<vertex_type::BasicVertex, std::allocator<vertex_type::BasicVertex>>::size_type>(i) * _colCount + j].TexCoord.x = j * du;
+                basic[static_cast<std::vector<vertex_type::BasicVertex, std::allocator<vertex_type::BasicVertex>>::size_type>(i) * _colCount + j].TexCoord.y = i * dv;
             }
         }
 
@@ -1532,11 +1532,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &basic;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &basic;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -1561,15 +1561,15 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
             {
                 float x = -halfWidth + j * dx;
 
-                tangent[static_cast<std::vector<VertexType::TangentVertex, std::allocator<VertexType::TangentVertex>>::size_type>(i) * _colCount + j].Position =
+                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].Position =
                     DirectX::XMFLOAT3(x, 0.f, z);
-                tangent[static_cast<std::vector<VertexType::TangentVertex, std::allocator<VertexType::TangentVertex>>::size_type>(i) * _colCount + j].Normal =
+                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].Normal =
                     DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-                tangent[static_cast<std::vector<VertexType::TangentVertex, std::allocator<VertexType::TangentVertex>>::size_type>(i) * _colCount + j].Tangent =
+                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].Tangent =
                     DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
 
-                tangent[static_cast<std::vector<VertexType::TangentVertex, std::allocator<VertexType::TangentVertex>>::size_type>(i) * _colCount + j].TexCoord.x = j * du;
-                tangent[static_cast<std::vector<VertexType::TangentVertex, std::allocator<VertexType::TangentVertex>>::size_type>(i) * _colCount + j].TexCoord.y = i * dv;
+                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].TexCoord.x = j * du;
+                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].TexCoord.y = i * dv;
             }
         }
 
@@ -1594,11 +1594,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
 
         textures.emplace_back(_texColorName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mVerteices = &tangent;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.VerteicesPtr = &tangent;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;
@@ -1619,8 +1619,8 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
     static SUBMESH_INFO si = {};
     static MATERIAL_INFO mi = {};
     static std::vector<UINT> indeices = {};
-    static std::vector<VertexType::BasicVertex> basic = {};
-    static std::vector<VertexType::TangentVertex> tangent = {};
+    static std::vector<vertex_type::BasicVertex> basic = {};
+    static std::vector<vertex_type::TangentVertex> tangent = {};
     static std::vector<std::string> textures = {};
 
     if (!g_SpriteRectHasBuilt)
@@ -1661,22 +1661,22 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         indeices[3] = 0; indeices[4] = 2; indeices[5] = 3;
 
         bool nullLayout = false;
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mIndeices = &indeices;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.IndeicesPtr = &indeices;
         switch (_layout)
         {
         case LAYOUT_TYPE::NORMAL_TEX:
-            si.mVerteices = &basic;
+            si.VerteicesPtr = &basic;
             break;
         case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-            si.mVerteices = &tangent;
+            si.VerteicesPtr = &tangent;
             break;
         default:
             assert(nullLayout);
             break;
         }
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&g_SpriteData, &si, _layout);
         g_SpriteRectHasBuilt = true;
         (void)nullLayout;
@@ -1698,7 +1698,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         {
             name = _texPath;
             mTexManagerPtr->AddMeshSrv(name, srv);
-            g_SpriteData.mTextures[0] = name;
+            g_SpriteData.Textures[0] = name;
         }
         else
         {
@@ -1716,7 +1716,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         {
             name = _texPath;
             mTexManagerPtr->AddMeshSrv(name, srv);
-            g_SpriteData.mTextures[0] = name;
+            g_SpriteData.Textures[0] = name;
         }
         else
         {
@@ -1735,8 +1735,8 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
     static SUBMESH_INFO si = {};
     static MATERIAL_INFO mi = {};
     static std::vector<UINT> indeices = {};
-    static std::vector<VertexType::BasicVertex> basic = {};
-    static std::vector<VertexType::TangentVertex> tangent = {};
+    static std::vector<vertex_type::BasicVertex> basic = {};
+    static std::vector<vertex_type::TangentVertex> tangent = {};
     static std::vector<std::string> textures = {};
 
     if (!g_SpriteRectHasBuilt)
@@ -1777,22 +1777,22 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         indeices[3] = 0; indeices[4] = 2; indeices[5] = 3;
 
         bool nullLayout = false;
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mIndeices = &indeices;
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.IndeicesPtr = &indeices;
         switch (_layout)
         {
         case LAYOUT_TYPE::NORMAL_TEX:
-            si.mVerteices = &basic;
+            si.VerteicesPtr = &basic;
             break;
         case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-            si.mVerteices = &tangent;
+            si.VerteicesPtr = &tangent;
             break;
         default:
             assert(nullLayout);
             break;
         }
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&g_SpriteData, &si, _layout);
         g_SpriteRectHasBuilt = true;
         (void)nullLayout;
@@ -1814,7 +1814,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         {
             name = _texPath;
             mTexManagerPtr->AddMeshSrv(name, srv);
-            g_SpriteData.mTextures[0] = name;
+            g_SpriteData.Textures[0] = name;
         }
         else
         {
@@ -1832,7 +1832,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
         {
             name = _texPath;
             mTexManagerPtr->AddMeshSrv(name, srv);
-            g_SpriteData.mTextures[0] = name;
+            g_SpriteData.Textures[0] = name;
         }
         else
         {
@@ -1852,9 +1852,9 @@ void RSGeometryGenerator::SubDivide(LAYOUT_TYPE _layout,
     {
     case LAYOUT_TYPE::NORMAL_COLOR:
     {
-        std::vector<VertexType::ColorVertex>* _colorVec =
-            (std::vector<VertexType::ColorVertex>*)_vertexVec;
-        std::vector<VertexType::ColorVertex> colorCopy = *_colorVec;
+        std::vector<vertex_type::ColorVertex>* _colorVec =
+            (std::vector<vertex_type::ColorVertex>*)_vertexVec;
+        std::vector<vertex_type::ColorVertex> colorCopy = *_colorVec;
         std::vector<UINT> indexCopy = *_indexVec;
 
         _colorVec->resize(0);
@@ -1863,16 +1863,16 @@ void RSGeometryGenerator::SubDivide(LAYOUT_TYPE _layout,
         UINT numTris = (UINT)indexCopy.size() / 3;
         for (UINT i = 0; i < numTris; i++)
         {
-            VertexType::ColorVertex v0 =
+            vertex_type::ColorVertex v0 =
                 colorCopy[indexCopy[i * 3 + 0]];
-            VertexType::ColorVertex v1 =
+            vertex_type::ColorVertex v1 =
                 colorCopy[indexCopy[i * 3 + 1]];
-            VertexType::ColorVertex v2 =
+            vertex_type::ColorVertex v2 =
                 colorCopy[indexCopy[i * 3 + 2]];
 
-            VertexType::ColorVertex m0 = ColorMidPoint(v0, v1);
-            VertexType::ColorVertex m1 = ColorMidPoint(v1, v2);
-            VertexType::ColorVertex m2 = ColorMidPoint(v0, v2);
+            vertex_type::ColorVertex m0 = ColorMidPoint(v0, v1);
+            vertex_type::ColorVertex m1 = ColorMidPoint(v1, v2);
+            vertex_type::ColorVertex m2 = ColorMidPoint(v0, v2);
 
             _colorVec->emplace_back(v0);
             _colorVec->emplace_back(v1);
@@ -1899,9 +1899,9 @@ void RSGeometryGenerator::SubDivide(LAYOUT_TYPE _layout,
 
     case LAYOUT_TYPE::NORMAL_TEX:
     {
-        std::vector<VertexType::BasicVertex>* _basicVec =
-            (std::vector<VertexType::BasicVertex>*)_vertexVec;
-        std::vector<VertexType::BasicVertex> basicCopy = *_basicVec;
+        std::vector<vertex_type::BasicVertex>* _basicVec =
+            (std::vector<vertex_type::BasicVertex>*)_vertexVec;
+        std::vector<vertex_type::BasicVertex> basicCopy = *_basicVec;
         std::vector<UINT> indexCopy = *_indexVec;
 
         _basicVec->resize(0);
@@ -1910,16 +1910,16 @@ void RSGeometryGenerator::SubDivide(LAYOUT_TYPE _layout,
         UINT numTris = (UINT)indexCopy.size() / 3;
         for (UINT i = 0; i < numTris; i++)
         {
-            VertexType::BasicVertex v0 =
+            vertex_type::BasicVertex v0 =
                 basicCopy[indexCopy[i * 3 + 0]];
-            VertexType::BasicVertex v1 =
+            vertex_type::BasicVertex v1 =
                 basicCopy[indexCopy[i * 3 + 1]];
-            VertexType::BasicVertex v2 =
+            vertex_type::BasicVertex v2 =
                 basicCopy[indexCopy[i * 3 + 2]];
 
-            VertexType::BasicVertex m0 = BasicMidPoint(v0, v1);
-            VertexType::BasicVertex m1 = BasicMidPoint(v1, v2);
-            VertexType::BasicVertex m2 = BasicMidPoint(v0, v2);
+            vertex_type::BasicVertex m0 = BasicMidPoint(v0, v1);
+            vertex_type::BasicVertex m1 = BasicMidPoint(v1, v2);
+            vertex_type::BasicVertex m2 = BasicMidPoint(v0, v2);
 
             _basicVec->emplace_back(v0);
             _basicVec->emplace_back(v1);
@@ -1946,9 +1946,9 @@ void RSGeometryGenerator::SubDivide(LAYOUT_TYPE _layout,
 
     case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
     {
-        std::vector<VertexType::TangentVertex>* _tangeVec =
-            (std::vector<VertexType::TangentVertex>*)_vertexVec;
-        std::vector<VertexType::TangentVertex> tangeCopy = *_tangeVec;
+        std::vector<vertex_type::TangentVertex>* _tangeVec =
+            (std::vector<vertex_type::TangentVertex>*)_vertexVec;
+        std::vector<vertex_type::TangentVertex> tangeCopy = *_tangeVec;
         std::vector<UINT> indexCopy = *_indexVec;
 
         _tangeVec->resize(0);
@@ -1957,16 +1957,16 @@ void RSGeometryGenerator::SubDivide(LAYOUT_TYPE _layout,
         UINT numTris = (UINT)indexCopy.size() / 3;
         for (UINT i = 0; i < numTris; i++)
         {
-            VertexType::TangentVertex v0 =
+            vertex_type::TangentVertex v0 =
                 tangeCopy[indexCopy[i * 3 + 0]];
-            VertexType::TangentVertex v1 =
+            vertex_type::TangentVertex v1 =
                 tangeCopy[indexCopy[i * 3 + 1]];
-            VertexType::TangentVertex v2 =
+            vertex_type::TangentVertex v2 =
                 tangeCopy[indexCopy[i * 3 + 2]];
 
-            VertexType::TangentVertex m0 = TangentMidPoint(v0, v1);
-            VertexType::TangentVertex m1 = TangentMidPoint(v1, v2);
-            VertexType::TangentVertex m2 = TangentMidPoint(v0, v2);
+            vertex_type::TangentVertex m0 = TangentMidPoint(v0, v1);
+            vertex_type::TangentVertex m1 = TangentMidPoint(v1, v2);
+            vertex_type::TangentVertex m2 = TangentMidPoint(v0, v2);
 
             _tangeVec->emplace_back(v0);
             _tangeVec->emplace_back(v1);
@@ -1998,9 +1998,9 @@ void RSGeometryGenerator::SubDivide(LAYOUT_TYPE _layout,
     }
 }
 
-VertexType::BasicVertex RSGeometryGenerator::BasicMidPoint(
-    const VertexType::BasicVertex& _v0,
-    const VertexType::BasicVertex& _v1)
+vertex_type::BasicVertex RSGeometryGenerator::BasicMidPoint(
+    const vertex_type::BasicVertex& _v0,
+    const vertex_type::BasicVertex& _v1)
 {
     DirectX::XMVECTOR p0 = DirectX::XMLoadFloat3(&_v0.Position);
     DirectX::XMVECTOR p1 = DirectX::XMLoadFloat3(&_v1.Position);
@@ -2013,7 +2013,7 @@ VertexType::BasicVertex RSGeometryGenerator::BasicMidPoint(
         DirectX::XMVector3Normalize(0.5f * (n0 + n1));
     DirectX::XMVECTOR tex = 0.5f * (tex0 + tex1);
 
-    VertexType::BasicVertex v = {};
+    vertex_type::BasicVertex v = {};
     DirectX::XMStoreFloat3(&v.Position, pos);
     DirectX::XMStoreFloat3(&v.Normal, normal);
     DirectX::XMStoreFloat2(&v.TexCoord, tex);
@@ -2021,9 +2021,9 @@ VertexType::BasicVertex RSGeometryGenerator::BasicMidPoint(
     return v;
 }
 
-VertexType::TangentVertex RSGeometryGenerator::TangentMidPoint(
-    const VertexType::TangentVertex& _v0,
-    const VertexType::TangentVertex& _v1)
+vertex_type::TangentVertex RSGeometryGenerator::TangentMidPoint(
+    const vertex_type::TangentVertex& _v0,
+    const vertex_type::TangentVertex& _v1)
 {
     DirectX::XMVECTOR p0 = DirectX::XMLoadFloat3(&_v0.Position);
     DirectX::XMVECTOR p1 = DirectX::XMLoadFloat3(&_v1.Position);
@@ -2040,7 +2040,7 @@ VertexType::TangentVertex RSGeometryGenerator::TangentMidPoint(
         DirectX::XMVector3Normalize(0.5f * (tan0 + tan1));
     DirectX::XMVECTOR tex = 0.5f * (tex0 + tex1);
 
-    VertexType::TangentVertex v = {};
+    vertex_type::TangentVertex v = {};
     DirectX::XMStoreFloat3(&v.Position, pos);
     DirectX::XMStoreFloat3(&v.Normal, normal);
     DirectX::XMStoreFloat3(&v.Tangent, tangent);
@@ -2049,9 +2049,9 @@ VertexType::TangentVertex RSGeometryGenerator::TangentMidPoint(
     return v;
 }
 
-VertexType::ColorVertex RSGeometryGenerator::ColorMidPoint(
-    const VertexType::ColorVertex& _v0,
-    const VertexType::ColorVertex& _v1)
+vertex_type::ColorVertex RSGeometryGenerator::ColorMidPoint(
+    const vertex_type::ColorVertex& _v0,
+    const vertex_type::ColorVertex& _v1)
 {
     DirectX::XMVECTOR p0 = DirectX::XMLoadFloat3(&_v0.Position);
     DirectX::XMVECTOR p1 = DirectX::XMLoadFloat3(&_v1.Position);
@@ -2064,7 +2064,7 @@ VertexType::ColorVertex RSGeometryGenerator::ColorMidPoint(
     DirectX::XMVECTOR normal =
         DirectX::XMVector3Normalize(0.5f * (n0 + n1));
 
-    VertexType::ColorVertex v = {};
+    vertex_type::ColorVertex v = {};
     DirectX::XMStoreFloat3(&v.Position, pos);
     DirectX::XMStoreFloat3(&v.Normal, normal);
     DirectX::XMStoreFloat4(&v.Color, color);
@@ -2083,8 +2083,8 @@ void RSGeometryGenerator::BuildCylinderTopCap(
     {
     case LAYOUT_TYPE::NORMAL_COLOR:
     {
-        std::vector<VertexType::ColorVertex>* _colorVec =
-            (std::vector<VertexType::ColorVertex>*)_vertexVec;
+        std::vector<vertex_type::ColorVertex>* _colorVec =
+            (std::vector<vertex_type::ColorVertex>*)_vertexVec;
 
         UINT baseIndex = (UINT)_colorVec->size();
         float y = 0.5f * _height;
@@ -2098,14 +2098,14 @@ void RSGeometryGenerator::BuildCylinderTopCap(
             float v = z / _height + 0.5f;
             (void)u; (void)v;
 
-            VertexType::ColorVertex vert =
+            vertex_type::ColorVertex vert =
             {
                 { x, y, z }, { 0.0f, 1.0f, 0.0f }, _vertColor
             };
             _colorVec->emplace_back(vert);
         }
 
-        VertexType::ColorVertex vert =
+        vertex_type::ColorVertex vert =
         {
             { 0.0f, y, 0.0f }, { 0.0f, 1.0f, 0.0f }, _vertColor
         };
@@ -2125,8 +2125,8 @@ void RSGeometryGenerator::BuildCylinderTopCap(
 
     case LAYOUT_TYPE::NORMAL_TEX:
     {
-        std::vector<VertexType::BasicVertex>* _basicVec =
-            (std::vector<VertexType::BasicVertex>*)_vertexVec;
+        std::vector<vertex_type::BasicVertex>* _basicVec =
+            (std::vector<vertex_type::BasicVertex>*)_vertexVec;
 
         UINT baseIndex = (UINT)_basicVec->size();
         float y = 0.5f * _height;
@@ -2139,14 +2139,14 @@ void RSGeometryGenerator::BuildCylinderTopCap(
             float u = x / _height + 0.5f;
             float v = z / _height + 0.5f;
 
-            VertexType::BasicVertex vert =
+            vertex_type::BasicVertex vert =
             {
                 { x, y, z }, { 0.0f, 1.0f, 0.0f }, { u, v }
             };
             _basicVec->emplace_back(vert);
         }
 
-        VertexType::BasicVertex vert =
+        vertex_type::BasicVertex vert =
         {
             { 0.0f, y, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.5f, 0.5f }
         };
@@ -2166,8 +2166,8 @@ void RSGeometryGenerator::BuildCylinderTopCap(
 
     case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
     {
-        std::vector<VertexType::TangentVertex>* _tangeVec =
-            (std::vector<VertexType::TangentVertex>*)_vertexVec;
+        std::vector<vertex_type::TangentVertex>* _tangeVec =
+            (std::vector<vertex_type::TangentVertex>*)_vertexVec;
 
         UINT baseIndex = (UINT)_tangeVec->size();
         float y = 0.5f * _height;
@@ -2180,7 +2180,7 @@ void RSGeometryGenerator::BuildCylinderTopCap(
             float u = x / _height + 0.5f;
             float v = z / _height + 0.5f;
 
-            VertexType::TangentVertex vert =
+            vertex_type::TangentVertex vert =
             {
                 { x, y, z }, { 0.0f, 1.0f, 0.0f },
                 { 1.0f, 0.0f, 0.0f }, { u, v }
@@ -2188,7 +2188,7 @@ void RSGeometryGenerator::BuildCylinderTopCap(
             _tangeVec->emplace_back(vert);
         }
 
-        VertexType::TangentVertex vert =
+        vertex_type::TangentVertex vert =
         {
             { 0.0f, y, 0.0f }, { 0.0f, 1.0f, 0.0f },
             { 1.0f, 0.0f, 0.0f }, { 0.5f, 0.5f }
@@ -2225,8 +2225,8 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
     {
     case LAYOUT_TYPE::NORMAL_COLOR:
     {
-        std::vector<VertexType::ColorVertex>* _colorVec =
-            (std::vector<VertexType::ColorVertex>*)_vertexVec;
+        std::vector<vertex_type::ColorVertex>* _colorVec =
+            (std::vector<vertex_type::ColorVertex>*)_vertexVec;
 
         UINT baseIndex = (UINT)_colorVec->size();
         float y = -0.5f * _height;
@@ -2240,14 +2240,14 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
             float v = z / _height + 0.5f;
             (void)u; (void)v;
 
-            VertexType::ColorVertex vert =
+            vertex_type::ColorVertex vert =
             {
                 { x, y, z }, { 0.0f, -1.0f, 0.0f }, _vertColor
             };
             _colorVec->emplace_back(vert);
         }
 
-        VertexType::ColorVertex vert =
+        vertex_type::ColorVertex vert =
         {
             { 0.0f, y, 0.0f }, { 0.0f, -1.0f, 0.0f }, _vertColor
         };
@@ -2267,8 +2267,8 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
 
     case LAYOUT_TYPE::NORMAL_TEX:
     {
-        std::vector<VertexType::BasicVertex>* _basicVec =
-            (std::vector<VertexType::BasicVertex>*)_vertexVec;
+        std::vector<vertex_type::BasicVertex>* _basicVec =
+            (std::vector<vertex_type::BasicVertex>*)_vertexVec;
 
         UINT baseIndex = (UINT)_basicVec->size();
         float y = -0.5f * _height;
@@ -2281,14 +2281,14 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
             float u = x / _height + 0.5f;
             float v = z / _height + 0.5f;
 
-            VertexType::BasicVertex vert =
+            vertex_type::BasicVertex vert =
             {
                 { x, y, z }, { 0.0f, -1.0f, 0.0f }, { u, v }
             };
             _basicVec->emplace_back(vert);
         }
 
-        VertexType::BasicVertex vert =
+        vertex_type::BasicVertex vert =
         {
             { 0.0f, y, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.5f, 0.5f }
         };
@@ -2308,8 +2308,8 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
 
     case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
     {
-        std::vector<VertexType::TangentVertex>* _tangeVec =
-            (std::vector<VertexType::TangentVertex>*)_vertexVec;
+        std::vector<vertex_type::TangentVertex>* _tangeVec =
+            (std::vector<vertex_type::TangentVertex>*)_vertexVec;
 
         UINT baseIndex = (UINT)_tangeVec->size();
         float y = -0.5f * _height;
@@ -2322,7 +2322,7 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
             float u = x / _height + 0.5f;
             float v = z / _height + 0.5f;
 
-            VertexType::TangentVertex vert =
+            vertex_type::TangentVertex vert =
             {
                 { x, y, z }, { 0.0f, -1.0f, 0.0f },
                 { 1.0f, 0.0f, 0.0f }, { u, v }
@@ -2330,7 +2330,7 @@ void RSGeometryGenerator::BuildCylinderBottomCap(
             _tangeVec->emplace_back(vert);
         }
 
-        VertexType::TangentVertex vert =
+        vertex_type::TangentVertex vert =
         {
             { 0.0f, y, 0.0f }, { 0.0f, -1.0f, 0.0f },
             { 1.0f, 0.0f, 0.0f }, { 0.5f, 0.5f }
@@ -2363,7 +2363,7 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreatePointWithTexture(LAYOUT_TYPE _layout,
     SUBMESH_INFO si = {};
     MATERIAL_INFO mi = {};
     std::vector<UINT> indeices = {};
-    std::vector<VertexType::TangentVertex> basic = {};
+    std::vector<vertex_type::TangentVertex> basic = {};
     std::vector<std::string> textures = {};
     std::string str = "";
 
@@ -2377,11 +2377,11 @@ RS_SUBMESH_DATA RSGeometryGenerator::CreatePointWithTexture(LAYOUT_TYPE _layout,
 
         textures.emplace_back(_texName);
 
-        si.mTopologyType = TOPOLOGY_TYPE::POINTLIST;
-        si.mVerteices = &basic;
-        si.mIndeices = &indeices;
-        si.mTextures = &textures;
-        si.mMaterial = &mi;
+        si.TopologyType = TOPOLOGY_TYPE::POINTLIST;
+        si.VerteicesPtr = &basic;
+        si.IndeicesPtr = &indeices;
+        si.TexturesPtr = &textures;
+        si.MaterialPtr = &mi;
         mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
 
         break;

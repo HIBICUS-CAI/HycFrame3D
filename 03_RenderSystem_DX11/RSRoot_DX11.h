@@ -11,35 +11,55 @@
 
 #include "RSCommon.h"
 
-class RSRoot_DX11* GetRSRoot_DX11_Singleton();
+class RSRoot_DX11 *
+getRSDX11RootInstance();
 
-class RSRoot_DX11
-{
-public:
-    RSRoot_DX11();
-    ~RSRoot_DX11();
-
-    bool StartUp(HWND _wndHandle);
-    void CleanAndStop();
-
-    class RSDevices* Devices() const;
-    class RSPipelinesManager* PipelinesManager() const;
-    class RSDrawCallsPool* DrawCallsPool() const;
-    class RSResourceManager* ResourceManager() const;
-    class RSStaticResources* StaticResources() const;
-    class RSCamerasContainer* CamerasContainer() const;
-    class RSLightsContainer* LightsContainer() const;
-    class RSParticlesContainer* ParticlesContainer() const;
-    class RSMeshHelper* MeshHelper() const;
-
+class RSRoot_DX11 {
 private:
-    class RSDevices* mDevicesPtr;
-    class RSPipelinesManager* mPipelinesManagerPtr;
-    class RSDrawCallsPool* mDrawCallsPoolPtr;
-    class RSResourceManager* mResourceManagerPtr;
-    class RSStaticResources* mStaticResourcesPtr;
-    class RSCamerasContainer* mCamerasContainerPtr;
-    class RSLightsContainer* mLightsContainerPtr;
-    class RSParticlesContainer* mParticlesContainerPtr;
-    class RSMeshHelper* mMeshHelperPtr;
+  class RSDevices *DevicesPtr;
+  class RSPipelinesManager *PipelinesManagerPtr;
+  class RSDrawCallsPool *DrawCallsPoolPtr;
+  class RSResourceManager *ResourceManagerPtr;
+  class RSStaticResources *StaticResourcesPtr;
+  class RSCamerasContainer *CamerasContainerPtr;
+  class RSLightsContainer *LightsContainerPtr;
+  class RSParticlesContainer *ParticlesContainerPtr;
+  class RSMeshHelper *MeshHelperPtr;
+
+public:
+  RSRoot_DX11();
+  ~RSRoot_DX11();
+
+  bool
+  startUp(HWND WndHandle);
+
+  void
+  cleanAndStop();
+
+  class RSDevices *
+  getDevices() const;
+
+  class RSPipelinesManager *
+  getPipelinesManager() const;
+
+  class RSDrawCallsPool *
+  getDrawCallsPool() const;
+
+  class RSResourceManager *
+  getResourceManager() const;
+
+  class RSStaticResources *
+  getStaticResources() const;
+
+  class RSCamerasContainer *
+  getCamerasContainer() const;
+
+  class RSLightsContainer *
+  getLightsContainer() const;
+
+  class RSParticlesContainer *
+  getParticlesContainer() const;
+
+  class RSMeshHelper *
+  getMeshHelper() const;
 };

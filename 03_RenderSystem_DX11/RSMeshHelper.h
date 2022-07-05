@@ -97,17 +97,17 @@ private:
     void SubDivide(LAYOUT_TYPE _layout, void* _vertexVec,
         std::vector<UINT>* _indexVec);
 
-    VertexType::BasicVertex BasicMidPoint(
-        const VertexType::BasicVertex& _v0,
-        const VertexType::BasicVertex& _v1);
+    vertex_type::BasicVertex BasicMidPoint(
+        const vertex_type::BasicVertex& _v0,
+        const vertex_type::BasicVertex& _v1);
 
-    VertexType::TangentVertex TangentMidPoint(
-        const VertexType::TangentVertex& _v0,
-        const VertexType::TangentVertex& _v1);
+    vertex_type::TangentVertex TangentMidPoint(
+        const vertex_type::TangentVertex& _v0,
+        const vertex_type::TangentVertex& _v1);
 
-    VertexType::ColorVertex ColorMidPoint(
-        const VertexType::ColorVertex& _v0,
-        const VertexType::ColorVertex& _v1);
+    vertex_type::ColorVertex ColorMidPoint(
+        const vertex_type::ColorVertex& _v0,
+        const vertex_type::ColorVertex& _v1);
 
     void BuildCylinderTopCap(
         float _bottomRadius, float _topRadius, float _height,

@@ -61,8 +61,8 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
 {
     if (!_scene) { return false; }
 
-    RS_SUBMESH_DATA sprite = GetRSRoot_DX11_Singleton()->
-        MeshHelper()->GeoGenerate()->
+    RS_SUBMESH_DATA sprite = getRSDX11RootInstance()->
+        getMeshHelper()->GeoGenerate()->
         CreateSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
 
     mMeshesName = GetCompName();
@@ -74,7 +74,7 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
-    id.mCustomizedData2 = { 0.f,0.f,1.f,1.f };
+    id.CustomizedData2 = { 0.f,0.f,1.f,1.f };
     spriteRect->mInstanceMap.insert({ mMeshesName,id });
 
     mOffsetColor = _offsetColor;
@@ -88,8 +88,8 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
 {
     if (!_scene) { return false; }
 
-    RS_SUBMESH_DATA sprite = GetRSRoot_DX11_Singleton()->
-        MeshHelper()->GeoGenerate()->
+    RS_SUBMESH_DATA sprite = getRSDX11RootInstance()->
+        getMeshHelper()->GeoGenerate()->
         CreateSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
 
     mMeshesName = GetCompName();
@@ -101,7 +101,7 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
-    id.mCustomizedData2 = { 0.f,0.f,1.f,1.f };
+    id.CustomizedData2 = { 0.f,0.f,1.f,1.f };
     spriteRect->mInstanceMap.insert({ mMeshesName,id });
 
     mOffsetColor = _offsetColor;
@@ -151,8 +151,8 @@ void USpriteComponent::SyncTransformDataToInstance()
             DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
         mat = DirectX::XMMatrixMultiply(mat,
             DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-        DirectX::XMStoreFloat4x4(&(ins_data.mWorldMat), mat);
-        ins_data.mCustomizedData1 = mOffsetColor;
+        DirectX::XMStoreFloat4x4(&(ins_data.WorldMatrix), mat);
+        ins_data.CustomizedData1 = mOffsetColor;
 
         break;
     }
@@ -164,11 +164,11 @@ void USpriteComponent::ResetTexture()
     auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
         GetSubMeshIfExisted(compName);
 
-    mesh->mMeshData.mTextures[0] = mOriginTextureName;
+    mesh->mMeshData.Textures[0] = mOriginTextureName;
 
     for (auto& ins : mesh->mInstanceMap)
     {
-        ins.second.mCustomizedData2 = { 0.f,0.f,1.f,1.f };
+        ins.second.CustomizedData2 = { 0.f,0.f,1.f,1.f };
         break;
     }
 

@@ -1,74 +1,75 @@
 #include "RSShaderCompile.h"
+
 #include <d3dcompiler.h>
 #include <string>
 
-HRESULT Tool::CompileShaderFromFile(const WCHAR* _fileName,
-    LPCSTR _entryPoint, LPCSTR _shaderModel,
-    ID3DBlob** _ppBlobOut, const D3D_SHADER_MACRO* _macro)
-{
-    HRESULT hr = S_OK;
+HRESULT
+rs_tool::compileShaderFromFile(const WCHAR *FileName,
+                               LPCSTR EntryPoint,
+                               LPCSTR ShaderModel,
+                               ID3DBlob **OutBlob,
+                               const D3D_SHADER_MACRO *Macro) {
+  HRESULT Hr = S_OK;
 
-    DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+  DWORD ShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
-    dwShaderFlags |= D3DCOMPILE_DEBUG;
-    dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+  ShaderFlags |= D3DCOMPILE_DEBUG;
+  ShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-    ID3DBlob* pErrorBlob = nullptr;
+  ID3DBlob *ErrorBlobPtr = nullptr;
 
-    hr = D3DCompileFromFile(
-        _fileName, _macro,
-        D3D_COMPILE_STANDARD_FILE_INCLUDE,
-        _entryPoint, _shaderModel,
-        dwShaderFlags, 0, _ppBlobOut, &pErrorBlob);
-    if (FAILED(hr))
-    {
-        if (pErrorBlob)
-        {
-            OutputDebugStringA(reinterpret_cast<const char*>(
-                pErrorBlob->GetBufferPointer()));
-            pErrorBlob->Release();
-        }
-        return hr;
+  Hr = D3DCompileFromFile(FileName, Macro, D3D_COMPILE_STANDARD_FILE_INCLUDE,
+                          EntryPoint, ShaderModel, ShaderFlags, 0, OutBlob,
+                          &ErrorBlobPtr);
+  if (FAILED(Hr)) {
+    if (ErrorBlobPtr) {
+      OutputDebugStringA(
+          reinterpret_cast<const char *>(ErrorBlobPtr->GetBufferPointer()));
+      ErrorBlobPtr->Release();
     }
-    if (pErrorBlob) { pErrorBlob->Release(); }
+    return Hr;
+  }
+  if (ErrorBlobPtr) {
+    ErrorBlobPtr->Release();
+  }
 
-    return S_OK;
+  return S_OK;
 }
 
-HRESULT Tool::CompileShaderFromFile(LPCSTR _fileName,
-    LPCSTR _entryPoint, LPCSTR _shaderModel,
-    ID3DBlob** _ppBlobOut, const D3D_SHADER_MACRO* _macro)
-{
-    std::string path = std::string(_fileName);
-    std::wstring wpath = std::wstring(path.begin(), path.end());
+HRESULT
+rs_tool::compileShaderFromFile(LPCSTR FileName,
+                               LPCSTR EntryPoint,
+                               LPCSTR ShaderModel,
+                               ID3DBlob **OutBlob,
+                               const D3D_SHADER_MACRO *Macro) {
+  std::string Path = std::string(FileName);
+  std::wstring WPath = std::wstring(Path.begin(), Path.end());
 
-    HRESULT hr = S_OK;
+  HRESULT Hr = S_OK;
 
-    DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+  DWORD ShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
-    dwShaderFlags |= D3DCOMPILE_DEBUG;
-    dwShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+  ShaderFlags |= D3DCOMPILE_DEBUG;
+  ShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-    ID3DBlob* pErrorBlob = nullptr;
+  ID3DBlob *ErrorBlobPtr = nullptr;
 
-    hr = D3DCompileFromFile(
-        wpath.c_str(), _macro,
-        D3D_COMPILE_STANDARD_FILE_INCLUDE,
-        _entryPoint, _shaderModel,
-        dwShaderFlags, 0, _ppBlobOut, &pErrorBlob);
-    if (FAILED(hr))
-    {
-        if (pErrorBlob)
-        {
-            OutputDebugStringA(reinterpret_cast<const char*>(
-                pErrorBlob->GetBufferPointer()));
-            pErrorBlob->Release();
-        }
-        return hr;
+  Hr = D3DCompileFromFile(WPath.c_str(), Macro,
+                          D3D_COMPILE_STANDARD_FILE_INCLUDE, EntryPoint,
+                          ShaderModel, ShaderFlags, 0, OutBlob, &ErrorBlobPtr);
+  if (FAILED(Hr)) {
+    if (ErrorBlobPtr) {
+      OutputDebugStringA(
+          reinterpret_cast<const char *>(ErrorBlobPtr->GetBufferPointer()));
+      ErrorBlobPtr->Release();
     }
-    if (pErrorBlob) { pErrorBlob->Release(); }
+    return Hr;
+  }
+  if (ErrorBlobPtr) {
+    ErrorBlobPtr->Release();
+  }
 
-    return S_OK;
+  return S_OK;
 }

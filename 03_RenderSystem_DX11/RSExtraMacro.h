@@ -11,5 +11,17 @@
 
 #include <Windows.h>
 
-#define FAIL_HR_RETURN(r) { if (FAILED((r))) { return false; } }
-#define SAFE_RELEASE(p) { if (p) { (p)->Release(); (p)=nullptr; } }
+#define FAIL_HR_RETURN(HR)                                                     \
+  {                                                                            \
+    if (FAILED((HR))) {                                                        \
+      return false;                                                            \
+    }                                                                          \
+  }
+
+#define SAFE_RELEASE(PTR)                                                      \
+  {                                                                            \
+    if (PTR) {                                                                 \
+      (PTR)->Release();                                                        \
+      (PTR) = nullptr;                                                         \
+    }                                                                          \
+  }

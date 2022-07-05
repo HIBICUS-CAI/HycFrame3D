@@ -8,170 +8,145 @@
 //---------------------------------------------------------------
 
 #include "RSTopic.h"
+
 #include "RSPass_Base.h"
+
 #include <algorithm>
 
-RSTopic::RSTopic(std::string& _name) :
-    mName(_name), mAssemblyFinishFlag(true),
-    mExecuateOrderInPipeline(RS_INVALID_ORDER), mPassVector({}),
-    mMTContext(nullptr)
-{
+RSTopic::RSTopic(const std::string &Name)
+    : TopicName(Name), AssemblyFinishFlag(true),
+      ExecuateOrderInPipeline(RS_INVALID_ORDER), PassArray({}),
+      MTContext(nullptr) {}
 
+RSTopic::RSTopic(const RSTopic &Source)
+    : TopicName(Source.TopicName),
+      AssemblyFinishFlag(Source.AssemblyFinishFlag),
+      ExecuateOrderInPipeline(Source.ExecuateOrderInPipeline), PassArray({}),
+      MTContext(Source.MTContext) {
+  PassArray.reserve(Source.PassArray.size());
+  for (auto &Topic : Source.PassArray) {
+    RSPass_Base *OneMore = Topic->clonePass();
+    PassArray.push_back(OneMore);
+  }
 }
 
-RSTopic::RSTopic(const RSTopic& _source) :
-    mName(_source.mName),
-    mAssemblyFinishFlag(_source.mAssemblyFinishFlag),
-    mExecuateOrderInPipeline(_source.mExecuateOrderInPipeline),
-    mPassVector({}), mMTContext(_source.mMTContext)
-{
-    mPassVector.reserve(_source.mPassVector.size());
-    for (auto& topic : _source.mPassVector)
-    {
-        RSPass_Base* onemore = topic->ClonePass();
-        mPassVector.push_back(onemore);
+RSTopic::~RSTopic() {}
+
+const std::string &
+RSTopic::getTopicName() const {
+  return TopicName;
+}
+
+void
+RSTopic::startAssembly() {
+  AssemblyFinishFlag = false;
+}
+
+void
+RSTopic::finishAssembly() {
+  AssemblyFinishFlag = true;
+}
+
+void
+RSTopic::setExecuateOrder(UINT Order) {
+  ExecuateOrderInPipeline = Order;
+}
+
+UINT
+RSTopic::getExecuateOrder() const {
+  return ExecuateOrderInPipeline;
+}
+
+void
+RSTopic::setMTContext(ID3D11DeviceContext *ContextPtr) {
+  MTContext = ContextPtr;
+  for (auto &Pass : PassArray) {
+    Pass->setMTContext(ContextPtr);
+  }
+}
+
+bool
+passExecLessCompare(const RSPass_Base *A, const RSPass_Base *B) {
+  return A->getExecuateOrder() < B->getExecuateOrder();
+}
+
+void
+RSTopic::insertPass(RSPass_Base *Pass) {
+  if (!AssemblyFinishFlag) {
+    PassArray.push_back(Pass);
+    std::sort(PassArray.begin(), PassArray.end(), passExecLessCompare);
+  }
+}
+
+void
+RSTopic::erasePass(RSPass_Base *Pass) {
+  if (!AssemblyFinishFlag) {
+    for (auto I = PassArray.begin(), E = PassArray.end(); I != E; I++) {
+      if (*I == Pass) {
+        (*I)->releasePass();
+        delete (*I);
+        PassArray.erase(I);
+        return;
+      }
     }
+  }
 }
 
-RSTopic::~RSTopic()
-{
-
-}
-
-const std::string& RSTopic::GetTopicName() const
-{
-    return mName;
-}
-
-void RSTopic::StartTopicAssembly()
-{
-    mAssemblyFinishFlag = false;
-}
-
-void RSTopic::FinishTopicAssembly()
-{
-    mAssemblyFinishFlag = true;
-}
-
-void RSTopic::SetExecuateOrder(UINT _order)
-{
-    mExecuateOrderInPipeline = _order;
-}
-
-UINT RSTopic::GetExecuateOrder() const
-{
-    return mExecuateOrderInPipeline;
-}
-
-void RSTopic::SetMTContext(ID3D11DeviceContext* _mtContext)
-{
-    mMTContext = _mtContext;
-    for (auto& pass : mPassVector)
-    {
-        pass->SetMTContext(_mtContext);
+void
+RSTopic::erasePass(const std::string &PassName) {
+  if (!AssemblyFinishFlag) {
+    for (auto I = PassArray.begin(), E = PassArray.end(); I != E; I++) {
+      if ((*I)->getPassName() == PassName) {
+        (*I)->releasePass();
+        delete (*I);
+        PassArray.erase(I);
+        return;
+      }
     }
+  }
 }
 
-bool PassExecLessCompare(const RSPass_Base* a, const RSPass_Base* b)
-{
-    return a->GetExecuateOrder() < b->GetExecuateOrder();
-}
-
-void RSTopic::InsertPass(RSPass_Base* _pass)
-{
-    if (!mAssemblyFinishFlag)
-    {
-        mPassVector.push_back(_pass);
-        std::sort(mPassVector.begin(), mPassVector.end(),
-            PassExecLessCompare);
+bool
+RSTopic::hasPass(const std::string &PassName) {
+  for (auto &Pass : PassArray) {
+    if (Pass->getPassName() == PassName) {
+      return true;
     }
+  }
+
+  return false;
 }
 
-void RSTopic::ErasePass(RSPass_Base* _pass)
-{
-    if (!mAssemblyFinishFlag)
-    {
-        for (auto i = mPassVector.begin();
-            i != mPassVector.end(); i++)
-        {
-            if (*i == _pass)
-            {
-                (*i)->ReleasePass();
-                delete (*i);
-                mPassVector.erase(i);
-                return;
-            }
-        }
-    }
-}
-
-void RSTopic::ErasePass(std::string& _passName)
-{
-    if (!mAssemblyFinishFlag)
-    {
-        for (auto i = mPassVector.begin();
-            i != mPassVector.end(); i++)
-        {
-            if ((*i)->GetPassName() == _passName)
-            {
-                (*i)->ReleasePass();
-                delete (*i);
-                mPassVector.erase(i);
-                return;
-            }
-        }
-    }
-}
-
-bool RSTopic::HasPass(std::string& _passName)
-{
-    for (auto& pass : mPassVector)
-    {
-        if (pass->GetPassName() == _passName)
-        {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-bool RSTopic::InitAllPasses()
-{
-    if (mAssemblyFinishFlag)
-    {
-        for (auto& pass : mPassVector)
-        {
-            if (!pass->InitPass()) { return false; }
-        }
-        return true;
-    }
-    else
-    {
+bool
+RSTopic::initAllPasses() {
+  if (AssemblyFinishFlag) {
+    for (auto &Pass : PassArray) {
+      if (!Pass->initPass()) {
         return false;
+      }
     }
+    return true;
+  } else {
+    return false;
+  }
 }
 
-void RSTopic::ExecuateTopic()
-{
-    if (mAssemblyFinishFlag)
-    {
-        for (auto& pass : mPassVector)
-        {
-            pass->ExecuatePass();
-        }
+void
+RSTopic::execuateTopic() {
+  if (AssemblyFinishFlag) {
+    for (auto &Pass : PassArray) {
+      Pass->execuatePass();
     }
+  }
 }
 
-void RSTopic::ReleaseTopic()
-{
-    if (mAssemblyFinishFlag)
-    {
-        for (auto& pass : mPassVector)
-        {
-            pass->ReleasePass();
-            delete pass;
-        }
-        mPassVector.clear();
+void
+RSTopic::releaseTopic() {
+  if (AssemblyFinishFlag) {
+    for (auto &Pass : PassArray) {
+      Pass->releasePass();
+      delete Pass;
     }
+    PassArray.clear();
+  }
 }

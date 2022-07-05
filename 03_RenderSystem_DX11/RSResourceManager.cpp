@@ -47,24 +47,24 @@ void RSResourceManager::CleanAndStop()
     }
     for (auto& resource : mResourceMap)
     {
-        SAFE_RELEASE(resource.second.mUav);
-        SAFE_RELEASE(resource.second.mSrv);
-        SAFE_RELEASE(resource.second.mDsv);
-        SAFE_RELEASE(resource.second.mRtv);
-        auto type = resource.second.mType;
+        SAFE_RELEASE(resource.second.Uav);
+        SAFE_RELEASE(resource.second.Srv);
+        SAFE_RELEASE(resource.second.Dsv);
+        SAFE_RELEASE(resource.second.Rtv);
+        auto type = resource.second.Type;
         switch (type)
         {
         case RS_RESOURCE_TYPE::BUFFER:
-            SAFE_RELEASE(resource.second.mResource.mBuffer);
+            SAFE_RELEASE(resource.second.Resource.Buffer);
             break;
         case RS_RESOURCE_TYPE::TEXTURE1D:
-            SAFE_RELEASE(resource.second.mResource.mTexture1D);
+            SAFE_RELEASE(resource.second.Resource.Texture1D);
             break;
         case RS_RESOURCE_TYPE::TEXTURE2D:
-            SAFE_RELEASE(resource.second.mResource.mTexture2D);
+            SAFE_RELEASE(resource.second.Resource.Texture2D);
             break;
         case RS_RESOURCE_TYPE::TEXTURE3D:
-            SAFE_RELEASE(resource.second.mResource.mTexture3D);
+            SAFE_RELEASE(resource.second.Resource.Texture3D);
             break;
         default:
         {
@@ -146,24 +146,24 @@ void RSResourceManager::DeleteResource(std::string& _name)
     auto found = mResourceMap.find(_name);
     if (found != mResourceMap.end())
     {
-        SAFE_RELEASE(found->second.mUav);
-        SAFE_RELEASE(found->second.mSrv);
-        SAFE_RELEASE(found->second.mDsv);
-        SAFE_RELEASE(found->second.mRtv);
-        auto type = found->second.mType;
+        SAFE_RELEASE(found->second.Uav);
+        SAFE_RELEASE(found->second.Srv);
+        SAFE_RELEASE(found->second.Dsv);
+        SAFE_RELEASE(found->second.Rtv);
+        auto type = found->second.Type;
         switch (type)
         {
         case RS_RESOURCE_TYPE::BUFFER:
-            SAFE_RELEASE(found->second.mResource.mBuffer);
+            SAFE_RELEASE(found->second.Resource.Buffer);
             break;
         case RS_RESOURCE_TYPE::TEXTURE1D:
-            SAFE_RELEASE(found->second.mResource.mTexture1D);
+            SAFE_RELEASE(found->second.Resource.Texture1D);
             break;
         case RS_RESOURCE_TYPE::TEXTURE2D:
-            SAFE_RELEASE(found->second.mResource.mTexture2D);
+            SAFE_RELEASE(found->second.Resource.Texture2D);
             break;
         case RS_RESOURCE_TYPE::TEXTURE3D:
-            SAFE_RELEASE(found->second.mResource.mTexture3D);
+            SAFE_RELEASE(found->second.Resource.Texture3D);
             break;
         default:
         {
@@ -195,24 +195,24 @@ void RSResourceManager::ClearResources()
     R_LOCK;
     for (auto& resource : mResourceMap)
     {
-        SAFE_RELEASE(resource.second.mUav);
-        SAFE_RELEASE(resource.second.mSrv);
-        SAFE_RELEASE(resource.second.mDsv);
-        SAFE_RELEASE(resource.second.mRtv);
-        auto type = resource.second.mType;
+        SAFE_RELEASE(resource.second.Uav);
+        SAFE_RELEASE(resource.second.Srv);
+        SAFE_RELEASE(resource.second.Dsv);
+        SAFE_RELEASE(resource.second.Rtv);
+        auto type = resource.second.Type;
         switch (type)
         {
         case RS_RESOURCE_TYPE::BUFFER:
-            SAFE_RELEASE(resource.second.mResource.mBuffer);
+            SAFE_RELEASE(resource.second.Resource.Buffer);
             break;
         case RS_RESOURCE_TYPE::TEXTURE1D:
-            SAFE_RELEASE(resource.second.mResource.mTexture1D);
+            SAFE_RELEASE(resource.second.Resource.Texture1D);
             break;
         case RS_RESOURCE_TYPE::TEXTURE2D:
-            SAFE_RELEASE(resource.second.mResource.mTexture2D);
+            SAFE_RELEASE(resource.second.Resource.Texture2D);
             break;
         case RS_RESOURCE_TYPE::TEXTURE3D:
-            SAFE_RELEASE(resource.second.mResource.mTexture3D);
+            SAFE_RELEASE(resource.second.Resource.Texture3D);
             break;
         default:
         {

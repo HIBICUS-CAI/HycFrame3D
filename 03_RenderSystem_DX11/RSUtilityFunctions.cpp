@@ -1,61 +1,65 @@
 #include "RSUtilityFunctions.h"
+
+#include <cassert>
+#include <fstream>
 #include <stdlib.h>
 #include <time.h>
-#include <fstream>
-#include <cassert>
 
-namespace Tool
-{
-    int Align(int _value, int _alignment)
-    {
-        return (_value + (_alignment - 1)) & ~(_alignment - 1);
-    }
+namespace rs_tool {
 
-    float Lerp(float _v1, float _v2, float _factor)
-    {
-        return (1.f - _factor)* _v1 + _factor * _v2;
-    }
-
-    float Clamp(float _v, float _min, float _max)
-    {
-        _v = (_v > _max) ? _max : _v;
-        _v = (_v < _min) ? _min : _v;
-        return _v;
-    }
-
-    float RandomVariance(float median, float variance)
-    {
-        static bool hasInited = false;
-        if (!hasInited)
-        {
-            srand((unsigned int)time(nullptr));
-            hasInited = true;
-        }
-
-        float fUnitRandomValue = (float)rand() / (float)RAND_MAX;
-        float fRange = variance * fUnitRandomValue;
-        return median - variance + (2.0f * fRange);
-    }
-
-    float Gauss1D(float _x, float _sigma)
-    {
-        return expf(-1.f * _x * _x / (2.f * _sigma * _sigma));
-    }
-
-    void CalcGaussWeight1D(uint16_t _kernelSize, float _sigma,
-        std::vector<float>& _outResult)
-    {
-        assert(_kernelSize % 2);
-        _outResult.resize(_kernelSize);
-        int x = -1 * (_kernelSize / 2);
-        float sum = 0.f;
-        for (uint16_t i = 0; i < _kernelSize; i++)
-        {
-            float weight = Gauss1D((float)(x++), _sigma);
-            _outResult[i] = weight;
-            sum += weight;
-        }
-
-        for (auto& w : _outResult) { w /= sum; }
-    }
+int
+align(int Value, int Alignment) {
+  return (Value + (Alignment - 1)) & ~(Alignment - 1);
 }
+
+float
+lerp(float V1, float V2, float Factor) {
+  return (1.f - Factor) * V1 + Factor * V2;
+}
+
+float
+clamp(float V, float Min, float Max) {
+  V = (V > Max) ? Max : V;
+  V = (V < Min) ? Min : V;
+  return V;
+}
+
+float
+randomVariance(float Median, float Variance) {
+  static bool HasInited = false;
+  if (!HasInited) {
+    srand(static_cast<uint32_t>(time(nullptr)));
+    HasInited = true;
+  }
+
+  float FUnitRandomValue =
+      static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+  float FRange = Variance * FUnitRandomValue;
+  return Median - Variance + (2.0f * FRange);
+}
+
+float
+gauss1D(float X, float Sigma) {
+  return expf(-1.f * X * X / (2.f * Sigma * Sigma));
+}
+
+void
+calcGaussWeight1D(uint32_t KernelSize,
+                  float Sigma,
+                  std::vector<float> &OutResult) {
+  assert(KernelSize % 2);
+  OutResult.resize(KernelSize);
+  int X = -1 * (KernelSize / 2);
+  float Sum = 0.f;
+  for (uint32_t I = 0; I < KernelSize; I++) {
+    float weight = gauss1D(static_cast<float>(X++), Sigma);
+    OutResult[I] = weight;
+    Sum += weight;
+  }
+
+  for (auto &W : OutResult) {
+    W /= Sum;
+  }
+}
+
+} // namespace rs_tool

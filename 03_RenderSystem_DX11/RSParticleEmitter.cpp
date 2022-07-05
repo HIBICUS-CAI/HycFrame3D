@@ -36,32 +36,32 @@ void RSParticleEmitter::ResetParticleEmitterInfo(
         return;
     }
 
-    mRSParticleEmitterInfo.mEmitterIndex =
+    mRSParticleEmitterInfo.EmitterIndex =
         g_ParticleEmitterCounter++;
-    mRSParticleEmitterInfo.mEmitNumPerSecond =
-        _info->mEmitNumPerSecond;
-    mRSParticleEmitterInfo.mNumToEmit = 0;
-    mRSParticleEmitterInfo.mAccumulation = 0.f;
-    mRSParticleEmitterInfo.mPosition = _info->mPosition;
-    mRSParticleEmitterInfo.mVelocity = _info->mVelocity;
-    mRSParticleEmitterInfo.mPosVariance = _info->mPosVariance;
-    mRSParticleEmitterInfo.mVelVariance = _info->mVelVariance;
-    mRSParticleEmitterInfo.mAcceleration = _info->mAcceleration;
-    mRSParticleEmitterInfo.mParticleMass = _info->mParticleMass;
-    mRSParticleEmitterInfo.mLifeSpan = _info->mLifeSpan;
-    mRSParticleEmitterInfo.mOffsetStartSize =
-        _info->mOffsetStartSize;
-    mRSParticleEmitterInfo.mOffsetEndSize =
-        _info->mOffsetEndSize;
-    mRSParticleEmitterInfo.mOffsetStartColor =
-        _info->mOffsetStartColor;
-    mRSParticleEmitterInfo.mOffsetEndColor =
-        _info->mOffsetEndColor;
-    mRSParticleEmitterInfo.mTextureID =
-        (UINT)(_info->mTextureID);
-    mRSParticleEmitterInfo.mStreakFlg =
-        (_info->mEnableStreak ? 1 : 0);
-    mRSParticleEmitterInfo.mMiscFlg = 0;
+    mRSParticleEmitterInfo.EmitNumPerSecond =
+        _info->EmitNumPerSecond;
+    mRSParticleEmitterInfo.EmitSize = 0;
+    mRSParticleEmitterInfo.Accumulation = 0.f;
+    mRSParticleEmitterInfo.Position = _info->Position;
+    mRSParticleEmitterInfo.Velocity = _info->Velocity;
+    mRSParticleEmitterInfo.PosVariance = _info->PosVariance;
+    mRSParticleEmitterInfo.VelVariance = _info->VelVariance;
+    mRSParticleEmitterInfo.Acceleration = _info->Acceleration;
+    mRSParticleEmitterInfo.ParticleMass = _info->ParticleMass;
+    mRSParticleEmitterInfo.LifeSpan = _info->LifeSpan;
+    mRSParticleEmitterInfo.StartSize =
+        _info->StartSize;
+    mRSParticleEmitterInfo.EndSize =
+        _info->EndSize;
+    mRSParticleEmitterInfo.StartColor =
+        _info->StartColor;
+    mRSParticleEmitterInfo.EndColor =
+        _info->EndColor;
+    mRSParticleEmitterInfo.TextureID =
+        (UINT)(_info->TextureID);
+    mRSParticleEmitterInfo.StreakFlag =
+        (_info->StreakFlag ? 1 : 0);
+    mRSParticleEmitterInfo.MiscFlag = 0;
 }
 
 RS_PARTICLE_EMITTER_INFO& RSParticleEmitter::GetRSParticleEmitterInfo()
@@ -81,12 +81,12 @@ void RSParticleEmitter::PauseParticleEmitter()
 
 void RSParticleEmitter::SetEmitterPosition(DirectX::XMFLOAT3& _position)
 {
-    mRSParticleEmitterInfo.mPosition = _position;
+    mRSParticleEmitterInfo.Position = _position;
 }
 
 void RSParticleEmitter::SetEmitterPosition(DirectX::XMFLOAT3&& _position)
 {
-    mRSParticleEmitterInfo.mPosition = _position;
+    mRSParticleEmitterInfo.Position = _position;
 }
 
 void RSParticleEmitter::ResetEmitterIndex()

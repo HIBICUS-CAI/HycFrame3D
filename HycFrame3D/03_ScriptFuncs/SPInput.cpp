@@ -90,11 +90,11 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
         std::string simple = "simple-pipeline";
         if (simp)
         {
-            GetRSRoot_DX11_Singleton()->PipelinesManager()->SetPipeline(basic);
+            getRSDX11RootInstance()->getPipelinesManager()->SetPipeline(basic);
         }
         else
         {
-            GetRSRoot_DX11_Singleton()->PipelinesManager()->SetPipeline(simple);
+            getRSDX11RootInstance()->getPipelinesManager()->SetPipeline(simple);
         }
         simp = !simp;
     }

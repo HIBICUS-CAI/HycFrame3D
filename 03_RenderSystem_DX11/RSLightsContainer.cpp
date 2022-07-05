@@ -73,7 +73,7 @@ RSLight* RSLightsContainer::CreateRSLight(
         mLights.emplace_back(light);
         std::sort(mLights.begin(), mLights.end(),
             LightLessCompare);
-        if (_info->mWithShadow)
+        if (_info->ShadowFlag)
         {
             mShadowLights.emplace_back(light);
             mShadowLightIndeices.emplace_back(
@@ -148,7 +148,7 @@ void RSLightsContainer::DeleteRSLight(std::string& _name,
                 }
                 mShadowLightIndeices.erase(i);
                 std::string camName = _name + "-light-cam";
-                mRootPtr->CamerasContainer()->DeleteRSCamera(camName);
+                mRootPtr->getCamerasContainer()->DeleteRSCamera(camName);
                 break;
             }
         }
@@ -201,7 +201,7 @@ bool RSLightsContainer::CreateLightCameraFor(
         auto light = found->second;
         UNLOCK;
         auto cam = light->CreateLightCamera(
-            _name, _info, mRootPtr->CamerasContainer());
+            _name, _info, mRootPtr->getCamerasContainer());
         if (cam)
         {
             return true;

@@ -11,59 +11,75 @@
 
 #include "RSCommon.h"
 
-struct TopicThread
-{
-    ID3D11DeviceContext* mDeferredContext = nullptr;
-    ID3D11CommandList* mCommandList = nullptr;
-    HANDLE mThreadHandle = nullptr;
-    HANDLE mBeginEvent = nullptr;
-    HANDLE mFinishEvent = nullptr;
-    bool mExitFlag = false;
-    struct ArgumentList
-    {
-        class RSTopic* mTopicPtr = nullptr;
-        HANDLE mBeginEventPtr = nullptr;
-        HANDLE mFinishEventPtr = nullptr;
-        bool* mExitFlagPtr = nullptr;
-        ID3D11DeviceContext* mDeferredContext = nullptr;
-        ID3D11CommandList** mCommandListPtr = nullptr;
-    } mArgumentList = {};
+struct TOPIC_THREAD {
+  ID3D11DeviceContext *DeferredContext = nullptr;
+  ID3D11CommandList *CommandList = nullptr;
+  HANDLE ThreadHandle = nullptr;
+  HANDLE BeginEvent = nullptr;
+  HANDLE FinishEvent = nullptr;
+  bool ExitFlag = false;
+
+  struct ARGUMENT_LIST {
+    class RSTopic *TopicPtr = nullptr;
+    HANDLE BeginEventPtr = nullptr;
+    HANDLE FinishEventPtr = nullptr;
+    bool *ExitFlagPtr = nullptr;
+    ID3D11DeviceContext *DeferredContext = nullptr;
+    ID3D11CommandList **CommandListPtr = nullptr;
+  } ArgumentList = {};
 };
 
-class RSPipeline
-{
-public:
-    RSPipeline(std::string& _name);
-    RSPipeline(const RSPipeline& _source);
-    ~RSPipeline();
-
-    const std::string& GetPipelineName() const;
-    void StartPipelineAssembly();
-    void FinishPipelineAssembly();
-
-    bool HasTopic(std::string& _topicName);
-    void InsertTopic(class RSTopic* _topic);
-    void EraseTopic(class RSTopic* _topic);
-    void EraseTopic(std::string& _topicName);
-
-    bool InitAllTopics(class RSDevices* _devices,
-        bool _forceSingleThread = false);
-
-    void ExecuatePipeline();
-
-    void ReleasePipeline();
-
-    void SuspendAllThread();
-    void ResumeAllThread();
-
+class RSPipeline {
 private:
-    const std::string mName;
-    bool mAssemblyFinishFlag;
+  const std::string PipelineName;
+  bool AssemblyFinishFlag;
 
-    std::vector<class RSTopic*> mTopicVector;
-    std::vector<TopicThread> mTopicThreads;
-    std::vector<HANDLE> mFinishEvents;
+  std::vector<class RSTopic *> TopicArray;
+  std::vector<TOPIC_THREAD> TopicThreads;
+  std::vector<HANDLE> FinishEvents;
 
-    ID3D11DeviceContext* mImmediateContext;
-    bool mMultipleThreadMode;
+  ID3D11DeviceContext *ImmediateContext;
+  bool MultipleThreadModeFlag;
+
+public:
+  RSPipeline(const std::string &_name);
+  RSPipeline(const RSPipeline &_source);
+  ~RSPipeline();
+
+  const std::string &
+  getPipelineName() const;
+
+  void
+  startAssembly();
+
+  void
+  finishAssembly();
+
+  bool
+  hasTopic(const std::string &TopicName);
+
+  void
+  insertTopic(class RSTopic *Topic);
+
+  void
+  eraseTopic(class RSTopic *Topic);
+
+  void
+  eraseTopic(const std::string &TopicName);
+
+  bool
+  initAllTopics(class RSDevices *DevicesPtr,
+                bool ForceSingleThreadFlag = false);
+
+  void
+  execuatePipeline();
+
+  void
+  releasePipeline();
+
+  void
+  suspendAllThread();
+
+  void
+  resumeAllThread();
 };

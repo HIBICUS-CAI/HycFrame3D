@@ -11,37 +11,36 @@
 
 #include <DirectXMath.h>
 
-namespace VertexType
-{
-    struct BasicVertex
-    {
-        DirectX::XMFLOAT3 Position;
-        DirectX::XMFLOAT3 Normal;
-        DirectX::XMFLOAT2 TexCoord;
-    };
+namespace dx = DirectX;
 
-    struct ColorVertex
-    {
-        DirectX::XMFLOAT3 Position;
-        DirectX::XMFLOAT3 Normal;
-        DirectX::XMFLOAT4 Color;
-    };
+namespace vertex_type {
 
-    struct TangentVertex
-    {
-        DirectX::XMFLOAT3 Position;
-        DirectX::XMFLOAT3 Normal;
-        DirectX::XMFLOAT3 Tangent;
-        DirectX::XMFLOAT2 TexCoord;
-    };
+struct BasicVertex {
+  dx::XMFLOAT3 Position;
+  dx::XMFLOAT3 Normal;
+  dx::XMFLOAT2 TexCoord;
+};
 
-    struct AnimationVertex
-    {
-        DirectX::XMFLOAT3 Position;
-        DirectX::XMFLOAT3 Normal;
-        DirectX::XMFLOAT3 Tangent;
-        DirectX::XMFLOAT2 TexCoord;
-        DirectX::XMFLOAT4 Weight;
-        DirectX::XMUINT4 BoneID;
-    };
-}
+struct ColorVertex {
+  dx::XMFLOAT3 Position;
+  dx::XMFLOAT3 Normal;
+  dx::XMFLOAT4 Color;
+};
+
+struct TangentVertex {
+  dx::XMFLOAT3 Position;
+  dx::XMFLOAT3 Normal;
+  dx::XMFLOAT3 Tangent;
+  dx::XMFLOAT2 TexCoord;
+};
+
+struct AnimationVertex {
+  dx::XMFLOAT3 Position;
+  dx::XMFLOAT3 Normal;
+  dx::XMFLOAT3 Tangent;
+  dx::XMFLOAT2 TexCoord;
+  dx::XMFLOAT4 Weight;
+  dx::XMUINT4 BoneID;
+};
+
+} // namespace vertex_type

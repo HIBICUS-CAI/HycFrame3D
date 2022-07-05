@@ -203,7 +203,7 @@ void AssetsPool::InsertNewSubMesh(std::string&& _meshName,
     if (_bonesData) { mSubMeshPool[_meshName].mOriginBoneData = *_bonesData; }
     mSubMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
-    if (_meshData.mWithAnimation && _animationData)
+    if (_meshData.AnimationFlag && _animationData)
     {
         mMeshAnimationsPool.insert({ _meshName,_animationData });
     }
@@ -220,7 +220,7 @@ void AssetsPool::InsertNewSubMesh(std::string& _meshName,
     if (_bonesData) { mSubMeshPool[_meshName].mOriginBoneData = *_bonesData; }
     mSubMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
-    if (_meshData.mWithAnimation && _animationData)
+    if (_meshData.AnimationFlag && _animationData)
     {
         mMeshAnimationsPool.insert({ _meshName,_animationData });
     }
@@ -242,7 +242,7 @@ void AssetsPool::InsertNewIndexedMesh(std::string&& _meshName,
     if (_bonesData) { mSubMeshPool[subMeshName].mOriginBoneData = *_bonesData; }
     mSubMeshPool[subMeshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
-    if (_meshData.mWithAnimation && _animationData &&
+    if (_meshData.AnimationFlag && _animationData &&
         mMeshAnimationsPool.find(_meshName) == mMeshAnimationsPool.end())
     {
         mMeshAnimationsPool.insert({ _meshName,_animationData });
@@ -269,7 +269,7 @@ void AssetsPool::InsertNewIndexedMesh(std::string& _meshName,
     if (_bonesData) { mSubMeshPool[subMeshName].mOriginBoneData = *_bonesData; }
     mSubMeshPool[subMeshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
 
-    if (_meshData.mWithAnimation && _animationData &&
+    if (_meshData.AnimationFlag && _animationData &&
         mMeshAnimationsPool.find(_meshName) == mMeshAnimationsPool.end())
     {
         mMeshAnimationsPool.insert({ _meshName,_animationData });
@@ -311,7 +311,7 @@ void AssetsPool::DeleteAllAssets()
             continue;
         }
 
-        GetRSRoot_DX11_Singleton()->MeshHelper()->
+        getRSDX11RootInstance()->getMeshHelper()->
             ReleaseSubMesh(mesh_data.second.mMeshData);
     }
     mSubMeshPool.clear();

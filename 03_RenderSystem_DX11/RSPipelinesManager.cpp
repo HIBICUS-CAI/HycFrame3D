@@ -44,7 +44,7 @@ void RSPipelinesManager::CleanAndStop()
     mCurrentPipeline = nullptr;
     for (auto& pipeline : mPipelineMap)
     {
-        pipeline.second->ReleasePipeline();
+        pipeline.second->releasePipeline();
         delete pipeline.second;
     }
     mPipelineMap.clear();
@@ -104,11 +104,11 @@ void RSPipelinesManager::ClearCurrentPipelineState()
 
 void RSPipelinesManager::ExecuateCurrentPipeline()
 {
-    mRootPtr->LightsContainer()->LockContainer();
-    mRootPtr->ParticlesContainer()->LockContainer();
-    mCurrentPipeline->ExecuatePipeline();
-    mRootPtr->LightsContainer()->UnlockContainer();
-    mRootPtr->ParticlesContainer()->UnlockContainer();
+    mRootPtr->getLightsContainer()->LockContainer();
+    mRootPtr->getParticlesContainer()->LockContainer();
+    mCurrentPipeline->execuatePipeline();
+    mRootPtr->getLightsContainer()->UnlockContainer();
+    mRootPtr->getParticlesContainer()->UnlockContainer();
 }
 
 void RSPipelinesManager::ProcessNextPipeline()
@@ -117,10 +117,10 @@ void RSPipelinesManager::ProcessNextPipeline()
     {
         if (mCurrentPipeline)
         {
-            mCurrentPipeline->SuspendAllThread();
+            mCurrentPipeline->suspendAllThread();
         }
         mCurrentPipeline = mNextPipeline;
-        mCurrentPipeline->ResumeAllThread();
+        mCurrentPipeline->resumeAllThread();
         mNextPipeline = nullptr;
     }
 }

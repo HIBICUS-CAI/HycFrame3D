@@ -8,294 +8,262 @@
 //---------------------------------------------------------------
 
 #include "RSPipeline.h"
-#include "RSTopic.h"
+
 #include "RSDevices.h"
+#include "RSTopic.h"
+
 #include <algorithm>
-#include <thread>
 #include <process.h>
+#include <thread>
 
-unsigned __stdcall TopicThreadFunc(PVOID _argu);
+unsigned __stdcall topicThreadFunc(PVOID Args);
 
-RSPipeline::RSPipeline(std::string& _name) :
-    mName(_name), mAssemblyFinishFlag(true),
-    mTopicVector({}), mTopicThreads({}), mFinishEvents({}),
-    mImmediateContext(nullptr),
-    mMultipleThreadMode(false)
-{
+RSPipeline::RSPipeline(const std::string &Name)
+    : PipelineName(Name), AssemblyFinishFlag(true), TopicArray({}),
+      TopicThreads({}), FinishEvents({}), ImmediateContext(nullptr),
+      MultipleThreadModeFlag(false) {}
 
+RSPipeline::RSPipeline(const RSPipeline &Source)
+    : PipelineName(Source.PipelineName),
+      AssemblyFinishFlag(Source.AssemblyFinishFlag), TopicArray({}),
+      TopicThreads({}), FinishEvents({}),
+      ImmediateContext(Source.ImmediateContext),
+      MultipleThreadModeFlag(Source.MultipleThreadModeFlag) {
+  TopicArray.reserve(Source.TopicArray.size());
+  for (auto &Topic : Source.TopicArray) {
+    RSTopic *OneMore = new RSTopic(*Topic);
+    TopicArray.push_back(OneMore);
+  }
 }
 
-RSPipeline::RSPipeline(const RSPipeline& _source) :
-    mName(_source.mName),
-    mAssemblyFinishFlag(_source.mAssemblyFinishFlag),
-    mTopicVector({}), mTopicThreads({}),
-    mFinishEvents({}),
-    mImmediateContext(_source.mImmediateContext),
-    mMultipleThreadMode(_source.mMultipleThreadMode)
-{
-    mTopicVector.reserve(_source.mTopicVector.size());
-    for (auto& topic : _source.mTopicVector)
-    {
-        RSTopic* onemore = new RSTopic(*topic);
-        mTopicVector.push_back(onemore);
+RSPipeline::~RSPipeline() {}
+
+const std::string &
+RSPipeline::getPipelineName() const {
+  return PipelineName;
+}
+
+void
+RSPipeline::startAssembly() {
+  AssemblyFinishFlag = false;
+}
+
+void
+RSPipeline::finishAssembly() {
+  AssemblyFinishFlag = true;
+}
+
+bool
+RSPipeline::hasTopic(const std::string &TopicName) {
+  for (auto &Topic : TopicArray) {
+    if (Topic->getTopicName() == TopicName) {
+      return true;
     }
+  }
+
+  return false;
 }
 
-RSPipeline::~RSPipeline()
-{
-
+bool
+topicExecLessCompare(const RSTopic *A, const RSTopic *B) {
+  return A->getExecuateOrder() < B->getExecuateOrder();
 }
 
-const std::string& RSPipeline::GetPipelineName() const
-{
-    return mName;
+void
+RSPipeline::insertTopic(RSTopic *Topic) {
+  if (!AssemblyFinishFlag) {
+    TopicArray.push_back(Topic);
+    std::sort(TopicArray.begin(), TopicArray.end(), topicExecLessCompare);
+  }
 }
 
-void RSPipeline::StartPipelineAssembly()
-{
-    mAssemblyFinishFlag = false;
-}
-
-void RSPipeline::FinishPipelineAssembly()
-{
-    mAssemblyFinishFlag = true;
-}
-
-bool RSPipeline::HasTopic(std::string& _topicName)
-{
-    for (auto& topic : mTopicVector)
-    {
-        if (topic->GetTopicName() == _topicName)
-        {
-            return true;
-        }
+void
+RSPipeline::eraseTopic(RSTopic *Topic) {
+  if (!AssemblyFinishFlag) {
+    for (auto I = TopicArray.begin(), E = TopicArray.end(); I != E; I++) {
+      if (*I == Topic) {
+        (*I)->releaseTopic();
+        delete (*I);
+        TopicArray.erase(I);
+        return;
+      }
     }
+  }
+}
 
+void
+RSPipeline::eraseTopic(const std::string &TopicName) {
+  if (!AssemblyFinishFlag) {
+    for (auto I = TopicArray.begin(), E = TopicArray.end(); I != E; I++) {
+      if ((*I)->getTopicName() == TopicName) {
+        (*I)->releaseTopic();
+        delete (*I);
+        TopicArray.erase(I);
+        return;
+      }
+    }
+  }
+}
+
+bool
+RSPipeline::initAllTopics(RSDevices *DevicesPtr, bool ForceSingleThreadFlag) {
+  if (!DevicesPtr) {
     return false;
-}
+  }
+  ImmediateContext = DevicesPtr->GetSTContext();
+  MultipleThreadModeFlag = DevicesPtr->GetCommandListSupport();
+  MultipleThreadModeFlag = MultipleThreadModeFlag && (!ForceSingleThreadFlag);
 
-bool TopicExecLessCompare(const RSTopic* a, const RSTopic* b)
-{
-    return a->GetExecuateOrder() < b->GetExecuateOrder();
-}
-
-void RSPipeline::InsertTopic(RSTopic* _topic)
-{
-    if (!mAssemblyFinishFlag)
-    {
-        mTopicVector.push_back(_topic);
-        std::sort(mTopicVector.begin(), mTopicVector.end(),
-            TopicExecLessCompare);
-    }
-}
-
-void RSPipeline::EraseTopic(RSTopic* _topic)
-{
-    if (!mAssemblyFinishFlag)
-    {
-        for (auto i = mTopicVector.begin();
-            i != mTopicVector.end(); i++)
-        {
-            if (*i == _topic)
-            {
-                (*i)->ReleaseTopic();
-                delete (*i);
-                mTopicVector.erase(i);
-                return;
-            }
-        }
-    }
-}
-
-void RSPipeline::EraseTopic(std::string& _topicName)
-{
-    if (!mAssemblyFinishFlag)
-    {
-        for (auto i = mTopicVector.begin();
-            i != mTopicVector.end(); i++)
-        {
-            if ((*i)->GetTopicName() == _topicName)
-            {
-                (*i)->ReleaseTopic();
-                delete (*i);
-                mTopicVector.erase(i);
-                return;
-            }
-        }
-    }
-}
-
-bool RSPipeline::InitAllTopics(RSDevices* _devices,
-    bool _forceSingleThread)
-{
-    if (!_devices) { return false; }
-    mImmediateContext = _devices->GetSTContext();
-    mMultipleThreadMode = _devices->GetCommandListSupport();
-    mMultipleThreadMode = mMultipleThreadMode &&
-        (!_forceSingleThread);
-
-    if (mAssemblyFinishFlag)
-    {
-        for (auto& topic : mTopicVector)
-        {
-            if (!topic->InitAllPasses()) { return false; }
-            if (mMultipleThreadMode)
-            {
-                ID3D11DeviceContext* deferred = nullptr;
-                HRESULT hr = _devices->GetDevice()->
-                    CreateDeferredContext(0, &deferred);
-                FAIL_HR_RETURN(hr);
-                topic->SetMTContext(deferred);
-
-                TopicThread tt = {};
-                tt.mDeferredContext = deferred;
-                tt.mCommandList = nullptr;
-                tt.mThreadHandle = NULL;
-                tt.mExitFlag = false;
-                tt.mArgumentList.mTopicPtr = topic;
-                tt.mArgumentList.mDeferredContext = deferred;
-                mTopicThreads.emplace_back(tt);
-            }
-        }
-
-        UINT coreCount = std::thread::hardware_concurrency();
-        DWORD_PTR affinity = 0;
-        DWORD_PTR mask = 0;
-        for (auto& t : mTopicThreads)
-        {
-            t.mArgumentList.mExitFlagPtr = &t.mExitFlag;
-            t.mArgumentList.mCommandListPtr = &t.mCommandList;
-
-            t.mBeginEvent = CreateEvent(nullptr, FALSE,
-                FALSE, nullptr);
-            t.mFinishEvent = CreateEvent(nullptr, FALSE,
-                FALSE, nullptr);
-            mFinishEvents.emplace_back(t.mFinishEvent);
-
-            t.mArgumentList.mBeginEventPtr = t.mBeginEvent;
-            t.mArgumentList.mFinishEventPtr = t.mFinishEvent;
-
-            t.mThreadHandle = (HANDLE)_beginthreadex(
-                nullptr, 0, TopicThreadFunc, &(t.mArgumentList),
-                CREATE_SUSPENDED, nullptr);
-            if (!t.mThreadHandle) { return false; }
-            mask = SetThreadAffinityMask(t.mThreadHandle,
-                static_cast<DWORD_PTR>(1) << affinity);
-            affinity = (++affinity) % coreCount;
-        }
-        (void)mask;
-
-        return true;
-    }
-    else
-    {
+  if (AssemblyFinishFlag) {
+    for (auto &Topic : TopicArray) {
+      if (!Topic->initAllPasses()) {
         return false;
+      }
+      if (MultipleThreadModeFlag) {
+        ID3D11DeviceContext *Deferred = nullptr;
+        HRESULT Hr =
+            DevicesPtr->GetDevice()->CreateDeferredContext(0, &Deferred);
+        FAIL_HR_RETURN(Hr);
+        Topic->setMTContext(Deferred);
+
+        TOPIC_THREAD TT = {};
+        TT.DeferredContext = Deferred;
+        TT.CommandList = nullptr;
+        TT.ThreadHandle = NULL;
+        TT.ExitFlag = false;
+        TT.ArgumentList.TopicPtr = Topic;
+        TT.ArgumentList.DeferredContext = Deferred;
+        TopicThreads.emplace_back(TT);
+      }
     }
+
+    UINT CoreCount = std::thread::hardware_concurrency();
+    DWORD_PTR Affinity = 0;
+    DWORD_PTR Mask = 0;
+    for (auto &TT : TopicThreads) {
+      TT.ArgumentList.ExitFlagPtr = &TT.ExitFlag;
+      TT.ArgumentList.CommandListPtr = &TT.CommandList;
+
+      TT.BeginEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+      TT.FinishEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+      FinishEvents.emplace_back(TT.FinishEvent);
+
+      TT.ArgumentList.BeginEventPtr = TT.BeginEvent;
+      TT.ArgumentList.FinishEventPtr = TT.FinishEvent;
+
+      TT.ThreadHandle = reinterpret_cast<HANDLE>(
+          _beginthreadex(nullptr, 0, topicThreadFunc, &(TT.ArgumentList),
+                         CREATE_SUSPENDED, nullptr));
+      if (!TT.ThreadHandle) {
+        return false;
+      }
+      Mask = SetThreadAffinityMask(TT.ThreadHandle, static_cast<DWORD_PTR>(1)
+                                                        << Affinity);
+      Affinity = (++Affinity) % CoreCount;
+    }
+    (void)Mask;
+
+    return true;
+  } else {
+    return false;
+  }
 }
 
-void RSPipeline::ExecuatePipeline()
-{
-    if (mAssemblyFinishFlag)
-    {
-        if (mMultipleThreadMode)
-        {
-            for (auto& t : mTopicThreads)
-            {
-                SetEvent(t.mBeginEvent);
-            }
+void
+RSPipeline::execuatePipeline() {
+  if (AssemblyFinishFlag) {
+    if (MultipleThreadModeFlag) {
+      for (auto &TT : TopicThreads) {
+        SetEvent(TT.BeginEvent);
+      }
 
-            WaitForMultipleObjects((DWORD)mFinishEvents.size(),
-                &mFinishEvents[0], TRUE, INFINITE);
+      WaitForMultipleObjects(static_cast<DWORD>(FinishEvents.size()),
+                             &FinishEvents[0], TRUE, INFINITE);
 
-            for (auto& t : mTopicThreads)
-            {
-                if (!t.mCommandList) { assert(false); return; }
-                mImmediateContext->ExecuteCommandList(
-                    t.mCommandList, FALSE);
-                SAFE_RELEASE(t.mCommandList);
-            }
+      for (auto &TT : TopicThreads) {
+        if (!TT.CommandList) {
+          assert(false);
+          return;
         }
-        else
-        {
-            for (auto& topic : mTopicVector)
-            {
-                topic->ExecuateTopic();
-            }
-        }
+        ImmediateContext->ExecuteCommandList(TT.CommandList, FALSE);
+        SAFE_RELEASE(TT.CommandList);
+      }
+    } else {
+      for (auto &Topic : TopicArray) {
+        Topic->execuateTopic();
+      }
     }
+  }
 }
 
-void RSPipeline::ReleasePipeline()
-{
-    if (mAssemblyFinishFlag)
-    {
-        for (auto& topic : mTopicVector)
-        {
-            topic->ReleaseTopic();
-            delete topic;
-        }
-        mTopicVector.clear();
-        if (mMultipleThreadMode)
-        {
-            std::vector<HANDLE> handleVec = {};
-            for (auto& thread : mTopicThreads)
-            {
-                handleVec.emplace_back(thread.mThreadHandle);
-                thread.mExitFlag = true;
-            }
-        }
-        for (auto& thread : mTopicThreads)
-        {
-            SAFE_RELEASE(thread.mDeferredContext);
-            SAFE_RELEASE(thread.mCommandList);
-            CloseHandle(thread.mBeginEvent);
-            CloseHandle(thread.mFinishEvent);
-        }
+void
+RSPipeline::releasePipeline() {
+  if (AssemblyFinishFlag) {
+    for (auto &Topic : TopicArray) {
+      Topic->releaseTopic();
+      delete Topic;
     }
+    TopicArray.clear();
+    if (MultipleThreadModeFlag) {
+      std::vector<HANDLE> HandleArray = {};
+      for (auto &TT : TopicThreads) {
+        HandleArray.emplace_back(TT.ThreadHandle);
+        TT.ExitFlag = true;
+      }
+    }
+    for (auto &TT : TopicThreads) {
+      SAFE_RELEASE(TT.DeferredContext);
+      SAFE_RELEASE(TT.CommandList);
+      CloseHandle(TT.BeginEvent);
+      CloseHandle(TT.FinishEvent);
+    }
+  }
 }
 
-unsigned __stdcall TopicThreadFunc(PVOID _argu)
-{
-    TopicThread::ArgumentList* argument = nullptr;
-    argument = (TopicThread::ArgumentList*)_argu;
-    if (!argument) { return -1; }
+unsigned __stdcall topicThreadFunc(PVOID Args) {
+  TOPIC_THREAD::ARGUMENT_LIST *Argument = nullptr;
+  Argument = static_cast<TOPIC_THREAD::ARGUMENT_LIST *>(Args);
+  if (!Argument) {
+    return -1;
+  }
 
-    auto topic = argument->mTopicPtr;
-    auto deferred = argument->mDeferredContext;
-    auto listptr = argument->mCommandListPtr;
-    HANDLE begin = argument->mBeginEventPtr;
-    HANDLE finish = argument->mFinishEventPtr;
-    auto exit = argument->mExitFlagPtr;
+  auto Topic = Argument->TopicPtr;
+  auto Deferred = Argument->DeferredContext;
+  auto ListPtr = Argument->CommandListPtr;
+  HANDLE Begin = Argument->BeginEventPtr;
+  HANDLE Finish = Argument->FinishEventPtr;
+  auto ExitFlagPtr = Argument->ExitFlagPtr;
 
-    HRESULT hr = S_OK;
-    while (true)
-    {
-        WaitForSingleObject(begin, INFINITE);
-        if (*exit) { break; }
-        topic->ExecuateTopic();
-        hr = deferred->FinishCommandList(FALSE, listptr);
+  HRESULT Hr = S_OK;
+  while (true) {
+    WaitForSingleObject(Begin, INFINITE);
+    if (*ExitFlagPtr) {
+      break;
+    }
+    Topic->execuateTopic();
+    Hr = Deferred->FinishCommandList(FALSE, ListPtr);
 #ifdef _DEBUG
-        if (FAILED(hr)) { return -2; }
+    if (FAILED(Hr)) {
+      return -2;
+    }
 #endif // _DEBUG
-        SetEvent(finish);
-    }
-    (void)hr;
+    SetEvent(Finish);
+  }
+  (void)Hr;
 
-    return 0;
+  return 0;
 }
 
-void RSPipeline::SuspendAllThread()
-{
-    for (auto& t : mTopicThreads)
-    {
-        SuspendThread(t.mThreadHandle);
-    }
+void
+RSPipeline::suspendAllThread() {
+  for (auto &TT : TopicThreads) {
+    SuspendThread(TT.ThreadHandle);
+  }
 }
 
-void RSPipeline::ResumeAllThread()
-{
-    for (auto& t : mTopicThreads)
-    {
-        ResumeThread(t.mThreadHandle);
-    }
+void
+RSPipeline::resumeAllThread() {
+  for (auto &TT : TopicThreads) {
+    ResumeThread(TT.ThreadHandle);
+  }
 }

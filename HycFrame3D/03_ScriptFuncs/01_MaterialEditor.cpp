@@ -42,20 +42,20 @@ void OutputThisMaterialInfo()
 {
     std::string matInfo = "Material Info\n";
     matInfo += "===============================\n";
-    matInfo += "FresnelR0 :\t\t" + std::to_string(g_Material->mFresnelR0.x);
-    matInfo += ", " + std::to_string(g_Material->mFresnelR0.y);
-    matInfo += ", " + std::to_string(g_Material->mFresnelR0.z);
+    matInfo += "FresnelR0 :\t\t" + std::to_string(g_Material->FresnelR0.x);
+    matInfo += ", " + std::to_string(g_Material->FresnelR0.y);
+    matInfo += ", " + std::to_string(g_Material->FresnelR0.z);
     matInfo += "\n";
-    matInfo += "SubSurface :\t" + std::to_string(g_Material->mSubSurface) + ", \t";
-    matInfo += "Metallic :\t\t\t" + std::to_string(g_Material->mMetallic) + "\n";
-    matInfo += "Specular :\t\t" + std::to_string(g_Material->mSpecular) + ", \t";
-    matInfo += "SpecularTint :\t\t" + std::to_string(g_Material->mSpecularTint) + "\n";
-    matInfo += "Roughness :\t\t" + std::to_string(g_Material->mRoughness) + ", \t";
-    matInfo += "Anisotropic :\t\t" + std::to_string(g_Material->mAnisotropic) + "\n";
-    matInfo += "Sheen :\t\t\t" + std::to_string(g_Material->mSheen) + ", \t";
-    matInfo += "SheenTint :\t\t\t" + std::to_string(g_Material->mSheenTint) + "\n";
-    matInfo += "Clearcoat :\t\t" + std::to_string(g_Material->mClearcoat) + ", \t";
-    matInfo += "ClearcoatGloss :\t" + std::to_string(g_Material->mClearcoatGloss) + "\n";
+    matInfo += "SubSurface :\t" + std::to_string(g_Material->SubSurface) + ", \t";
+    matInfo += "Metallic :\t\t\t" + std::to_string(g_Material->Metallic) + "\n";
+    matInfo += "Specular :\t\t" + std::to_string(g_Material->Specular) + ", \t";
+    matInfo += "SpecularTint :\t\t" + std::to_string(g_Material->SpecularTint) + "\n";
+    matInfo += "Roughness :\t\t" + std::to_string(g_Material->Roughness) + ", \t";
+    matInfo += "Anisotropic :\t\t" + std::to_string(g_Material->Anisotropic) + "\n";
+    matInfo += "Sheen :\t\t\t" + std::to_string(g_Material->Sheen) + ", \t";
+    matInfo += "SheenTint :\t\t\t" + std::to_string(g_Material->SheenTint) + "\n";
+    matInfo += "Clearcoat :\t\t" + std::to_string(g_Material->Clearcoat) + ", \t";
+    matInfo += "ClearcoatGloss :\t" + std::to_string(g_Material->ClearcoatGloss) + "\n";
     matInfo += "===============================\n";
     P_LOG(LOG_DEBUG, "%s", matInfo.c_str());
 }
@@ -75,12 +75,12 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         std::string simple = "simple-pipeline";
         if (simp)
         {
-            GetRSRoot_DX11_Singleton()->PipelinesManager()->
+            getRSDX11RootInstance()->getPipelinesManager()->
                 SetPipeline(basic);
         }
         else
         {
-            GetRSRoot_DX11_Singleton()->PipelinesManager()->
+            getRSDX11RootInstance()->getPipelinesManager()->
                 SetPipeline(simple);
         }
         simp = !simp;
@@ -210,34 +210,34 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
     switch (g_EditingMatTerm)
     {
     case MAT_TYPE::SUBSURFACE:
-        editValue = &g_Material->mSubSurface;
+        editValue = &g_Material->SubSurface;
         break;
     case MAT_TYPE::METALLIC:
-        editValue = &g_Material->mMetallic;
+        editValue = &g_Material->Metallic;
         break;
     case MAT_TYPE::SPECULAR:
-        editValue = &g_Material->mSpecular;
+        editValue = &g_Material->Specular;
         break;
     case MAT_TYPE::SPECULARTINT:
-        editValue = &g_Material->mSpecularTint;
+        editValue = &g_Material->SpecularTint;
         break;
     case MAT_TYPE::ROUGHNESS:
-        editValue = &g_Material->mRoughness;
+        editValue = &g_Material->Roughness;
         break;
     case MAT_TYPE::ANISOTROPIC:
-        editValue = &g_Material->mAnisotropic;
+        editValue = &g_Material->Anisotropic;
         break;
     case MAT_TYPE::SHEEN:
-        editValue = &g_Material->mSheen;
+        editValue = &g_Material->Sheen;
         break;
     case MAT_TYPE::SHEENTINT:
-        editValue = &g_Material->mSheenTint;
+        editValue = &g_Material->SheenTint;
         break;
     case MAT_TYPE::CLEARCOAT:
-        editValue = &g_Material->mClearcoat;
+        editValue = &g_Material->Clearcoat;
         break;
     case MAT_TYPE::CLEARCOATGLOSS:
-        editValue = &g_Material->mClearcoatGloss;
+        editValue = &g_Material->ClearcoatGloss;
         break;
     }
     assert(editValue);
@@ -245,17 +245,17 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
     {
         *editValue += deltatime / 1000.f;
         if (*editValue > 1.f) { *editValue = 1.f; }
-        GetRSRoot_DX11_Singleton()->StaticResources()->MapMaterialData();
+        getRSDX11RootInstance()->getStaticResources()->MapMaterialData();
     }
     if (input::isKeyDownInSingle(KB_LEFT))
     {
         *editValue -= deltatime / 1000.f;
         if (*editValue < 0.f) { *editValue = 0.f; }
-        GetRSRoot_DX11_Singleton()->StaticResources()->MapMaterialData();
+        getRSDX11RootInstance()->getStaticResources()->MapMaterialData();
     }
 
     float& factor = g_MatBallMesh->mInstanceMap.begin()->
-        second.mMaterialData.mInterpolateFactor;
+        second.MaterialData.InterpolateFactor;
     if (input::isKeyDownInSingle(KB_COMMA))
     {
         factor -= deltatime / 1000.f;
@@ -280,7 +280,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 bool MatEditorInit(AInteractComponent* _aitc)
 {
     std::string basic = "light-pipeline";
-    GetRSRoot_DX11_Singleton()->PipelinesManager()->SetPipeline(basic);
+    getRSDX11RootInstance()->getPipelinesManager()->SetPipeline(basic);
 
     g_PointLightAtc = _aitc->GetActorObject("point-light-actor")->
         GetComponent<ATransformComponent>();
@@ -294,7 +294,7 @@ bool MatEditorInit(AInteractComponent* _aitc)
         GetSubMeshIfExisted("mat-ball0"));
     if (!g_MatBallMesh) { return false; }
 
-    g_Material = GetRSRoot_DX11_Singleton()->StaticResources()->
+    g_Material = getRSDX11RootInstance()->getStaticResources()->
         GetMaterialDataPtrForTest();
     if (!g_Material) { return false; }
 

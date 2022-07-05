@@ -35,7 +35,7 @@ bool RenderSystem::Init()
     {
         mRenderSystemRoot = new RSRoot_DX11();
         if (!mRenderSystemRoot->
-            StartUp(window::getWindowPtr()->getWndHandle()))
+            startUp(window::getWindowPtr()->getWndHandle()))
         {
             return false;
         }
@@ -43,24 +43,24 @@ bool RenderSystem::Init()
         std::string name = "temp-cam";
         CAM_INFO ci = {};
         ci.mType = LENS_TYPE::PERSPECTIVE;
-        ci.mPosition = { 0.f,0.f,0.f };
-        ci.mLookAt = { 0.f,0.f,1.f };
-        ci.mUpVec = { 0.f,1.f,0.f };
-        ci.mNearFarZ = { 1.f,800.f };
-        ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
-        ci.mOWidthAndHeight = { 12.8f,7.2f };
-        mRenderSystemRoot->CamerasContainer()->CreateRSCamera(name, &ci);
+        ci.Position = { 0.f,0.f,0.f };
+        ci.LookAtVector = { 0.f,0.f,1.f };
+        ci.UpVector = { 0.f,1.f,0.f };
+        ci.NearFarZ = { 1.f,800.f };
+        ci.PerspFovYRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
+        ci.OrthoWidthHeight = { 12.8f,7.2f };
+        mRenderSystemRoot->getCamerasContainer()->CreateRSCamera(name, &ci);
 
         name = "temp-ui-cam";
         ci = {};
         ci.mType = LENS_TYPE::ORTHOGRAPHIC;
-        ci.mPosition = { 0.f,0.f,0.f };
-        ci.mLookAt = { 0.f,0.f,1.f };
-        ci.mUpVec = { 0.f,1.f,0.f };
-        ci.mNearFarZ = { 1.f,100.f };
-        ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
-        ci.mOWidthAndHeight = { 1280.f,720.f };
-        mRenderSystemRoot->CamerasContainer()->CreateRSCamera(name, &ci);
+        ci.Position = { 0.f,0.f,0.f };
+        ci.LookAtVector = { 0.f,0.f,1.f };
+        ci.UpVector = { 0.f,1.f,0.f };
+        ci.NearFarZ = { 1.f,100.f };
+        ci.PerspFovYRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
+        ci.OrthoWidthHeight = { 1280.f,720.f };
+        mRenderSystemRoot->getCamerasContainer()->CreateRSCamera(name, &ci);
 
         if (!CreateBasicPipeline()) { return false; }
     }
@@ -77,14 +77,14 @@ bool RenderSystem::Init()
     mSpecTex = GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetIBLSpecular();
 
-    GetRSRoot_DX11_Singleton()->ParticlesContainer()->ResetRSParticleSystem();
+    getRSDX11RootInstance()->getParticlesContainer()->ResetRSParticleSystem();
 
     return true;
 }
 
 void RenderSystem::Run(Timer& _timer)
 {
-    mRenderSystemRoot = GetRSRoot_DX11_Singleton();
+    mRenderSystemRoot = getRSDX11RootInstance();
 #ifdef _DEBUG
     assert(mRenderSystemRoot);
 #endif // _DEBUG
@@ -108,7 +108,7 @@ void RenderSystem::Run(Timer& _timer)
             mesh.second.mBonesVector.emplace_back(bone.second);
         }
 
-        auto drawCallPool = mRenderSystemRoot->DrawCallsPool();
+        auto drawCallPool = mRenderSystemRoot->getDrawCallsPool();
         DRAWCALL_TYPE dType = DRAWCALL_TYPE::MAX;
         MESH_TYPE mType = mesh.second.mMeshType;
         switch (mType)
@@ -121,22 +121,22 @@ void RenderSystem::Run(Timer& _timer)
         }
 
         drawCall = {};
-        drawCall.mMeshData.mLayout = mesh.second.mMeshData.mLayout;
-        drawCall.mMeshData.mTopologyType = mesh.second.mMeshData.mTopologyType;
-        drawCall.mMeshData.mVertexBuffer = mesh.second.mMeshData.mVertexBuffer;
-        drawCall.mMeshData.mIndexBuffer = mesh.second.mMeshData.mIndexBuffer;
-        drawCall.mMeshData.mIndexCount = mesh.second.mMeshData.mIndexCount;
-        drawCall.mInstanceData.mDataPtr = &(mesh.second.mInstanceVector);
-        drawCall.mInstanceData.mBonesDataPtr = &(mesh.second.mBonesVector);
-        auto texSize = mesh.second.mMeshData.mTextures.size();
-        auto& texArray = mesh.second.mMeshData.mTextures;
+        drawCall.MeshData.InputLayout = mesh.second.mMeshData.InputLayout;
+        drawCall.MeshData.TopologyType = mesh.second.mMeshData.TopologyType;
+        drawCall.MeshData.VertexBuffer = mesh.second.mMeshData.VertexBuffer;
+        drawCall.MeshData.IndexBuffer = mesh.second.mMeshData.IndexBuffer;
+        drawCall.MeshData.IndexSize = mesh.second.mMeshData.IndexSize;
+        drawCall.InstanceData.DataArrayPtr = &(mesh.second.mInstanceVector);
+        drawCall.InstanceData.BonesArrayPtr = &(mesh.second.mBonesVector);
+        auto texSize = mesh.second.mMeshData.Textures.size();
+        auto& texArray = mesh.second.mMeshData.Textures;
         for (size_t i = 0; i < texSize; i++)
         {
             if (texArray[i] != "")
             {
-                drawCall.mTextureDatas[i].mUse = true;
-                drawCall.mTextureDatas[i].mSrv = mRenderSystemRoot->
-                    ResourceManager()->GetMeshSrv(texArray[i]);
+                drawCall.TextureData[i].EnabledFlag = true;
+                drawCall.TextureData[i].Srv = mRenderSystemRoot->
+                    getResourceManager()->GetMeshSrv(texArray[i]);
             }
         }
 
@@ -149,26 +149,26 @@ void RenderSystem::Run(Timer& _timer)
     }
     if (hasBtnSelect)
     {
-        mRenderSystemRoot->DrawCallsPool()->AddDrawCallToPipe(
+        mRenderSystemRoot->getDrawCallsPool()->AddDrawCallToPipe(
             DRAWCALL_TYPE::UI_SPRITE, btnSelectFlg);
     }
-    mRenderSystemRoot->LightsContainer()->UploadLightBloomDrawCall();
+    mRenderSystemRoot->getLightsContainer()->UploadLightBloomDrawCall();
 
-    mRenderSystemRoot->LightsContainer()->ForceCurrentAmbientLight(
+    mRenderSystemRoot->getLightsContainer()->ForceCurrentAmbientLight(
         GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetCurrentAmbientFactor());
 
     SetPipelineIBLTextures(mEnvTex, mDiffTex, mSpecTex);
     SetPipelineDeltaTime(_timer.FloatDeltaTime());
 
-    GetRSRoot_DX11_Singleton()->PipelinesManager()->ProcessNextPipeline();
-    mRenderSystemRoot->PipelinesManager()->ExecuateCurrentPipeline();
-    mRenderSystemRoot->Devices()->PresentSwapChain();
-    mRenderSystemRoot->DrawCallsPool()->ClearAllDrawCallsInPipes();
+    getRSDX11RootInstance()->getPipelinesManager()->ProcessNextPipeline();
+    mRenderSystemRoot->getPipelinesManager()->ExecuateCurrentPipeline();
+    mRenderSystemRoot->getDevices()->PresentSwapChain();
+    mRenderSystemRoot->getDrawCallsPool()->ClearAllDrawCallsInPipes();
 }
 
 void RenderSystem::Destory()
 {
-    mRenderSystemRoot->CleanAndStop();
+    mRenderSystemRoot->cleanAndStop();
     delete mRenderSystemRoot;
 }

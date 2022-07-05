@@ -8,55 +8,22 @@
 //---------------------------------------------------------------
 
 #include "RSPass_Base.h"
-#include "RSRoot_DX11.h"
+
 #include "RSDevices.h"
+#include "RSRoot_DX11.h"
 
-RSPass_Base::RSPass_Base(std::string& _name, PASS_TYPE _type,
-    class RSRoot_DX11* _root) :
-    mName(_name), mPassType(_type),
-    mExecuateOrderInTopic(RS_INVALID_ORDER),
-    mDevice(_root->Devices()->GetDevice()),
-    mSTContext(_root->Devices()->GetSTContext()),
-    mMTContext(nullptr), mHasBeenInited(false)
-{
+RSPass_Base::RSPass_Base(const std::string &Name,
+                         PASS_TYPE Type,
+                         RSRoot_DX11 *RootPtr)
+    : PassName(Name), PassType(Type), ExecuateOrderInTopic(RS_INVALID_ORDER),
+      Device(RootPtr->getDevices()->GetDevice()),
+      STContext(RootPtr->getDevices()->GetSTContext()), MTContext(nullptr),
+      HasBeenInited(false) {}
 
-}
+RSPass_Base::RSPass_Base(const RSPass_Base &_source)
+    : PassName(_source.PassName), PassType(_source.PassType),
+      ExecuateOrderInTopic(_source.ExecuateOrderInTopic),
+      Device(_source.Device), STContext(_source.STContext),
+      MTContext(_source.MTContext), HasBeenInited(_source.HasBeenInited) {}
 
-RSPass_Base::RSPass_Base(const RSPass_Base& _source) :
-    mName(_source.mName), mPassType(_source.mPassType),
-    mExecuateOrderInTopic(_source.mExecuateOrderInTopic),
-    mDevice(_source.mDevice), mSTContext(_source.mSTContext),
-    mMTContext(_source.mMTContext), mHasBeenInited(_source.mHasBeenInited)
-{
-
-}
-
-RSPass_Base::~RSPass_Base()
-{
-
-}
-
-const std::string& RSPass_Base::GetPassName() const
-{
-    return mName;
-}
-
-PASS_TYPE RSPass_Base::GetPassType() const
-{
-    return mPassType;
-}
-
-void RSPass_Base::SetExecuateOrder(UINT _order)
-{
-    mExecuateOrderInTopic = _order;
-}
-
-UINT RSPass_Base::GetExecuateOrder() const
-{
-    return mExecuateOrderInTopic;
-}
-
-void RSPass_Base::SetMTContext(ID3D11DeviceContext* _mtContext)
-{
-    mMTContext = _mtContext;
-}
+RSPass_Base::~RSPass_Base() {}

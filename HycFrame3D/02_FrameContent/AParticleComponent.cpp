@@ -39,14 +39,14 @@ void AParticleComponent::Update(Timer& _timer)
 void AParticleComponent::Destory()
 {
     std::string name = GetCompName();
-    GetRSRoot_DX11_Singleton()->ParticlesContainer()->
+    getRSDX11RootInstance()->getParticlesContainer()->
         DeleteRSParticleEmitter(name);
 }
 
 void AParticleComponent::CreateEmitter(PARTICLE_EMITTER_INFO* _emitterInfo)
 {
     std::string name = GetCompName();
-    mRSParticleEmitterPtr = GetRSRoot_DX11_Singleton()->ParticlesContainer()->
+    mRSParticleEmitterPtr = getRSDX11RootInstance()->getParticlesContainer()->
         CreateRSParticleEmitter(name, _emitterInfo);
 }
 

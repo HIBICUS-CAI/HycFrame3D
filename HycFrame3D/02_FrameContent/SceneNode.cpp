@@ -23,8 +23,8 @@ SceneNode::SceneNode(std::string&& _sceneName, SceneManager* _sceneManager) :
     if (_sceneName != "temp-loading-scene")
     {
         std::string cam = "temp-cam";
-        mCameraAmbientInfo.mRSCameraPtr = GetRSRoot_DX11_Singleton()->
-            CamerasContainer()->GetRSCamera(cam);
+        mCameraAmbientInfo.mRSCameraPtr = getRSDX11RootInstance()->
+            getCamerasContainer()->GetRSCamera(cam);
         bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
             mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
         assert(new_scene_fail);
@@ -45,8 +45,8 @@ SceneNode::SceneNode(std::string& _sceneName, SceneManager* _sceneManager) :
     if (_sceneName != "temp-loading-scene")
     {
         std::string cam = "temp-cam";
-        mCameraAmbientInfo.mRSCameraPtr = GetRSRoot_DX11_Singleton()->
-            CamerasContainer()->GetRSCamera(cam);
+        mCameraAmbientInfo.mRSCameraPtr = getRSDX11RootInstance()->
+            getCamerasContainer()->GetRSCamera(cam);
         bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
             mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
         assert(new_scene_fail);
@@ -124,7 +124,7 @@ void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string 
         wstr = std::wstring(_env.begin(), _env.end());
         wstr = L".\\Assets\\Textures\\" + wstr;
         hr = DirectX::CreateDDSTextureFromFile(
-            GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->GetDevice(),
             wstr.c_str(), nullptr, &srv);
         assert(!FAILED(hr));
         (void)hr;
@@ -136,7 +136,7 @@ void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string 
         wstr = std::wstring(_diff.begin(), _diff.end());
         wstr = L".\\Assets\\Textures\\" + wstr;
         hr = DirectX::CreateDDSTextureFromFile(
-            GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->GetDevice(),
             wstr.c_str(), nullptr, &srv);
         assert(!FAILED(hr));
         (void)hr;
@@ -148,7 +148,7 @@ void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string 
         wstr = std::wstring(_spc.begin(), _spc.end());
         wstr = L".\\Assets\\Textures\\" + wstr;
         hr = DirectX::CreateDDSTextureFromFile(
-            GetRSRoot_DX11_Singleton()->Devices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->GetDevice(),
             wstr.c_str(), nullptr, &srv);
         assert(!FAILED(hr));
         (void)hr;

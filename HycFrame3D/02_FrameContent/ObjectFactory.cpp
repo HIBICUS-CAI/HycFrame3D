@@ -175,18 +175,18 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                     jsonPath + "/material-info/minor-material");
                 JsonNode factorNode = getJsonNode(_json,
                     jsonPath + "/material-info/interpolate-factor");
-                auto staticResPtr = GetRSRoot_DX11_Singleton()->
-                    StaticResources();
+                auto staticResPtr = getRSDX11RootInstance()->
+                    getStaticResources();
 
                 assert(staticResPtr && majorNode && minorNode && factorNode);
 
                 std::string majName = majorNode->GetString();
                 std::string minName = minorNode->GetString();
-                matInfo.mMajorMaterialID = staticResPtr->
+                matInfo.MajorMaterialID = staticResPtr->
                     GetStaticMaterialIndex(majName);
-                matInfo.mMinorMaterialID = staticResPtr->
+                matInfo.MinorMaterialID = staticResPtr->
                     GetStaticMaterialIndex(minName);
-                matInfo.mInterpolateFactor = factorNode->GetFloat();
+                matInfo.InterpolateFactor = factorNode->GetFloat();
             }
             else
             {
@@ -273,7 +273,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                     jsonPath + "/load-info/b-size/2")->GetFloat();
                 UINT divide = getJsonNode(_json,
                     jsonPath + "/load-info/b-divide")->GetUint();
-                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                meshData = getRSDX11RootInstance()->getMeshHelper()->
                     GeoGenerate()->CreateBox(width, height, depth, divide,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         getJsonNode(_json,
@@ -287,7 +287,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                     jsonPath + "/load-info/s-slice-stack-count/0")->GetUint();
                 UINT stack = getJsonNode(_json,
                     jsonPath + "/load-info/s-slice-stack-count/1")->GetUint();
-                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                meshData = getRSDX11RootInstance()->getMeshHelper()->
                     GeoGenerate()->CreateSphere(radius, slice, stack,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         getJsonNode(_json,
@@ -299,7 +299,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                     jsonPath + "/load-info/gs-radius")->GetFloat();
                 UINT divide = getJsonNode(_json,
                     jsonPath + "/load-info/gs-divide")->GetUint();
-                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                meshData = getRSDX11RootInstance()->getMeshHelper()->
                     GeoGenerate()->CreateGeometrySphere(radius, divide,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         getJsonNode(_json,
@@ -317,7 +317,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                     jsonPath + "/load-info/c-slice-stack-count/0")->GetUint();
                 UINT stack = getJsonNode(_json,
                     jsonPath + "/load-info/c-slice-stack-count/1")->GetUint();
-                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                meshData = getRSDX11RootInstance()->getMeshHelper()->
                     GeoGenerate()->CreateCylinder(bottomRadius, topRadius,
                         height, slice, stack, LAYOUT_TYPE::NORMAL_TANGENT_TEX,
                         false, {},
@@ -334,7 +334,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                     jsonPath + "/load-info/g-row-col-count/0")->GetUint();
                 UINT col = getJsonNode(_json,
                     jsonPath + "/load-info/g-row-col-count/1")->GetUint();
-                meshData = GetRSRoot_DX11_Singleton()->MeshHelper()->
+                meshData = getRSDX11RootInstance()->getMeshHelper()->
                     GeoGenerate()->CreateGrid(width, depth, row, col,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         getJsonNode(_json,
@@ -347,7 +347,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                 return;
             }
 
-            meshData.mMaterial = matInfo;
+            meshData.Material = matInfo;
 
             if (forceDiffuse != "")
             {
@@ -375,11 +375,11 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                     MESH_TEXTURE_TYPE::EMISSIVE);
             }
 
-            if (!meshData.mTextures.size())
+            if (!meshData.Textures.size())
             {
                 P_LOG(LOG_ERROR, "invlaid model without diffuse : %s\n",
                     meshName.c_str());
-                GetRSRoot_DX11_Singleton()->MeshHelper()->
+                getRSDX11RootInstance()->getMeshHelper()->
                     ReleaseSubMesh(meshData);
                 return;
             }
@@ -702,42 +702,42 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
 
         LIGHT_INFO li = {};
         CAM_INFO ci = {};
-        li.mType = lightType;
-        li.mPosition = { 0.f,0.f,0.f };
-        li.mWithShadow = shadowFlag;
-        li.mDirection.x = getJsonNode(_json,
+        li.Type = lightType;
+        li.Position = { 0.f,0.f,0.f };
+        li.ShadowFlag = shadowFlag;
+        li.Direction.x = getJsonNode(_json,
             _jsonPath + "/alc-direction/0")->GetFloat();
-        li.mDirection.y = getJsonNode(_json,
+        li.Direction.y = getJsonNode(_json,
             _jsonPath + "/alc-direction/1")->GetFloat();
-        li.mDirection.z = getJsonNode(_json,
+        li.Direction.z = getJsonNode(_json,
             _jsonPath + "/alc-direction/2")->GetFloat();
-        li.mTempIntensity = getJsonNode(_json,
+        li.Intensity = getJsonNode(_json,
             _jsonPath + "/alc-intensity")->GetFloat();
-        li.mAlbedo.x = getJsonNode(_json,
+        li.Albedo.x = getJsonNode(_json,
             _jsonPath + "/alc-albedo/0")->GetFloat();
-        li.mAlbedo.y = getJsonNode(_json,
+        li.Albedo.y = getJsonNode(_json,
             _jsonPath + "/alc-albedo/1")->GetFloat();
-        li.mAlbedo.z = getJsonNode(_json,
+        li.Albedo.z = getJsonNode(_json,
             _jsonPath + "/alc-albedo/2")->GetFloat();
-        li.mFalloffStart = getJsonNode(_json,
+        li.FalloffStart = getJsonNode(_json,
             _jsonPath + "/alc-fall-off-start-end/0")->GetFloat();
-        li.mFalloffEnd = getJsonNode(_json,
+        li.FalloffEnd = getJsonNode(_json,
             _jsonPath + "/alc-fall-off-start-end/1")->GetFloat();
-        li.mSpotPower = getJsonNode(_json,
+        li.SpotPower = getJsonNode(_json,
             _jsonPath + "/alc-spot-power")->GetFloat();
         if (getJsonNode(_json, _jsonPath + "/alc-cam-up-vec"))
         {
             ci.mType = LENS_TYPE::ORTHOGRAPHIC;
-            ci.mPosition = li.mPosition;
-            ci.mLookAt = li.mDirection;
-            ci.mNearFarZ = { 0.f,1000.f };
-            ci.mPFovyAndRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
-            ci.mOWidthAndHeight = { 128.f * 9.5f,72.f * 9.5f };
-            ci.mUpVec.x = getJsonNode(_json,
+            ci.Position = li.Position;
+            ci.LookAtVector = li.Direction;
+            ci.NearFarZ = { 0.f,1000.f };
+            ci.PerspFovYRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
+            ci.OrthoWidthHeight = { 128.f * 9.5f,72.f * 9.5f };
+            ci.UpVector.x = getJsonNode(_json,
                 _jsonPath + "/alc-cam-up-vec/0")->GetFloat();
-            ci.mUpVec.y = getJsonNode(_json,
+            ci.UpVector.y = getJsonNode(_json,
                 _jsonPath + "/alc-cam-up-vec/1")->GetFloat();
-            ci.mUpVec.z = getJsonNode(_json,
+            ci.UpVector.z = getJsonNode(_json,
                 _jsonPath + "/alc-cam-up-vec/2")->GetFloat();
         }
 
@@ -769,7 +769,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
 
         std::string ptcTexName = getJsonNode(_json,
             _jsonPath + "/apc-texture-name")->GetString();
-        PARTICLE_TEXTURE ptcTex = PARTICLE_TEXTURE::PARTICLE_TEXTURE_SIZE;
+        PARTICLE_TEXTURE ptcTex = PARTICLE_TEXTURE::SIZE;
         if (ptcTexName == "circle")
         {
             ptcTex = PARTICLE_TEXTURE::WHITE_CIRCLE;
@@ -850,19 +850,19 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             _jsonPath + "/apc-streak-flag")->GetBool();
 
         PARTICLE_EMITTER_INFO pei = {};
-        pei.mEmitNumPerSecond = emitPreSec;
-        pei.mVelocity = velocity;
-        pei.mPosVariance = posVariance;
-        pei.mVelVariance = velVariance;
-        pei.mAcceleration = acceleration;
-        pei.mParticleMass = mass;
-        pei.mLifeSpan = lifeSpan;
-        pei.mOffsetStartSize = startSize;
-        pei.mOffsetEndSize = endSize;
-        pei.mOffsetStartColor = startColor;
-        pei.mOffsetEndColor = endColor;
-        pei.mEnableStreak = streakFlg;
-        pei.mTextureID = ptcTex;
+        pei.EmitNumPerSecond = emitPreSec;
+        pei.Velocity = velocity;
+        pei.PosVariance = posVariance;
+        pei.VelVariance = velVariance;
+        pei.Acceleration = acceleration;
+        pei.ParticleMass = mass;
+        pei.LifeSpan = lifeSpan;
+        pei.StartSize = startSize;
+        pei.EndSize = endSize;
+        pei.StartColor = startColor;
+        pei.EndColor = endColor;
+        pei.StreakFlag = streakFlg;
+        pei.TextureID = ptcTex;
 
         apc.CreateEmitter(&pei);
 

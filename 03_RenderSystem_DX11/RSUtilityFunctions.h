@@ -2,16 +2,23 @@
 
 #include <vector>
 
-namespace Tool
-{
-    int Align(int _value, int _alignment);
+namespace rs_tool {
 
-    float Lerp(float _v1, float _v2, float _factor);
+int
+align(int Value, int Alignment);
 
-    float Clamp(float _v, float _min, float _max);
+float
+lerp(float V1, float V2, float Factor);
 
-    float RandomVariance(float median, float variance);
+float
+clamp(float V, float Min, float Max);
 
-    void CalcGaussWeight1D(uint16_t _kernelSize, float _sigma,
-        std::vector<float>& _outResult);
-}
+float
+randomVariance(float Median, float Variance);
+
+void
+calcGaussWeight1D(uint32_t KernelSize,
+                  float Sigma,
+                  std::vector<float> &OutResult);
+
+} // namespace rs_tool

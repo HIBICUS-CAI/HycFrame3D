@@ -12,220 +12,192 @@
 #pragma comment(lib, "dxguid.lib")
 
 #include "RSRoot_DX11.h"
+
+#include "RSCamerasContainer.h"
 #include "RSDevices.h"
-#include "RSPipelinesManager.h"
 #include "RSDrawCallsPool.h"
+#include "RSLightsContainer.h"
+#include "RSMeshHelper.h"
+#include "RSParticlesContainer.h"
+#include "RSPipelinesManager.h"
 #include "RSResourceManager.h"
 #include "RSStaticResources.h"
-#include "RSLightsContainer.h"
-#include "RSCamerasContainer.h"
-#include "RSParticlesContainer.h"
-#include "RSMeshHelper.h"
-#include <assert.h>
 
-static RSRoot_DX11* g_RSRoot_DX11_Singleton = nullptr;
+#include <cassert>
 
-RSRoot_DX11* GetRSRoot_DX11_Singleton()
-{
-    if (!g_RSRoot_DX11_Singleton)
-    {
-        bool rs_root_dx11_hasnt_been_built = false;
-        assert(rs_root_dx11_hasnt_been_built);
-        (void)rs_root_dx11_hasnt_been_built;
-    }
-    return g_RSRoot_DX11_Singleton;
+static RSRoot_DX11 *G_RSRoot_DX11_Instance = nullptr;
+
+RSRoot_DX11 *
+getRSDX11RootInstance() {
+  if (!G_RSRoot_DX11_Instance) {
+    assert(false && "rs_root_dx11_hasnt_been_built");
+  }
+  return G_RSRoot_DX11_Instance;
 }
 
-RSRoot_DX11::RSRoot_DX11() :
-    mDevicesPtr(nullptr), mPipelinesManagerPtr(nullptr),
-    mDrawCallsPoolPtr(nullptr), mResourceManagerPtr(nullptr),
-    mStaticResourcesPtr(nullptr), mCamerasContainerPtr(nullptr),
-    mLightsContainerPtr(nullptr), mParticlesContainerPtr(nullptr),
-    mMeshHelperPtr(nullptr)
-{
+RSRoot_DX11::RSRoot_DX11()
+    : DevicesPtr(nullptr), PipelinesManagerPtr(nullptr),
+      DrawCallsPoolPtr(nullptr), ResourceManagerPtr(nullptr),
+      StaticResourcesPtr(nullptr), CamerasContainerPtr(nullptr),
+      LightsContainerPtr(nullptr), ParticlesContainerPtr(nullptr),
+      MeshHelperPtr(nullptr) {}
 
+RSRoot_DX11::~RSRoot_DX11() {}
+
+bool
+RSRoot_DX11::startUp(HWND WndHandle) {
+  DevicesPtr = new RSDevices();
+  if (!DevicesPtr->StartUp(this, WndHandle)) {
+    return false;
+  }
+
+  PipelinesManagerPtr = new RSPipelinesManager();
+  if (!PipelinesManagerPtr->StartUp(this)) {
+    return false;
+  }
+
+  DrawCallsPoolPtr = new RSDrawCallsPool();
+  if (!DrawCallsPoolPtr->StartUp(this)) {
+    return false;
+  }
+
+  ResourceManagerPtr = new RSResourceManager();
+  if (!ResourceManagerPtr->StartUp(this)) {
+    return false;
+  }
+
+  StaticResourcesPtr = new RSStaticResources();
+  if (!StaticResourcesPtr->StartUp(this)) {
+    return false;
+  }
+
+  LightsContainerPtr = new RSLightsContainer();
+  if (!LightsContainerPtr->StartUp(this)) {
+    return false;
+  }
+
+  CamerasContainerPtr = new RSCamerasContainer();
+  if (!CamerasContainerPtr->StartUp(this)) {
+    return false;
+  }
+
+  ParticlesContainerPtr = new RSParticlesContainer();
+  if (!ParticlesContainerPtr->StartUp(this)) {
+    return false;
+  }
+
+  MeshHelperPtr = new RSMeshHelper();
+  if (!MeshHelperPtr->StartUp(this, ResourceManagerPtr)) {
+    return false;
+  }
+
+  if (G_RSRoot_DX11_Instance) {
+    assert(false && "rs_root_dx11_should_be_singleton");
+    return false;
+  }
+  G_RSRoot_DX11_Instance = this;
+
+  return true;
 }
 
-RSRoot_DX11::~RSRoot_DX11()
-{
+void
+RSRoot_DX11::cleanAndStop() {
+  if (PipelinesManagerPtr) {
+    PipelinesManagerPtr->CleanAndStop();
+    delete PipelinesManagerPtr;
+    PipelinesManagerPtr = nullptr;
+  }
 
+  if (MeshHelperPtr) {
+    MeshHelperPtr->CleanAndStop();
+    delete MeshHelperPtr;
+    MeshHelperPtr = nullptr;
+  }
+
+  if (CamerasContainerPtr) {
+    CamerasContainerPtr->CleanAndStop();
+    delete CamerasContainerPtr;
+    CamerasContainerPtr = nullptr;
+  }
+
+  if (LightsContainerPtr) {
+    LightsContainerPtr->CleanAndStop();
+    delete LightsContainerPtr;
+    LightsContainerPtr = nullptr;
+  }
+
+  if (ParticlesContainerPtr) {
+    ParticlesContainerPtr->CleanAndStop();
+    delete ParticlesContainerPtr;
+    ParticlesContainerPtr = nullptr;
+  }
+
+  if (StaticResourcesPtr) {
+    StaticResourcesPtr->CleanAndStop();
+    delete StaticResourcesPtr;
+    StaticResourcesPtr = nullptr;
+  }
+
+  if (ResourceManagerPtr) {
+    ResourceManagerPtr->CleanAndStop();
+    delete ResourceManagerPtr;
+    ResourceManagerPtr = nullptr;
+  }
+
+  if (DrawCallsPoolPtr) {
+    DrawCallsPoolPtr->CleanAndStop();
+    delete DrawCallsPoolPtr;
+    DrawCallsPoolPtr = nullptr;
+  }
+
+  if (DevicesPtr) {
+    DevicesPtr->CleanAndStop();
+    delete DevicesPtr;
+    DevicesPtr = nullptr;
+  }
 }
 
-bool RSRoot_DX11::StartUp(HWND _wndHandle)
-{
-    mDevicesPtr = new RSDevices();
-    if (!mDevicesPtr->StartUp(this, _wndHandle))
-    {
-        return false;
-    }
-
-    mPipelinesManagerPtr = new RSPipelinesManager();
-    if (!mPipelinesManagerPtr->StartUp(this))
-    {
-        return false;
-    }
-
-    mDrawCallsPoolPtr = new RSDrawCallsPool();
-    if (!mDrawCallsPoolPtr->StartUp(this))
-    {
-        return false;
-    }
-
-    mResourceManagerPtr = new RSResourceManager();
-    if (!mResourceManagerPtr->StartUp(this))
-    {
-        return false;
-    }
-
-    mStaticResourcesPtr = new RSStaticResources();
-    if (!mStaticResourcesPtr->StartUp(this))
-    {
-        return false;
-    }
-
-    mLightsContainerPtr = new RSLightsContainer();
-    if (!mLightsContainerPtr->StartUp(this))
-    {
-        return false;
-    }
-
-    mCamerasContainerPtr = new RSCamerasContainer();
-    if (!mCamerasContainerPtr->StartUp(this))
-    {
-        return false;
-    }
-
-    mParticlesContainerPtr = new RSParticlesContainer();
-    if (!mParticlesContainerPtr->StartUp(this))
-    {
-        return false;
-    }
-
-    mMeshHelperPtr = new RSMeshHelper();
-    if (!mMeshHelperPtr->StartUp(this, mResourceManagerPtr))
-    {
-        return false;
-    }
-
-    if (g_RSRoot_DX11_Singleton)
-    {
-        bool rs_root_dx11_should_be_singleton = false;
-        assert(rs_root_dx11_should_be_singleton);
-        (void)rs_root_dx11_should_be_singleton;
-        return false;
-    }
-    g_RSRoot_DX11_Singleton = this;
-
-    return true;
+RSDevices *
+RSRoot_DX11::getDevices() const {
+  return DevicesPtr;
 }
 
-void RSRoot_DX11::CleanAndStop()
-{
-    if (mPipelinesManagerPtr)
-    {
-        mPipelinesManagerPtr->CleanAndStop();
-        delete mPipelinesManagerPtr;
-        mPipelinesManagerPtr = nullptr;
-    }
-
-    if (mMeshHelperPtr)
-    {
-        mMeshHelperPtr->CleanAndStop();
-        delete mMeshHelperPtr;
-        mMeshHelperPtr = nullptr;
-    }
-
-    if (mCamerasContainerPtr)
-    {
-        mCamerasContainerPtr->CleanAndStop();
-        delete mCamerasContainerPtr;
-        mCamerasContainerPtr = nullptr;
-    }
-
-    if (mLightsContainerPtr)
-    {
-        mLightsContainerPtr->CleanAndStop();
-        delete mLightsContainerPtr;
-        mLightsContainerPtr = nullptr;
-    }
-
-    if (mParticlesContainerPtr)
-    {
-        mParticlesContainerPtr->CleanAndStop();
-        delete mParticlesContainerPtr;
-        mParticlesContainerPtr = nullptr;
-    }
-
-    if (mStaticResourcesPtr)
-    {
-        mStaticResourcesPtr->CleanAndStop();
-        delete mStaticResourcesPtr;
-        mStaticResourcesPtr = nullptr;
-    }
-
-    if (mResourceManagerPtr)
-    {
-        mResourceManagerPtr->CleanAndStop();
-        delete mResourceManagerPtr;
-        mResourceManagerPtr = nullptr;
-    }
-
-    if (mDrawCallsPoolPtr)
-    {
-        mDrawCallsPoolPtr->CleanAndStop();
-        delete mDrawCallsPoolPtr;
-        mDrawCallsPoolPtr = nullptr;
-    }
-
-    if (mDevicesPtr)
-    {
-        mDevicesPtr->CleanAndStop();
-        delete mDevicesPtr;
-        mDevicesPtr = nullptr;
-    }
+RSPipelinesManager *
+RSRoot_DX11::getPipelinesManager() const {
+  return PipelinesManagerPtr;
 }
 
-RSDevices* RSRoot_DX11::Devices() const
-{
-    return mDevicesPtr;
+RSDrawCallsPool *
+RSRoot_DX11::getDrawCallsPool() const {
+  return DrawCallsPoolPtr;
 }
 
-RSPipelinesManager* RSRoot_DX11::PipelinesManager() const
-{
-    return mPipelinesManagerPtr;
+RSResourceManager *
+RSRoot_DX11::getResourceManager() const {
+  return ResourceManagerPtr;
 }
 
-RSDrawCallsPool* RSRoot_DX11::DrawCallsPool() const
-{
-    return mDrawCallsPoolPtr;
+RSStaticResources *
+RSRoot_DX11::getStaticResources() const {
+  return StaticResourcesPtr;
 }
 
-RSResourceManager* RSRoot_DX11::ResourceManager() const
-{
-    return mResourceManagerPtr;
+RSCamerasContainer *
+RSRoot_DX11::getCamerasContainer() const {
+  return CamerasContainerPtr;
 }
 
-RSStaticResources* RSRoot_DX11::StaticResources() const
-{
-    return mStaticResourcesPtr;
+RSLightsContainer *
+RSRoot_DX11::getLightsContainer() const {
+  return LightsContainerPtr;
 }
 
-RSCamerasContainer* RSRoot_DX11::CamerasContainer() const
-{
-    return mCamerasContainerPtr;
+RSParticlesContainer *
+RSRoot_DX11::getParticlesContainer() const {
+  return ParticlesContainerPtr;
 }
 
-RSLightsContainer* RSRoot_DX11::LightsContainer() const
-{
-    return mLightsContainerPtr;
-}
-
-RSParticlesContainer* RSRoot_DX11::ParticlesContainer() const
-{
-    return mParticlesContainerPtr;
-}
-
-RSMeshHelper* RSRoot_DX11::MeshHelper() const
-{
-    return mMeshHelperPtr;
+RSMeshHelper *
+RSRoot_DX11::getMeshHelper() const {
+  return MeshHelperPtr;
 }

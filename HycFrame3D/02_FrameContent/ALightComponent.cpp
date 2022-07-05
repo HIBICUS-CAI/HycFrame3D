@@ -59,14 +59,14 @@ void ALightComponent::Update(Timer& _timer)
 
 void ALightComponent::Destory()
 {
-    GetRSRoot_DX11_Singleton()->LightsContainer()->
+    getRSDX11RootInstance()->getLightsContainer()->
         DeleteRSLight(mLightName, true);
 }
 
 void ALightComponent::CreateLight()
 {
     mLightName = GetCompName();
-    mRSLightPtr = GetRSRoot_DX11_Singleton()->LightsContainer()->
+    mRSLightPtr = getRSDX11RootInstance()->getLightsContainer()->
         CreateRSLight(mLightName, &mLightInfoForInit);
 #ifdef _DEBUG
     assert(mRSLightPtr);
@@ -78,8 +78,8 @@ void ALightComponent::CreateLight()
             GetSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
         if (!mesh)
         {
-            RS_SUBMESH_DATA boxBloom = GetRSRoot_DX11_Singleton()->
-                MeshHelper()->GeoGenerate()->
+            RS_SUBMESH_DATA boxBloom = getRSDX11RootInstance()->
+                getMeshHelper()->GeoGenerate()->
                 CreateBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
             GetActorOwner()->GetSceneNode().GetAssetsPool()->InsertNewSubMesh(
                 BOX_BLOOM_MESH_NAME, boxBloom, MESH_TYPE::LIGHT);
@@ -91,7 +91,7 @@ void ALightComponent::CreateLight()
 
     if (mIsCamera)
     {
-        bool cam_create = GetRSRoot_DX11_Singleton()->LightsContainer()->
+        bool cam_create = getRSDX11RootInstance()->getLightsContainer()->
             CreateLightCameraFor(mLightName, &mLightCamInfoForInit);
 #ifdef _DEBUG
         assert(cam_create);

@@ -209,97 +209,97 @@ bool CreateBasicPipeline()
         }
     }
 
-    g_Root = GetRSRoot_DX11_Singleton();
+    g_Root = getRSDX11RootInstance();
     std::string name = "";
 
     name = "mrt-pass";
     RSPass_MRT* mrt = new RSPass_MRT(name, PASS_TYPE::RENDER, g_Root);
-    mrt->SetExecuateOrder(1);
+    mrt->setExecuateOrder(1);
 
     name = "mrt-topic";
     RSTopic* mrt_topic = new RSTopic(name);
-    mrt_topic->StartTopicAssembly();
-    mrt_topic->InsertPass(mrt);
-    mrt_topic->SetExecuateOrder(1);
-    mrt_topic->FinishTopicAssembly();
+    mrt_topic->startAssembly();
+    mrt_topic->insertPass(mrt);
+    mrt_topic->setExecuateOrder(1);
+    mrt_topic->finishAssembly();
 
     name = "basic-ssao";
     RSPass_Ssao* ssao = new RSPass_Ssao(
         name, PASS_TYPE::RENDER, g_Root);
-    ssao->SetExecuateOrder(2);
+    ssao->setExecuateOrder(2);
 
     name = "kbblur-ssao";
     RSPass_KBBlur* kbblur = new RSPass_KBBlur(
         name, PASS_TYPE::COMPUTE, g_Root);
-    kbblur->SetExecuateOrder(3);
+    kbblur->setExecuateOrder(3);
 
     name = "ssao-topic";
     RSTopic* ssao_topic = new RSTopic(name);
-    ssao_topic->StartTopicAssembly();
-    ssao_topic->InsertPass(ssao);
-    ssao_topic->InsertPass(kbblur);
-    ssao_topic->SetExecuateOrder(2);
-    ssao_topic->FinishTopicAssembly();
+    ssao_topic->startAssembly();
+    ssao_topic->insertPass(ssao);
+    ssao_topic->insertPass(kbblur);
+    ssao_topic->setExecuateOrder(2);
+    ssao_topic->finishAssembly();
 
     name = "basic-shadowmap";
     RSPass_Shadow* shadow = new RSPass_Shadow(
         name, PASS_TYPE::RENDER, g_Root);
-    shadow->SetExecuateOrder(1);
+    shadow->setExecuateOrder(1);
 
     name = "shadowmap-topic";
     RSTopic* shadow_topic = new RSTopic(name);
-    shadow_topic->StartTopicAssembly();
-    shadow_topic->InsertPass(shadow);
-    shadow_topic->SetExecuateOrder(3);
-    shadow_topic->FinishTopicAssembly();
+    shadow_topic->startAssembly();
+    shadow_topic->insertPass(shadow);
+    shadow_topic->setExecuateOrder(3);
+    shadow_topic->finishAssembly();
 
     name = "defered-light";
     RSPass_Defered* defered = new RSPass_Defered(
         name, PASS_TYPE::RENDER, g_Root);
-    defered->SetExecuateOrder(1);
+    defered->setExecuateOrder(1);
 
     name = "defered-light-topic";
     RSTopic* defered_topic = new RSTopic(name);
-    defered_topic->StartTopicAssembly();
-    defered_topic->InsertPass(defered);
-    defered_topic->SetExecuateOrder(4);
-    defered_topic->FinishTopicAssembly();
+    defered_topic->startAssembly();
+    defered_topic->insertPass(defered);
+    defered_topic->setExecuateOrder(4);
+    defered_topic->finishAssembly();
 
     name = "sky-skysphere";
     RSPass_SkyShpere* skysphere = new RSPass_SkyShpere(
         name, PASS_TYPE::RENDER, g_Root);
-    skysphere->SetExecuateOrder(1);
+    skysphere->setExecuateOrder(1);
 
     name = "skysphere-topic";
     RSTopic* sky_topic = new RSTopic(name);
-    sky_topic->StartTopicAssembly();
-    sky_topic->InsertPass(skysphere);
-    sky_topic->SetExecuateOrder(5);
-    sky_topic->FinishTopicAssembly();
+    sky_topic->startAssembly();
+    sky_topic->insertPass(skysphere);
+    sky_topic->setExecuateOrder(5);
+    sky_topic->finishAssembly();
 
     name = "billboard-pass";
     RSPass_Billboard* billboard = new RSPass_Billboard(
         name, PASS_TYPE::RENDER, g_Root);
-    billboard->SetExecuateOrder(1);
+    billboard->setExecuateOrder(1);
 
     name = "billboard-topic";
     RSTopic* billboard_topic = new RSTopic(name);
-    billboard_topic->StartTopicAssembly();
-    billboard_topic->InsertPass(billboard);
-    billboard_topic->SetExecuateOrder(6);
-    billboard_topic->FinishTopicAssembly();
+    billboard_topic->startAssembly();
+    billboard_topic->insertPass(billboard);
+    billboard_topic->setExecuateOrder(6);
+    billboard_topic->finishAssembly();
 
     name = "bloomdraw-pass";
     RSPass_Bloom* bloomdraw = new RSPass_Bloom(
         name, PASS_TYPE::RENDER, g_Root);
-    bloomdraw->SetExecuateOrder(1);
+    bloomdraw->setExecuateOrder(1);
 
     name = "bloom-topic";
     RSTopic* bloom_topic = new RSTopic(name);
-    bloom_topic->StartTopicAssembly();
-    bloom_topic->InsertPass(bloomdraw);
-    bloom_topic->SetExecuateOrder(7);
-    bloom_topic->FinishTopicAssembly();
+    bloom_topic->startAssembly();
+    bloom_topic->insertPass(bloomdraw);
+    bloom_topic->setExecuateOrder(7);
+    bloom_topic->finishAssembly();
 
     RSTopic* particle_topic = nullptr;
     if (!g_RenderEffectConfig.mParticleOff)
@@ -307,187 +307,187 @@ bool CreateBasicPipeline()
         name = "particle-setup-pass";
         RSPass_PriticleSetUp* ptcsetup = new RSPass_PriticleSetUp(
             name, PASS_TYPE::COMPUTE, g_Root);
-        ptcsetup->SetExecuateOrder(1);
+        ptcsetup->setExecuateOrder(1);
 
         name = "particle-emit-simulate-pass";
         RSPass_PriticleEmitSimulate* ptcemitsimul = new RSPass_PriticleEmitSimulate(
             name, PASS_TYPE::COMPUTE, g_Root);
-        ptcemitsimul->SetExecuateOrder(2);
+        ptcemitsimul->setExecuateOrder(2);
 
         name = "particle-tile-render-pass";
         RSPass_PriticleTileRender* ptctile = new RSPass_PriticleTileRender(
             name, PASS_TYPE::COMPUTE, g_Root);
-        ptctile->SetExecuateOrder(3);
+        ptctile->setExecuateOrder(3);
 
         name = "paricle-topic";
         particle_topic = new RSTopic(name);
-        particle_topic->StartTopicAssembly();
-        particle_topic->InsertPass(ptcsetup);
-        particle_topic->InsertPass(ptcemitsimul);
-        particle_topic->InsertPass(ptctile);
-        particle_topic->SetExecuateOrder(8);
-        particle_topic->FinishTopicAssembly();
+        particle_topic->startAssembly();
+        particle_topic->insertPass(ptcsetup);
+        particle_topic->insertPass(ptcemitsimul);
+        particle_topic->insertPass(ptctile);
+        particle_topic->setExecuateOrder(8);
+        particle_topic->finishAssembly();
     }
 
     name = "sprite-ui";
     RSPass_Sprite* sprite = new RSPass_Sprite(
         name, PASS_TYPE::RENDER, g_Root);
-    sprite->SetExecuateOrder(1);
+    sprite->setExecuateOrder(1);
 
     name = "sprite-topic";
     RSTopic* sprite_topic = new RSTopic(name);
-    sprite_topic->StartTopicAssembly();
-    sprite_topic->InsertPass(sprite);
-    sprite_topic->SetExecuateOrder(10);
-    sprite_topic->FinishTopicAssembly();
+    sprite_topic->startAssembly();
+    sprite_topic->insertPass(sprite);
+    sprite_topic->setExecuateOrder(10);
+    sprite_topic->finishAssembly();
 
     name = "tonemapping-pass";
     RSPass_Tonemapping* tonemap = new RSPass_Tonemapping(
         name, PASS_TYPE::COMPUTE, g_Root);
-    tonemap->SetExecuateOrder(2);
+    tonemap->setExecuateOrder(2);
 
     RSPass_BloomHdr* bloomhdr = nullptr;
     if (!g_RenderEffectConfig.mBloomOff)
     {
         name = "bloom-hdr-pass";
         bloomhdr = new RSPass_BloomHdr(name, PASS_TYPE::COMPUTE, g_Root);
-        bloomhdr->SetExecuateOrder(1);
+        bloomhdr->setExecuateOrder(1);
     }
 
     name = "fxaa-pass";
     RSPass_FXAA* fxaa = new RSPass_FXAA(name, PASS_TYPE::COMPUTE, g_Root);
-    fxaa->SetExecuateOrder(3);
+    fxaa->setExecuateOrder(3);
 
     name = "to-swapchain-pass";
     RSPass_ToSwapChain* toswap = new RSPass_ToSwapChain(
         name, PASS_TYPE::RENDER, g_Root);
-    toswap->SetExecuateOrder(4);
+    toswap->setExecuateOrder(4);
 
     name = "post-processing-topic";
     RSTopic* post_procsssing_topic = new RSTopic(name);
-    post_procsssing_topic->StartTopicAssembly();
-    post_procsssing_topic->InsertPass(tonemap);
+    post_procsssing_topic->startAssembly();
+    post_procsssing_topic->insertPass(tonemap);
     if (!g_RenderEffectConfig.mFXAAOff)
     {
-        post_procsssing_topic->InsertPass(fxaa);
+        post_procsssing_topic->insertPass(fxaa);
     }
-    post_procsssing_topic->InsertPass(toswap);
+    post_procsssing_topic->insertPass(toswap);
     if (!g_RenderEffectConfig.mBloomOff)
     {
-        post_procsssing_topic->InsertPass(bloomhdr);
+        post_procsssing_topic->insertPass(bloomhdr);
     }
-    post_procsssing_topic->SetExecuateOrder(9);
-    post_procsssing_topic->FinishTopicAssembly();
+    post_procsssing_topic->setExecuateOrder(9);
+    post_procsssing_topic->finishAssembly();
 
     name = "light-pipeline";
     g_BasicPipeline = new RSPipeline(name);
-    g_BasicPipeline->StartPipelineAssembly();
-    g_BasicPipeline->InsertTopic(mrt_topic);
-    g_BasicPipeline->InsertTopic(ssao_topic);
-    g_BasicPipeline->InsertTopic(shadow_topic);
-    g_BasicPipeline->InsertTopic(defered_topic);
-    g_BasicPipeline->InsertTopic(sky_topic);
-    g_BasicPipeline->InsertTopic(bloom_topic);
-    g_BasicPipeline->InsertTopic(billboard_topic);
+    g_BasicPipeline->startAssembly();
+    g_BasicPipeline->insertTopic(mrt_topic);
+    g_BasicPipeline->insertTopic(ssao_topic);
+    g_BasicPipeline->insertTopic(shadow_topic);
+    g_BasicPipeline->insertTopic(defered_topic);
+    g_BasicPipeline->insertTopic(sky_topic);
+    g_BasicPipeline->insertTopic(bloom_topic);
+    g_BasicPipeline->insertTopic(billboard_topic);
     if (!g_RenderEffectConfig.mParticleOff)
     {
-        g_BasicPipeline->InsertTopic(particle_topic);
+        g_BasicPipeline->insertTopic(particle_topic);
     }
-    g_BasicPipeline->InsertTopic(post_procsssing_topic);
-    g_BasicPipeline->InsertTopic(sprite_topic);
-    g_BasicPipeline->FinishPipelineAssembly();
+    g_BasicPipeline->insertTopic(post_procsssing_topic);
+    g_BasicPipeline->insertTopic(sprite_topic);
+    g_BasicPipeline->finishAssembly();
 
-    if (!g_BasicPipeline->InitAllTopics(g_Root->Devices()))
+    if (!g_BasicPipeline->initAllTopics(g_Root->getDevices()))
     {
         return false;
     }
 
-    name = g_BasicPipeline->GetPipelineName();
-    g_Root->PipelinesManager()->AddPipeline(name, g_BasicPipeline);
-    g_Root->PipelinesManager()->SetPipeline(name);
-    g_Root->PipelinesManager()->ProcessNextPipeline();
+    name = g_BasicPipeline->getPipelineName();
+    g_Root->getPipelinesManager()->AddPipeline(name, g_BasicPipeline);
+    g_Root->getPipelinesManager()->SetPipeline(name);
+    g_Root->getPipelinesManager()->ProcessNextPipeline();
 
     name = "simp-mrt-pass";
-    RSPass_MRT* simp_mrt = mrt->ClonePass();
-    simp_mrt->SetExecuateOrder(1);
+    RSPass_MRT* simp_mrt = mrt->clonePass();
+    simp_mrt->setExecuateOrder(1);
 
     name = "simp-mrt-topic";
     RSTopic* simp_mrt_topic = new RSTopic(name);
-    simp_mrt_topic->StartTopicAssembly();
-    simp_mrt_topic->InsertPass(simp_mrt);
-    simp_mrt_topic->SetExecuateOrder(1);
-    simp_mrt_topic->FinishTopicAssembly();
+    simp_mrt_topic->startAssembly();
+    simp_mrt_topic->insertPass(simp_mrt);
+    simp_mrt_topic->setExecuateOrder(1);
+    simp_mrt_topic->finishAssembly();
 
     name = "simp-basic-ssao";
-    RSPass_Ssao* simp_ssao = ssao->ClonePass();
-    simp_ssao->SetExecuateOrder(1);
+    RSPass_Ssao* simp_ssao = ssao->clonePass();
+    simp_ssao->setExecuateOrder(1);
 
     name = "simp-ssao-topic";
     RSTopic* simp_ssao_topic = new RSTopic(name);
-    simp_ssao_topic->StartTopicAssembly();
-    simp_ssao_topic->InsertPass(simp_ssao);
-    simp_ssao_topic->SetExecuateOrder(2);
-    simp_ssao_topic->FinishTopicAssembly();
+    simp_ssao_topic->startAssembly();
+    simp_ssao_topic->insertPass(simp_ssao);
+    simp_ssao_topic->setExecuateOrder(2);
+    simp_ssao_topic->finishAssembly();
 
     name = "simp-lit-shadowmap";
     RSPass_SimpleLight* simp_lit = new RSPass_SimpleLight(
         name, PASS_TYPE::RENDER, g_Root);
-    simp_lit->SetExecuateOrder(1);
+    simp_lit->setExecuateOrder(1);
 
     name = "simp-lit-topic";
     RSTopic* simp_lit_topic = new RSTopic(name);
-    simp_lit_topic->StartTopicAssembly();
-    simp_lit_topic->InsertPass(simp_lit);
-    simp_lit_topic->SetExecuateOrder(3);
-    simp_lit_topic->FinishTopicAssembly();
+    simp_lit_topic->startAssembly();
+    simp_lit_topic->insertPass(simp_lit);
+    simp_lit_topic->setExecuateOrder(3);
+    simp_lit_topic->finishAssembly();
 
     name = "simp-billboard";
-    RSPass_Billboard* simp_bill = billboard->ClonePass();
-    simp_bill->SetExecuateOrder(1);
+    RSPass_Billboard* simp_bill = billboard->clonePass();
+    simp_bill->setExecuateOrder(1);
 
     name = "simp-billboard-topic";
     RSTopic* simp_bill_topic = new RSTopic(name);
-    simp_bill_topic->StartTopicAssembly();
-    simp_bill_topic->InsertPass(simp_bill);
-    simp_bill_topic->SetExecuateOrder(4);
-    simp_bill_topic->FinishTopicAssembly();
+    simp_bill_topic->startAssembly();
+    simp_bill_topic->insertPass(simp_bill);
+    simp_bill_topic->setExecuateOrder(4);
+    simp_bill_topic->finishAssembly();
 
     name = "simp-sprite-ui";
-    RSPass_Sprite* simp_sprite = sprite->ClonePass();
-    simp_sprite->SetExecuateOrder(1);
+    RSPass_Sprite* simp_sprite = sprite->clonePass();
+    simp_sprite->setExecuateOrder(1);
 
     name = "simp-sprite-topic";
     RSTopic* simp_sprite_topic = new RSTopic(name);
-    simp_sprite_topic->StartTopicAssembly();
-    simp_sprite_topic->InsertPass(simp_sprite);
-    simp_sprite_topic->SetExecuateOrder(5);
-    simp_sprite_topic->FinishTopicAssembly();
+    simp_sprite_topic->startAssembly();
+    simp_sprite_topic->insertPass(simp_sprite);
+    simp_sprite_topic->setExecuateOrder(5);
+    simp_sprite_topic->finishAssembly();
 
     name = "simple-pipeline";
     g_SimplePipeline = new RSPipeline(name);
-    g_SimplePipeline->StartPipelineAssembly();
-    g_SimplePipeline->InsertTopic(simp_mrt_topic);
-    g_SimplePipeline->InsertTopic(simp_ssao_topic);
-    g_SimplePipeline->InsertTopic(simp_lit_topic);
-    g_SimplePipeline->InsertTopic(simp_bill_topic);
-    g_SimplePipeline->InsertTopic(simp_sprite_topic);
-    g_SimplePipeline->FinishPipelineAssembly();
+    g_SimplePipeline->startAssembly();
+    g_SimplePipeline->insertTopic(simp_mrt_topic);
+    g_SimplePipeline->insertTopic(simp_ssao_topic);
+    g_SimplePipeline->insertTopic(simp_lit_topic);
+    g_SimplePipeline->insertTopic(simp_bill_topic);
+    g_SimplePipeline->insertTopic(simp_sprite_topic);
+    g_SimplePipeline->finishAssembly();
 
-    if (!g_SimplePipeline->InitAllTopics(g_Root->Devices()))
+    if (!g_SimplePipeline->initAllTopics(g_Root->getDevices()))
     {
         return false;
     }
 
-    name = g_SimplePipeline->GetPipelineName();
-    g_Root->PipelinesManager()->AddPipeline(name, g_SimplePipeline);
+    name = g_SimplePipeline->getPipelineName();
+    g_Root->getPipelinesManager()->AddPipeline(name, g_SimplePipeline);
     if (g_RenderEffectConfig.mSimplyLitOn)
     {
-        g_Root->PipelinesManager()->SetPipeline(name);
-        g_Root->PipelinesManager()->ProcessNextPipeline();
+        g_Root->getPipelinesManager()->SetPipeline(name);
+        g_Root->getPipelinesManager()->ProcessNextPipeline();
     }
 
-    g_ViewPort.Width = (float)g_Root->Devices()->GetCurrWndWidth();
-    g_ViewPort.Height = (float)g_Root->Devices()->GetCurrWndHeight();
+    g_ViewPort.Width = (float)g_Root->getDevices()->GetCurrWndWidth();
+    g_ViewPort.Height = (float)g_Root->getDevices()->GetCurrWndHeight();
     g_ViewPort.MinDepth = 0.f;
     g_ViewPort.MaxDepth = 1.f;
     g_ViewPort.TopLeftX = 0.f;
@@ -537,7 +537,7 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT& _source) :
     mDepthDsv(_source.mDepthDsv),
     mRSCameraInfo(_source.mRSCameraInfo)
 {
-    if (mHasBeenInited)
+    if (HasBeenInited)
     {
         RS_ADDREF(mVertexShader);
         RS_ADDREF(mAniVertexShader);
@@ -558,14 +558,14 @@ RSPass_MRT::~RSPass_MRT()
 
 }
 
-RSPass_MRT* RSPass_MRT::ClonePass()
+RSPass_MRT* RSPass_MRT::clonePass()
 {
     return new RSPass_MRT(*this);
 }
 
-bool RSPass_MRT::InitPass()
+bool RSPass_MRT::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
@@ -573,17 +573,17 @@ bool RSPass_MRT::InitPass()
     if (!CreateSamplers()) { return false; }
 
     mDrawCallType = DRAWCALL_TYPE::OPACITY;
-    mDrawCallPipe = g_Root->DrawCallsPool()->GetDrawCallsPipe(mDrawCallType);
+    mDrawCallPipe = g_Root->getDrawCallsPool()->GetDrawCallsPipe(mDrawCallType);
 
     std::string name = "temp-cam";
-    mRSCameraInfo = g_Root->CamerasContainer()->GetRSCameraInfo(name);
+    mRSCameraInfo = g_Root->getCamerasContainer()->GetRSCameraInfo(name);
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_MRT::ReleasePass()
+void RSPass_MRT::releasePass()
 {
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mAniVertexShader);
@@ -598,65 +598,65 @@ void RSPass_MRT::ReleasePass()
     RS_RELEASE(mLinearSampler);
 
     std::string name = "mrt-depth";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
     name = "mrt-geo-buffer";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
     name = "mrt-anisotropic";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
 }
 
-void RSPass_MRT::ExecuatePass()
+void RSPass_MRT::execuatePass()
 {
     ID3D11RenderTargetView* rtvnull = nullptr;
     static ID3D11RenderTargetView* mrt[] = { mGeoBufferRtv, mAnisotropicRtv };
-    STContext()->OMSetRenderTargets(2, mrt, mDepthDsv);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->ClearRenderTargetView(
+    context()->OMSetRenderTargets(2, mrt, mDepthDsv);
+    context()->RSSetViewports(1, &g_ViewPort);
+    context()->ClearRenderTargetView(
         mGeoBufferRtv, DirectX::Colors::Transparent);
-    STContext()->ClearRenderTargetView(
+    context()->ClearRenderTargetView(
         mAnisotropicRtv, DirectX::Colors::Transparent);
-    STContext()->ClearDepthStencilView(mDepthDsv, D3D11_CLEAR_DEPTH, 1.f, 0);
+    context()->ClearDepthStencilView(mDepthDsv, D3D11_CLEAR_DEPTH, 1.f, 0);
     //STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
+    context()->PSSetShader(mPixelShader, nullptr, 0);
 
-    STContext()->PSSetSamplers(0, 1, &mLinearSampler);
+    context()->PSSetSamplers(0, 1, &mLinearSampler);
 
     DirectX::XMMATRIX mat = {};
-    UINT stride = sizeof(VertexType::TangentVertex);
-    UINT aniStride = sizeof(VertexType::AnimationVertex);
+    UINT stride = sizeof(vertex_type::TangentVertex);
+    UINT aniStride = sizeof(vertex_type::AnimationVertex);
     UINT offset = 0;
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
-    STContext()->Map(mViewProjStructedBuffer, 0,
+    context()->Map(mViewProjStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     ViewProj* vp_data = (ViewProj*)msr.pData;
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mViewMat, mat);
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
-    STContext()->Unmap(mViewProjStructedBuffer, 0);
+    context()->Unmap(mViewProjStructedBuffer, 0);
 
-    STContext()->VSSetShaderResources(0, 1, &mViewProjStructedBufferSrv);
+    context()->VSSetShaderResources(0, 1, &mViewProjStructedBufferSrv);
 
     static std::string A_NAME = "AnimationVertex";
     static const auto ANIMAT_LAYOUT =
-        GetRSRoot_DX11_Singleton()->StaticResources()->
+        getRSDX11RootInstance()->getStaticResources()->
         GetStaticInputLayout(A_NAME);
 
-    for (auto& call : mDrawCallPipe->mDatas)
+    for (auto& call : mDrawCallPipe->Data)
     {
-        if (call.mMeshData.mLayout == ANIMAT_LAYOUT)
+        if (call.MeshData.InputLayout == ANIMAT_LAYOUT)
         {
-            STContext()->VSSetShader(mAniVertexShader, nullptr, 0);
-            STContext()->IASetVertexBuffers(
-                0, 1, &call.mMeshData.mVertexBuffer, &aniStride, &offset);
+            context()->VSSetShader(mAniVertexShader, nullptr, 0);
+            context()->IASetVertexBuffers(
+                0, 1, &call.MeshData.VertexBuffer, &aniStride, &offset);
 
-            STContext()->Map(mBonesStructedBuffer, 0,
+            context()->Map(mBonesStructedBuffer, 0,
                 D3D11_MAP_WRITE_DISCARD, 0, &msr);
             DirectX::XMFLOAT4X4* b_data = (DirectX::XMFLOAT4X4*)msr.pData;
-            void* boneData = call.mInstanceData.mBonesDataPtr;
+            void* boneData = call.InstanceData.BonesArrayPtr;
             std::vector<std::vector<RS_SUBMESH_BONE_DATA>>* bones = nullptr;
             bones = static_cast<decltype(bones)>(boneData);
             // TEMP-----------------------
@@ -669,7 +669,7 @@ void RSPass_MRT::ExecuatePass()
                     if (j < (*bones)[i].size())
                     {
                         DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
-                            &((*bones)[i][j].mBoneTransform));
+                            &((*bones)[i][j].BoneTransform));
                         trans = DirectX::XMMatrixTranspose(trans);
                         DirectX::XMStoreFloat4x4(
                             b_data + i * MAX_STRUCTURED_BUFFER_SIZE + j,
@@ -683,65 +683,65 @@ void RSPass_MRT::ExecuatePass()
                     }
                 }
             }
-            STContext()->Unmap(mBonesStructedBuffer, 0);
+            context()->Unmap(mBonesStructedBuffer, 0);
 
-            STContext()->VSSetShaderResources(2, 1,
+            context()->VSSetShaderResources(2, 1,
                 &mBonesStructedBufferSrv);
         }
         else
         {
-            STContext()->VSSetShader(mVertexShader, nullptr, 0);
-            STContext()->IASetVertexBuffers(
-                0, 1, &call.mMeshData.mVertexBuffer, &stride, &offset);
+            context()->VSSetShader(mVertexShader, nullptr, 0);
+            context()->IASetVertexBuffers(
+                0, 1, &call.MeshData.VertexBuffer, &stride, &offset);
         }
 
-        auto vecPtr = call.mInstanceData.mDataPtr;
+        auto vecPtr = call.InstanceData.DataArrayPtr;
         auto size = vecPtr->size();
-        STContext()->Map(mInstanceStructedBuffer, 0,
+        context()->Map(mInstanceStructedBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         RS_INSTANCE_DATA* ins_data = (RS_INSTANCE_DATA*)msr.pData;
         for (size_t i = 0; i < size; i++)
         {
-            mat = DirectX::XMLoadFloat4x4(&(*vecPtr)[i].mWorldMat);
+            mat = DirectX::XMLoadFloat4x4(&(*vecPtr)[i].WorldMatrix);
             mat = DirectX::XMMatrixTranspose(mat);
-            DirectX::XMStoreFloat4x4(&ins_data[i].mWorldMat, mat);
-            ins_data[i].mMaterialData = (*vecPtr)[i].mMaterialData;
-            ins_data[i].mCustomizedData1 = (*vecPtr)[i].mCustomizedData1;
-            ins_data[i].mCustomizedData2 = (*vecPtr)[i].mCustomizedData2;
+            DirectX::XMStoreFloat4x4(&ins_data[i].WorldMatrix, mat);
+            ins_data[i].MaterialData = (*vecPtr)[i].MaterialData;
+            ins_data[i].CustomizedData1 = (*vecPtr)[i].CustomizedData1;
+            ins_data[i].CustomizedData2 = (*vecPtr)[i].CustomizedData2;
         }
-        STContext()->Unmap(mInstanceStructedBuffer, 0);
+        context()->Unmap(mInstanceStructedBuffer, 0);
 
-        STContext()->IASetInputLayout(call.mMeshData.mLayout);
-        STContext()->IASetPrimitiveTopology(call.mMeshData.mTopologyType);
+        context()->IASetInputLayout(call.MeshData.InputLayout);
+        context()->IASetPrimitiveTopology(call.MeshData.TopologyType);
         /*STContext()->IASetVertexBuffers(
             0, 1, &call.mMeshData.mVertexBuffer, &stride, &offset);*/
-        STContext()->IASetIndexBuffer(
-            call.mMeshData.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        STContext()->VSSetShaderResources(1, 1, &mInstanceStructedBufferSrv);
-        ID3D11ShaderResourceView* matSrv = g_Root->StaticResources()->GetMaterialSrv();
-        STContext()->PSSetShaderResources(0, 1, &matSrv);
+        context()->IASetIndexBuffer(
+            call.MeshData.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        context()->VSSetShaderResources(1, 1, &mInstanceStructedBufferSrv);
+        ID3D11ShaderResourceView* matSrv = g_Root->getStaticResources()->GetMaterialSrv();
+        context()->PSSetShaderResources(0, 1, &matSrv);
         for (UINT i = 0; i < (UINT)MESH_TEXTURE_TYPE::SIZE; i++)
         {
-            if (call.mTextureDatas[i].mUse)
+            if (call.TextureData[i].EnabledFlag)
             {
-                STContext()->PSSetShaderResources(
-                    i + 1, 1, &(call.mTextureDatas[i].mSrv));
+                context()->PSSetShaderResources(
+                    i + 1, 1, &(call.TextureData[i].Srv));
             }
         }
 
-        STContext()->DrawIndexedInstanced(
-            call.mMeshData.mIndexCount,
-            (UINT)call.mInstanceData.mDataPtr->size(), 0, 0, 0);
+        context()->DrawIndexedInstanced(
+            call.MeshData.IndexSize,
+            (UINT)call.InstanceData.DataArrayPtr->size(), 0, 0, 0);
 
-        if (call.mMeshData.mLayout == ANIMAT_LAYOUT)
+        if (call.MeshData.InputLayout == ANIMAT_LAYOUT)
         {
             ID3D11ShaderResourceView* nullSRV = nullptr;
-            STContext()->VSSetShaderResources(2, 1,
+            context()->VSSetShaderResources(2, 1,
                 &nullSRV);
         }
     }
 
-    STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
+    context()->OMSetRenderTargets(1, &rtvnull, nullptr);
 }
 
 bool RSPass_MRT::CreateShaders()
@@ -749,12 +749,12 @@ bool RSPass_MRT::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\mrt_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -764,12 +764,12 @@ bool RSPass_MRT::CreateShaders()
 
     D3D_SHADER_MACRO macro[] =
     { { "ANIMATION_VERTEX", "1" }, { nullptr, nullptr } };
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\mrt_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob, macro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mAniVertexShader);
@@ -777,12 +777,12 @@ bool RSPass_MRT::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\mrt_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
@@ -790,12 +790,12 @@ bool RSPass_MRT::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\mrt_nd_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mNDPixelShader);
@@ -818,17 +818,17 @@ bool RSPass_MRT::CreateBuffers()
     bdc.ByteWidth = MAX_INSTANCE_SIZE * sizeof(RS_INSTANCE_DATA);
     bdc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bdc.StructureByteStride = sizeof(RS_INSTANCE_DATA);
-    hr = Device()->CreateBuffer(&bdc, nullptr, &mInstanceStructedBuffer);
+    hr = device()->CreateBuffer(&bdc, nullptr, &mInstanceStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bdc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE *
         (UINT)sizeof(DirectX::XMFLOAT4X4);
     bdc.StructureByteStride = sizeof(DirectX::XMFLOAT4X4);
-    hr = Device()->CreateBuffer(&bdc, nullptr, &mBonesStructedBuffer);
+    hr = device()->CreateBuffer(&bdc, nullptr, &mBonesStructedBuffer);
 
     bdc.ByteWidth = sizeof(ViewProj);
     bdc.StructureByteStride = sizeof(ViewProj);
-    hr = Device()->CreateBuffer(&bdc, nullptr, &mViewProjStructedBuffer);
+    hr = device()->CreateBuffer(&bdc, nullptr, &mViewProjStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -847,19 +847,19 @@ bool RSPass_MRT::CreateViews()
     srvDesc.Format = DXGI_FORMAT_UNKNOWN;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     srvDesc.Buffer.ElementWidth = MAX_INSTANCE_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mInstanceStructedBuffer,
         &srvDesc, &mInstanceStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Buffer.ElementWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mBonesStructedBuffer,
         &srvDesc, &mBonesStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Buffer.ElementWidth = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mViewProjStructedBuffer,
         &srvDesc, &mViewProjStructedBufferSrv);
     if (FAILED(hr)) { return false; }
@@ -872,9 +872,9 @@ bool RSPass_MRT::CreateViews()
     std::string name = "";
 
     ID3D11Texture2D* texture = nullptr;
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->
+    texDesc.Width = getRSDX11RootInstance()->getDevices()->
         GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->
+    texDesc.Height = getRSDX11RootInstance()->getDevices()->
         GetCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
@@ -885,13 +885,13 @@ bool RSPass_MRT::CreateViews()
     texDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
     texDesc.CPUAccessFlags = 0;
     texDesc.MiscFlags = 0;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
+    hr = device()->CreateTexture2D(&texDesc, nullptr, &texture);
     if (FAILED(hr)) { return false; }
 
     dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
     dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
     dsvDesc.Texture2D.MipSlice = 0;
-    hr = Device()->CreateDepthStencilView(
+    hr = device()->CreateDepthStencilView(
         texture, &dsvDesc, &mDepthDsv);
     if (FAILED(hr)) { return false; }
 
@@ -899,21 +899,21 @@ bool RSPass_MRT::CreateViews()
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         texture, &srvDesc, &srv);
     if (FAILED(hr)) { return false; }
 
     dti = {};
     name = "mrt-depth";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mDsv = mDepthDsv;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
+    dti.Resource.Texture2D = texture;
+    dti.Dsv = mDepthDsv;
+    dti.Srv = srv;
+    g_Root->getResourceManager()->AddResource(name, dti);
 
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->
+    texDesc.Width = getRSDX11RootInstance()->getDevices()->
         GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->
+    texDesc.Height = getRSDX11RootInstance()->getDevices()->
         GetCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
@@ -923,32 +923,32 @@ bool RSPass_MRT::CreateViews()
     texDesc.MiscFlags = 0;
     texDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
     texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
+    hr = device()->CreateTexture2D(&texDesc, nullptr, &texture);
     if (FAILED(hr)) { return false; }
 
     rtvDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
     rtvDesc.Texture2D.MipSlice = 0;
     rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(texture, &rtvDesc, &mGeoBufferRtv);
+    hr = device()->CreateRenderTargetView(texture, &rtvDesc, &mGeoBufferRtv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture, &srvDesc, &srv);
+    hr = device()->CreateShaderResourceView(texture, &srvDesc, &srv);
     if (FAILED(hr)) { return false; }
 
     dti = {};
     name = "mrt-geo-buffer";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = mGeoBufferRtv;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
+    dti.Resource.Texture2D = texture;
+    dti.Rtv = mGeoBufferRtv;
+    dti.Srv = srv;
+    g_Root->getResourceManager()->AddResource(name, dti);
 
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
+    texDesc.Width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
+    texDesc.Height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
     texDesc.SampleDesc.Count = 1;
@@ -957,29 +957,29 @@ bool RSPass_MRT::CreateViews()
     texDesc.MiscFlags = 0;
     texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     texDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &texture);
+    hr = device()->CreateTexture2D(&texDesc, nullptr, &texture);
     if (FAILED(hr)) { return false; }
 
     rtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     rtvDesc.Texture2D.MipSlice = 0;
     rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(texture, &rtvDesc, &mAnisotropicRtv);
+    hr = device()->CreateRenderTargetView(texture, &rtvDesc, &mAnisotropicRtv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture, &srvDesc, &srv);
+    hr = device()->CreateShaderResourceView(texture, &srvDesc, &srv);
     if (FAILED(hr)) { return false; }
 
     dti = {};
     name = "mrt-anisotropic";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = mAnisotropicRtv;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
+    dti.Resource.Texture2D = texture;
+    dti.Rtv = mAnisotropicRtv;
+    dti.Srv = srv;
+    g_Root->getResourceManager()->AddResource(name, dti);
 
     return true;
 }
@@ -1015,7 +1015,7 @@ bool RSPass_MRT::CreateSamplers()
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-    hr = Device()->CreateSamplerState(&sampDesc, &mLinearSampler);
+    hr = device()->CreateSamplerState(&sampDesc, &mLinearSampler);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -1071,7 +1071,7 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao& _source) :
     mIndexBuffer(_source.mIndexBuffer),
     mRSCameraInfo(_source.mRSCameraInfo)
 {
-    if (mHasBeenInited)
+    if (HasBeenInited)
     {
         RS_ADDREF(mVertexShader);
         RS_ADDREF(mPixelShader);
@@ -1093,14 +1093,14 @@ RSPass_Ssao::~RSPass_Ssao()
 
 }
 
-RSPass_Ssao* RSPass_Ssao::ClonePass()
+RSPass_Ssao* RSPass_Ssao::clonePass()
 {
     return new RSPass_Ssao(*this);
 }
 
-bool RSPass_Ssao::InitPass()
+bool RSPass_Ssao::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
@@ -1140,15 +1140,15 @@ bool RSPass_Ssao::InitPass()
     }
 
     std::string name = "temp-cam";
-    mRSCameraInfo = g_Root->CamerasContainer()->
+    mRSCameraInfo = g_Root->getCamerasContainer()->
         GetRSCameraInfo(name);
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_Ssao::ReleasePass()
+void RSPass_Ssao::releasePass()
 {
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mPixelShader);
@@ -1164,42 +1164,42 @@ void RSPass_Ssao::ReleasePass()
     RS_RELEASE(mIndexBuffer);
 
     std::string name = "random-tex-ssao";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
     name = "ssao-tex-ssao";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
     name = "ssao-tex-compress-ssao";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
 }
 
-void RSPass_Ssao::ExecuatePass()
+void RSPass_Ssao::execuatePass()
 {
     ID3D11RenderTargetView* null = nullptr;
     ID3D11ShaderResourceView* srvnull = nullptr;
-    STContext()->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
-    STContext()->RSSetState(nullptr);
+    context()->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
+    context()->RSSetViewports(1, &g_ViewPort);
+    context()->VSSetShader(mVertexShader, nullptr, 0);
+    context()->PSSetShader(mPixelShader, nullptr, 0);
+    context()->RSSetState(nullptr);
 
     DirectX::XMMATRIX mat = {};
-    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT stride = sizeof(vertex_type::TangentVertex);
     UINT offset = 0;
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
 
-    STContext()->Map(mSsaoInfoStructedBuffer, 0,
+    context()->Map(mSsaoInfoStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     SsaoInfo* ss_data = (SsaoInfo*)msr.pData;
 
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&ss_data[0].mProj, mat);
 
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&ss_data[0].mView, mat);
 
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvProjMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvProjMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&ss_data[0].mInvProj, mat);
 
@@ -1209,7 +1209,7 @@ void RSPass_Ssao::ExecuatePass()
         0.0f, 0.0f, 1.0f, 0.0f,
         0.5f, 0.5f, 0.0f, 1.0f);
     mat = DirectX::XMMatrixTranspose(
-        DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat) * T);
+        DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix) * T);
     DirectX::XMStoreFloat4x4(&ss_data[0].mTexProj, mat);
 
     for (UINT i = 0; i < 14; i++)
@@ -1221,57 +1221,57 @@ void RSPass_Ssao::ExecuatePass()
     ss_data[0].mOcclusionFadeStart = g_RenderEffectConfig.mSsaoStart;
     ss_data[0].mOcclusionFadeEnd = g_RenderEffectConfig.mSsaoEnd;
     ss_data[0].mSurfaceEpsilon = g_RenderEffectConfig.mSsaoEpsilon;
-    STContext()->Unmap(mSsaoInfoStructedBuffer, 0);
+    context()->Unmap(mSsaoInfoStructedBuffer, 0);
 
-    STContext()->IASetPrimitiveTopology(
+    context()->IASetPrimitiveTopology(
         D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    STContext()->IASetVertexBuffers(
+    context()->IASetVertexBuffers(
         0, 1, &mVertexBuffer,
         &stride, &offset);
-    STContext()->IASetIndexBuffer(
+    context()->IASetIndexBuffer(
         mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    STContext()->VSSetShaderResources(
+    context()->VSSetShaderResources(
         0, 1, &mSsaoInfoStructedBufferSrv);
-    STContext()->PSSetShaderResources(
+    context()->PSSetShaderResources(
         0, 1, &mSsaoInfoStructedBufferSrv);
-    STContext()->PSSetShaderResources(
+    context()->PSSetShaderResources(
         1, 1, &mGeoBufferSrv);
-    STContext()->PSSetShaderResources(
+    context()->PSSetShaderResources(
         2, 1, &mDepthMapSrv);
-    STContext()->PSSetShaderResources(
+    context()->PSSetShaderResources(
         3, 1, &mRandomMapSrv);
 
-    STContext()->PSSetSamplers(0, 1, &mSamplePointClamp);
-    STContext()->PSSetSamplers(1, 1, &mSampleLinearClamp);
-    STContext()->PSSetSamplers(2, 1, &mSampleDepthMap);
-    STContext()->PSSetSamplers(3, 1, &mSampleLinearWrap);
+    context()->PSSetSamplers(0, 1, &mSamplePointClamp);
+    context()->PSSetSamplers(1, 1, &mSampleLinearClamp);
+    context()->PSSetSamplers(2, 1, &mSampleDepthMap);
+    context()->PSSetSamplers(3, 1, &mSampleLinearWrap);
 
-    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+    context()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
-    STContext()->OMSetRenderTargets(1, &mCompressRtv, nullptr);
-    STContext()->IASetPrimitiveTopology(
+    context()->OMSetRenderTargets(1, &mCompressRtv, nullptr);
+    context()->IASetPrimitiveTopology(
         D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    STContext()->IASetVertexBuffers(
+    context()->IASetVertexBuffers(
         0, 1, &mVertexBuffer,
         &stride, &offset);
-    STContext()->IASetIndexBuffer(
+    context()->IASetIndexBuffer(
         mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->VSSetShader(mCompressVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mCompressPixelShader, nullptr, 0);
-    STContext()->PSSetSamplers(0, 1, &mSampleLinearWrap);
-    STContext()->PSSetShaderResources(
+    context()->RSSetViewports(1, &g_ViewPort);
+    context()->VSSetShader(mCompressVertexShader, nullptr, 0);
+    context()->PSSetShader(mCompressPixelShader, nullptr, 0);
+    context()->PSSetSamplers(0, 1, &mSampleLinearWrap);
+    context()->PSSetShaderResources(
         0, 1, &mNotCompressSrv);
 
-    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+    context()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
-    STContext()->OMSetRenderTargets(1, &null, nullptr);
-    STContext()->RSSetState(nullptr);
-    STContext()->PSSetShaderResources(
+    context()->OMSetRenderTargets(1, &null, nullptr);
+    context()->RSSetState(nullptr);
+    context()->PSSetShaderResources(
         1, 1, &srvnull);
-    STContext()->PSSetShaderResources(
+    context()->PSSetShaderResources(
         2, 1, &srvnull);
-    STContext()->PSSetShaderResources(
+    context()->PSSetShaderResources(
         3, 1, &srvnull);
 }
 
@@ -1280,12 +1280,12 @@ bool RSPass_Ssao::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\ssao_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -1293,12 +1293,12 @@ bool RSPass_Ssao::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\ssao_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
@@ -1306,12 +1306,12 @@ bool RSPass_Ssao::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\compress_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mCompressVertexShader);
@@ -1319,12 +1319,12 @@ bool RSPass_Ssao::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\compress_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mCompressPixelShader);
@@ -1347,11 +1347,11 @@ bool RSPass_Ssao::CreateBuffers()
     bdc.ByteWidth = sizeof(SsaoInfo);
     bdc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bdc.StructureByteStride = sizeof(SsaoInfo);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mSsaoInfoStructedBuffer);
     if (FAILED(hr)) { return false; }
 
-    VertexType::TangentVertex v[4] = {};
+    vertex_type::TangentVertex v[4] = {};
     v[0].Position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
     v[1].Position = DirectX::XMFLOAT3(-1.0f, +1.0f, 0.0f);
     v[2].Position = DirectX::XMFLOAT3(+1.0f, +1.0f, 0.0f);
@@ -1370,7 +1370,7 @@ bool RSPass_Ssao::CreateBuffers()
     v[3].TexCoord = DirectX::XMFLOAT2(1.0f, 1.0f);
     ZeroMemory(&bdc, sizeof(bdc));
     bdc.Usage = D3D11_USAGE_IMMUTABLE;
-    bdc.ByteWidth = sizeof(VertexType::TangentVertex) * 4;
+    bdc.ByteWidth = sizeof(vertex_type::TangentVertex) * 4;
     bdc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bdc.CPUAccessFlags = 0;
     bdc.MiscFlags = 0;
@@ -1378,7 +1378,7 @@ bool RSPass_Ssao::CreateBuffers()
     D3D11_SUBRESOURCE_DATA vinitData = {};
     ZeroMemory(&vinitData, sizeof(vinitData));
     vinitData.pSysMem = v;
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, &vinitData, &mVertexBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -1397,7 +1397,7 @@ bool RSPass_Ssao::CreateBuffers()
     D3D11_SUBRESOURCE_DATA iinitData = {};
     ZeroMemory(&iinitData, sizeof(iinitData));
     iinitData.pSysMem = indices;
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, &iinitData, &mIndexBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -1458,7 +1458,7 @@ bool RSPass_Ssao::CreateTextures()
     texDesc.MiscFlags = 0;
     texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(
+    hr = device()->CreateTexture2D(
         &texDesc, &iniData, &texture);
 
     delete[] random;
@@ -1468,20 +1468,20 @@ bool RSPass_Ssao::CreateTextures()
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(texture,
+    hr = device()->CreateShaderResourceView(texture,
         &srvDesc, &srv);
     if (FAILED(hr)) { return false; }
 
     dti = {};
     name = "random-tex-ssao";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
+    dti.Resource.Texture2D = texture;
+    dti.Srv = srv;
+    g_Root->getResourceManager()->AddResource(name, dti);
 
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->
+    texDesc.Width = getRSDX11RootInstance()->getDevices()->
         GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->
+    texDesc.Height = getRSDX11RootInstance()->getDevices()->
         GetCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
@@ -1492,14 +1492,14 @@ bool RSPass_Ssao::CreateTextures()
     texDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     texDesc.BindFlags =
         D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-    hr = Device()->CreateTexture2D(
+    hr = device()->CreateTexture2D(
         &texDesc, nullptr, &texture);
     if (FAILED(hr)) { return false; }
 
     rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     rtvDesc.Texture2D.MipSlice = 0;
     rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(
+    hr = device()->CreateRenderTargetView(
         texture, &rtvDesc, &rtv);
     if (FAILED(hr)) { return false; }
 
@@ -1507,21 +1507,21 @@ bool RSPass_Ssao::CreateTextures()
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         texture, &srvDesc, &srv);
     if (FAILED(hr)) { return false; }
 
     dti = {};
     name = "ssao-tex-ssao";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = rtv;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
+    dti.Resource.Texture2D = texture;
+    dti.Rtv = rtv;
+    dti.Srv = srv;
+    g_Root->getResourceManager()->AddResource(name, dti);
 
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->
+    texDesc.Width = getRSDX11RootInstance()->getDevices()->
         GetCurrWndWidth() / 2;
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->
+    texDesc.Height = getRSDX11RootInstance()->getDevices()->
         GetCurrWndHeight() / 2;
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
@@ -1533,14 +1533,14 @@ bool RSPass_Ssao::CreateTextures()
     texDesc.BindFlags =
         D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE |
         D3D11_BIND_UNORDERED_ACCESS;
-    hr = Device()->CreateTexture2D(
+    hr = device()->CreateTexture2D(
         &texDesc, nullptr, &texture);
     if (FAILED(hr)) { return false; }
 
     rtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     rtvDesc.Texture2D.MipSlice = 0;
     rtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-    hr = Device()->CreateRenderTargetView(
+    hr = device()->CreateRenderTargetView(
         texture, &rtvDesc, &rtv);
     if (FAILED(hr)) { return false; }
 
@@ -1548,25 +1548,25 @@ bool RSPass_Ssao::CreateTextures()
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         texture, &srvDesc, &srv);
     if (FAILED(hr)) { return false; }
 
     uavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
     uavDesc.Texture2D.MipSlice = 0;
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         texture, &uavDesc, &uav);
     if (FAILED(hr)) { return false; }
 
     dti = {};
     name = "ssao-tex-compress-ssao";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = texture;
-    dti.mRtv = rtv;
-    dti.mSrv = srv;
-    dti.mUav = uav;
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
+    dti.Resource.Texture2D = texture;
+    dti.Rtv = rtv;
+    dti.Srv = srv;
+    dti.Uav = uav;
+    g_Root->getResourceManager()->AddResource(name, dti);
 
     return true;
 }
@@ -1574,22 +1574,22 @@ bool RSPass_Ssao::CreateTextures()
 bool RSPass_Ssao::CreateViews()
 {
     std::string name = "random-tex-ssao";
-    mRandomMapSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mRandomMapSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
     name = "mrt-geo-buffer";
-    mGeoBufferSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mGeoBufferSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
     name = "mrt-depth";
-    mDepthMapSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mDepthMapSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
     name = "ssao-tex-ssao";
-    mRenderTargetView = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mRtv;
-    mNotCompressSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mRenderTargetView = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Rtv;
+    mNotCompressSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
     name = "ssao-tex-compress-ssao";
-    mCompressRtv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mRtv;
+    mCompressRtv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Rtv;
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desSRV = {};
     HRESULT hr = S_OK;
@@ -1597,7 +1597,7 @@ bool RSPass_Ssao::CreateViews()
     desSRV.Format = DXGI_FORMAT_UNKNOWN;
     desSRV.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     desSRV.Buffer.ElementWidth = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mSsaoInfoStructedBuffer,
         &desSRV, &mSsaoInfoStructedBufferSrv);
     if (FAILED(hr)) { return false; }
@@ -1618,7 +1618,7 @@ bool RSPass_Ssao::CreateSamplers()
     samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     samDesc.MinLOD = 0;
     samDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &samDesc, &mSamplePointClamp);
     if (FAILED(hr)) { return false; }
 
@@ -1629,7 +1629,7 @@ bool RSPass_Ssao::CreateSamplers()
     samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     samDesc.MinLOD = 0;
     samDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &samDesc, &mSampleLinearClamp);
     if (FAILED(hr)) { return false; }
 
@@ -1640,7 +1640,7 @@ bool RSPass_Ssao::CreateSamplers()
     samDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
     samDesc.MinLOD = 0;
     samDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &samDesc, &mSampleDepthMap);
     if (FAILED(hr)) { return false; }
 
@@ -1651,7 +1651,7 @@ bool RSPass_Ssao::CreateSamplers()
     samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     samDesc.MinLOD = 0;
     samDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &samDesc, &mSampleLinearWrap);
     if (FAILED(hr)) { return false; }
 
@@ -1678,7 +1678,7 @@ RSPass_KBBlur::RSPass_KBBlur(const RSPass_KBBlur& _source) :
     mGeoBufferSrv(_source.mGeoBufferSrv),
     mDepthMapSrv(_source.mDepthMapSrv)
 {
-    if (mHasBeenInited)
+    if (HasBeenInited)
     {
         RS_ADDREF(mHoriBlurShader);
         RS_ADDREF(mVertBlurShader);
@@ -1690,30 +1690,30 @@ RSPass_KBBlur::~RSPass_KBBlur()
 
 }
 
-RSPass_KBBlur* RSPass_KBBlur::ClonePass()
+RSPass_KBBlur* RSPass_KBBlur::clonePass()
 {
     return new RSPass_KBBlur(*this);
 }
 
-bool RSPass_KBBlur::InitPass()
+bool RSPass_KBBlur::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_KBBlur::ReleasePass()
+void RSPass_KBBlur::releasePass()
 {
     RS_RELEASE(mHoriBlurShader);
     RS_RELEASE(mVertBlurShader);
 }
 
-void RSPass_KBBlur::ExecuatePass()
+void RSPass_KBBlur::execuatePass()
 {
     ID3D11ShaderResourceView* srv[] =
     {
@@ -1726,32 +1726,32 @@ void RSPass_KBBlur::ExecuatePass()
     };
 
     static const UINT loopCount = g_RenderEffectConfig.mSsaoBlurCount;
-    static UINT width = GetRSRoot_DX11_Singleton()->Devices()->
+    static UINT width = getRSDX11RootInstance()->getDevices()->
         GetCurrWndWidth() / 2;
-    static UINT height = GetRSRoot_DX11_Singleton()->Devices()->
+    static UINT height = getRSDX11RootInstance()->getDevices()->
         GetCurrWndHeight() / 2;
-    UINT dispatchVert = Tool::Align(width, 256) / 256;
-    UINT dispatchHori = Tool::Align(height, 256) / 256;
+    UINT dispatchVert = rs_tool::align(width, 256) / 256;
+    UINT dispatchHori = rs_tool::align(height, 256) / 256;
 
     for (UINT i = 0; i < loopCount; i++)
     {
-        STContext()->CSSetShader(mHoriBlurShader, nullptr, 0);
-        STContext()->CSSetUnorderedAccessViews(0, 1,
+        context()->CSSetShader(mHoriBlurShader, nullptr, 0);
+        context()->CSSetUnorderedAccessViews(0, 1,
             &mSsaoTexUav, nullptr);
-        STContext()->CSSetShaderResources(0, 2, srv);
-        STContext()->Dispatch(dispatchVert, height, 1);
-        STContext()->CSSetUnorderedAccessViews(0, 1,
+        context()->CSSetShaderResources(0, 2, srv);
+        context()->Dispatch(dispatchVert, height, 1);
+        context()->CSSetUnorderedAccessViews(0, 1,
             &nullUav, nullptr);
-        STContext()->CSSetShaderResources(0, 2, nullSrv);
+        context()->CSSetShaderResources(0, 2, nullSrv);
 
-        STContext()->CSSetShader(mVertBlurShader, nullptr, 0);
-        STContext()->CSSetUnorderedAccessViews(0, 1,
+        context()->CSSetShader(mVertBlurShader, nullptr, 0);
+        context()->CSSetUnorderedAccessViews(0, 1,
             &mSsaoTexUav, nullptr);
-        STContext()->CSSetShaderResources(0, 2, srv);
-        STContext()->Dispatch(width, dispatchHori, 1);
-        STContext()->CSSetUnorderedAccessViews(0, 1,
+        context()->CSSetShaderResources(0, 2, srv);
+        context()->Dispatch(width, dispatchHori, 1);
+        context()->CSSetUnorderedAccessViews(0, 1,
             &nullUav, nullptr);
-        STContext()->CSSetShaderResources(0, 2, nullSrv);
+        context()->CSSetShaderResources(0, 2, nullSrv);
     }
 }
 
@@ -1760,12 +1760,12 @@ bool RSPass_KBBlur::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\ssao_compute.hlsl",
         "HMain", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mHoriBlurShader);
@@ -1773,12 +1773,12 @@ bool RSPass_KBBlur::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\ssao_compute.hlsl",
         "VMain", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertBlurShader);
@@ -1792,14 +1792,14 @@ bool RSPass_KBBlur::CreateShaders()
 bool RSPass_KBBlur::CreateViews()
 {
     std::string name = "mrt-geo-buffer";
-    mGeoBufferSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mGeoBufferSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
     name = "mrt-depth";
-    mDepthMapSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mDepthMapSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
     name = "ssao-tex-compress-ssao";
-    mSsaoTexUav = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mUav;
+    mSsaoTexUav = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Uav;
 
     return true;
 }
@@ -1846,14 +1846,14 @@ RSPass_Shadow::~RSPass_Shadow()
 
 }
 
-RSPass_Shadow* RSPass_Shadow::ClonePass()
+RSPass_Shadow* RSPass_Shadow::clonePass()
 {
     return new RSPass_Shadow(*this);
 }
 
-bool RSPass_Shadow::InitPass()
+bool RSPass_Shadow::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateStates()) { return false; }
@@ -1862,15 +1862,15 @@ bool RSPass_Shadow::InitPass()
     if (!CreateSamplers()) { return false; }
 
     mDrawCallType = DRAWCALL_TYPE::OPACITY;
-    mDrawCallPipe = g_Root->DrawCallsPool()->
+    mDrawCallPipe = g_Root->getDrawCallsPool()->
         GetDrawCallsPipe(mDrawCallType);
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_Shadow::ReleasePass()
+void RSPass_Shadow::releasePass()
 {
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mAniVertexShader);
@@ -1881,76 +1881,76 @@ void RSPass_Shadow::ReleasePass()
     RS_RELEASE(mInstanceStructedBuffer);
 
     std::string name = "light-depth-light-other";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
     name = "light-depth-light-dep0";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
     name = "light-depth-light-dep1";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
     name = "light-depth-light-dep2";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
     name = "light-depth-light-dep3";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
 }
 
-void RSPass_Shadow::ExecuatePass()
+void RSPass_Shadow::execuatePass()
 {
     ID3D11RenderTargetView* null = nullptr;
     //STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(nullptr, nullptr, 0);
-    STContext()->RSSetState(mRasterizerState);
+    context()->PSSetShader(nullptr, nullptr, 0);
+    context()->RSSetState(mRasterizerState);
 
     DirectX::XMMATRIX mat = {};
-    UINT stride = sizeof(VertexType::TangentVertex);
-    UINT aniStride = sizeof(VertexType::AnimationVertex);
+    UINT stride = sizeof(vertex_type::TangentVertex);
+    UINT aniStride = sizeof(vertex_type::AnimationVertex);
     UINT offset = 0;
-    auto shadowLights = g_Root->LightsContainer()->
+    auto shadowLights = g_Root->getLightsContainer()->
         GetShadowLights();
     UINT shadowSize = (UINT)shadowLights->size();
     D3D11_MAPPED_SUBRESOURCE msr = {};
 
     static std::string A_NAME = "AnimationVertex";
     static const auto ANIMAT_LAYOUT =
-        GetRSRoot_DX11_Singleton()->StaticResources()->
+        getRSDX11RootInstance()->getStaticResources()->
         GetStaticInputLayout(A_NAME);
 
     for (UINT i = 0; i < shadowSize; i++)
     {
-        STContext()->OMSetRenderTargets(1,
+        context()->OMSetRenderTargets(1,
             &null, mDepthStencilView[i]);
-        STContext()->RSSetViewports(1, &g_ViewPort);
-        STContext()->ClearDepthStencilView(
+        context()->RSSetViewports(1, &g_ViewPort);
+        context()->ClearDepthStencilView(
             mDepthStencilView[i], D3D11_CLEAR_DEPTH, 1.f, 0);
 
-        STContext()->Map(mViewProjStructedBuffer, 0,
+        context()->Map(mViewProjStructedBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         ViewProj* vp_data = (ViewProj*)msr.pData;
         auto light = (*shadowLights)[i];
         auto lcam = light->GetRSLightCamera();
         mat = DirectX::XMLoadFloat4x4(
-            &(lcam->GetRSCameraInfo()->mViewMat));
+            &(lcam->GetRSCameraInfo()->ViewMatrix));
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&vp_data[0].mViewMat, mat);
         mat = DirectX::XMLoadFloat4x4(
-            &(lcam->GetRSCameraInfo()->mProjMat));
+            &(lcam->GetRSCameraInfo()->ProjMatrix));
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
-        STContext()->Unmap(mViewProjStructedBuffer, 0);
+        context()->Unmap(mViewProjStructedBuffer, 0);
 
-        STContext()->VSSetShaderResources(
+        context()->VSSetShaderResources(
             0, 1, &mViewProjStructedBufferSrv);
 
-        for (auto& call : mDrawCallPipe->mDatas)
+        for (auto& call : mDrawCallPipe->Data)
         {
-            if (call.mMeshData.mLayout == ANIMAT_LAYOUT)
+            if (call.MeshData.InputLayout == ANIMAT_LAYOUT)
             {
-                STContext()->VSSetShader(mAniVertexShader, nullptr, 0);
-                STContext()->IASetVertexBuffers(
-                    0, 1, &call.mMeshData.mVertexBuffer, &aniStride, &offset);
+                context()->VSSetShader(mAniVertexShader, nullptr, 0);
+                context()->IASetVertexBuffers(
+                    0, 1, &call.MeshData.VertexBuffer, &aniStride, &offset);
 
-                STContext()->Map(mBonesStructedBuffer, 0,
+                context()->Map(mBonesStructedBuffer, 0,
                     D3D11_MAP_WRITE_DISCARD, 0, &msr);
                 DirectX::XMFLOAT4X4* b_data = (DirectX::XMFLOAT4X4*)msr.pData;
-                void* boneData = call.mInstanceData.mBonesDataPtr;
+                void* boneData = call.InstanceData.BonesArrayPtr;
                 std::vector<std::vector<RS_SUBMESH_BONE_DATA>>* bones = nullptr;
                 bones = static_cast<decltype(bones)>(boneData);
                 // TEMP-----------------------
@@ -1963,7 +1963,7 @@ void RSPass_Shadow::ExecuatePass()
                         if (j < (*bones)[i].size())
                         {
                             DirectX::XMMATRIX trans = DirectX::XMLoadFloat4x4(
-                                &((*bones)[i][j].mBoneTransform));
+                                &((*bones)[i][j].BoneTransform));
                             trans = DirectX::XMMatrixTranspose(trans);
                             DirectX::XMStoreFloat4x4(
                                 b_data + i * MAX_STRUCTURED_BUFFER_SIZE + j,
@@ -1977,65 +1977,65 @@ void RSPass_Shadow::ExecuatePass()
                         }
                     }
                 }
-                STContext()->Unmap(mBonesStructedBuffer, 0);
+                context()->Unmap(mBonesStructedBuffer, 0);
 
-                STContext()->VSSetShaderResources(3, 1,
+                context()->VSSetShaderResources(3, 1,
                     &mBonesStructedBufferSrv);
             }
             else
             {
-                STContext()->VSSetShader(mVertexShader, nullptr, 0);
-                STContext()->IASetVertexBuffers(
-                    0, 1, &call.mMeshData.mVertexBuffer, &stride, &offset);
+                context()->VSSetShader(mVertexShader, nullptr, 0);
+                context()->IASetVertexBuffers(
+                    0, 1, &call.MeshData.VertexBuffer, &stride, &offset);
             }
 
-            auto vecPtr = call.mInstanceData.mDataPtr;
+            auto vecPtr = call.InstanceData.DataArrayPtr;
             auto size = vecPtr->size();
-            STContext()->Map(mInstanceStructedBuffer, 0,
+            context()->Map(mInstanceStructedBuffer, 0,
                 D3D11_MAP_WRITE_DISCARD, 0, &msr);
             RS_INSTANCE_DATA* ins_data = (RS_INSTANCE_DATA*)msr.pData;
             for (size_t i = 0; i < size; i++)
             {
                 mat = DirectX::XMLoadFloat4x4(
-                    &(*vecPtr)[i].mWorldMat);
+                    &(*vecPtr)[i].WorldMatrix);
                 mat = DirectX::XMMatrixTranspose(mat);
-                DirectX::XMStoreFloat4x4(&ins_data[i].mWorldMat, mat);
-                ins_data[i].mMaterialData =
-                    (*vecPtr)[i].mMaterialData;
-                ins_data[i].mCustomizedData1 =
-                    (*vecPtr)[i].mCustomizedData1;
-                ins_data[i].mCustomizedData2 =
-                    (*vecPtr)[i].mCustomizedData2;
+                DirectX::XMStoreFloat4x4(&ins_data[i].WorldMatrix, mat);
+                ins_data[i].MaterialData =
+                    (*vecPtr)[i].MaterialData;
+                ins_data[i].CustomizedData1 =
+                    (*vecPtr)[i].CustomizedData1;
+                ins_data[i].CustomizedData2 =
+                    (*vecPtr)[i].CustomizedData2;
             }
-            STContext()->Unmap(mInstanceStructedBuffer, 0);
+            context()->Unmap(mInstanceStructedBuffer, 0);
 
-            STContext()->IASetInputLayout(
-                call.mMeshData.mLayout);
-            STContext()->IASetPrimitiveTopology(
-                call.mMeshData.mTopologyType);
+            context()->IASetInputLayout(
+                call.MeshData.InputLayout);
+            context()->IASetPrimitiveTopology(
+                call.MeshData.TopologyType);
             /*STContext()->IASetVertexBuffers(
                 0, 1, &call.mMeshData.mVertexBuffer,
                 &stride, &offset);*/
-            STContext()->IASetIndexBuffer(
-                call.mMeshData.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-            STContext()->VSSetShaderResources(
+            context()->IASetIndexBuffer(
+                call.MeshData.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+            context()->VSSetShaderResources(
                 1, 1, &mInstanceStructedBufferSrv);
 
-            STContext()->DrawIndexedInstanced(
-                call.mMeshData.mIndexCount,
-                (UINT)call.mInstanceData.mDataPtr->size(), 0, 0, 0);
+            context()->DrawIndexedInstanced(
+                call.MeshData.IndexSize,
+                (UINT)call.InstanceData.DataArrayPtr->size(), 0, 0, 0);
 
-            if (call.mMeshData.mLayout == ANIMAT_LAYOUT)
+            if (call.MeshData.InputLayout == ANIMAT_LAYOUT)
             {
                 ID3D11ShaderResourceView* nullSRV = nullptr;
-                STContext()->VSSetShaderResources(3, 1,
+                context()->VSSetShaderResources(3, 1,
                     &nullSRV);
             }
         }
     }
 
-    STContext()->OMSetRenderTargets(1, &null, nullptr);
-    STContext()->RSSetState(nullptr);
+    context()->OMSetRenderTargets(1, &null, nullptr);
+    context()->RSSetState(nullptr);
 }
 
 bool RSPass_Shadow::CreateShaders()
@@ -2043,12 +2043,12 @@ bool RSPass_Shadow::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\light_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -2058,12 +2058,12 @@ bool RSPass_Shadow::CreateShaders()
 
     D3D_SHADER_MACRO macro[] =
     { { "ANIMATION_VERTEX", "1" }, { nullptr, nullptr } };
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\light_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob, macro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mAniVertexShader);
@@ -2091,7 +2091,7 @@ bool RSPass_Shadow::CreateStates()
     shadowRasterDesc.MultisampleEnable = FALSE;
     shadowRasterDesc.AntialiasedLineEnable = FALSE;
 
-    hr = Device()->CreateRasterizerState(&shadowRasterDesc,
+    hr = device()->CreateRasterizerState(&shadowRasterDesc,
         &mRasterizerState);
     if (FAILED(hr))
     {
@@ -2113,18 +2113,18 @@ bool RSPass_Shadow::CreateBuffers()
     bdc.ByteWidth = MAX_INSTANCE_SIZE * sizeof(RS_INSTANCE_DATA);
     bdc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bdc.StructureByteStride = sizeof(RS_INSTANCE_DATA);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mInstanceStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bdc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE * (UINT)sizeof(DirectX::XMFLOAT4X4);
     bdc.StructureByteStride = sizeof(DirectX::XMFLOAT4X4);
-    hr = Device()->CreateBuffer(&bdc, nullptr, &mBonesStructedBuffer);
+    hr = device()->CreateBuffer(&bdc, nullptr, &mBonesStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bdc.ByteWidth = sizeof(ViewProj);
     bdc.StructureByteStride = sizeof(ViewProj);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mViewProjStructedBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -2136,9 +2136,9 @@ bool RSPass_Shadow::CreateViews()
     HRESULT hr = S_OK;
     ID3D11Texture2D* depthTex = nullptr;
     D3D11_TEXTURE2D_DESC texDepSte = {};
-    texDepSte.Width = GetRSRoot_DX11_Singleton()->Devices()->
+    texDepSte.Width = getRSDX11RootInstance()->getDevices()->
         GetCurrWndWidth();
-    texDepSte.Height = GetRSRoot_DX11_Singleton()->Devices()->
+    texDepSte.Height = getRSDX11RootInstance()->getDevices()->
         GetCurrWndHeight();
     texDepSte.MipLevels = 1;
     texDepSte.ArraySize = MAX_SHADOW_SIZE;
@@ -2150,7 +2150,7 @@ bool RSPass_Shadow::CreateViews()
         D3D11_BIND_SHADER_RESOURCE;
     texDepSte.CPUAccessFlags = 0;
     texDepSte.MiscFlags = 0;
-    hr = Device()->CreateTexture2D(
+    hr = device()->CreateTexture2D(
         &texDepSte, nullptr, &depthTex);
     if (FAILED(hr)) { return false; }
 
@@ -2163,7 +2163,7 @@ bool RSPass_Shadow::CreateViews()
     {
         desDSV.Texture2DArray.FirstArraySlice =
             D3D11CalcSubresource(0, i, 1);
-        hr = Device()->CreateDepthStencilView(
+        hr = device()->CreateDepthStencilView(
             depthTex, &desDSV, &(mDepthStencilView[i]));
         if (FAILED(hr)) { return false; }
     }
@@ -2176,48 +2176,48 @@ bool RSPass_Shadow::CreateViews()
     desSRV.Texture2DArray.MostDetailedMip = 0;
     desSRV.Texture2DArray.MipLevels = 1;
     desSRV.Texture2DArray.ArraySize = MAX_SHADOW_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         depthTex, &desSRV, &srv);
     if (FAILED(hr)) { return false; }
 
     RS_RESOURCE_INFO dti = {};
     std::string name = "light-depth-light-other";
-    dti.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    dti.mResource.mTexture2D = depthTex;
-    dti.mSrv = srv;
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
+    dti.Resource.Texture2D = depthTex;
+    dti.Srv = srv;
+    g_Root->getResourceManager()->AddResource(name, dti);
 
     dti = {};
     name = "light-depth-light-dep0";
-    dti.mDsv = mDepthStencilView[0];
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Dsv = mDepthStencilView[0];
+    g_Root->getResourceManager()->AddResource(name, dti);
     name = "light-depth-light-dep1";
-    dti.mDsv = mDepthStencilView[1];
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Dsv = mDepthStencilView[1];
+    g_Root->getResourceManager()->AddResource(name, dti);
     name = "light-depth-light-dep2";
-    dti.mDsv = mDepthStencilView[2];
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Dsv = mDepthStencilView[2];
+    g_Root->getResourceManager()->AddResource(name, dti);
     name = "light-depth-light-dep3";
-    dti.mDsv = mDepthStencilView[3];
-    g_Root->ResourceManager()->AddResource(name, dti);
+    dti.Dsv = mDepthStencilView[3];
+    g_Root->getResourceManager()->AddResource(name, dti);
 
     ZeroMemory(&desSRV, sizeof(desSRV));
     desSRV.Format = DXGI_FORMAT_UNKNOWN;
     desSRV.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     desSRV.Buffer.ElementWidth = MAX_INSTANCE_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mInstanceStructedBuffer,
         &desSRV, &mInstanceStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     desSRV.Buffer.ElementWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mBonesStructedBuffer,
         &desSRV, &mBonesStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     desSRV.Buffer.ElementWidth = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mViewProjStructedBuffer,
         &desSRV, &mViewProjStructedBufferSrv);
     if (FAILED(hr)) { return false; }
@@ -2294,14 +2294,14 @@ RSPass_Defered::~RSPass_Defered()
 
 }
 
-RSPass_Defered* RSPass_Defered::ClonePass()
+RSPass_Defered* RSPass_Defered::clonePass()
 {
     return new RSPass_Defered(*this);
 }
 
-bool RSPass_Defered::InitPass()
+bool RSPass_Defered::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
@@ -2309,15 +2309,15 @@ bool RSPass_Defered::InitPass()
     if (!CreateSamplers()) { return false; }
 
     std::string name = "temp-cam";
-    mRSCameraInfo = g_Root->CamerasContainer()->
+    mRSCameraInfo = g_Root->getCamerasContainer()->
         GetRSCameraInfo(name);
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_Defered::ReleasePass()
+void RSPass_Defered::releasePass()
 {
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mPixelShader);
@@ -2336,34 +2336,34 @@ void RSPass_Defered::ReleasePass()
     RS_RELEASE(mIndexBuffer);
 }
 
-void RSPass_Defered::ExecuatePass()
+void RSPass_Defered::execuatePass()
 {
-    STContext()->OMSetRenderTargets(1,
+    context()->OMSetRenderTargets(1,
         &mRenderTargetView, nullptr);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->ClearRenderTargetView(
+    context()->RSSetViewports(1, &g_ViewPort);
+    context()->ClearRenderTargetView(
         mRenderTargetView, DirectX::Colors::DarkGreen);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
+    context()->VSSetShader(mVertexShader, nullptr, 0);
+    context()->PSSetShader(mPixelShader, nullptr, 0);
 
     DirectX::XMMATRIX mat = {};
-    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT stride = sizeof(vertex_type::TangentVertex);
     UINT offset = 0;
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
-    STContext()->Map(mAmbientStructedBuffer, 0,
+    context()->Map(mAmbientStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     Ambient* amb_data = (Ambient*)msr.pData;
-    DirectX::XMFLOAT4 ambientL = GetRSRoot_DX11_Singleton()->
-        LightsContainer()->GetCurrentAmbientLight();
+    DirectX::XMFLOAT4 ambientL = getRSDX11RootInstance()->
+        getLightsContainer()->GetCurrentAmbientLight();
     amb_data[0].mAmbient = ambientL;
-    STContext()->Unmap(mAmbientStructedBuffer, 0);
+    context()->Unmap(mAmbientStructedBuffer, 0);
 
-    static auto lights = g_Root->LightsContainer()->GetLights();
-    STContext()->Map(mLightInfoStructedBuffer, 0,
+    static auto lights = g_Root->getLightsContainer()->GetLights();
+    context()->Map(mLightInfoStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     LightInfo* li_data = (LightInfo*)msr.pData;
-    li_data[0].mCameraPos = mRSCameraInfo->mEyePosition;
+    li_data[0].mCameraPos = mRSCameraInfo->EyePosition;
     UINT dNum = 0;
     UINT sNum = 0;
     UINT pNum = 0;
@@ -2384,13 +2384,13 @@ void RSPass_Defered::ExecuatePass()
     li_data[0].mDirectLightNum = dNum;
     li_data[0].mPointLightNum = pNum;
     li_data[0].mSpotLightNum = sNum;
-    li_data[0].mShadowLightNum = (UINT)g_Root->LightsContainer()->
+    li_data[0].mShadowLightNum = (UINT)g_Root->getLightsContainer()->
         GetShadowLights()->size();
     li_data[0].mShadowLightIndex[0] = -1;
     li_data[0].mShadowLightIndex[1] = -1;
     li_data[0].mShadowLightIndex[2] = -1;
     li_data[0].mShadowLightIndex[3] = -1;
-    auto shadowIndeices = g_Root->LightsContainer()->
+    auto shadowIndeices = g_Root->getLightsContainer()->
         GetShadowLightIndeices();
     for (UINT i = 0; i < li_data[0].mShadowLightNum; i++)
     {
@@ -2400,9 +2400,9 @@ void RSPass_Defered::ExecuatePass()
             break;
         }
     }
-    STContext()->Unmap(mLightInfoStructedBuffer, 0);
+    context()->Unmap(mLightInfoStructedBuffer, 0);
 
-    STContext()->Map(mLightStructedBuffer, 0,
+    context()->Map(mLightStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     RS_LIGHT_INFO* l_data = (RS_LIGHT_INFO*)msr.pData;
     UINT lightIndex = 0;
@@ -2410,23 +2410,23 @@ void RSPass_Defered::ExecuatePass()
     {
         l_data[lightIndex++] = *(l->GetRSLightInfo());
     }
-    STContext()->Unmap(mLightStructedBuffer, 0);
+    context()->Unmap(mLightStructedBuffer, 0);
 
-    STContext()->Map(mShadowStructedBuffer, 0,
+    context()->Map(mShadowStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     ShadowInfo* s_data = (ShadowInfo*)msr.pData;
-    auto shadowLights = g_Root->LightsContainer()->
+    auto shadowLights = g_Root->getLightsContainer()->
         GetShadowLights();
     UINT shadowSize = (UINT)shadowLights->size();
     for (UINT i = 0; i < shadowSize; i++)
     {
         auto lcam = (*shadowLights)[i]->GetRSLightCamera();
         mat = DirectX::XMLoadFloat4x4(
-            &(lcam->GetRSCameraInfo()->mViewMat));
+            &(lcam->GetRSCameraInfo()->ViewMatrix));
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&s_data[i].mShadowViewMat, mat);
         mat = DirectX::XMLoadFloat4x4(
-            &(lcam->GetRSCameraInfo()->mProjMat));
+            &(lcam->GetRSCameraInfo()->ProjMatrix));
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&s_data[i].mShadowProjMat, mat);
     }
@@ -2437,26 +2437,26 @@ void RSPass_Defered::ExecuatePass()
         0.0f, 0.0f, 1.0f, 0.0f,
         0.5f, 0.5f, 0.0f, 1.0f);
     mat = DirectX::XMMatrixTranspose(
-        DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat) *
-        DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat) *
+        DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix) *
+        DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix) *
         T);
     DirectX::XMStoreFloat4x4(&s_data[0].mSSAOMat, mat);
-    STContext()->Unmap(mShadowStructedBuffer, 0);
+    context()->Unmap(mShadowStructedBuffer, 0);
 
-    STContext()->Map(mCameraStructedBuffer, 0,
+    context()->Map(mCameraStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     ViewProj* vp_data = (ViewProj*)msr.pData;
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvViewMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvViewMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mViewMat, mat);
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvProjMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvProjMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
-    STContext()->Unmap(mCameraStructedBuffer, 0);
+    context()->Unmap(mCameraStructedBuffer, 0);
 
     static std::string depthSrvName = "mrt-depth";
-    static auto depSrv = g_Root->ResourceManager()->
-        GetResourceInfo(depthSrvName)->mSrv;
+    static auto depSrv = g_Root->getResourceManager()->
+        GetResourceInfo(depthSrvName)->Srv;
     ID3D11ShaderResourceView* srvs[] =
     {
         mAmbientStructedBufferSrv,
@@ -2464,13 +2464,13 @@ void RSPass_Defered::ExecuatePass()
         mLightStructedBufferSrv,
         mShadowStructedBufferSrv,
         mCameraStructedBufferSrv,
-        g_Root->StaticResources()->GetMaterialSrv(),
+        g_Root->getStaticResources()->GetMaterialSrv(),
         mGeoBufferSrv, mAnisotropicSrv,
         mSsaoSrv, mShadowDepthSrv,
         g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv,
         depSrv
     };
-    STContext()->PSSetShaderResources(0, 14, srvs);
+    context()->PSSetShaderResources(0, 14, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
@@ -2478,27 +2478,27 @@ void RSPass_Defered::ExecuatePass()
         mLinearWrapSampler,
         mShadowTexSampler
     };
-    STContext()->PSSetSamplers(0, 3, samps);
+    context()->PSSetSamplers(0, 3, samps);
 
-    STContext()->IASetPrimitiveTopology(
+    context()->IASetPrimitiveTopology(
         D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    STContext()->IASetVertexBuffers(
+    context()->IASetVertexBuffers(
         0, 1, &mVertexBuffer,
         &stride, &offset);
-    STContext()->IASetIndexBuffer(
+    context()->IASetIndexBuffer(
         mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+    context()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
     ID3D11RenderTargetView* rtvnull = nullptr;
-    STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
+    context()->OMSetRenderTargets(1, &rtvnull, nullptr);
     static ID3D11ShaderResourceView* nullsrvs[] =
     {
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
         nullptr, nullptr
     };
-    STContext()->PSSetShaderResources(0, 14, nullsrvs);
+    context()->PSSetShaderResources(0, 14, nullsrvs);
 }
 
 bool RSPass_Defered::CreateShaders()
@@ -2506,12 +2506,12 @@ bool RSPass_Defered::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\defered_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -2527,12 +2527,12 @@ bool RSPass_Defered::CreateShaders()
         { modelName.c_str(), "1" },
         { nullptr, nullptr }
     };
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\defered_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob, macro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
@@ -2548,7 +2548,7 @@ bool RSPass_Defered::CreateBuffers()
     HRESULT hr = S_OK;
     D3D11_BUFFER_DESC bufDesc = {};
 
-    VertexType::TangentVertex v[4] = {};
+    vertex_type::TangentVertex v[4] = {};
     v[0].Position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
     v[1].Position = DirectX::XMFLOAT3(-1.0f, +1.0f, 0.0f);
     v[2].Position = DirectX::XMFLOAT3(+1.0f, +1.0f, 0.0f);
@@ -2567,7 +2567,7 @@ bool RSPass_Defered::CreateBuffers()
     v[3].TexCoord = DirectX::XMFLOAT2(1.0f, 1.0f);
     ZeroMemory(&bufDesc, sizeof(bufDesc));
     bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufDesc.ByteWidth = sizeof(VertexType::TangentVertex) * 4;
+    bufDesc.ByteWidth = sizeof(vertex_type::TangentVertex) * 4;
     bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufDesc.CPUAccessFlags = 0;
     bufDesc.MiscFlags = 0;
@@ -2575,7 +2575,7 @@ bool RSPass_Defered::CreateBuffers()
     D3D11_SUBRESOURCE_DATA vinitData = {};
     ZeroMemory(&vinitData, sizeof(vinitData));
     vinitData.pSysMem = v;
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bufDesc, &vinitData, &mVertexBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -2594,7 +2594,7 @@ bool RSPass_Defered::CreateBuffers()
     D3D11_SUBRESOURCE_DATA iinitData = {};
     ZeroMemory(&iinitData, sizeof(iinitData));
     iinitData.pSysMem = indices;
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bufDesc, &iinitData, &mIndexBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -2605,31 +2605,31 @@ bool RSPass_Defered::CreateBuffers()
     bufDesc.ByteWidth = MAX_LIGHT_SIZE * sizeof(RS_LIGHT_INFO);
     bufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bufDesc.StructureByteStride = sizeof(RS_LIGHT_INFO);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bufDesc, nullptr, &mLightStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bufDesc.ByteWidth = sizeof(Ambient);
     bufDesc.StructureByteStride = sizeof(Ambient);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bufDesc, nullptr, &mAmbientStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bufDesc.ByteWidth = sizeof(LightInfo);
     bufDesc.StructureByteStride = sizeof(LightInfo);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bufDesc, nullptr, &mLightInfoStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bufDesc.ByteWidth = MAX_SHADOW_SIZE * sizeof(ShadowInfo);
     bufDesc.StructureByteStride = sizeof(ShadowInfo);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bufDesc, nullptr, &mShadowStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bufDesc.ByteWidth = sizeof(ViewProj);
     bufDesc.StructureByteStride = sizeof(ViewProj);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bufDesc, nullptr, &mCameraStructedBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -2638,20 +2638,20 @@ bool RSPass_Defered::CreateBuffers()
 
 bool RSPass_Defered::CreateViews()
 {
-    mRenderTargetView = g_Root->Devices()->GetHighDynamicRtv();
+    mRenderTargetView = g_Root->getDevices()->GetHighDynamicRtv();
 
     std::string name = "mrt-geo-buffer";
-    mGeoBufferSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mGeoBufferSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
     name = "mrt-anisotropic";
-    mAnisotropicSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mAnisotropicSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
     name = "ssao-tex-compress-ssao";
-    mSsaoSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mSsaoSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
     name = "light-depth-light-other";
-    mShadowDepthSrv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mSrv;
+    mShadowDepthSrv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Srv;
 
     HRESULT hr = S_OK;
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -2659,29 +2659,29 @@ bool RSPass_Defered::CreateViews()
     srvDesc.Format = DXGI_FORMAT_UNKNOWN;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     srvDesc.Buffer.ElementWidth = MAX_LIGHT_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mLightStructedBuffer,
         &srvDesc, &mLightStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Buffer.ElementWidth = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mLightInfoStructedBuffer,
         &srvDesc, &mLightInfoStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mAmbientStructedBuffer,
         &srvDesc, &mAmbientStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mCameraStructedBuffer,
         &srvDesc, &mCameraStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Buffer.ElementWidth = MAX_SHADOW_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mShadowStructedBuffer,
         &srvDesc, &mShadowStructedBufferSrv);
     if (FAILED(hr)) { return false; }
@@ -2719,7 +2719,7 @@ bool RSPass_Defered::CreateSamplers()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &sampDesc, &mLinearWrapSampler);
     if (FAILED(hr)) { return false; }
 
@@ -2731,7 +2731,7 @@ bool RSPass_Defered::CreateSamplers()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &sampDesc, &mPointClampSampler);
     if (FAILED(hr)) { return false; }
 
@@ -2743,7 +2743,7 @@ bool RSPass_Defered::CreateSamplers()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &sampDesc, &mShadowTexSampler);
     if (FAILED(hr)) { return false; }
 
@@ -2791,14 +2791,14 @@ RSPass_SkyShpere::~RSPass_SkyShpere()
 
 }
 
-RSPass_SkyShpere* RSPass_SkyShpere::ClonePass()
+RSPass_SkyShpere* RSPass_SkyShpere::clonePass()
 {
     return new RSPass_SkyShpere(*this);
 }
 
-bool RSPass_SkyShpere::InitPass()
+bool RSPass_SkyShpere::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateStates()) { return false; }
@@ -2806,27 +2806,27 @@ bool RSPass_SkyShpere::InitPass()
     if (!CreateViews()) { return false; }
     if (!CreateSamplers()) { return false; }
 
-    mSkySphereMesh = g_Root->MeshHelper()->GeoGenerate()->
+    mSkySphereMesh = g_Root->getMeshHelper()->GeoGenerate()->
         CreateGeometrySphere(10.f, 0,
             LAYOUT_TYPE::NORMAL_TANGENT_TEX, false,
             {},
             "this is not a bug about loading skybox texture failed :)");
     HRESULT hr = DirectX::CreateDDSTextureFromFile(
-        g_Root->Devices()->GetDevice(),
+        g_Root->getDevices()->GetDevice(),
         L".\\RenderSystem_StaticResources\\Textures\\ibl_brdf.dds",
         nullptr, &g_IblBrdfSrv);
     if (FAILED(hr)) { return false; }
 
     std::string name = "temp-cam";
-    mRSCameraInfo = g_Root->CamerasContainer()->
+    mRSCameraInfo = g_Root->getCamerasContainer()->
         GetRSCameraInfo(name);
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_SkyShpere::ReleasePass()
+void RSPass_SkyShpere::releasePass()
 {
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mPixelShader);
@@ -2836,64 +2836,64 @@ void RSPass_SkyShpere::ReleasePass()
     RS_RELEASE(mSkyShpereInfoStructedBuffer);
     //RS_RELEASE(mSkyShpereInfoStructedBufferSrv);
 
-    g_Root->MeshHelper()->ReleaseSubMesh(mSkySphereMesh);
+    g_Root->getMeshHelper()->ReleaseSubMesh(mSkySphereMesh);
 }
 
-void RSPass_SkyShpere::ExecuatePass()
+void RSPass_SkyShpere::execuatePass()
 {
     ID3D11RenderTargetView* null = nullptr;
-    STContext()->OMSetRenderTargets(1,
+    context()->OMSetRenderTargets(1,
         &mRenderTargerView, mDepthStencilView);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
-    STContext()->RSSetState(mRasterizerState);
-    STContext()->OMSetDepthStencilState(mDepthStencilState, 0);
+    context()->RSSetViewports(1, &g_ViewPort);
+    context()->VSSetShader(mVertexShader, nullptr, 0);
+    context()->PSSetShader(mPixelShader, nullptr, 0);
+    context()->RSSetState(mRasterizerState);
+    context()->OMSetDepthStencilState(mDepthStencilState, 0);
 
     DirectX::XMMATRIX mat = {};
-    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT stride = sizeof(vertex_type::TangentVertex);
     UINT offset = 0;
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
 
-    STContext()->Map(mSkyShpereInfoStructedBuffer, 0,
+    context()->Map(mSkyShpereInfoStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     SkyShpereInfo* sp_data = (SkyShpereInfo*)msr.pData;
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&sp_data[0].mViewMat, mat);
 
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&sp_data[0].mProjMat, mat);
 
-    sp_data[0].mEyePosition = mRSCameraInfo->mEyePosition;
+    sp_data[0].mEyePosition = mRSCameraInfo->EyePosition;
 
     mat = DirectX::XMMatrixScaling(1000.f, 1000.f, 1000.f);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&sp_data[0].mWorldMat, mat);
-    STContext()->Unmap(mSkyShpereInfoStructedBuffer, 0);
+    context()->Unmap(mSkyShpereInfoStructedBuffer, 0);
 
-    STContext()->IASetInputLayout(mSkySphereMesh.mLayout);
-    STContext()->IASetPrimitiveTopology(
-        mSkySphereMesh.mTopologyType);
-    STContext()->IASetVertexBuffers(
-        0, 1, &mSkySphereMesh.mVertexBuffer,
+    context()->IASetInputLayout(mSkySphereMesh.InputLayout);
+    context()->IASetPrimitiveTopology(
+        mSkySphereMesh.TopologyType);
+    context()->IASetVertexBuffers(
+        0, 1, &mSkySphereMesh.VertexBuffer,
         &stride, &offset);
-    STContext()->IASetIndexBuffer(
-        mSkySphereMesh.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-    STContext()->VSSetShaderResources(
+    context()->IASetIndexBuffer(
+        mSkySphereMesh.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    context()->VSSetShaderResources(
         0, 1, &mSkyShpereInfoStructedBufferSrv);
-    STContext()->PSSetShaderResources(
+    context()->PSSetShaderResources(
         0, 1, &g_EnviMapSrv);
-    STContext()->PSSetSamplers(0, 1, &mLinearWrapSampler);
+    context()->PSSetSamplers(0, 1, &mLinearWrapSampler);
 
-    STContext()->DrawIndexedInstanced(mSkySphereMesh.mIndexCount,
+    context()->DrawIndexedInstanced(mSkySphereMesh.IndexSize,
         1, 0, 0, 0);
 
-    STContext()->OMSetRenderTargets(1, &null, nullptr);
-    STContext()->RSSetState(nullptr);
-    STContext()->OMSetDepthStencilState(nullptr, 0);
+    context()->OMSetRenderTargets(1, &null, nullptr);
+    context()->RSSetState(nullptr);
+    context()->OMSetDepthStencilState(nullptr, 0);
 }
 
 bool RSPass_SkyShpere::CreateShaders()
@@ -2901,12 +2901,12 @@ bool RSPass_SkyShpere::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\skysphere_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -2914,12 +2914,12 @@ bool RSPass_SkyShpere::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\skysphere_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
@@ -2943,11 +2943,11 @@ bool RSPass_SkyShpere::CreateStates()
     depDesc.DepthEnable = TRUE;
     depDesc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 
-    hr = Device()->CreateRasterizerState(
+    hr = device()->CreateRasterizerState(
         &rasDesc, &mRasterizerState);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateDepthStencilState(
+    hr = device()->CreateDepthStencilState(
         &depDesc, &mDepthStencilState);
     if (FAILED(hr)) { return false; }
 
@@ -2966,7 +2966,7 @@ bool RSPass_SkyShpere::CreateBuffers()
     bdc.ByteWidth = sizeof(SkyShpereInfo);
     bdc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bdc.StructureByteStride = sizeof(SkyShpereInfo);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mSkyShpereInfoStructedBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -2975,10 +2975,10 @@ bool RSPass_SkyShpere::CreateBuffers()
 
 bool RSPass_SkyShpere::CreateViews()
 {
-    mRenderTargerView = g_Root->Devices()->GetHighDynamicRtv();
+    mRenderTargerView = g_Root->getDevices()->GetHighDynamicRtv();
     std::string name = "mrt-depth";
-    mDepthStencilView = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mDsv;
+    mDepthStencilView = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Dsv;
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desSRV = {};
     HRESULT hr = S_OK;
@@ -2986,7 +2986,7 @@ bool RSPass_SkyShpere::CreateViews()
     desSRV.Format = DXGI_FORMAT_UNKNOWN;
     desSRV.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     desSRV.Buffer.ElementWidth = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mSkyShpereInfoStructedBuffer,
         &desSRV, &mSkyShpereInfoStructedBufferSrv);
     if (FAILED(hr)) { return false; }
@@ -3007,7 +3007,7 @@ bool RSPass_SkyShpere::CreateSamplers()
     samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     samDesc.MinLOD = 0;
     samDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &samDesc, &mLinearWrapSampler);
     if (FAILED(hr)) { return false; }
 
@@ -3058,39 +3058,39 @@ RSPass_Bloom::~RSPass_Bloom()
 
 }
 
-RSPass_Bloom* RSPass_Bloom::ClonePass()
+RSPass_Bloom* RSPass_Bloom::clonePass()
 {
     return new RSPass_Bloom(*this);
 }
 
-bool RSPass_Bloom::InitPass()
+bool RSPass_Bloom::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
     if (!CreateViews()) { return false; }
     if (!CreateSamplers()) { return false; }
 
-    mDrawCallPipe = g_Root->DrawCallsPool()->
+    mDrawCallPipe = g_Root->getDrawCallsPool()->
         GetDrawCallsPipe(mDrawCallType);
 
     std::string name = "temp-cam";
-    mRSCameraInfo = g_Root->CamerasContainer()->
+    mRSCameraInfo = g_Root->getCamerasContainer()->
         GetRSCameraInfo(name);
     if (!mRSCameraInfo) { return false; }
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_Bloom::ReleasePass()
+void RSPass_Bloom::releasePass()
 {
     std::string name = "bloom-light";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
     name = "bloom-compress-light";
-    g_Root->ResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->DeleteResource(name);
 
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mPixelShader);
@@ -3102,75 +3102,75 @@ void RSPass_Bloom::ReleasePass()
     RS_RELEASE(mSampler);
 }
 
-void RSPass_Bloom::ExecuatePass()
+void RSPass_Bloom::execuatePass()
 {
-    STContext()->OMSetRenderTargets(1, &mRtv, mDepthDsv);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
+    context()->OMSetRenderTargets(1, &mRtv, mDepthDsv);
+    context()->RSSetViewports(1, &g_ViewPort);
+    context()->VSSetShader(mVertexShader, nullptr, 0);
+    context()->PSSetShader(mPixelShader, nullptr, 0);
 
     DirectX::XMMATRIX mat = {};
-    UINT stride = sizeof(VertexType::ColorVertex);
+    UINT stride = sizeof(vertex_type::ColorVertex);
     UINT offset = 0;
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
-    STContext()->Map(mViewProjStructedBuffer, 0,
+    context()->Map(mViewProjStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     ViewProj* vp_data = (ViewProj*)msr.pData;
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mViewMat, mat);
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
-    STContext()->Unmap(mViewProjStructedBuffer, 0);
+    context()->Unmap(mViewProjStructedBuffer, 0);
 
-    STContext()->VSSetShaderResources(
+    context()->VSSetShaderResources(
         0, 1, &mViewProjStructedBufferSrv);
 
-    for (auto& call : mDrawCallPipe->mDatas)
+    for (auto& call : mDrawCallPipe->Data)
     {
-        auto vecPtr = call.mInstanceData.mDataPtr;
+        auto vecPtr = call.InstanceData.DataArrayPtr;
         auto size = vecPtr->size();
-        STContext()->Map(mInstanceStructedBuffer, 0,
+        context()->Map(mInstanceStructedBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         RS_INSTANCE_DATA* ins_data = (RS_INSTANCE_DATA*)msr.pData;
         for (size_t i = 0; i < size; i++)
         {
             mat = DirectX::XMLoadFloat4x4(
-                &(*vecPtr)[i].mWorldMat);
+                &(*vecPtr)[i].WorldMatrix);
             mat = DirectX::XMMatrixTranspose(mat);
-            DirectX::XMStoreFloat4x4(&ins_data[i].mWorldMat, mat);
-            ins_data[i].mMaterialData =
-                (*vecPtr)[i].mMaterialData;
-            ins_data[i].mCustomizedData1 =
-                (*vecPtr)[i].mCustomizedData1;
-            ins_data[i].mCustomizedData2 =
-                (*vecPtr)[i].mCustomizedData2;
+            DirectX::XMStoreFloat4x4(&ins_data[i].WorldMatrix, mat);
+            ins_data[i].MaterialData =
+                (*vecPtr)[i].MaterialData;
+            ins_data[i].CustomizedData1 =
+                (*vecPtr)[i].CustomizedData1;
+            ins_data[i].CustomizedData2 =
+                (*vecPtr)[i].CustomizedData2;
         }
-        STContext()->Unmap(mInstanceStructedBuffer, 0);
+        context()->Unmap(mInstanceStructedBuffer, 0);
 
-        STContext()->IASetInputLayout(
-            call.mMeshData.mLayout);
-        STContext()->IASetPrimitiveTopology(
-            call.mMeshData.mTopologyType);
-        STContext()->IASetVertexBuffers(
-            0, 1, &call.mMeshData.mVertexBuffer,
+        context()->IASetInputLayout(
+            call.MeshData.InputLayout);
+        context()->IASetPrimitiveTopology(
+            call.MeshData.TopologyType);
+        context()->IASetVertexBuffers(
+            0, 1, &call.MeshData.VertexBuffer,
             &stride, &offset);
-        STContext()->IASetIndexBuffer(
-            call.mMeshData.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        STContext()->VSSetShaderResources(
+        context()->IASetIndexBuffer(
+            call.MeshData.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        context()->VSSetShaderResources(
             1, 1, &mInstanceStructedBufferSrv);
 
-        STContext()->DrawIndexedInstanced(
-            call.mMeshData.mIndexCount,
-            (UINT)call.mInstanceData.mDataPtr->size(), 0, 0, 0);
+        context()->DrawIndexedInstanced(
+            call.MeshData.IndexSize,
+            (UINT)call.InstanceData.DataArrayPtr->size(), 0, 0, 0);
     }
 
     static ID3D11RenderTargetView* nullrtv[] = { nullptr };
     static ID3D11ShaderResourceView* nullsrv[] = { nullptr };
-    STContext()->OMSetRenderTargets(1, nullrtv, nullptr);
-    STContext()->VSSetShaderResources(0, 1, nullsrv);
+    context()->OMSetRenderTargets(1, nullrtv, nullptr);
+    context()->VSSetShaderResources(0, 1, nullsrv);
 }
 
 bool RSPass_Bloom::CreateShaders()
@@ -3178,12 +3178,12 @@ bool RSPass_Bloom::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\bloom_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -3200,7 +3200,7 @@ bool RSPass_Bloom::CreateShaders()
             { "PIXEL_FACTOR", pixelFactor.c_str() },
             { nullptr, nullptr }
         };
-        hr = Tool::CompileShaderFromFile(
+        hr = rs_tool::compileShaderFromFile(
             L".\\Assets\\Shaders\\bloom_pixel.hlsl",
             "main", "ps_5_0", &shaderBlob, macro);
         if (FAILED(hr)) { return false; }
@@ -3213,13 +3213,13 @@ bool RSPass_Bloom::CreateShaders()
             { "PIXEL_FACTOR", pixelFactor.c_str() },
             { nullptr, nullptr }
         };
-        hr = Tool::CompileShaderFromFile(
+        hr = rs_tool::compileShaderFromFile(
             L".\\Assets\\Shaders\\bloom_pixel.hlsl",
             "main", "ps_5_0", &shaderBlob, macro);
         if (FAILED(hr)) { return false; }
     }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
@@ -3243,7 +3243,7 @@ bool RSPass_Bloom::CreateSamplers()
     samDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     samDesc.MinLOD = 0;
     samDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &samDesc, &mSampler);
     if (FAILED(hr)) { return false; }
 
@@ -3262,17 +3262,17 @@ bool RSPass_Bloom::CreateBuffers()
     bdc.ByteWidth = MAX_INSTANCE_SIZE * sizeof(RS_INSTANCE_DATA);
     bdc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bdc.StructureByteStride = sizeof(RS_INSTANCE_DATA);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mInstanceStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bdc.ByteWidth = sizeof(ViewProj);
     bdc.StructureByteStride = sizeof(ViewProj);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mViewProjStructedBuffer);
     if (FAILED(hr)) { return false; }
 
-    VertexType::TangentVertex v[4] = {};
+    vertex_type::TangentVertex v[4] = {};
     v[0].Position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
     v[1].Position = DirectX::XMFLOAT3(-1.0f, +1.0f, 0.0f);
     v[2].Position = DirectX::XMFLOAT3(+1.0f, +1.0f, 0.0f);
@@ -3291,7 +3291,7 @@ bool RSPass_Bloom::CreateBuffers()
     v[3].TexCoord = DirectX::XMFLOAT2(1.0f, 1.0f);
     ZeroMemory(&bdc, sizeof(bdc));
     bdc.Usage = D3D11_USAGE_IMMUTABLE;
-    bdc.ByteWidth = sizeof(VertexType::TangentVertex) * 4;
+    bdc.ByteWidth = sizeof(vertex_type::TangentVertex) * 4;
     bdc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bdc.CPUAccessFlags = 0;
     bdc.MiscFlags = 0;
@@ -3299,7 +3299,7 @@ bool RSPass_Bloom::CreateBuffers()
     D3D11_SUBRESOURCE_DATA vinitData = {};
     ZeroMemory(&vinitData, sizeof(vinitData));
     vinitData.pSysMem = v;
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, &vinitData, &mVertexBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -3318,7 +3318,7 @@ bool RSPass_Bloom::CreateBuffers()
     D3D11_SUBRESOURCE_DATA iinitData = {};
     ZeroMemory(&iinitData, sizeof(iinitData));
     iinitData.pSysMem = indices;
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, &iinitData, &mIndexBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -3331,24 +3331,24 @@ bool RSPass_Bloom::CreateViews()
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     std::string name = "";
 
-    mRtv = g_Root->Devices()->GetHighDynamicRtv();
+    mRtv = g_Root->getDevices()->GetHighDynamicRtv();
 
     name = "mrt-depth";
-    mDepthDsv = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mDsv;
+    mDepthDsv = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Dsv;
     if (!mDepthDsv) { return false; }
 
     ZeroMemory(&srvDesc, sizeof(srvDesc));
     srvDesc.Format = DXGI_FORMAT_UNKNOWN;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     srvDesc.Buffer.ElementWidth = MAX_INSTANCE_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mInstanceStructedBuffer,
         &srvDesc, &mInstanceStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Buffer.ElementWidth = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mViewProjStructedBuffer,
         &srvDesc, &mViewProjStructedBufferSrv);
     if (FAILED(hr)) { return false; }
@@ -3460,31 +3460,31 @@ const RS_TILING_CONSTANT& RSPass_PriticleSetUp::GetTilingConstantInfo() const
     return mTilingConstant;
 }
 
-RSPass_PriticleSetUp* RSPass_PriticleSetUp::ClonePass()
+RSPass_PriticleSetUp* RSPass_PriticleSetUp::clonePass()
 {
     return new RSPass_PriticleSetUp(*this);
 }
 
-bool RSPass_PriticleSetUp::InitPass()
+bool RSPass_PriticleSetUp::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
-    int width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    int height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
+    int width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
+    int height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
 
     mTilingConstant.mNumTilesX =
-        Tool::Align(width, PTC_TILE_X_SIZE) / PTC_TILE_X_SIZE;
+        rs_tool::align(width, PTC_TILE_X_SIZE) / PTC_TILE_X_SIZE;
     mTilingConstant.mNumTilesY =
-        Tool::Align(height, PTC_TILE_Y_SIZE) / PTC_TILE_Y_SIZE;
+        rs_tool::align(height, PTC_TILE_Y_SIZE) / PTC_TILE_Y_SIZE;
     mTilingConstant.mNumCoarseCullingTilesX = PTC_MAX_COARSE_CULL_TILE_X;
     mTilingConstant.mNumCoarseCullingTilesY = PTC_MAX_COARSE_CULL_TILE_Y;
     mTilingConstant.mNumCullingTilesPerCoarseTileX =
-        Tool::Align(
+        rs_tool::align(
             mTilingConstant.mNumTilesX,
             mTilingConstant.mNumCoarseCullingTilesX) /
         mTilingConstant.mNumCoarseCullingTilesX;
     mTilingConstant.mNumCullingTilesPerCoarseTileY =
-        Tool::Align(
+        rs_tool::align(
             mTilingConstant.mNumTilesY,
             mTilingConstant.mNumCoarseCullingTilesY) /
         mTilingConstant.mNumCoarseCullingTilesY;
@@ -3492,152 +3492,152 @@ bool RSPass_PriticleSetUp::InitPass()
     if (!CreateBuffers()) { return false; }
     if (!CreateViews()) { return false; }
 
-    auto resManager = GetRSRoot_DX11_Singleton()->ResourceManager();
+    auto resManager = getRSDX11RootInstance()->getResourceManager();
     RS_RESOURCE_INFO res;
     std::string name = "";
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mParticleRenderBuffer;
-    res.mSrv = mParticleRender_Srv;
-    res.mUav = mParticleRender_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mParticleRenderBuffer;
+    res.Srv = mParticleRender_Srv;
+    res.Uav = mParticleRender_Uav;
     name = PTC_RENDER_BUFFER_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mParticlePartA;
-    res.mSrv = mPartA_Srv;
-    res.mUav = mPartA_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mParticlePartA;
+    res.Srv = mPartA_Srv;
+    res.Uav = mPartA_Uav;
     name = PTC_A_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mParticlePartB;
-    res.mUav = mPartB_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mParticlePartB;
+    res.Uav = mPartB_Uav;
     name = PTC_B_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mViewspacePosBuffer;
-    res.mSrv = mViewSpacePos_Srv;
-    res.mUav = mViewSpacePos_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mViewspacePosBuffer;
+    res.Srv = mViewSpacePos_Srv;
+    res.Uav = mViewSpacePos_Uav;
     name = PTC_VIEW_SPCACE_POS_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mMaxRadiusBuffer;
-    res.mSrv = mMaxRadius_Srv;
-    res.mUav = mMaxRadius_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mMaxRadiusBuffer;
+    res.Srv = mMaxRadius_Srv;
+    res.Uav = mMaxRadius_Uav;
     name = PTC_MAX_RADIUS_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mStridedCoarseCullBuffer;
-    res.mSrv = mStridedCoarseCull_Srv;
-    res.mUav = mStridedCoarseCull_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mStridedCoarseCullBuffer;
+    res.Srv = mStridedCoarseCull_Srv;
+    res.Uav = mStridedCoarseCull_Uav;
     name = PTC_COARSE_CULL_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mStridedCoarseCullCounterBuffer;
-    res.mSrv = mStridedCoarseCullCounter_Srv;
-    res.mUav = mStridedCoarseCullCounter_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mStridedCoarseCullCounterBuffer;
+    res.Srv = mStridedCoarseCullCounter_Srv;
+    res.Uav = mStridedCoarseCullCounter_Uav;
     name = PTC_COARSE_CULL_COUNTER_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mTiledIndexBuffer;
-    res.mSrv = mTiledIndex_Srv;
-    res.mUav = mTiledIndex_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mTiledIndexBuffer;
+    res.Srv = mTiledIndex_Srv;
+    res.Uav = mTiledIndex_Uav;
     name = PTC_TILED_INDEX_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mDeadListBuffer;
-    res.mUav = mDeadList_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mDeadListBuffer;
+    res.Uav = mDeadList_Uav;
     name = PTC_DEAD_LIST_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mAliveIndexBuffer;
-    res.mSrv = mAliveIndex_Srv;
-    res.mUav = mAliveIndex_Uav;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mAliveIndexBuffer;
+    res.Srv = mAliveIndex_Srv;
+    res.Uav = mAliveIndex_Uav;
     name = PTC_ALIVE_INDEX_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mDeadListConstantBuffer;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mDeadListConstantBuffer;
     name = PTC_DEAD_LIST_CONSTANT_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mActiveListConstantBuffer;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mActiveListConstantBuffer;
     name = PTC_ALIVE_LIST_CONSTANT_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mEmitterConstantBuffer;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mEmitterConstantBuffer;
     name = PTC_EMITTER_CONSTANT_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mCameraConstantBuffer;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mCameraConstantBuffer;
     name = PTC_CAMERA_CONSTANT_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mTilingConstantBuffer;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mTilingConstantBuffer;
     name = PTC_TILING_CONSTANT_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mDebugCounterBuffer;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mDebugCounterBuffer;
     name = PTC_DEBUG_COUNTER_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::TEXTURE2D;
-    res.mResource.mTexture2D = mParticleRandomTexture;
-    res.mSrv = mParticleRandom_Srv;
+    res.Type = RS_RESOURCE_TYPE::TEXTURE2D;
+    res.Resource.Texture2D = mParticleRandomTexture;
+    res.Srv = mParticleRandom_Srv;
     name = PTC_RAMDOM_TEXTURE_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mSimulEmitterStructedBuffer;
-    res.mSrv = mSimulEmitterStructedBuffer_Srv;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mSimulEmitterStructedBuffer;
+    res.Srv = mSimulEmitterStructedBuffer_Srv;
     name = PTC_SIMU_EMITTER_STRU_NAME;
     resManager->AddResource(name, res);
 
     res = {};
-    res.mType = RS_RESOURCE_TYPE::BUFFER;
-    res.mResource.mBuffer = mTimeConstantBuffer;
+    res.Type = RS_RESOURCE_TYPE::BUFFER;
+    res.Resource.Buffer = mTimeConstantBuffer;
     name = PTC_TIME_CONSTANT_NAME;
     resManager->AddResource(name, res);
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_PriticleSetUp::ReleasePass()
+void RSPass_PriticleSetUp::releasePass()
 {
-    auto resManager = GetRSRoot_DX11_Singleton()->ResourceManager();
+    auto resManager = getRSDX11RootInstance()->getResourceManager();
     std::string name = PTC_RENDER_BUFFER_NAME;
     resManager->DeleteResource(name);
     name = PTC_A_NAME;
@@ -3678,7 +3678,7 @@ void RSPass_PriticleSetUp::ReleasePass()
     resManager->DeleteResource(name);
 }
 
-void RSPass_PriticleSetUp::ExecuatePass()
+void RSPass_PriticleSetUp::execuatePass()
 {
 
 }
@@ -3697,58 +3697,58 @@ bool RSPass_PriticleSetUp::CreateBuffers()
     bfrDesc.CPUAccessFlags = 0;
     bfrDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bfrDesc.StructureByteStride = sizeof(RS_PARTICLE_PART_A);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mParticlePartA);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mParticlePartA);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth = sizeof(RS_PARTICLE_PART_B) * PTC_MAX_PARTICLE_SIZE;
     bfrDesc.StructureByteStride = sizeof(RS_PARTICLE_PART_B);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mParticlePartB);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mParticlePartB);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth = sizeof(DirectX::XMFLOAT4) * PTC_MAX_PARTICLE_SIZE;
     bfrDesc.StructureByteStride = sizeof(DirectX::XMFLOAT4);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mViewspacePosBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mViewspacePosBuffer);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth = sizeof(float) * PTC_MAX_PARTICLE_SIZE;
     bfrDesc.StructureByteStride = sizeof(float);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mMaxRadiusBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mMaxRadiusBuffer);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth = sizeof(UINT) * PTC_MAX_PARTICLE_SIZE;
     bfrDesc.StructureByteStride = sizeof(UINT);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mDeadListBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mDeadListBuffer);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth =
         sizeof(RS_ALIVE_INDEX_BUFFER_ELEMENT) * PTC_MAX_PARTICLE_SIZE;
     bfrDesc.StructureByteStride = sizeof(RS_ALIVE_INDEX_BUFFER_ELEMENT);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mAliveIndexBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mAliveIndexBuffer);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.StructureByteStride = 0;
     bfrDesc.MiscFlags = 0;
     bfrDesc.ByteWidth =
         sizeof(UINT) * PTC_MAX_PARTICLE_SIZE * PTC_MAX_COARSE_CULL_TILE_SIZE;
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mStridedCoarseCullBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mStridedCoarseCullBuffer);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth = sizeof(UINT) * PTC_MAX_COARSE_CULL_TILE_SIZE;
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr,
+    hr = device()->CreateBuffer(&bfrDesc, nullptr,
         &mStridedCoarseCullCounterBuffer);
     if (FAILED(hr)) { return false; }
 
     UINT numElements = mTilingConstant.mNumTilesX * mTilingConstant.mNumTilesY *
         PTC_TILE_BUFFER_SIZE;
     bfrDesc.ByteWidth = sizeof(UINT) * numElements;
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mTiledIndexBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mTiledIndexBuffer);
     if (FAILED(hr)) { return false; }
 
     numElements =
         mTilingConstant.mNumTilesX * mTilingConstant.mNumTilesY *
         PTC_TILE_X_SIZE * PTC_TILE_Y_SIZE;
     bfrDesc.ByteWidth = 8 * numElements;    // DXGI_FORMAT_R16G16B16A16_FLOAT
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mParticleRenderBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mParticleRenderBuffer);
     if (FAILED(hr)) { return false; }
 
     ZeroMemory(&bfrDesc, sizeof(bfrDesc));
@@ -3756,9 +3756,9 @@ bool RSPass_PriticleSetUp::CreateBuffers()
     bfrDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bfrDesc.CPUAccessFlags = 0;
     bfrDesc.ByteWidth = 4 * sizeof(UINT);   // one for record and three for pad
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mDeadListConstantBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mDeadListConstantBuffer);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mActiveListConstantBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mActiveListConstantBuffer);
     if (FAILED(hr)) { return false; }
 
     ZeroMemory(&bfrDesc, sizeof(bfrDesc));
@@ -3766,19 +3766,19 @@ bool RSPass_PriticleSetUp::CreateBuffers()
     bfrDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bfrDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     bfrDesc.ByteWidth = sizeof(RS_PARTICLE_EMITTER_INFO);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mEmitterConstantBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mEmitterConstantBuffer);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth = sizeof(CAMERA_STATUS);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mCameraConstantBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mCameraConstantBuffer);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth = sizeof(RS_TILING_CONSTANT);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mTilingConstantBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mTilingConstantBuffer);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth = sizeof(PTC_TIME_CONSTANT);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mTimeConstantBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mTimeConstantBuffer);
     if (FAILED(hr)) { return false; }
 
     ZeroMemory(&bfrDesc, sizeof(bfrDesc));
@@ -3786,7 +3786,7 @@ bool RSPass_PriticleSetUp::CreateBuffers()
     bfrDesc.BindFlags = 0;
     bfrDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
     bfrDesc.ByteWidth = sizeof(UINT);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mDebugCounterBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mDebugCounterBuffer);
     if (FAILED(hr)) { return false; }
 
     ZeroMemory(&bfrDesc, sizeof(bfrDesc));
@@ -3797,7 +3797,7 @@ bool RSPass_PriticleSetUp::CreateBuffers()
         sizeof(SIMULATE_EMITTER_INFO);
     bfrDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bfrDesc.StructureByteStride = sizeof(SIMULATE_EMITTER_INFO);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bfrDesc, nullptr, &mSimulEmitterStructedBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -3815,10 +3815,10 @@ bool RSPass_PriticleSetUp::CreateBuffers()
     float* ptr = values;
     for (UINT i = 0; i < texDesc.Width * texDesc.Height; i++)
     {
-        ptr[0] = Tool::RandomVariance(0.0f, 1.0f);
-        ptr[1] = Tool::RandomVariance(0.0f, 1.0f);
-        ptr[2] = Tool::RandomVariance(0.0f, 1.0f);
-        ptr[3] = Tool::RandomVariance(0.0f, 1.0f);
+        ptr[0] = rs_tool::randomVariance(0.0f, 1.0f);
+        ptr[1] = rs_tool::randomVariance(0.0f, 1.0f);
+        ptr[2] = rs_tool::randomVariance(0.0f, 1.0f);
+        ptr[3] = rs_tool::randomVariance(0.0f, 1.0f);
         ptr += 4;
     }
 
@@ -3827,7 +3827,7 @@ bool RSPass_PriticleSetUp::CreateBuffers()
     data.SysMemPitch = texDesc.Width * 16;
     data.SysMemSlicePitch = 0;
 
-    hr = Device()->CreateTexture2D(&texDesc, &data, &mParticleRandomTexture);
+    hr = device()->CreateTexture2D(&texDesc, &data, &mParticleRandomTexture);
     delete[] values;
     if (FAILED(hr)) { return false; }
 
@@ -3851,32 +3851,32 @@ bool RSPass_PriticleSetUp::CreateViews()
     uavDesc.Buffer.FirstElement = 0;
     uavDesc.Buffer.NumElements = PTC_MAX_PARTICLE_SIZE;
     uavDesc.Buffer.Flags = 0;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mParticlePartA, &srvDesc, &mPartA_Srv);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mParticlePartA, &uavDesc, &mPartA_Uav);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mParticlePartB, &uavDesc, &mPartB_Uav);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mViewspacePosBuffer, &srvDesc, &mViewSpacePos_Srv);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mViewspacePosBuffer, &uavDesc, &mViewSpacePos_Uav);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mMaxRadiusBuffer, &srvDesc, &mMaxRadius_Srv);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mMaxRadiusBuffer, &uavDesc, &mMaxRadius_Uav);
     if (FAILED(hr)) { return false; }
 
     uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mDeadListBuffer, &uavDesc, &mDeadList_Uav);
     if (FAILED(hr)) { return false; }
 
@@ -3887,20 +3887,20 @@ bool RSPass_PriticleSetUp::CreateViews()
     srvDesc.Format = DXGI_FORMAT_R32_UINT;
     srvDesc.Buffer.NumElements =
         PTC_MAX_PARTICLE_SIZE * PTC_MAX_COARSE_CULL_TILE_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mStridedCoarseCullBuffer, &srvDesc, &mStridedCoarseCull_Srv);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mStridedCoarseCullBuffer, &uavDesc, &mStridedCoarseCull_Uav);
     if (FAILED(hr)) { return false; }
 
     uavDesc.Buffer.NumElements = PTC_MAX_COARSE_CULL_TILE_SIZE;
     srvDesc.Buffer.NumElements = PTC_MAX_COARSE_CULL_TILE_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mStridedCoarseCullCounterBuffer, &srvDesc,
         &mStridedCoarseCullCounter_Srv);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mStridedCoarseCullCounterBuffer, &uavDesc,
         &mStridedCoarseCullCounter_Uav);
     if (FAILED(hr)) { return false; }
@@ -3912,10 +3912,10 @@ bool RSPass_PriticleSetUp::CreateViews()
     uavDesc.Buffer.NumElements = PTC_MAX_PARTICLE_SIZE;
     uavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
     uavDesc.Format = DXGI_FORMAT_UNKNOWN;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mAliveIndexBuffer, &srvDesc, &mAliveIndex_Srv);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mAliveIndexBuffer, &uavDesc, &mAliveIndex_Uav);
     if (FAILED(hr)) { return false; }
 
@@ -3931,10 +3931,10 @@ bool RSPass_PriticleSetUp::CreateViews()
     uavDesc.Buffer.FirstElement = 0;
     uavDesc.Format = DXGI_FORMAT_R32_UINT;
     uavDesc.Buffer.NumElements = numElements;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mTiledIndexBuffer, &srvDesc, &mTiledIndex_Srv);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mTiledIndexBuffer, &uavDesc, &mTiledIndex_Uav);
     if (FAILED(hr)) { return false; }
 
@@ -3951,10 +3951,10 @@ bool RSPass_PriticleSetUp::CreateViews()
     uavDesc.Buffer.FirstElement = 0;
     uavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     uavDesc.Buffer.NumElements = numElements;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mParticleRenderBuffer, &srvDesc, &mParticleRender_Srv);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(
+    hr = device()->CreateUnorderedAccessView(
         mParticleRenderBuffer, &uavDesc, &mParticleRender_Uav);
     if (FAILED(hr)) { return false; }
 
@@ -3963,7 +3963,7 @@ bool RSPass_PriticleSetUp::CreateViews()
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MipLevels = 1;
     srvDesc.Texture2D.MostDetailedMip = 0;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mParticleRandomTexture, &srvDesc, &mParticleRandom_Srv);
     if (FAILED(hr)) { return false; }
 
@@ -3971,7 +3971,7 @@ bool RSPass_PriticleSetUp::CreateViews()
     srvDesc.Format = DXGI_FORMAT_UNKNOWN;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     srvDesc.Buffer.ElementWidth = MAX_PARTICLE_EMITTER_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mSimulEmitterStructedBuffer,
         &srvDesc, &mSimulEmitterStructedBuffer_Srv);
     if (FAILED(hr)) { return false; }
@@ -4040,20 +4040,20 @@ RSPass_PriticleEmitSimulate::~RSPass_PriticleEmitSimulate()
 
 }
 
-RSPass_PriticleEmitSimulate* RSPass_PriticleEmitSimulate::ClonePass()
+RSPass_PriticleEmitSimulate* RSPass_PriticleEmitSimulate::clonePass()
 {
     return new RSPass_PriticleEmitSimulate(*this);
 }
 
-bool RSPass_PriticleEmitSimulate::InitPass()
+bool RSPass_PriticleEmitSimulate::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
-    mRSParticleContainerPtr = GetRSRoot_DX11_Singleton()->ParticlesContainer();
+    mRSParticleContainerPtr = getRSDX11RootInstance()->getParticlesContainer();
     if (!mRSParticleContainerPtr) { return false; }
 
     std::string name = "temp-cam";
-    mRSCameraInfo = GetRSRoot_DX11_Singleton()->CamerasContainer()->
+    mRSCameraInfo = getRSDX11RootInstance()->getCamerasContainer()->
         GetRSCameraInfo(name);
     if (!mRSCameraInfo) { return false; }
 
@@ -4063,12 +4063,12 @@ bool RSPass_PriticleEmitSimulate::InitPass()
 
     mRSParticleContainerPtr->ResetRSParticleSystem();
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_PriticleEmitSimulate::ReleasePass()
+void RSPass_PriticleEmitSimulate::releasePass()
 {
     RS_RELEASE(mSimulateShader);
     RS_RELEASE(mEmitParticleShader);
@@ -4076,7 +4076,7 @@ void RSPass_PriticleEmitSimulate::ReleasePass()
     RS_RELEASE(mInitDeadListShader);
 }
 
-void RSPass_PriticleEmitSimulate::ExecuatePass()
+void RSPass_PriticleEmitSimulate::execuatePass()
 {
     if (!mRSParticleContainerPtr->GetAllParticleEmitters()->size())
     {
@@ -4086,34 +4086,34 @@ void RSPass_PriticleEmitSimulate::ExecuatePass()
     if (mRSParticleContainerPtr->GetResetFlg())
     {
         {
-            STContext()->CSSetShader(mInitDeadListShader,
+            context()->CSSetShader(mInitDeadListShader,
                 nullptr, 0);
             ID3D11UnorderedAccessView* uav[] = { mDeadList_Uav };
             UINT initialCount[] = { 0 };
-            STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
+            context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
                 uav, initialCount);
 
-            STContext()->Dispatch(
-                Tool::Align(PTC_MAX_PARTICLE_SIZE, 256) / 256, 1, 1);
+            context()->Dispatch(
+                rs_tool::align(PTC_MAX_PARTICLE_SIZE, 256) / 256, 1, 1);
 
             ZeroMemory(uav, sizeof(uav));
-            STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
+            context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
                 uav, nullptr);
         }
 
         {
-            STContext()->CSSetShader(mResetParticlesShader,
+            context()->CSSetShader(mResetParticlesShader,
                 nullptr, 0);
             ID3D11UnorderedAccessView* uav[] = { mPartA_Uav,mPartB_Uav };
             UINT initialCount[] = { (UINT)-1,(UINT)-1 };
-            STContext()->CSSetUnorderedAccessViews(0,
+            context()->CSSetUnorderedAccessViews(0,
                 ARRAYSIZE(uav), uav, initialCount);
 
-            STContext()->Dispatch(
-                Tool::Align(PTC_MAX_PARTICLE_SIZE, 256) / 256, 1, 1);
+            context()->Dispatch(
+                rs_tool::align(PTC_MAX_PARTICLE_SIZE, 256) / 256, 1, 1);
 
             ZeroMemory(uav, sizeof(uav));
-            STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
+            context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
                 uav, nullptr);
         }
 
@@ -4121,7 +4121,7 @@ void RSPass_PriticleEmitSimulate::ExecuatePass()
     }
 
     {
-        STContext()->CSSetShader(mEmitParticleShader, nullptr, 0);
+        context()->CSSetShader(mEmitParticleShader, nullptr, 0);
         ID3D11UnorderedAccessView* uav[] =
         { mPartA_Uav,mPartB_Uav,mDeadList_Uav };
         ID3D11ShaderResourceView* srv[] = { mRandomTex_Srv };
@@ -4129,113 +4129,113 @@ void RSPass_PriticleEmitSimulate::ExecuatePass()
         { mEmitterConstantBuffer,mDeadListConstantBuffer,mTimeConstantBuffer };
         ID3D11SamplerState* sam[] = { mLinearWrapSampler };
         UINT initialCount[] = { (UINT)-1,(UINT)-1,(UINT)-1 };
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
             uav, initialCount);
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
-        STContext()->CSSetConstantBuffers(0, ARRAYSIZE(cbuffer), cbuffer);
-        STContext()->CSSetSamplers(0, ARRAYSIZE(sam), sam);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetConstantBuffers(0, ARRAYSIZE(cbuffer), cbuffer);
+        context()->CSSetSamplers(0, ARRAYSIZE(sam), sam);
 
         auto emitters = mRSParticleContainerPtr->
             GetAllParticleEmitters();
         D3D11_MAPPED_SUBRESOURCE msr = {};
-        STContext()->Map(mTimeConstantBuffer, 0,
+        context()->Map(mTimeConstantBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         PTC_TIME_CONSTANT* time = (PTC_TIME_CONSTANT*)msr.pData;
         static float timer = 0.f;
         time->mDeltaTime = g_DeltaTimeInSecond;
         timer += g_DeltaTimeInSecond;
         time->mTotalTime = timer;
-        STContext()->Unmap(mTimeConstantBuffer, 0);
+        context()->Unmap(mTimeConstantBuffer, 0);
         for (auto& emitter : *emitters)
         {
             auto& rsinfo = emitter->GetRSParticleEmitterInfo();
-            rsinfo.mAccumulation += rsinfo.mEmitNumPerSecond *
+            rsinfo.Accumulation += rsinfo.EmitNumPerSecond *
                 g_DeltaTimeInSecond;
-            if (rsinfo.mAccumulation > 1.f)
+            if (rsinfo.Accumulation > 1.f)
             {
                 float integerPart = 0.0f;
-                float fraction = modf(rsinfo.mAccumulation,
+                float fraction = modf(rsinfo.Accumulation,
                     &integerPart);
-                rsinfo.mNumToEmit = (int)integerPart;
-                rsinfo.mAccumulation = fraction;
+                rsinfo.EmitSize = (int)integerPart;
+                rsinfo.Accumulation = fraction;
             }
 
-            STContext()->Map(mEmitterConstantBuffer, 0,
+            context()->Map(mEmitterConstantBuffer, 0,
                 D3D11_MAP_WRITE_DISCARD, 0, &msr);
             RS_PARTICLE_EMITTER_INFO* emitterCon =
                 (RS_PARTICLE_EMITTER_INFO*)msr.pData;
-            emitterCon->mEmitterIndex = rsinfo.mEmitterIndex;
-            emitterCon->mEmitNumPerSecond = rsinfo.mEmitNumPerSecond;
-            emitterCon->mNumToEmit = rsinfo.mNumToEmit;
-            emitterCon->mAccumulation = rsinfo.mAccumulation;
-            emitterCon->mPosition = rsinfo.mPosition;
-            emitterCon->mVelocity = rsinfo.mVelocity;
-            emitterCon->mPosVariance = rsinfo.mPosVariance;
-            emitterCon->mVelVariance = rsinfo.mVelVariance;
-            emitterCon->mAcceleration = rsinfo.mAcceleration;
-            emitterCon->mParticleMass = rsinfo.mParticleMass;
-            emitterCon->mLifeSpan = rsinfo.mLifeSpan;
-            emitterCon->mOffsetStartSize = rsinfo.mOffsetStartSize;
-            emitterCon->mOffsetEndSize = rsinfo.mOffsetEndSize;
-            emitterCon->mOffsetStartColor = rsinfo.mOffsetStartColor;
-            emitterCon->mOffsetEndColor = rsinfo.mOffsetEndColor;
-            emitterCon->mTextureID = rsinfo.mTextureID;
-            emitterCon->mStreakFlg = rsinfo.mStreakFlg;
-            emitterCon->mMiscFlg = rsinfo.mMiscFlg;
-            STContext()->Unmap(mEmitterConstantBuffer, 0);
-            STContext()->CopyStructureCount(mDeadListConstantBuffer,
+            emitterCon->EmitterIndex = rsinfo.EmitterIndex;
+            emitterCon->EmitNumPerSecond = rsinfo.EmitNumPerSecond;
+            emitterCon->EmitSize = rsinfo.EmitSize;
+            emitterCon->Accumulation = rsinfo.Accumulation;
+            emitterCon->Position = rsinfo.Position;
+            emitterCon->Velocity = rsinfo.Velocity;
+            emitterCon->PosVariance = rsinfo.PosVariance;
+            emitterCon->VelVariance = rsinfo.VelVariance;
+            emitterCon->Acceleration = rsinfo.Acceleration;
+            emitterCon->ParticleMass = rsinfo.ParticleMass;
+            emitterCon->LifeSpan = rsinfo.LifeSpan;
+            emitterCon->StartSize = rsinfo.StartSize;
+            emitterCon->EndSize = rsinfo.EndSize;
+            emitterCon->StartColor = rsinfo.StartColor;
+            emitterCon->EndColor = rsinfo.EndColor;
+            emitterCon->TextureID = rsinfo.TextureID;
+            emitterCon->StreakFlag = rsinfo.StreakFlag;
+            emitterCon->MiscFlag = rsinfo.MiscFlag;
+            context()->Unmap(mEmitterConstantBuffer, 0);
+            context()->CopyStructureCount(mDeadListConstantBuffer,
                 0, mDeadList_Uav);
 
-            int threadGroupNum = Tool::Align(
-                rsinfo.mNumToEmit, 1024) / 1024;
-            STContext()->Dispatch(threadGroupNum, 1, 1);
+            int threadGroupNum = rs_tool::align(
+                rsinfo.EmitSize, 1024) / 1024;
+            context()->Dispatch(threadGroupNum, 1, 1);
         }
 
         ZeroMemory(uav, sizeof(uav));
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
         ZeroMemory(srv, sizeof(srv));
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
     }
 
     {
         D3D11_MAPPED_SUBRESOURCE msr = {};
         DirectX::XMMATRIX mat = {};
 
-        STContext()->Map(mCameraConstantBuffer, 0,
+        context()->Map(mCameraConstantBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         CAMERA_STATUS* camStatus =
             (CAMERA_STATUS*)msr.pData;
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mView), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvViewMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvViewMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mInvView), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mProj), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mInvProj), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mViewProj), mat);
-        camStatus->mEyePosition = mRSCameraInfo->mEyePosition;
-        STContext()->Unmap(mCameraConstantBuffer, 0);
+        camStatus->mEyePosition = mRSCameraInfo->EyePosition;
+        context()->Unmap(mCameraConstantBuffer, 0);
 
         static auto emitterVec = mRSParticleContainerPtr->
             GetAllParticleEmitters();
         auto size = emitterVec->size();
-        STContext()->Map(mSimulEmitterStructedBuffer, 0,
+        context()->Map(mSimulEmitterStructedBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         SIMULATE_EMITTER_INFO* emitter =
             (SIMULATE_EMITTER_INFO*)msr.pData;
         for (size_t i = 0; i < size; i++)
         {
             emitter[i].mWorldPosition = (*(*emitterVec)[i]).
-                GetRSParticleEmitterInfo().mPosition;
+                GetRSParticleEmitterInfo().Position;
         }
-        STContext()->Unmap(mSimulEmitterStructedBuffer, 0);
+        context()->Unmap(mSimulEmitterStructedBuffer, 0);
 
         ID3D11Buffer* cb[] = { mCameraConstantBuffer,mTimeConstantBuffer };
         ID3D11ShaderResourceView* srv[] =
@@ -4246,19 +4246,19 @@ void RSPass_PriticleEmitSimulate::ExecuatePass()
         UINT initialCount[] =
         { (UINT)-1,(UINT)-1,(UINT)-1,0,(UINT)-1,(UINT)-1 };
 
-        STContext()->CSSetShader(mSimulateShader, nullptr, 0);
-        STContext()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
+        context()->CSSetShader(mSimulateShader, nullptr, 0);
+        context()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav),
             uav, initialCount);
-        static int threadGroupNum = Tool::Align(
+        static int threadGroupNum = rs_tool::align(
             PTC_MAX_PARTICLE_SIZE, 256) / 256;
-        STContext()->Dispatch(threadGroupNum, 1, 1);
+        context()->Dispatch(threadGroupNum, 1, 1);
 
         ZeroMemory(uav, sizeof(uav));
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
         ZeroMemory(srv, sizeof(srv));
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
     }
 }
 
@@ -4275,7 +4275,7 @@ bool RSPass_PriticleEmitSimulate::CreateSampler()
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-    hr = Device()->CreateSamplerState(&sampDesc, &mLinearWrapSampler);
+    hr = device()->CreateSamplerState(&sampDesc, &mLinearWrapSampler);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -4286,38 +4286,38 @@ bool RSPass_PriticleEmitSimulate::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(L".\\Assets\\Shaders\\ptc_init_compute.hlsl",
+    hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ptc_init_compute.hlsl",
         "Main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
+    hr = device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(), nullptr, &mInitDeadListShader);
     RS_RELEASE(shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(L".\\Assets\\Shaders\\ptc_reset_compute.hlsl",
+    hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ptc_reset_compute.hlsl",
         "Main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
+    hr = device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(), nullptr, &mResetParticlesShader);
     RS_RELEASE(shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(L".\\Assets\\Shaders\\ptc_emit_compute.hlsl",
+    hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ptc_emit_compute.hlsl",
         "Main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
+    hr = device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(), nullptr, &mEmitParticleShader);
     RS_RELEASE(shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(L".\\Assets\\Shaders\\ptc_simulate_compute.hlsl",
+    hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ptc_simulate_compute.hlsl",
         "Main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
+    hr = device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(), nullptr, &mSimulateShader);
     RS_RELEASE(shaderBlob);
     if (FAILED(hr)) { return false; }
@@ -4327,65 +4327,65 @@ bool RSPass_PriticleEmitSimulate::CreateShaders()
 
 bool RSPass_PriticleEmitSimulate::CheckResources()
 {
-    auto resManager = GetRSRoot_DX11_Singleton()->ResourceManager();
+    auto resManager = getRSDX11RootInstance()->getResourceManager();
     if (!resManager) { return false; }
 
     std::string name = PTC_DEAD_LIST_NAME;
-    mDeadList_Uav = resManager->GetResourceInfo(name)->mUav;
+    mDeadList_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mDeadList_Uav) { return false; }
 
     name = PTC_A_NAME;
-    mPartA_Uav = resManager->GetResourceInfo(name)->mUav;
+    mPartA_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mPartA_Uav) { return false; }
 
     name = PTC_B_NAME;
-    mPartB_Uav = resManager->GetResourceInfo(name)->mUav;
+    mPartB_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mPartB_Uav) { return false; }
 
     name = PTC_RAMDOM_TEXTURE_NAME;
-    mRandomTex_Srv = resManager->GetResourceInfo(name)->mSrv;
+    mRandomTex_Srv = resManager->GetResourceInfo(name)->Srv;
     if (!mRandomTex_Srv) { return false; }
 
     name = PTC_EMITTER_CONSTANT_NAME;
     mEmitterConstantBuffer = resManager->GetResourceInfo(name)->
-        mResource.mBuffer;
+        Resource.Buffer;
     if (!mEmitterConstantBuffer) { return false; }
 
     name = PTC_DEAD_LIST_CONSTANT_NAME;
     mDeadListConstantBuffer = resManager->GetResourceInfo(name)->
-        mResource.mBuffer;
+        Resource.Buffer;
     if (!mDeadListConstantBuffer) { return false; }
 
     name = PTC_CAMERA_CONSTANT_NAME;
     mCameraConstantBuffer = resManager->GetResourceInfo(name)->
-        mResource.mBuffer;
+        Resource.Buffer;
     if (!mCameraConstantBuffer) { return false; }
 
     name = PTC_SIMU_EMITTER_STRU_NAME;
-    mSimulEmitterStructedBuffer_Srv = resManager->GetResourceInfo(name)->mSrv;
+    mSimulEmitterStructedBuffer_Srv = resManager->GetResourceInfo(name)->Srv;
     mSimulEmitterStructedBuffer = resManager->GetResourceInfo(name)->
-        mResource.mBuffer;
+        Resource.Buffer;
     if (!mSimulEmitterStructedBuffer_Srv || !mSimulEmitterStructedBuffer) { return false; }
 
     name = PTC_ALIVE_INDEX_NAME;
-    mAliveIndex_Uav = resManager->GetResourceInfo(name)->mUav;
+    mAliveIndex_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mAliveIndex_Uav) { return false; }
 
     name = PTC_VIEW_SPCACE_POS_NAME;
-    mViewSpacePos_Uav = resManager->GetResourceInfo(name)->mUav;
+    mViewSpacePos_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mViewSpacePos_Uav) { return false; }
 
     name = PTC_MAX_RADIUS_NAME;
-    mMaxRadius_Uav = resManager->GetResourceInfo(name)->mUav;
+    mMaxRadius_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mMaxRadius_Uav) { return false; }
 
     name = PTC_TIME_CONSTANT_NAME;
     mTimeConstantBuffer = resManager->GetResourceInfo(name)->
-        mResource.mBuffer;
+        Resource.Buffer;
     if (!mTimeConstantBuffer) { return false; }
 
     name = "mrt-depth";
-    mDepthTex_Srv = resManager->GetResourceInfo(name)->mSrv;
+    mDepthTex_Srv = resManager->GetResourceInfo(name)->Srv;
     if (!mDepthTex_Srv) { return false; }
 
     return true;
@@ -4462,17 +4462,17 @@ RSPass_PriticleTileRender::~RSPass_PriticleTileRender()
 
 }
 
-RSPass_PriticleTileRender* RSPass_PriticleTileRender::ClonePass()
+RSPass_PriticleTileRender* RSPass_PriticleTileRender::clonePass()
 {
     return new RSPass_PriticleTileRender(*this);
 }
 
-bool RSPass_PriticleTileRender::InitPass()
+bool RSPass_PriticleTileRender::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     std::string name = "temp-cam";
-    mRSCameraInfo = GetRSRoot_DX11_Singleton()->CamerasContainer()->
+    mRSCameraInfo = getRSDX11RootInstance()->getCamerasContainer()->
         GetRSCameraInfo(name);
     if (!mRSCameraInfo) { return false; }
 
@@ -4482,12 +4482,12 @@ bool RSPass_PriticleTileRender::InitPass()
     if (!CreateBlend()) { return false; }
     if (!CheckResources()) { return false; }
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_PriticleTileRender::ReleasePass()
+void RSPass_PriticleTileRender::releasePass()
 {
     RS_RELEASE(mCoarseCullingShader);
     RS_RELEASE(mTileCullingShader);
@@ -4501,9 +4501,9 @@ void RSPass_PriticleTileRender::ReleasePass()
     RS_RELEASE(mParticleTex_Srv);
 }
 
-void RSPass_PriticleTileRender::ExecuatePass()
+void RSPass_PriticleTileRender::execuatePass()
 {
-    if (!g_Root->ParticlesContainer()->GetAllParticleEmitters()->size())
+    if (!g_Root->getParticlesContainer()->GetAllParticleEmitters()->size())
     {
         return;
     }
@@ -4511,27 +4511,27 @@ void RSPass_PriticleTileRender::ExecuatePass()
     {
         D3D11_MAPPED_SUBRESOURCE msr = {};
         DirectX::XMMATRIX mat = {};
-        STContext()->Map(mCameraConstantBuffer, 0,
+        context()->Map(mCameraConstantBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         CAMERA_STATUS* camStatus = (CAMERA_STATUS*)msr.pData;
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mView), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvViewMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvViewMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mInvView), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mProj), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mInvProj), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mViewProj), mat);
-        camStatus->mEyePosition = mRSCameraInfo->mEyePosition;
-        STContext()->Unmap(mCameraConstantBuffer, 0);
-        STContext()->Map(mTilingConstantBuffer, 0,
+        camStatus->mEyePosition = mRSCameraInfo->EyePosition;
+        context()->Unmap(mCameraConstantBuffer, 0);
+        context()->Map(mTilingConstantBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         RS_TILING_CONSTANT* tiling = (RS_TILING_CONSTANT*)msr.pData;
         tiling->mNumTilesX = g_ParticleSetUpPass->
@@ -4546,8 +4546,8 @@ void RSPass_PriticleTileRender::ExecuatePass()
             GetTilingConstantInfo().mNumCullingTilesPerCoarseTileX;
         tiling->mNumCullingTilesPerCoarseTileY = g_ParticleSetUpPass->
             GetTilingConstantInfo().mNumCullingTilesPerCoarseTileY;
-        STContext()->Unmap(mTilingConstantBuffer, 0);
-        STContext()->CopyStructureCount(mActiveListConstantBuffer, 0,
+        context()->Unmap(mTilingConstantBuffer, 0);
+        context()->CopyStructureCount(mActiveListConstantBuffer, 0,
             mAliveIndex_Uav);
 
         ID3D11Buffer* cb[] =
@@ -4558,47 +4558,47 @@ void RSPass_PriticleTileRender::ExecuatePass()
         { mCoarseTileIndex_Uav,mCoarseTileIndexCounter_Uav };
         UINT initial[] = { (UINT)-1,(UINT)-1 };
 
-        STContext()->CSSetShader(mCoarseCullingShader, nullptr, 0);
-        STContext()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, initial);
+        context()->CSSetShader(mCoarseCullingShader, nullptr, 0);
+        context()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, initial);
 
-        static int threadGroupNum = Tool::Align(PTC_MAX_PARTICLE_SIZE,
+        static int threadGroupNum = rs_tool::align(PTC_MAX_PARTICLE_SIZE,
             PTC_COARSE_CULLING_THREADS) / PTC_COARSE_CULLING_THREADS;
-        STContext()->Dispatch(threadGroupNum, 1, 1);
+        context()->Dispatch(threadGroupNum, 1, 1);
 
         ZeroMemory(cb, sizeof(cb));
         ZeroMemory(srv, sizeof(srv));
         ZeroMemory(uav, sizeof(uav));
-        STContext()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
+        context()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
     }
 
     {
         D3D11_MAPPED_SUBRESOURCE msr = {};
         DirectX::XMMATRIX mat = {};
-        STContext()->Map(mCameraConstantBuffer, 0,
+        context()->Map(mCameraConstantBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         CAMERA_STATUS* camStatus = (CAMERA_STATUS*)msr.pData;
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mView), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvViewMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvViewMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mInvView), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mProj), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mInvProj), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mViewProj), mat);
-        camStatus->mEyePosition = mRSCameraInfo->mEyePosition;
-        STContext()->Unmap(mCameraConstantBuffer, 0);
-        STContext()->Map(mTilingConstantBuffer, 0,
+        camStatus->mEyePosition = mRSCameraInfo->EyePosition;
+        context()->Unmap(mCameraConstantBuffer, 0);
+        context()->Map(mTilingConstantBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         RS_TILING_CONSTANT* tiling = (RS_TILING_CONSTANT*)msr.pData;
         tiling->mNumTilesX = g_ParticleSetUpPass->
@@ -4613,7 +4613,7 @@ void RSPass_PriticleTileRender::ExecuatePass()
             GetTilingConstantInfo().mNumCullingTilesPerCoarseTileX;
         tiling->mNumCullingTilesPerCoarseTileY = g_ParticleSetUpPass->
             GetTilingConstantInfo().mNumCullingTilesPerCoarseTileY;
-        STContext()->Unmap(mTilingConstantBuffer, 0);
+        context()->Unmap(mTilingConstantBuffer, 0);
 
         ID3D11Buffer* cb[] =
         { mCameraConstantBuffer,mTilingConstantBuffer,mActiveListConstantBuffer };
@@ -4623,47 +4623,47 @@ void RSPass_PriticleTileRender::ExecuatePass()
         ID3D11UnorderedAccessView* uav[] = { mTiledIndex_Uav };
         UINT initial[] = { (UINT)-1 };
 
-        STContext()->CSSetShader(mTileCullingShader, nullptr, 0);
-        STContext()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, initial);
+        context()->CSSetShader(mTileCullingShader, nullptr, 0);
+        context()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, initial);
 
-        STContext()->Dispatch(
+        context()->Dispatch(
             g_ParticleSetUpPass->GetTilingConstantInfo().mNumTilesX,
             g_ParticleSetUpPass->GetTilingConstantInfo().mNumTilesY, 1);
 
         ZeroMemory(cb, sizeof(cb));
         ZeroMemory(srv, sizeof(srv));
         ZeroMemory(uav, sizeof(uav));
-        STContext()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
+        context()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
     }
 
     {
         D3D11_MAPPED_SUBRESOURCE msr = {};
         DirectX::XMMATRIX mat = {};
-        STContext()->Map(mCameraConstantBuffer, 0,
+        context()->Map(mCameraConstantBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         CAMERA_STATUS* camStatus = (CAMERA_STATUS*)msr.pData;
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mView), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvViewMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvViewMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mInvView), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mProj), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mInvProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->InvProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mInvProj), mat);
-        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewProjMat);
+        mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewProjMatrix);
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&(camStatus->mViewProj), mat);
-        camStatus->mEyePosition = mRSCameraInfo->mEyePosition;
-        STContext()->Unmap(mCameraConstantBuffer, 0);
-        STContext()->Map(mTilingConstantBuffer, 0,
+        camStatus->mEyePosition = mRSCameraInfo->EyePosition;
+        context()->Unmap(mCameraConstantBuffer, 0);
+        context()->Map(mTilingConstantBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         RS_TILING_CONSTANT* tiling = (RS_TILING_CONSTANT*)msr.pData;
         tiling->mNumTilesX = g_ParticleSetUpPass->
@@ -4678,7 +4678,7 @@ void RSPass_PriticleTileRender::ExecuatePass()
             GetTilingConstantInfo().mNumCullingTilesPerCoarseTileX;
         tiling->mNumCullingTilesPerCoarseTileY = g_ParticleSetUpPass->
             GetTilingConstantInfo().mNumCullingTilesPerCoarseTileY;
-        STContext()->Unmap(mTilingConstantBuffer, 0);
+        context()->Unmap(mTilingConstantBuffer, 0);
 
         ID3D11Buffer* cb[] =
         { mCameraConstantBuffer,mTilingConstantBuffer };
@@ -4689,48 +4689,48 @@ void RSPass_PriticleTileRender::ExecuatePass()
         UINT initial[] = { (UINT)-1 };
         ID3D11SamplerState* sam[] = { mLinearClampSampler };
 
-        STContext()->CSSetShader(mTileRenderShader, nullptr, 0);
-        STContext()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, initial);
-        STContext()->CSSetSamplers(0, ARRAYSIZE(sam), sam);
+        context()->CSSetShader(mTileRenderShader, nullptr, 0);
+        context()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, initial);
+        context()->CSSetSamplers(0, ARRAYSIZE(sam), sam);
 
-        STContext()->Dispatch(
+        context()->Dispatch(
             g_ParticleSetUpPass->GetTilingConstantInfo().mNumTilesX,
             g_ParticleSetUpPass->GetTilingConstantInfo().mNumTilesY, 1);
 
         ZeroMemory(cb, sizeof(cb));
         ZeroMemory(srv, sizeof(srv));
         ZeroMemory(uav, sizeof(uav));
-        STContext()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
-        STContext()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
-        STContext()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
-        STContext()->CSSetShader(nullptr, nullptr, 0);
+        context()->CSSetConstantBuffers(0, ARRAYSIZE(cb), cb);
+        context()->CSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(uav), uav, nullptr);
+        context()->CSSetShader(nullptr, nullptr, 0);
     }
 
     {
-        static auto rtv = GetRSRoot_DX11_Singleton()->Devices()->GetHighDynamicRtv();
+        static auto rtv = getRSDX11RootInstance()->getDevices()->GetHighDynamicRtv();
         static D3D11_VIEWPORT vp = {};
         vp.Width = 1280.f; vp.Height = 720.f; vp.MinDepth = 0.f;
         vp.MaxDepth = 1.f; vp.TopLeftX = 0.f; vp.TopLeftY = 0.f;
-        STContext()->VSSetShader(mBlendVertexShader, nullptr, 0);
-        STContext()->PSSetShader(mBlendPixelShader, nullptr, 0);
-        STContext()->OMSetBlendState(mParticleBlendState, nullptr, 0xFFFFFFFF);
-        STContext()->OMSetRenderTargets(1, &rtv, nullptr);
-        STContext()->RSSetViewports(1, &vp);
-        STContext()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
-        STContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+        context()->VSSetShader(mBlendVertexShader, nullptr, 0);
+        context()->PSSetShader(mBlendPixelShader, nullptr, 0);
+        context()->OMSetBlendState(mParticleBlendState, nullptr, 0xFFFFFFFF);
+        context()->OMSetRenderTargets(1, &rtv, nullptr);
+        context()->RSSetViewports(1, &vp);
+        context()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
+        context()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
         ID3D11ShaderResourceView* srv[] = { mParticleRender_Srv };
-        STContext()->PSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->PSSetShaderResources(0, ARRAYSIZE(srv), srv);
 
-        STContext()->Draw(3, 0);
+        context()->Draw(3, 0);
 
         ZeroMemory(srv, sizeof(srv));
-        STContext()->PSSetShaderResources(0, ARRAYSIZE(srv), srv);
-        STContext()->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
+        context()->PSSetShaderResources(0, ARRAYSIZE(srv), srv);
+        context()->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
         static ID3D11RenderTargetView* nullrtv = nullptr;
-        STContext()->OMSetRenderTargets(1, &nullrtv, nullptr);
+        context()->OMSetRenderTargets(1, &nullrtv, nullptr);
     }
 }
 
@@ -4739,47 +4739,47 @@ bool RSPass_PriticleTileRender::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(L".\\Assets\\Shaders\\ptc_coarse_compute.hlsl",
+    hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ptc_coarse_compute.hlsl",
         "Main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
+    hr = device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(), nullptr, &mCoarseCullingShader);
     RS_RELEASE(shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(L".\\Assets\\Shaders\\ptc_cull_compute.hlsl",
+    hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ptc_cull_compute.hlsl",
         "Main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
+    hr = device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(), nullptr, &mTileCullingShader);
     RS_RELEASE(shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(L".\\Assets\\Shaders\\ptc_render_compute.hlsl",
+    hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ptc_render_compute.hlsl",
         "Main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
+    hr = device()->CreateComputeShader(shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(), nullptr, &mTileRenderShader);
     RS_RELEASE(shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(L".\\Assets\\Shaders\\ptc_blend_vertex.hlsl",
+    hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ptc_blend_vertex.hlsl",
         "Main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(shaderBlob->GetBufferPointer(),
+    hr = device()->CreateVertexShader(shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(), nullptr, &mBlendVertexShader);
     RS_RELEASE(shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(L".\\Assets\\Shaders\\ptc_blend_pixel.hlsl",
+    hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ptc_blend_pixel.hlsl",
         "Main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(shaderBlob->GetBufferPointer(),
+    hr = device()->CreatePixelShader(shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(), nullptr, &mBlendPixelShader);
     RS_RELEASE(shaderBlob);
     if (FAILED(hr)) { return false; }
@@ -4792,7 +4792,7 @@ bool RSPass_PriticleTileRender::CreateViews()
     HRESULT hr = S_OK;
 
     std::wstring path = L".\\Assets\\Textures\\particle_atlas.dds";
-    hr = DirectX::CreateDDSTextureFromFile(Device(), path.c_str(),
+    hr = DirectX::CreateDDSTextureFromFile(device(), path.c_str(),
         nullptr, &mParticleTex_Srv);
     if (FAILED(hr)) { return false; }
 
@@ -4812,7 +4812,7 @@ bool RSPass_PriticleTileRender::CreateSampler()
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-    hr = Device()->CreateSamplerState(&sampDesc, &mLinearClampSampler);
+    hr = device()->CreateSamplerState(&sampDesc, &mLinearClampSampler);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -4834,7 +4834,7 @@ bool RSPass_PriticleTileRender::CreateBlend()
     bldDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
     bldDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
     bldDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-    hr = Device()->CreateBlendState(&bldDesc, &mParticleBlendState);
+    hr = device()->CreateBlendState(&bldDesc, &mParticleBlendState);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -4842,67 +4842,67 @@ bool RSPass_PriticleTileRender::CreateBlend()
 
 bool RSPass_PriticleTileRender::CheckResources()
 {
-    auto resManager = GetRSRoot_DX11_Singleton()->ResourceManager();
+    auto resManager = getRSDX11RootInstance()->getResourceManager();
     if (!resManager) { return false; }
 
     std::string name = PTC_CAMERA_CONSTANT_NAME;
     mCameraConstantBuffer = resManager->GetResourceInfo(name)->
-        mResource.mBuffer;
+        Resource.Buffer;
     if (!mCameraConstantBuffer) { return false; }
 
     name = PTC_TILING_CONSTANT_NAME;
     mTilingConstantBuffer = resManager->GetResourceInfo(name)->
-        mResource.mBuffer;
+        Resource.Buffer;
     if (!mTilingConstantBuffer) { return false; }
 
     name = PTC_ALIVE_LIST_CONSTANT_NAME;
     mActiveListConstantBuffer = resManager->GetResourceInfo(name)->
-        mResource.mBuffer;
+        Resource.Buffer;
     if (!mActiveListConstantBuffer) { return false; }
 
     name = "mrt-depth";
-    mDepthTex_Srv = resManager->GetResourceInfo(name)->mSrv;
+    mDepthTex_Srv = resManager->GetResourceInfo(name)->Srv;
     if (!mDepthTex_Srv) { return false; }
 
     name = PTC_VIEW_SPCACE_POS_NAME;
-    mViewSpacePos_Srv = resManager->GetResourceInfo(name)->mSrv;
+    mViewSpacePos_Srv = resManager->GetResourceInfo(name)->Srv;
     if (!mViewSpacePos_Srv) { return false; }
 
     name = PTC_MAX_RADIUS_NAME;
-    mMaxRadius_Srv = resManager->GetResourceInfo(name)->mSrv;
+    mMaxRadius_Srv = resManager->GetResourceInfo(name)->Srv;
     if (!mMaxRadius_Srv) { return false; }
 
     name = PTC_ALIVE_INDEX_NAME;
-    mAliveIndex_Srv = resManager->GetResourceInfo(name)->mSrv;
-    mAliveIndex_Uav = resManager->GetResourceInfo(name)->mUav;
+    mAliveIndex_Srv = resManager->GetResourceInfo(name)->Srv;
+    mAliveIndex_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mAliveIndex_Srv) { return false; }
     if (!mAliveIndex_Uav) { return false; }
 
     name = PTC_A_NAME;
-    mPartA_Srv = resManager->GetResourceInfo(name)->mSrv;
+    mPartA_Srv = resManager->GetResourceInfo(name)->Srv;
     if (!mPartA_Srv) { return false; }
 
     name = PTC_COARSE_CULL_NAME;
-    mCoarseTileIndex_Srv = resManager->GetResourceInfo(name)->mSrv;
-    mCoarseTileIndex_Uav = resManager->GetResourceInfo(name)->mUav;
+    mCoarseTileIndex_Srv = resManager->GetResourceInfo(name)->Srv;
+    mCoarseTileIndex_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mCoarseTileIndex_Srv) { return false; }
     if (!mCoarseTileIndex_Uav) { return false; }
 
     name = PTC_COARSE_CULL_COUNTER_NAME;
-    mCoarseTileIndexCounter_Srv = resManager->GetResourceInfo(name)->mSrv;
-    mCoarseTileIndexCounter_Uav = resManager->GetResourceInfo(name)->mUav;
+    mCoarseTileIndexCounter_Srv = resManager->GetResourceInfo(name)->Srv;
+    mCoarseTileIndexCounter_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mCoarseTileIndexCounter_Srv) { return false; }
     if (!mCoarseTileIndexCounter_Uav) { return false; }
 
     name = PTC_TILED_INDEX_NAME;
-    mTiledIndex_Srv = resManager->GetResourceInfo(name)->mSrv;
-    mTiledIndex_Uav = resManager->GetResourceInfo(name)->mUav;
+    mTiledIndex_Srv = resManager->GetResourceInfo(name)->Srv;
+    mTiledIndex_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mTiledIndex_Srv) { return false; }
     if (!mTiledIndex_Uav) { return false; }
 
     name = PTC_RENDER_BUFFER_NAME;
-    mParticleRender_Srv = resManager->GetResourceInfo(name)->mSrv;
-    mParticleRender_Uav = resManager->GetResourceInfo(name)->mUav;
+    mParticleRender_Srv = resManager->GetResourceInfo(name)->Srv;
+    mParticleRender_Uav = resManager->GetResourceInfo(name)->Uav;
     if (!mParticleRender_Srv) { return false; }
     if (!mParticleRender_Uav) { return false; }
 
@@ -4946,7 +4946,7 @@ RSPass_Sprite::RSPass_Sprite(
     mLinearSampler(_source.mLinearSampler),
     mRSCameraInfo(_source.mRSCameraInfo)
 {
-    if (mHasBeenInited)
+    if (HasBeenInited)
     {
         RS_ADDREF(mVertexShader);
         RS_ADDREF(mPixelShader);
@@ -4964,14 +4964,14 @@ RSPass_Sprite::~RSPass_Sprite()
 
 }
 
-RSPass_Sprite* RSPass_Sprite::ClonePass()
+RSPass_Sprite* RSPass_Sprite::clonePass()
 {
     return new RSPass_Sprite(*this);
 }
 
-bool RSPass_Sprite::InitPass()
+bool RSPass_Sprite::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateStates()) { return false; }
@@ -4980,19 +4980,19 @@ bool RSPass_Sprite::InitPass()
     if (!CreateSamplers()) { return false; }
 
     mDrawCallType = DRAWCALL_TYPE::UI_SPRITE;
-    mDrawCallPipe = g_Root->DrawCallsPool()->
+    mDrawCallPipe = g_Root->getDrawCallsPool()->
         GetDrawCallsPipe(mDrawCallType);
 
     std::string name = "temp-ui-cam";
-    mRSCameraInfo = g_Root->CamerasContainer()->
+    mRSCameraInfo = g_Root->getCamerasContainer()->
         GetRSCameraInfo(name);
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_Sprite::ReleasePass()
+void RSPass_Sprite::releasePass()
 {
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mPixelShader);
@@ -5004,79 +5004,79 @@ void RSPass_Sprite::ReleasePass()
     RS_RELEASE(mInstanceStructedBuffer);
 }
 
-void RSPass_Sprite::ExecuatePass()
+void RSPass_Sprite::execuatePass()
 {
     ID3D11RenderTargetView* rtvnull = nullptr;
-    STContext()->OMSetRenderTargets(1,
+    context()->OMSetRenderTargets(1,
         &mRenderTargetView, nullptr);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->OMSetDepthStencilState(mDepthStencilState, 0);
+    context()->RSSetViewports(1, &g_ViewPort);
+    context()->OMSetDepthStencilState(mDepthStencilState, 0);
     static float factor[4] = { 0.f,0.f,0.f,0.f };
-    STContext()->OMSetBlendState(mBlendState, factor, 0xFFFFFFFF);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
-    STContext()->PSSetSamplers(0, 1, &mLinearSampler);
+    context()->OMSetBlendState(mBlendState, factor, 0xFFFFFFFF);
+    context()->VSSetShader(mVertexShader, nullptr, 0);
+    context()->PSSetShader(mPixelShader, nullptr, 0);
+    context()->PSSetSamplers(0, 1, &mLinearSampler);
 
     DirectX::XMMATRIX mat = {};
-    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT stride = sizeof(vertex_type::TangentVertex);
     UINT offset = 0;
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
-    STContext()->Map(mProjStructedBuffer, 0,
+    context()->Map(mProjStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     OnlyProj* vp_data = (OnlyProj*)msr.pData;
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
-    STContext()->Unmap(mProjStructedBuffer, 0);
+    context()->Unmap(mProjStructedBuffer, 0);
 
-    STContext()->VSSetShaderResources(
+    context()->VSSetShaderResources(
         0, 1, &mProjStructedBufferSrv);
 
-    for (auto& call : mDrawCallPipe->mDatas)
+    for (auto& call : mDrawCallPipe->Data)
     {
-        auto vecPtr = call.mInstanceData.mDataPtr;
+        auto vecPtr = call.InstanceData.DataArrayPtr;
         auto size = vecPtr->size();
-        STContext()->Map(mInstanceStructedBuffer, 0,
+        context()->Map(mInstanceStructedBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         RS_INSTANCE_DATA* ins_data = (RS_INSTANCE_DATA*)msr.pData;
         for (size_t i = 0; i < size; i++)
         {
             mat = DirectX::XMLoadFloat4x4(
-                &(*vecPtr)[i].mWorldMat);
+                &(*vecPtr)[i].WorldMatrix);
             mat = DirectX::XMMatrixTranspose(mat);
-            DirectX::XMStoreFloat4x4(&ins_data[i].mWorldMat, mat);
-            ins_data[i].mMaterialData =
-                (*vecPtr)[i].mMaterialData;
-            ins_data[i].mCustomizedData1 =
-                (*vecPtr)[i].mCustomizedData1;
-            ins_data[i].mCustomizedData2 =
-                (*vecPtr)[i].mCustomizedData2;
+            DirectX::XMStoreFloat4x4(&ins_data[i].WorldMatrix, mat);
+            ins_data[i].MaterialData =
+                (*vecPtr)[i].MaterialData;
+            ins_data[i].CustomizedData1 =
+                (*vecPtr)[i].CustomizedData1;
+            ins_data[i].CustomizedData2 =
+                (*vecPtr)[i].CustomizedData2;
         }
-        STContext()->Unmap(mInstanceStructedBuffer, 0);
+        context()->Unmap(mInstanceStructedBuffer, 0);
 
-        STContext()->IASetInputLayout(
-            call.mMeshData.mLayout);
-        STContext()->IASetPrimitiveTopology(
-            call.mMeshData.mTopologyType);
-        STContext()->IASetVertexBuffers(
-            0, 1, &call.mMeshData.mVertexBuffer,
+        context()->IASetInputLayout(
+            call.MeshData.InputLayout);
+        context()->IASetPrimitiveTopology(
+            call.MeshData.TopologyType);
+        context()->IASetVertexBuffers(
+            0, 1, &call.MeshData.VertexBuffer,
             &stride, &offset);
-        STContext()->IASetIndexBuffer(
-            call.mMeshData.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        STContext()->VSSetShaderResources(
+        context()->IASetIndexBuffer(
+            call.MeshData.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        context()->VSSetShaderResources(
             1, 1, &mInstanceStructedBufferSrv);
-        STContext()->PSSetShaderResources(
-            0, 1, &(call.mTextureDatas[0].mSrv));
+        context()->PSSetShaderResources(
+            0, 1, &(call.TextureData[0].Srv));
 
-        STContext()->DrawIndexedInstanced(
-            call.mMeshData.mIndexCount,
-            (UINT)call.mInstanceData.mDataPtr->size(), 0, 0, 0);
+        context()->DrawIndexedInstanced(
+            call.MeshData.IndexSize,
+            (UINT)call.InstanceData.DataArrayPtr->size(), 0, 0, 0);
     }
 
-    STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
-    STContext()->OMSetDepthStencilState(nullptr, 0);
-    STContext()->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
+    context()->OMSetRenderTargets(1, &rtvnull, nullptr);
+    context()->OMSetDepthStencilState(nullptr, 0);
+    context()->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
 }
 
 bool RSPass_Sprite::CreateShaders()
@@ -5084,12 +5084,12 @@ bool RSPass_Sprite::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\sprite_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -5097,12 +5097,12 @@ bool RSPass_Sprite::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\sprite_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
@@ -5120,7 +5120,7 @@ bool RSPass_Sprite::CreateStates()
     D3D11_DEPTH_STENCIL_DESC depDesc = {};
     depDesc.DepthEnable = FALSE;
     depDesc.StencilEnable = FALSE;
-    hr = Device()->CreateDepthStencilState(
+    hr = device()->CreateDepthStencilState(
         &depDesc, &mDepthStencilState);
     if (FAILED(hr)) { return false; }
 
@@ -5136,7 +5136,7 @@ bool RSPass_Sprite::CreateStates()
     bldDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
     bldDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
     bldDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-    hr = Device()->CreateBlendState(&bldDesc, &mBlendState);
+    hr = device()->CreateBlendState(&bldDesc, &mBlendState);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -5154,13 +5154,13 @@ bool RSPass_Sprite::CreateBuffers()
     bdc.ByteWidth = MAX_INSTANCE_SIZE * sizeof(RS_INSTANCE_DATA);
     bdc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bdc.StructureByteStride = sizeof(RS_INSTANCE_DATA);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mInstanceStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bdc.ByteWidth = sizeof(OnlyProj);
     bdc.StructureByteStride = sizeof(OnlyProj);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mProjStructedBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -5169,7 +5169,7 @@ bool RSPass_Sprite::CreateBuffers()
 
 bool RSPass_Sprite::CreateViews()
 {
-    mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
+    mRenderTargetView = g_Root->getDevices()->GetSwapChainRtv();
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desSRV = {};
     HRESULT hr = S_OK;
@@ -5177,13 +5177,13 @@ bool RSPass_Sprite::CreateViews()
     desSRV.Format = DXGI_FORMAT_UNKNOWN;
     desSRV.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     desSRV.Buffer.ElementWidth = MAX_INSTANCE_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mInstanceStructedBuffer,
         &desSRV, &mInstanceStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     desSRV.Buffer.ElementWidth = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mProjStructedBuffer,
         &desSRV, &mProjStructedBufferSrv);
     if (FAILED(hr)) { return false; }
@@ -5213,7 +5213,7 @@ bool RSPass_Sprite::CreateSamplers()
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &sampDesc, &mLinearSampler);
     if (FAILED(hr)) { return false; }
 
@@ -5254,26 +5254,26 @@ RSPass_SimpleLight::~RSPass_SimpleLight()
 
 }
 
-RSPass_SimpleLight* RSPass_SimpleLight::ClonePass()
+RSPass_SimpleLight* RSPass_SimpleLight::clonePass()
 {
     return new RSPass_SimpleLight(*this);
 }
 
-bool RSPass_SimpleLight::InitPass()
+bool RSPass_SimpleLight::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateBuffers()) { return false; }
     if (!CreateViews()) { return false; }
     if (!CreateSamplers()) { return false; }
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_SimpleLight::ReleasePass()
+void RSPass_SimpleLight::releasePass()
 {
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mPixelShader);
@@ -5282,43 +5282,43 @@ void RSPass_SimpleLight::ReleasePass()
     RS_RELEASE(mIndexBuffer);
 }
 
-void RSPass_SimpleLight::ExecuatePass()
+void RSPass_SimpleLight::execuatePass()
 {
-    STContext()->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->ClearRenderTargetView(
+    context()->OMSetRenderTargets(1, &mRenderTargetView, nullptr);
+    context()->RSSetViewports(1, &g_ViewPort);
+    context()->ClearRenderTargetView(
         mRenderTargetView, DirectX::Colors::DarkGreen);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
+    context()->VSSetShader(mVertexShader, nullptr, 0);
+    context()->PSSetShader(mPixelShader, nullptr, 0);
 
-    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT stride = sizeof(vertex_type::TangentVertex);
     UINT offset = 0;
 
     static ID3D11ShaderResourceView* srvs[] =
     {
         mGeoBufferSrv, mSsaoSrv
     };
-    STContext()->PSSetShaderResources(0, 2, srvs);
+    context()->PSSetShaderResources(0, 2, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
         mLinearWrapSampler,
     };
-    STContext()->PSSetSamplers(0, 1, samps);
+    context()->PSSetSamplers(0, 1, samps);
 
-    STContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    STContext()->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
-    STContext()->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    context()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    context()->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
+    context()->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+    context()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
     ID3D11RenderTargetView* rtvnull = nullptr;
-    STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
+    context()->OMSetRenderTargets(1, &rtvnull, nullptr);
     static ID3D11ShaderResourceView* nullsrvs[] =
     {
         nullptr, nullptr
     };
-    STContext()->PSSetShaderResources(0, 2, nullsrvs);
+    context()->PSSetShaderResources(0, 2, nullsrvs);
 }
 
 bool RSPass_SimpleLight::CreateShaders()
@@ -5326,12 +5326,12 @@ bool RSPass_SimpleLight::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\simplylit_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -5339,12 +5339,12 @@ bool RSPass_SimpleLight::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\simplylit_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
@@ -5360,7 +5360,7 @@ bool RSPass_SimpleLight::CreateBuffers()
     HRESULT hr = S_OK;
     D3D11_BUFFER_DESC bufDesc = {};
 
-    VertexType::TangentVertex v[4] = {};
+    vertex_type::TangentVertex v[4] = {};
     v[0].Position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
     v[1].Position = DirectX::XMFLOAT3(-1.0f, +1.0f, 0.0f);
     v[2].Position = DirectX::XMFLOAT3(+1.0f, +1.0f, 0.0f);
@@ -5371,7 +5371,7 @@ bool RSPass_SimpleLight::CreateBuffers()
     v[3].TexCoord = DirectX::XMFLOAT2(1.0f, 1.0f);
     ZeroMemory(&bufDesc, sizeof(bufDesc));
     bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufDesc.ByteWidth = sizeof(VertexType::TangentVertex) * 4;
+    bufDesc.ByteWidth = sizeof(vertex_type::TangentVertex) * 4;
     bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufDesc.CPUAccessFlags = 0;
     bufDesc.MiscFlags = 0;
@@ -5379,7 +5379,7 @@ bool RSPass_SimpleLight::CreateBuffers()
     D3D11_SUBRESOURCE_DATA vinitData = {};
     ZeroMemory(&vinitData, sizeof(vinitData));
     vinitData.pSysMem = v;
-    hr = Device()->CreateBuffer(&bufDesc, &vinitData, &mVertexBuffer);
+    hr = device()->CreateBuffer(&bufDesc, &vinitData, &mVertexBuffer);
     if (FAILED(hr)) { return false; }
 
     UINT indices[6] =
@@ -5397,7 +5397,7 @@ bool RSPass_SimpleLight::CreateBuffers()
     D3D11_SUBRESOURCE_DATA iinitData = {};
     ZeroMemory(&iinitData, sizeof(iinitData));
     iinitData.pSysMem = indices;
-    hr = Device()->CreateBuffer(&bufDesc, &iinitData, &mIndexBuffer);
+    hr = device()->CreateBuffer(&bufDesc, &iinitData, &mIndexBuffer);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -5405,12 +5405,12 @@ bool RSPass_SimpleLight::CreateBuffers()
 
 bool RSPass_SimpleLight::CreateViews()
 {
-    mRenderTargetView = g_Root->Devices()->GetSwapChainRtv();
+    mRenderTargetView = g_Root->getDevices()->GetSwapChainRtv();
 
     std::string name = "mrt-geo-buffer";
-    mGeoBufferSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
+    mGeoBufferSrv = g_Root->getResourceManager()->GetResourceInfo(name)->Srv;
     name = "ssao-tex-compress-ssao";
-    mSsaoSrv = g_Root->ResourceManager()->GetResourceInfo(name)->mSrv;
+    mSsaoSrv = g_Root->getResourceManager()->GetResourceInfo(name)->Srv;
 
     return true;
 }
@@ -5445,7 +5445,7 @@ bool RSPass_SimpleLight::CreateSamplers()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &sampDesc, &mLinearWrapSampler);
     if (FAILED(hr)) { return false; }
 
@@ -5492,7 +5492,7 @@ RSPass_Billboard::RSPass_Billboard(const RSPass_Billboard& _source) :
     mRSCameraInfo(_source.mRSCameraInfo),
     mRSCamera(_source.mRSCamera)
 {
-    if (mHasBeenInited)
+    if (HasBeenInited)
     {
         RS_ADDREF(mVertexShader);
         RS_ADDREF(mGeometryShader);
@@ -5511,14 +5511,14 @@ RSPass_Billboard::~RSPass_Billboard()
 
 }
 
-RSPass_Billboard* RSPass_Billboard::ClonePass()
+RSPass_Billboard* RSPass_Billboard::clonePass()
 {
     return new RSPass_Billboard(*this);
 }
 
-bool RSPass_Billboard::InitPass()
+bool RSPass_Billboard::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateStates()) { return false; }
@@ -5527,18 +5527,18 @@ bool RSPass_Billboard::InitPass()
     if (!CreateSamplers()) { return false; }
 
     mDrawCallType = DRAWCALL_TYPE::TRANSPARENCY;
-    mDrawCallPipe = g_Root->DrawCallsPool()->GetDrawCallsPipe(mDrawCallType);
+    mDrawCallPipe = g_Root->getDrawCallsPool()->GetDrawCallsPipe(mDrawCallType);
 
     std::string name = "temp-cam";
-    mRSCameraInfo = g_Root->CamerasContainer()->GetRSCameraInfo(name);
-    mRSCamera = g_Root->CamerasContainer()->GetRSCamera(name);
+    mRSCameraInfo = g_Root->getCamerasContainer()->GetRSCameraInfo(name);
+    mRSCamera = g_Root->getCamerasContainer()->GetRSCamera(name);
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_Billboard::ReleasePass()
+void RSPass_Billboard::releasePass()
 {
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mGeometryShader);
@@ -5551,81 +5551,81 @@ void RSPass_Billboard::ReleasePass()
     RS_RELEASE(mInstanceStructedBufferSrv);
 }
 
-void RSPass_Billboard::ExecuatePass()
+void RSPass_Billboard::execuatePass()
 {
-    STContext()->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
-    STContext()->RSSetViewports(1, &g_ViewPort);
+    context()->OMSetRenderTargets(1, &mRenderTargetView, mDepthStencilView);
+    context()->RSSetViewports(1, &g_ViewPort);
     static float factor[4] = { 0.f,0.f,0.f,0.f };
-    STContext()->OMSetBlendState(mBlendState, factor, 0xFFFFFFFF);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->GSSetShader(mGeometryShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
-    STContext()->PSSetSamplers(0, 1, &mLinearWrapSampler);
+    context()->OMSetBlendState(mBlendState, factor, 0xFFFFFFFF);
+    context()->VSSetShader(mVertexShader, nullptr, 0);
+    context()->GSSetShader(mGeometryShader, nullptr, 0);
+    context()->PSSetShader(mPixelShader, nullptr, 0);
+    context()->PSSetSamplers(0, 1, &mLinearWrapSampler);
 
     DirectX::XMMATRIX mat = {};
-    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT stride = sizeof(vertex_type::TangentVertex);
     UINT offset = 0;
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
-    STContext()->Map(mViewProjStructedBuffer, 0,
+    context()->Map(mViewProjStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     ViewProjCamUpPos* vp_data = (ViewProjCamUpPos*)msr.pData;
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mViewMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ViewMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mViewMat, mat);
-    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->mProjMat);
+    mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
     vp_data->mCamUpVec = mRSCamera->GetRSCameraUpVector();
     vp_data->mCamPos = mRSCamera->GetRSCameraPosition();
-    STContext()->Unmap(mViewProjStructedBuffer, 0);
+    context()->Unmap(mViewProjStructedBuffer, 0);
 
-    STContext()->GSSetShaderResources(0, 1, &mViewProjStructedBufferSrv);
+    context()->GSSetShaderResources(0, 1, &mViewProjStructedBufferSrv);
 
-    for (auto& call : mDrawCallPipe->mDatas)
+    for (auto& call : mDrawCallPipe->Data)
     {
-        auto vecPtr = call.mInstanceData.mDataPtr;
+        auto vecPtr = call.InstanceData.DataArrayPtr;
         auto size = vecPtr->size();
-        STContext()->Map(mInstanceStructedBuffer, 0,
+        context()->Map(mInstanceStructedBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         RS_INSTANCE_DATA* ins_data = (RS_INSTANCE_DATA*)msr.pData;
         for (size_t i = 0; i < size; i++)
         {
             mat = DirectX::XMLoadFloat4x4(
-                &(*vecPtr)[i].mWorldMat);
+                &(*vecPtr)[i].WorldMatrix);
             mat = DirectX::XMMatrixTranspose(mat);
-            DirectX::XMStoreFloat4x4(&ins_data[i].mWorldMat, mat);
-            ins_data[i].mMaterialData =
-                (*vecPtr)[i].mMaterialData;
-            ins_data[i].mCustomizedData1 =
-                (*vecPtr)[i].mCustomizedData1;
-            ins_data[i].mCustomizedData2 =
-                (*vecPtr)[i].mCustomizedData2;
+            DirectX::XMStoreFloat4x4(&ins_data[i].WorldMatrix, mat);
+            ins_data[i].MaterialData =
+                (*vecPtr)[i].MaterialData;
+            ins_data[i].CustomizedData1 =
+                (*vecPtr)[i].CustomizedData1;
+            ins_data[i].CustomizedData2 =
+                (*vecPtr)[i].CustomizedData2;
         }
-        STContext()->Unmap(mInstanceStructedBuffer, 0);
+        context()->Unmap(mInstanceStructedBuffer, 0);
 
-        STContext()->IASetInputLayout(call.mMeshData.mLayout);
-        STContext()->IASetPrimitiveTopology(call.mMeshData.mTopologyType);
-        STContext()->IASetVertexBuffers(0, 1, &call.mMeshData.mVertexBuffer,
+        context()->IASetInputLayout(call.MeshData.InputLayout);
+        context()->IASetPrimitiveTopology(call.MeshData.TopologyType);
+        context()->IASetVertexBuffers(0, 1, &call.MeshData.VertexBuffer,
             &stride, &offset);
-        STContext()->IASetIndexBuffer(
-            call.mMeshData.mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-        STContext()->VSSetShaderResources(0, 1, &mInstanceStructedBufferSrv);
-        STContext()->PSSetShaderResources(0, 1, &call.mTextureDatas[0].mSrv);
+        context()->IASetIndexBuffer(
+            call.MeshData.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        context()->VSSetShaderResources(0, 1, &mInstanceStructedBufferSrv);
+        context()->PSSetShaderResources(0, 1, &call.TextureData[0].Srv);
 
-        STContext()->DrawIndexedInstanced(
-            call.mMeshData.mIndexCount,
-            (UINT)call.mInstanceData.mDataPtr->size(), 0, 0, 0);
+        context()->DrawIndexedInstanced(
+            call.MeshData.IndexSize,
+            (UINT)call.InstanceData.DataArrayPtr->size(), 0, 0, 0);
     }
 
     static ID3D11RenderTargetView* nullrtv[] = { nullptr };
     static ID3D11ShaderResourceView* nullsrv[] = { nullptr };
-    STContext()->OMSetRenderTargets(1, nullrtv, nullptr);
-    STContext()->OMSetBlendState(nullptr, factor, 0xFFFFFFFF);
-    STContext()->GSSetShader(nullptr, nullptr, 0);
-    STContext()->VSSetShaderResources(0, 1, nullsrv);
-    STContext()->GSSetShaderResources(0, 1, nullsrv);
-    STContext()->PSSetShaderResources(0, 1, nullsrv);
+    context()->OMSetRenderTargets(1, nullrtv, nullptr);
+    context()->OMSetBlendState(nullptr, factor, 0xFFFFFFFF);
+    context()->GSSetShader(nullptr, nullptr, 0);
+    context()->VSSetShaderResources(0, 1, nullsrv);
+    context()->GSSetShaderResources(0, 1, nullsrv);
+    context()->PSSetShaderResources(0, 1, nullsrv);
 }
 
 bool RSPass_Billboard::CreateShaders()
@@ -5633,12 +5633,12 @@ bool RSPass_Billboard::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\billboard_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -5646,12 +5646,12 @@ bool RSPass_Billboard::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\billboard_geometry.hlsl",
         "main", "gs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateGeometryShader(
+    hr = device()->CreateGeometryShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mGeometryShader);
@@ -5659,12 +5659,12 @@ bool RSPass_Billboard::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\billboard_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
@@ -5691,7 +5691,7 @@ bool RSPass_Billboard::CreateStates()
     bldDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
     bldDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
     bldDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-    hr = Device()->CreateBlendState(&bldDesc, &mBlendState);
+    hr = device()->CreateBlendState(&bldDesc, &mBlendState);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -5709,13 +5709,13 @@ bool RSPass_Billboard::CreateBuffers()
     bdc.ByteWidth = MAX_INSTANCE_SIZE * sizeof(RS_INSTANCE_DATA);
     bdc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
     bdc.StructureByteStride = sizeof(RS_INSTANCE_DATA);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mInstanceStructedBuffer);
     if (FAILED(hr)) { return false; }
 
     bdc.ByteWidth = sizeof(ViewProjCamUpPos);
     bdc.StructureByteStride = sizeof(ViewProjCamUpPos);
-    hr = Device()->CreateBuffer(
+    hr = device()->CreateBuffer(
         &bdc, nullptr, &mViewProjStructedBuffer);
     if (FAILED(hr)) { return false; }
 
@@ -5724,12 +5724,12 @@ bool RSPass_Billboard::CreateBuffers()
 
 bool RSPass_Billboard::CreateViews()
 {
-    mRenderTargetView = g_Root->Devices()->GetHighDynamicRtv();
+    mRenderTargetView = g_Root->getDevices()->GetHighDynamicRtv();
 
     std::string name = "";
     name = "mrt-depth";
-    mDepthStencilView = g_Root->ResourceManager()->
-        GetResourceInfo(name)->mDsv;
+    mDepthStencilView = g_Root->getResourceManager()->
+        GetResourceInfo(name)->Dsv;
     if (!mDepthStencilView) { return false; }
 
     HRESULT hr = S_OK;
@@ -5739,13 +5739,13 @@ bool RSPass_Billboard::CreateViews()
     srvDesc.Format = DXGI_FORMAT_UNKNOWN;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     srvDesc.Buffer.ElementWidth = MAX_INSTANCE_SIZE;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mInstanceStructedBuffer,
         &srvDesc, &mInstanceStructedBufferSrv);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Buffer.ElementWidth = 1;
-    hr = Device()->CreateShaderResourceView(
+    hr = device()->CreateShaderResourceView(
         mViewProjStructedBuffer,
         &srvDesc, &mViewProjStructedBufferSrv);
     if (FAILED(hr)) { return false; }
@@ -5783,7 +5783,7 @@ bool RSPass_Billboard::CreateSamplers()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &sampDesc, &mLinearWrapSampler);
     if (FAILED(hr)) { return false; }
 
@@ -5816,7 +5816,7 @@ RSPass_Tonemapping::RSPass_Tonemapping(const RSPass_Tonemapping& _source) :
     mAverageLuminSrvArray(_source.mAverageLuminSrvArray),
     mAverageLuminUavArray(_source.mAverageLuminUavArray)
 {
-    if (mHasBeenInited)
+    if (HasBeenInited)
     {
         RS_ADDREF(mDynamicExposureShader);
         RS_ADDREF(mAverLuminShader);
@@ -5835,24 +5835,24 @@ RSPass_Tonemapping::~RSPass_Tonemapping()
 
 }
 
-RSPass_Tonemapping* RSPass_Tonemapping::ClonePass()
+RSPass_Tonemapping* RSPass_Tonemapping::clonePass()
 {
     return new RSPass_Tonemapping(*this);
 }
 
-bool RSPass_Tonemapping::InitPass()
+bool RSPass_Tonemapping::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_Tonemapping::ReleasePass()
+void RSPass_Tonemapping::releasePass()
 {
     RS_RELEASE(mDynamicExposureShader);
     RS_RELEASE(mAverLuminShader);
@@ -5865,50 +5865,50 @@ void RSPass_Tonemapping::ReleasePass()
     RS_RELEASE(mAverageLuminUavArray[1]);
 }
 
-void RSPass_Tonemapping::ExecuatePass()
+void RSPass_Tonemapping::execuatePass()
 {
     static ID3D11UnorderedAccessView* nullUav = nullptr;
     static ID3D11ShaderResourceView* nullSrv = nullptr;
 
-    UINT width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    UINT height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
-    UINT dispatchX = Tool::Align(width, 32) / 32;
-    UINT dispatchY = Tool::Align(height, 32) / 32;
+    UINT width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
+    UINT height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
+    UINT dispatchX = rs_tool::align(width, 32) / 32;
+    UINT dispatchY = rs_tool::align(height, 32) / 32;
 
     static int cindex = 0;
     int pindex = cindex;
     cindex = (cindex + 1) % 2;
 
-    STContext()->CSSetShader(mAverLuminShader, nullptr, 0);
-    STContext()->CSSetShaderResources(0, 1, &mHdrSrv);
-    STContext()->CSSetUnorderedAccessViews(0, 1,
+    context()->CSSetShader(mAverLuminShader, nullptr, 0);
+    context()->CSSetShaderResources(0, 1, &mHdrSrv);
+    context()->CSSetUnorderedAccessViews(0, 1,
         &mAverageLuminUavArray[cindex], nullptr);
 
-    STContext()->Dispatch(dispatchX, dispatchY, 1);
+    context()->Dispatch(dispatchX, dispatchY, 1);
 
-    STContext()->CSSetShaderResources(0, 1, &nullSrv);
-    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
+    context()->CSSetShaderResources(0, 1, &nullSrv);
+    context()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
 
-    STContext()->CSSetShader(mDynamicExposureShader, nullptr, 0);
-    STContext()->CSSetShaderResources(0, 1,
+    context()->CSSetShader(mDynamicExposureShader, nullptr, 0);
+    context()->CSSetShaderResources(0, 1,
         &mAverageLuminSrvArray[pindex]);
-    STContext()->CSSetUnorderedAccessViews(0, 1,
+    context()->CSSetUnorderedAccessViews(0, 1,
         &mAverageLuminUavArray[cindex], nullptr);
 
-    STContext()->Dispatch(1, 1, 1);
+    context()->Dispatch(1, 1, 1);
 
-    STContext()->CSSetShaderResources(0, 1, &nullSrv);
-    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
+    context()->CSSetShaderResources(0, 1, &nullSrv);
+    context()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
 
-    dispatchX = Tool::Align(width, 256) / 256;
-    STContext()->CSSetShader(mToneMapShader, nullptr, 0);
-    STContext()->CSSetShaderResources(0, 1,
+    dispatchX = rs_tool::align(width, 256) / 256;
+    context()->CSSetShader(mToneMapShader, nullptr, 0);
+    context()->CSSetShaderResources(0, 1,
         &mAverageLuminSrvArray[cindex]);
-    STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
+    context()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
 
-    STContext()->Dispatch(dispatchX, height, 1);
+    context()->Dispatch(dispatchX, height, 1);
 
-    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
+    context()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
 }
 
 bool RSPass_Tonemapping::CreateShaders()
@@ -5916,12 +5916,12 @@ bool RSPass_Tonemapping::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\average_lumin_compute.hlsl",
         "main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mAverLuminShader);
@@ -5945,12 +5945,12 @@ bool RSPass_Tonemapping::CreateShaders()
         { "INV_FACTOR", invFactorStr.c_str() },
         { nullptr, nullptr }
     };
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\dynamic_exposure_compute.hlsl",
         "main", "cs_5_0", &shaderBlob, expoMacro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mDynamicExposureShader);
@@ -5970,12 +5970,12 @@ bool RSPass_Tonemapping::CreateShaders()
         staticV += "f)";
         macro[0] = { "STATIC_EXPOSURE", staticV.c_str() };
     }
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\tonemap_compute.hlsl",
         "main", "cs_5_0", &shaderBlob, macro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mToneMapShader);
@@ -5988,8 +5988,8 @@ bool RSPass_Tonemapping::CreateShaders()
 
 bool RSPass_Tonemapping::CreateViews()
 {
-    mHdrUav = g_Root->Devices()->GetHighDynamicUav();
-    mHdrSrv = g_Root->Devices()->GetHighDynamicSrv();
+    mHdrUav = g_Root->getDevices()->GetHighDynamicUav();
+    mHdrSrv = g_Root->getDevices()->GetHighDynamicSrv();
 
     HRESULT hr = S_OK;
     D3D11_BUFFER_DESC bfrDesc = {};
@@ -5997,11 +5997,11 @@ bool RSPass_Tonemapping::CreateViews()
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 
-    UINT width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    UINT height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
+    UINT width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
+    UINT height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
     // TODO shader hasn't been supported for other sreen size
-    UINT expoSize = Tool::Align(width, 32) / 32 *
-        Tool::Align(height, 32) / 32;
+    UINT expoSize = rs_tool::align(width, 32) / 32 *
+        rs_tool::align(height, 32) / 32;
 
     ZeroMemory(&bfrDesc, sizeof(bfrDesc));
     ZeroMemory(&initData, sizeof(initData));
@@ -6014,10 +6014,10 @@ bool RSPass_Tonemapping::CreateViews()
     float* data = new float[expoSize];
     data[0] = g_RenderEffectConfig.mStaticExpo;
     initData.pSysMem = data;
-    hr = Device()->CreateBuffer(&bfrDesc, &initData,
+    hr = device()->CreateBuffer(&bfrDesc, &initData,
         &mAverageLuminBufferArray[0]);
     if (FAILED(hr)) { delete[] data; return false; }
-    hr = Device()->CreateBuffer(&bfrDesc, &initData,
+    hr = device()->CreateBuffer(&bfrDesc, &initData,
         &mAverageLuminBufferArray[1]);
     if (FAILED(hr)) { delete[] data; return false; }
     delete[] data;
@@ -6026,10 +6026,10 @@ bool RSPass_Tonemapping::CreateViews()
     srvDesc.Format = DXGI_FORMAT_UNKNOWN;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
     srvDesc.Buffer.ElementWidth = expoSize;
-    hr = Device()->CreateShaderResourceView(mAverageLuminBufferArray[0],
+    hr = device()->CreateShaderResourceView(mAverageLuminBufferArray[0],
         &srvDesc, &mAverageLuminSrvArray[0]);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateShaderResourceView(mAverageLuminBufferArray[1],
+    hr = device()->CreateShaderResourceView(mAverageLuminBufferArray[1],
         &srvDesc, &mAverageLuminSrvArray[1]);
     if (FAILED(hr)) { return false; }
 
@@ -6037,10 +6037,10 @@ bool RSPass_Tonemapping::CreateViews()
     uavDesc.Format = DXGI_FORMAT_UNKNOWN;
     uavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
     uavDesc.Buffer.NumElements = expoSize;
-    hr = Device()->CreateUnorderedAccessView(mAverageLuminBufferArray[0],
+    hr = device()->CreateUnorderedAccessView(mAverageLuminBufferArray[0],
         &uavDesc, &mAverageLuminUavArray[0]);
     if (FAILED(hr)) { return false; }
-    hr = Device()->CreateUnorderedAccessView(mAverageLuminBufferArray[1],
+    hr = device()->CreateUnorderedAccessView(mAverageLuminBufferArray[1],
         &uavDesc, &mAverageLuminUavArray[1]);
     if (FAILED(hr)) { return false; }
 
@@ -6093,7 +6093,7 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr& _source) :
     mUpSampleSrv(_source.mUpSampleSrv),
     mUpSampleUavArray({ _source.mUpSampleUavArray })
 {
-    if (mHasBeenInited)
+    if (HasBeenInited)
     {
         RS_ADDREF(mUpSampleShader);
         RS_ADDREF(mBlurHoriShader);
@@ -6119,26 +6119,26 @@ RSPass_BloomHdr::~RSPass_BloomHdr()
 
 }
 
-RSPass_BloomHdr* RSPass_BloomHdr::ClonePass()
+RSPass_BloomHdr* RSPass_BloomHdr::clonePass()
 {
     return new RSPass_BloomHdr(*this);
 }
 
-bool RSPass_BloomHdr::InitPass()
+bool RSPass_BloomHdr::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
     if (!CreateBuffers()) { return false; }
     if (!CreateSampler()) { return false; }
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_BloomHdr::ReleasePass()
+void RSPass_BloomHdr::releasePass()
 {
     RS_RELEASE(mFilterPixelShader);
     RS_RELEASE(mUpSampleShader);
@@ -6158,26 +6158,26 @@ void RSPass_BloomHdr::ReleasePass()
     for (auto uav : mUpSampleUavArray) { RS_RELEASE(uav); }
 }
 
-void RSPass_BloomHdr::ExecuatePass()
+void RSPass_BloomHdr::execuatePass()
 {
     static ID3D11UnorderedAccessView* nullUav = nullptr;
     static ID3D11ShaderResourceView* nullSrv = nullptr;
-    UINT width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    UINT height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
-    UINT dispatchX = Tool::Align(width, 16) / 16;
-    UINT dispatchY = Tool::Align(height, 16) / 16;
+    UINT width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
+    UINT height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
+    UINT dispatchX = rs_tool::align(width, 16) / 16;
+    UINT dispatchY = rs_tool::align(height, 16) / 16;
 
-    STContext()->CSSetShader(mFilterPixelShader, nullptr, 0);
-    STContext()->CSSetShaderResources(0, 1, &mHdrSrv);
-    STContext()->CSSetUnorderedAccessViews(0, 1,
+    context()->CSSetShader(mFilterPixelShader, nullptr, 0);
+    context()->CSSetShaderResources(0, 1, &mHdrSrv);
+    context()->CSSetUnorderedAccessViews(0, 1,
         mNeedBloomUavArray.data(), nullptr);
 
-    STContext()->Dispatch(dispatchX, dispatchY, 1);
+    context()->Dispatch(dispatchX, dispatchY, 1);
 
-    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
-    STContext()->CSSetShaderResources(0, 1, &nullSrv);
+    context()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
+    context()->CSSetShaderResources(0, 1, &nullSrv);
 
-    STContext()->GenerateMips(mNeedBloomSrv);
+    context()->GenerateMips(mNeedBloomSrv);
 
     D3D11_MAPPED_SUBRESOURCE msr = {};
 
@@ -6189,30 +6189,30 @@ void RSPass_BloomHdr::ExecuatePass()
         auto index = 1;
         UINT blurTexWidth = width / (1 << index);
         UINT blurTexHeight = height / (1 << index);
-        STContext()->Map(mBlurConstBuffer, 0,
+        context()->Map(mBlurConstBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         BLM_BLUR_INFO* info = (BLM_BLUR_INFO*)msr.pData;
         info->mTexWidth = blurTexWidth;
         info->mTexHeight = blurTexHeight;
-        STContext()->Unmap(mBlurConstBuffer, 0);
+        context()->Unmap(mBlurConstBuffer, 0);
 
-        STContext()->CSSetUnorderedAccessViews(0, 1,
+        context()->CSSetUnorderedAccessViews(0, 1,
             &mNeedBloomUavArray[index], nullptr);
-        STContext()->CSSetConstantBuffers(0, 1, &mBlurConstBuffer);
+        context()->CSSetConstantBuffers(0, 1, &mBlurConstBuffer);
 
         for (size_t j = 0; j < BLUR_COUNT; j++)
         {
-            STContext()->CSSetShader(mKABlurHoriShader,
+            context()->CSSetShader(mKABlurHoriShader,
                 nullptr, 0);
-            dispatchX = Tool::Align(blurTexWidth, 256) / 256;
+            dispatchX = rs_tool::align(blurTexWidth, 256) / 256;
             dispatchY = blurTexHeight;
-            STContext()->Dispatch(dispatchX, dispatchY, 1);
+            context()->Dispatch(dispatchX, dispatchY, 1);
 
-            STContext()->CSSetShader(mKABlurVertShader,
+            context()->CSSetShader(mKABlurVertShader,
                 nullptr, 0);
             dispatchX = blurTexWidth;
-            dispatchY = Tool::Align(blurTexHeight, 256) / 256;
-            STContext()->Dispatch(dispatchX, dispatchY, 1);
+            dispatchY = rs_tool::align(blurTexHeight, 256) / 256;
+            context()->Dispatch(dispatchX, dispatchY, 1);
         }
     }
 
@@ -6221,81 +6221,81 @@ void RSPass_BloomHdr::ExecuatePass()
         auto index = i + 1;
         UINT blurTexWidth = width / (1 << index);
         UINT blurTexHeight = height / (1 << index);
-        STContext()->Map(mBlurConstBuffer, 0,
+        context()->Map(mBlurConstBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         BLM_BLUR_INFO* info = (BLM_BLUR_INFO*)msr.pData;
         info->mTexWidth = blurTexWidth;
         info->mTexHeight = blurTexHeight;
-        STContext()->Unmap(mBlurConstBuffer, 0);
+        context()->Unmap(mBlurConstBuffer, 0);
 
-        STContext()->CSSetUnorderedAccessViews(0, 1,
+        context()->CSSetUnorderedAccessViews(0, 1,
             &mNeedBloomUavArray[index], nullptr);
-        STContext()->CSSetConstantBuffers(0, 1, &mBlurConstBuffer);
+        context()->CSSetConstantBuffers(0, 1, &mBlurConstBuffer);
 
         for (size_t j = 0; j < BLUR_COUNT; j++)
         {
-            STContext()->CSSetShader(mBlurHoriShader,
+            context()->CSSetShader(mBlurHoriShader,
                 nullptr, 0);
-            dispatchX = Tool::Align(blurTexWidth, 256) / 256;
+            dispatchX = rs_tool::align(blurTexWidth, 256) / 256;
             dispatchY = blurTexHeight;
-            STContext()->Dispatch(dispatchX, dispatchY, 1);
+            context()->Dispatch(dispatchX, dispatchY, 1);
 
-            STContext()->CSSetShader(mBlurVertShader,
+            context()->CSSetShader(mBlurVertShader,
                 nullptr, 0);
             dispatchX = blurTexWidth;
-            dispatchY = Tool::Align(blurTexHeight, 256) / 256;
-            STContext()->Dispatch(dispatchX, dispatchY, 1);
+            dispatchY = rs_tool::align(blurTexHeight, 256) / 256;
+            context()->Dispatch(dispatchX, dispatchY, 1);
         }
     }
     static ID3D11UnorderedAccessView* nulluav = nullptr;
     static ID3D11ShaderResourceView* nullsrv = nullptr;
-    STContext()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
+    context()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
 
     width /= 2;
     height /= 2;
-    STContext()->CSSetShader(mUpSampleShader, nullptr, 0);
-    STContext()->CSSetShaderResources(0, 1, &mNeedBloomSrv);
-    STContext()->CSSetSamplers(0, 1, &mLinearBorderSampler);
+    context()->CSSetShader(mUpSampleShader, nullptr, 0);
+    context()->CSSetShaderResources(0, 1, &mNeedBloomSrv);
+    context()->CSSetSamplers(0, 1, &mLinearBorderSampler);
     for (size_t i = 0; i < UP_COUNT; i++)
     {
         auto inv_i = UP_COUNT - 1 - i;
         UINT texWidth = width / (1 << inv_i);
         UINT texHeight = height / (1 << inv_i);
 
-        STContext()->Map(mBlurConstBuffer, 0,
+        context()->Map(mBlurConstBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         BLM_BLUR_INFO* info = (BLM_BLUR_INFO*)msr.pData;
         info->mTexWidth = texWidth;
         info->mTexHeight = texHeight;
         info->mPads[0] = static_cast<UINT>(inv_i);
-        STContext()->Unmap(mBlurConstBuffer, 0);
+        context()->Unmap(mBlurConstBuffer, 0);
 
-        STContext()->CSSetUnorderedAccessViews(0, 2,
+        context()->CSSetUnorderedAccessViews(0, 2,
             &mUpSampleUavArray[inv_i], nullptr);
 
-        dispatchX = Tool::Align(texWidth, 16) / 16;
-        dispatchY = Tool::Align(texHeight, 16) / 16;
-        STContext()->Dispatch(dispatchX, dispatchY, 1);
+        dispatchX = rs_tool::align(texWidth, 16) / 16;
+        dispatchY = rs_tool::align(texHeight, 16) / 16;
+        context()->Dispatch(dispatchX, dispatchY, 1);
     }
-    STContext()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
-    STContext()->CSSetUnorderedAccessViews(1, 1, &nulluav, nullptr);
+    context()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
+    context()->CSSetUnorderedAccessViews(1, 1, &nulluav, nullptr);
 
 
-    STContext()->Map(mIntensityConstBuffer, 0,
+    context()->Map(mIntensityConstBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     BLM_INTENSITY_INFO* info = (BLM_INTENSITY_INFO*)msr.pData;
     info->mIntensityFactor = g_RenderEffectConfig.mBloomIntensityFactor;
-    STContext()->Unmap(mIntensityConstBuffer, 0);
-    STContext()->CSSetShader(mBlendShader, nullptr, 0);
-    STContext()->CSSetConstantBuffers(0, 1, &mIntensityConstBuffer);
-    STContext()->CSSetShaderResources(0, 1, &mUpSampleSrv);
-    STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
-    dispatchX = Tool::Align(width * 2, 16) / 16;
-    dispatchY = Tool::Align(height * 2, 16) / 16;
-    STContext()->Dispatch(dispatchX, dispatchY, 1);
+    context()->Unmap(mIntensityConstBuffer, 0);
+    context()->CSSetShader(mBlendShader, nullptr, 0);
+    context()->CSSetConstantBuffers(0, 1, &mIntensityConstBuffer);
+    context()->CSSetShaderResources(0, 1, &mUpSampleSrv);
+    context()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
+    dispatchX = rs_tool::align(width * 2, 16) / 16;
+    dispatchY = rs_tool::align(height * 2, 16) / 16;
+    context()->Dispatch(dispatchX, dispatchY, 1);
 
-    STContext()->CSSetShaderResources(0, 1, &nullsrv);
-    STContext()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
+    context()->CSSetShaderResources(0, 1, &nullsrv);
+    context()->CSSetUnorderedAccessViews(0, 1, &nulluav, nullptr);
 }
 
 bool RSPass_BloomHdr::CreateShaders()
@@ -6310,12 +6310,12 @@ bool RSPass_BloomHdr::CreateShaders()
         { "MIN_VALUE", pickMinValue.c_str() },
         { nullptr, nullptr }
     };
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\bloom_pick_compute.hlsl",
         "main", "cs_5_0", &shaderBlob, pickMacro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mFilterPixelShader);
@@ -6332,7 +6332,7 @@ bool RSPass_BloomHdr::CreateShaders()
         float sigma = g_RenderEffectConfig.mBloomBlurSigma;
 
         std::vector<float> weights = {};
-        Tool::CalcGaussWeight1D(kernel, sigma, weights);
+        rs_tool::calcGaussWeight1D(kernel, sigma, weights);
 
         kernelSize = std::to_string(kernel);
         kernelHalf = std::to_string(half);
@@ -6350,12 +6350,12 @@ bool RSPass_BloomHdr::CreateShaders()
         { "WEIGHT_ARRAY", weightArray.c_str() },
         { nullptr, nullptr }
     };
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\gauss_blur_compute.hlsl",
         "HMain", "cs_5_0", &shaderBlob, blurMacro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mBlurHoriShader);
@@ -6363,12 +6363,12 @@ bool RSPass_BloomHdr::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\gauss_blur_compute.hlsl",
         "VMain", "cs_5_0", &shaderBlob, blurMacro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mBlurVertShader);
@@ -6376,12 +6376,12 @@ bool RSPass_BloomHdr::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\karis_average_compute.hlsl",
         "HMain", "cs_5_0", &shaderBlob, blurMacro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mKABlurHoriShader);
@@ -6389,12 +6389,12 @@ bool RSPass_BloomHdr::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\karis_average_compute.hlsl",
         "VMain", "cs_5_0", &shaderBlob, blurMacro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mKABlurVertShader);
@@ -6402,12 +6402,12 @@ bool RSPass_BloomHdr::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\bloom_upsample_compute.hlsl",
         "main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mUpSampleShader);
@@ -6415,12 +6415,12 @@ bool RSPass_BloomHdr::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\bloom_blend_compute.hlsl",
         "main", "cs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mBlendShader);
@@ -6433,8 +6433,8 @@ bool RSPass_BloomHdr::CreateShaders()
 
 bool RSPass_BloomHdr::CreateViews()
 {
-    mHdrUav = g_Root->Devices()->GetHighDynamicUav();
-    mHdrSrv = g_Root->Devices()->GetHighDynamicSrv();
+    mHdrUav = g_Root->getDevices()->GetHighDynamicUav();
+    mHdrSrv = g_Root->getDevices()->GetHighDynamicSrv();
 
     HRESULT hr = S_OK;
     D3D11_TEXTURE2D_DESC texDesc = {};
@@ -6449,8 +6449,8 @@ bool RSPass_BloomHdr::CreateViews()
     UINT downMips = g_RenderEffectConfig.mBloomDownSamplingCount + 1;
     UINT upMips = downMips - 2;
 
-    texDesc.Width = g_Root->Devices()->GetCurrWndWidth();
-    texDesc.Height = g_Root->Devices()->GetCurrWndHeight();
+    texDesc.Width = g_Root->getDevices()->GetCurrWndWidth();
+    texDesc.Height = g_Root->getDevices()->GetCurrWndHeight();
     texDesc.MipLevels = downMips;
     texDesc.ArraySize = 1;
     texDesc.SampleDesc.Count = 1;
@@ -6461,14 +6461,14 @@ bool RSPass_BloomHdr::CreateViews()
     texDesc.BindFlags = D3D11_BIND_RENDER_TARGET |
         D3D11_BIND_SHADER_RESOURCE |
         D3D11_BIND_UNORDERED_ACCESS;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &mNeedBloomTexture);
+    hr = device()->CreateTexture2D(&texDesc, nullptr, &mNeedBloomTexture);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = downMips;
-    hr = Device()->CreateShaderResourceView(mNeedBloomTexture,
+    hr = device()->CreateShaderResourceView(mNeedBloomTexture,
         &srvDesc, &mNeedBloomSrv);
     if (FAILED(hr)) { return false; }
 
@@ -6477,7 +6477,7 @@ bool RSPass_BloomHdr::CreateViews()
         uavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
         uavDesc.Texture2D.MipSlice = static_cast<UINT>(i);
-        hr = Device()->CreateUnorderedAccessView(mNeedBloomTexture,
+        hr = device()->CreateUnorderedAccessView(mNeedBloomTexture,
             &uavDesc, &mNeedBloomUavArray[i]);
         if (FAILED(hr)) { return false; }
     }
@@ -6489,11 +6489,11 @@ bool RSPass_BloomHdr::CreateViews()
     texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE |
         D3D11_BIND_UNORDERED_ACCESS;
     srvDesc.Texture2D.MipLevels = upMips;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr,
+    hr = device()->CreateTexture2D(&texDesc, nullptr,
         &mUpSampleTexture);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateShaderResourceView(mUpSampleTexture,
+    hr = device()->CreateShaderResourceView(mUpSampleTexture,
         &srvDesc, &mUpSampleSrv);
     if (FAILED(hr)) { return false; }
 
@@ -6502,7 +6502,7 @@ bool RSPass_BloomHdr::CreateViews()
         uavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
         uavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
         uavDesc.Texture2D.MipSlice = static_cast<UINT>(i);
-        hr = Device()->CreateUnorderedAccessView(mUpSampleTexture,
+        hr = device()->CreateUnorderedAccessView(mUpSampleTexture,
             &uavDesc, &mUpSampleUavArray[i]);
         if (FAILED(hr)) { return false; }
     }
@@ -6520,11 +6520,11 @@ bool RSPass_BloomHdr::CreateBuffers()
     bfrDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     bfrDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     bfrDesc.ByteWidth = sizeof(BLM_BLUR_INFO);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mBlurConstBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mBlurConstBuffer);
     if (FAILED(hr)) { return false; }
 
     bfrDesc.ByteWidth = sizeof(BLM_INTENSITY_INFO);
-    hr = Device()->CreateBuffer(&bfrDesc, nullptr, &mIntensityConstBuffer);
+    hr = device()->CreateBuffer(&bfrDesc, nullptr, &mIntensityConstBuffer);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -6543,7 +6543,7 @@ bool RSPass_BloomHdr::CreateSampler()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(&sampDesc, &mLinearBorderSampler);
+    hr = device()->CreateSamplerState(&sampDesc, &mLinearBorderSampler);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -6573,7 +6573,7 @@ RSPass_ToSwapChain::RSPass_ToSwapChain(const RSPass_ToSwapChain& _source) :
     mHdrSrv(_source.mHdrSrv),
     mLinearWrapSampler(_source.mLinearWrapSampler)
 {
-    if (mHasBeenInited)
+    if (HasBeenInited)
     {
         RS_ADDREF(mVertexBuffer);
         RS_ADDREF(mIndexBuffer);
@@ -6588,26 +6588,26 @@ RSPass_ToSwapChain::~RSPass_ToSwapChain()
 
 }
 
-RSPass_ToSwapChain* RSPass_ToSwapChain::ClonePass()
+RSPass_ToSwapChain* RSPass_ToSwapChain::clonePass()
 {
     return new RSPass_ToSwapChain(*this);
 }
 
-bool RSPass_ToSwapChain::InitPass()
+bool RSPass_ToSwapChain::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateBuffers()) { return false; }
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
     if (!CreateSamplers()) { return false; }
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_ToSwapChain::ReleasePass()
+void RSPass_ToSwapChain::releasePass()
 {
     RS_RELEASE(mVertexBuffer);
     RS_RELEASE(mIndexBuffer);
@@ -6616,43 +6616,43 @@ void RSPass_ToSwapChain::ReleasePass()
     RS_RELEASE(mLinearWrapSampler);
 }
 
-void RSPass_ToSwapChain::ExecuatePass()
+void RSPass_ToSwapChain::execuatePass()
 {
-    STContext()->OMSetRenderTargets(1, &mSwapChainRtv, nullptr);
-    STContext()->RSSetViewports(1, &g_ViewPort);
-    STContext()->ClearRenderTargetView(
+    context()->OMSetRenderTargets(1, &mSwapChainRtv, nullptr);
+    context()->RSSetViewports(1, &g_ViewPort);
+    context()->ClearRenderTargetView(
         mSwapChainRtv, DirectX::Colors::DarkGreen);
-    STContext()->VSSetShader(mVertexShader, nullptr, 0);
-    STContext()->PSSetShader(mPixelShader, nullptr, 0);
+    context()->VSSetShader(mVertexShader, nullptr, 0);
+    context()->PSSetShader(mPixelShader, nullptr, 0);
 
-    UINT stride = sizeof(VertexType::TangentVertex);
+    UINT stride = sizeof(vertex_type::TangentVertex);
     UINT offset = 0;
 
     static ID3D11ShaderResourceView* srvs[] =
     {
         mHdrSrv
     };
-    STContext()->PSSetShaderResources(0, 1, srvs);
+    context()->PSSetShaderResources(0, 1, srvs);
 
     static ID3D11SamplerState* samps[] =
     {
         mLinearWrapSampler,
     };
-    STContext()->PSSetSamplers(0, 1, samps);
+    context()->PSSetSamplers(0, 1, samps);
 
-    STContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-    STContext()->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
-    STContext()->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    context()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    context()->IASetVertexBuffers(0, 1, &mVertexBuffer, &stride, &offset);
+    context()->IASetIndexBuffer(mIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-    STContext()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+    context()->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
     ID3D11RenderTargetView* rtvnull = nullptr;
-    STContext()->OMSetRenderTargets(1, &rtvnull, nullptr);
+    context()->OMSetRenderTargets(1, &rtvnull, nullptr);
     static ID3D11ShaderResourceView* nullsrvs[] =
     {
         nullptr
     };
-    STContext()->PSSetShaderResources(0, 1, nullsrvs);
+    context()->PSSetShaderResources(0, 1, nullsrvs);
 }
 
 bool RSPass_ToSwapChain::CreateBuffers()
@@ -6660,7 +6660,7 @@ bool RSPass_ToSwapChain::CreateBuffers()
     HRESULT hr = S_OK;
     D3D11_BUFFER_DESC bufDesc = {};
 
-    VertexType::TangentVertex v[4] = {};
+    vertex_type::TangentVertex v[4] = {};
     v[0].Position = DirectX::XMFLOAT3(-1.0f, -1.0f, 0.0f);
     v[1].Position = DirectX::XMFLOAT3(-1.0f, +1.0f, 0.0f);
     v[2].Position = DirectX::XMFLOAT3(+1.0f, +1.0f, 0.0f);
@@ -6671,7 +6671,7 @@ bool RSPass_ToSwapChain::CreateBuffers()
     v[3].TexCoord = DirectX::XMFLOAT2(1.0f, 1.0f);
     ZeroMemory(&bufDesc, sizeof(bufDesc));
     bufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-    bufDesc.ByteWidth = sizeof(VertexType::TangentVertex) * 4;
+    bufDesc.ByteWidth = sizeof(vertex_type::TangentVertex) * 4;
     bufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     bufDesc.CPUAccessFlags = 0;
     bufDesc.MiscFlags = 0;
@@ -6679,7 +6679,7 @@ bool RSPass_ToSwapChain::CreateBuffers()
     D3D11_SUBRESOURCE_DATA vinitData = {};
     ZeroMemory(&vinitData, sizeof(vinitData));
     vinitData.pSysMem = v;
-    hr = Device()->CreateBuffer(&bufDesc, &vinitData, &mVertexBuffer);
+    hr = device()->CreateBuffer(&bufDesc, &vinitData, &mVertexBuffer);
     if (FAILED(hr)) { return false; }
 
     UINT indices[6] =
@@ -6697,7 +6697,7 @@ bool RSPass_ToSwapChain::CreateBuffers()
     D3D11_SUBRESOURCE_DATA iinitData = {};
     ZeroMemory(&iinitData, sizeof(iinitData));
     iinitData.pSysMem = indices;
-    hr = Device()->CreateBuffer(&bufDesc, &iinitData, &mIndexBuffer);
+    hr = device()->CreateBuffer(&bufDesc, &iinitData, &mIndexBuffer);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -6708,12 +6708,12 @@ bool RSPass_ToSwapChain::CreateShaders()
     ID3DBlob* shaderBlob = nullptr;
     HRESULT hr = S_OK;
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\copy_texture_vertex.hlsl",
         "main", "vs_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateVertexShader(
+    hr = device()->CreateVertexShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mVertexShader);
@@ -6721,12 +6721,12 @@ bool RSPass_ToSwapChain::CreateShaders()
     shaderBlob = nullptr;
     if (FAILED(hr)) { return false; }
 
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\copy_texture_pixel.hlsl",
         "main", "ps_5_0", &shaderBlob);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreatePixelShader(
+    hr = device()->CreatePixelShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mPixelShader);
@@ -6739,8 +6739,8 @@ bool RSPass_ToSwapChain::CreateShaders()
 
 bool RSPass_ToSwapChain::CreateViews()
 {
-    mSwapChainRtv = g_Root->Devices()->GetSwapChainRtv();
-    mHdrSrv = g_Root->Devices()->GetHighDynamicSrv();
+    mSwapChainRtv = g_Root->getDevices()->GetSwapChainRtv();
+    mHdrSrv = g_Root->getDevices()->GetHighDynamicSrv();
 
     return true;
 }
@@ -6775,7 +6775,7 @@ bool RSPass_ToSwapChain::CreateSamplers()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(
+    hr = device()->CreateSamplerState(
         &sampDesc, &mLinearWrapSampler);
     if (FAILED(hr)) { return false; }
 
@@ -6802,7 +6802,7 @@ RSPass_FXAA::RSPass_FXAA(const RSPass_FXAA& _source) :
     mCopySrv(_source.mCopySrv),
     mLinearBorderSampler(_source.mLinearBorderSampler)
 {
-    if (mHasBeenInited)
+    if (HasBeenInited)
     {
         RS_ADDREF(mFXAAShader);
         RS_ADDREF(mLinearBorderSampler);
@@ -6816,25 +6816,25 @@ RSPass_FXAA::~RSPass_FXAA()
 
 }
 
-RSPass_FXAA* RSPass_FXAA::ClonePass()
+RSPass_FXAA* RSPass_FXAA::clonePass()
 {
     return new RSPass_FXAA(*this);
 }
 
-bool RSPass_FXAA::InitPass()
+bool RSPass_FXAA::initPass()
 {
-    if (mHasBeenInited) { return true; }
+    if (HasBeenInited) { return true; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateViews()) { return false; }
     if (!CreateSamplers()) { return false; }
 
-    mHasBeenInited = true;
+    HasBeenInited = true;
 
     return true;
 }
 
-void RSPass_FXAA::ReleasePass()
+void RSPass_FXAA::releasePass()
 {
     RS_RELEASE(mFXAAShader);
     RS_RELEASE(mLinearBorderSampler);
@@ -6842,26 +6842,26 @@ void RSPass_FXAA::ReleasePass()
     RS_RELEASE(mCopySrv);
 }
 
-void RSPass_FXAA::ExecuatePass()
+void RSPass_FXAA::execuatePass()
 {
-    UINT dispatchX = g_Root->Devices()->GetCurrWndWidth();
-    UINT dispatchY = g_Root->Devices()->GetCurrWndHeight();
-    dispatchX = Tool::Align(dispatchX, 16) / 16;
-    dispatchY = Tool::Align(dispatchY, 16) / 16;
+    UINT dispatchX = g_Root->getDevices()->GetCurrWndWidth();
+    UINT dispatchY = g_Root->getDevices()->GetCurrWndHeight();
+    dispatchX = rs_tool::align(dispatchX, 16) / 16;
+    dispatchY = rs_tool::align(dispatchY, 16) / 16;
 
-    g_Root->Devices()->CopyHighDynamicTexture(STContext(), mCopyTex);
+    g_Root->getDevices()->CopyHighDynamicTexture(context(), mCopyTex);
 
-    STContext()->CSSetShader(mFXAAShader, nullptr, 0);
-    STContext()->CSSetSamplers(0, 1, &mLinearBorderSampler);
-    STContext()->CSSetShaderResources(0, 1, &mCopySrv);
-    STContext()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
+    context()->CSSetShader(mFXAAShader, nullptr, 0);
+    context()->CSSetSamplers(0, 1, &mLinearBorderSampler);
+    context()->CSSetShaderResources(0, 1, &mCopySrv);
+    context()->CSSetUnorderedAccessViews(0, 1, &mHdrUav, nullptr);
 
-    STContext()->Dispatch(dispatchX, dispatchY, 1);
+    context()->Dispatch(dispatchX, dispatchY, 1);
 
     static ID3D11ShaderResourceView* nullSrv = nullptr;
     static ID3D11UnorderedAccessView* nullUav = nullptr;
-    STContext()->CSSetShaderResources(0, 1, &nullSrv);
-    STContext()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
+    context()->CSSetShaderResources(0, 1, &nullSrv);
+    context()->CSSetUnorderedAccessViews(0, 1, &nullUav, nullptr);
 }
 
 bool RSPass_FXAA::CreateShaders()
@@ -6885,12 +6885,12 @@ bool RSPass_FXAA::CreateShaders()
         { "EDGE_GUESS", borderGuessStr.c_str() },
         { nullptr, nullptr }
     };
-    hr = Tool::CompileShaderFromFile(
+    hr = rs_tool::compileShaderFromFile(
         L".\\Assets\\Shaders\\fxaa_compute.hlsl",
         "main", "cs_5_0", &shaderBlob, macro);
     if (FAILED(hr)) { return false; }
 
-    hr = Device()->CreateComputeShader(
+    hr = device()->CreateComputeShader(
         shaderBlob->GetBufferPointer(),
         shaderBlob->GetBufferSize(),
         nullptr, &mFXAAShader);
@@ -6903,7 +6903,7 @@ bool RSPass_FXAA::CreateShaders()
 
 bool RSPass_FXAA::CreateViews()
 {
-    mHdrUav = g_Root->Devices()->GetHighDynamicUav();
+    mHdrUav = g_Root->getDevices()->GetHighDynamicUav();
 
     HRESULT hr = S_OK;
     D3D11_TEXTURE2D_DESC texDesc = {};
@@ -6911,8 +6911,8 @@ bool RSPass_FXAA::CreateViews()
     ZeroMemory(&texDesc, sizeof(texDesc));
     ZeroMemory(&srvDesc, sizeof(srvDesc));
 
-    texDesc.Width = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndWidth();
-    texDesc.Height = GetRSRoot_DX11_Singleton()->Devices()->GetCurrWndHeight();
+    texDesc.Width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
+    texDesc.Height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
     texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -6922,14 +6922,14 @@ bool RSPass_FXAA::CreateViews()
     texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     texDesc.CPUAccessFlags = 0;
     texDesc.MiscFlags = 0;
-    hr = Device()->CreateTexture2D(&texDesc, nullptr, &mCopyTex);
+    hr = device()->CreateTexture2D(&texDesc, nullptr, &mCopyTex);
     if (FAILED(hr)) { return false; }
 
     srvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
     srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
     srvDesc.Texture2D.MostDetailedMip = 0;
     srvDesc.Texture2D.MipLevels = 1;
-    hr = Device()->CreateShaderResourceView(mCopyTex, &srvDesc, &mCopySrv);
+    hr = device()->CreateShaderResourceView(mCopyTex, &srvDesc, &mCopySrv);
     if (FAILED(hr)) { return false; }
 
     return true;
@@ -6947,7 +6947,7 @@ bool RSPass_FXAA::CreateSamplers()
     sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sampDesc.MinLOD = 0;
     sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-    hr = Device()->CreateSamplerState(&sampDesc, &mLinearBorderSampler);
+    hr = device()->CreateSamplerState(&sampDesc, &mLinearBorderSampler);
     if (FAILED(hr)) { return false; }
 
     return true;

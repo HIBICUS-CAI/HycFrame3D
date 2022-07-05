@@ -16,15 +16,15 @@
 #include "RSCamera.h"
 
 RSLight::RSLight(LIGHT_INFO* _info) :
-    mLightType(_info->mType),
-    mWithShadow(_info->mWithShadow),
-    mIntensity(_info->mTempIntensity),
-    mLightStrength(_info->mAlbedo),
-    mLightDirection(_info->mDirection),
-    mLightPosition(_info->mPosition),
-    mLightFallOffStart(_info->mFalloffStart),
-    mLightFallOffEnd(_info->mFalloffEnd),
-    mLightSpotPower(_info->mSpotPower),
+    mLightType(_info->Type),
+    mWithShadow(_info->ShadowFlag),
+    mIntensity(_info->Intensity),
+    mLightStrength(_info->Albedo),
+    mLightDirection(_info->Direction),
+    mLightPosition(_info->Position),
+    mLightFallOffStart(_info->FalloffStart),
+    mLightFallOffEnd(_info->FalloffEnd),
+    mLightSpotPower(_info->SpotPower),
     mRSLightInfo({
         mIntensity, mLightStrength, mLightFallOffStart, mLightDirection,
         mLightFallOffEnd, mLightPosition, mLightSpotPower
@@ -53,31 +53,31 @@ LIGHT_TYPE RSLight::GetRSLightType()
 
 void RSLight::ResetRSLight(LIGHT_INFO* _info)
 {
-    mLightType = _info->mType;
-    SetRSLightIntensity(_info->mTempIntensity);
-    SetRSLightStrength(_info->mAlbedo);
-    SetRSLightDirection(_info->mDirection);
-    SetRSLightPosition(_info->mPosition);
-    SetRSLightFallOff(_info->mFalloffStart, _info->mFalloffEnd);
-    SetRSLightSpotPower(_info->mSpotPower);
+    mLightType = _info->Type;
+    SetRSLightIntensity(_info->Intensity);
+    SetRSLightStrength(_info->Albedo);
+    SetRSLightDirection(_info->Direction);
+    SetRSLightPosition(_info->Position);
+    SetRSLightFallOff(_info->FalloffStart, _info->FalloffEnd);
+    SetRSLightSpotPower(_info->SpotPower);
 }
 
 void RSLight::SetRSLightStrength(DirectX::XMFLOAT3 _strength)
 {
     mLightStrength = _strength;
-    mRSLightInfo.mAlbedo = _strength;
+    mRSLightInfo.Albedo = _strength;
 }
 
 void RSLight::SetRSLightDirection(DirectX::XMFLOAT3 _direction)
 {
     mLightDirection = _direction;
-    mRSLightInfo.mDirection = _direction;
+    mRSLightInfo.Direction = _direction;
 }
 
 void RSLight::SetRSLightPosition(DirectX::XMFLOAT3 _position)
 {
     mLightPosition = _position;
-    mRSLightInfo.mPosition = _position;
+    mRSLightInfo.Position = _position;
 
     if (mRSLightCamera)
     {
@@ -88,7 +88,7 @@ void RSLight::SetRSLightPosition(DirectX::XMFLOAT3 _position)
         static DirectX::XMMATRIX mat = {};
         mat = DirectX::XMMatrixTranslation(
             mLightPosition.x, mLightPosition.y, mLightPosition.z);
-        DirectX::XMStoreFloat4x4(&(mLightInstanceData[0].mWorldMat), mat);
+        DirectX::XMStoreFloat4x4(&(mLightInstanceData[0].WorldMatrix), mat);
     }
 }
 
@@ -96,20 +96,20 @@ void RSLight::SetRSLightFallOff(float _start, float _end)
 {
     mLightFallOffStart = _start;
     mLightFallOffEnd = _end;
-    mRSLightInfo.mFalloffStart = _start;
-    mRSLightInfo.mFalloffEnd = _end;
+    mRSLightInfo.FalloffStart = _start;
+    mRSLightInfo.FalloffEnd = _end;
 }
 
 void RSLight::SetRSLightSpotPower(float _power)
 {
     mLightSpotPower = _power;
-    mRSLightInfo.mSpotPower = _power;
+    mRSLightInfo.SpotPower = _power;
 }
 
 void RSLight::SetRSLightIntensity(float _power)
 {
     mIntensity = _power;
-    mRSLightInfo.mTempIntensity = _power;
+    mRSLightInfo.Intensity = _power;
 }
 
 RSCamera* RSLight::CreateLightCamera(std::string& _lightName,
@@ -133,43 +133,43 @@ void RSLight::SetLightBloom(RS_SUBMESH_DATA& _meshData)
     mBloomLightFlg = true;
     mLightMeshData = _meshData;
     mLightInstanceData.resize(1);
-    mLightInstanceData[0].mCustomizedData1.x = mLightStrength.x;
-    mLightInstanceData[0].mCustomizedData1.y = mLightStrength.y;
-    mLightInstanceData[0].mCustomizedData1.z = mLightStrength.z;
-    mLightInstanceData[0].mCustomizedData1.w = mIntensity;
+    mLightInstanceData[0].CustomizedData1.x = mLightStrength.x;
+    mLightInstanceData[0].CustomizedData1.y = mLightStrength.y;
+    mLightInstanceData[0].CustomizedData1.z = mLightStrength.z;
+    mLightInstanceData[0].CustomizedData1.w = mIntensity;
     static DirectX::XMMATRIX mat = {};
     mat = DirectX::XMMatrixTranslation(
         mLightPosition.x, mLightPosition.y, mLightPosition.z);
-    DirectX::XMStoreFloat4x4(&(mLightInstanceData[0].mWorldMat),
+    DirectX::XMStoreFloat4x4(&(mLightInstanceData[0].WorldMatrix),
         mat);
-    mLightDrawCallData.mInstanceData.mDataPtr = &mLightInstanceData;
-    mLightDrawCallData.mMeshData.mIndexBuffer =
-        mLightMeshData.mIndexBuffer;
-    mLightDrawCallData.mMeshData.mVertexBuffer =
-        mLightMeshData.mVertexBuffer;
-    mLightDrawCallData.mMeshData.mIndexCount =
-        mLightMeshData.mIndexCount;
-    mLightDrawCallData.mMeshData.mLayout =
-        mLightMeshData.mLayout;
-    mLightDrawCallData.mMeshData.mTopologyType =
-        mLightMeshData.mTopologyType;
+    mLightDrawCallData.InstanceData.DataArrayPtr = &mLightInstanceData;
+    mLightDrawCallData.MeshData.IndexBuffer =
+        mLightMeshData.IndexBuffer;
+    mLightDrawCallData.MeshData.VertexBuffer =
+        mLightMeshData.VertexBuffer;
+    mLightDrawCallData.MeshData.IndexSize =
+        mLightMeshData.IndexSize;
+    mLightDrawCallData.MeshData.InputLayout =
+        mLightMeshData.InputLayout;
+    mLightDrawCallData.MeshData.TopologyType =
+        mLightMeshData.TopologyType;
 }
 
 void RSLight::UpdateBloomColor()
 {
     if (mBloomLightFlg)
     {
-        mLightInstanceData[0].mCustomizedData1.x = mLightStrength.x;
-        mLightInstanceData[0].mCustomizedData1.y = mLightStrength.y;
-        mLightInstanceData[0].mCustomizedData1.z = mLightStrength.z;
-        mLightInstanceData[0].mCustomizedData1.w = mIntensity;
+        mLightInstanceData[0].CustomizedData1.x = mLightStrength.x;
+        mLightInstanceData[0].CustomizedData1.y = mLightStrength.y;
+        mLightInstanceData[0].CustomizedData1.z = mLightStrength.z;
+        mLightInstanceData[0].CustomizedData1.w = mIntensity;
     }
 }
 
 void RSLight::UploadLightDrawCall()
 {
-    static auto pool = GetRSRoot_DX11_Singleton()->
-        DrawCallsPool();
+    static auto pool = getRSDX11RootInstance()->
+        getDrawCallsPool();
     if (mBloomLightFlg)
     {
         pool->AddDrawCallToPipe(DRAWCALL_TYPE::LIGHT,
@@ -181,7 +181,7 @@ void RSLight::ReleaseLightBloom(bool _deleteByFrame)
 {
     if (mBloomLightFlg && !_deleteByFrame)
     {
-        GetRSRoot_DX11_Singleton()->MeshHelper()->ReleaseSubMesh(
+        getRSDX11RootInstance()->getMeshHelper()->ReleaseSubMesh(
             mLightMeshData);
     }
 }
@@ -189,5 +189,5 @@ void RSLight::ReleaseLightBloom(bool _deleteByFrame)
 DirectX::XMFLOAT4X4* RSLight::GetLightWorldMat()
 {
     if (!mLightInstanceData.size()) { return nullptr; }
-    return &(mLightInstanceData[0].mWorldMat);
+    return &(mLightInstanceData[0].WorldMatrix);
 }

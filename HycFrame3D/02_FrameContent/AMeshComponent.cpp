@@ -116,17 +116,17 @@ bool AMeshComponent::BindInstanceToAssetsPool(std::string& _meshName)
     if (!mesh) { return false; }
 
     RS_INSTANCE_DATA id = {};
-    id.mMaterialData = mesh->mMeshData.mMaterial;
-    if (mesh->mMeshData.mTextures[1] != "") { id.mCustomizedData1.x = 1.f; }
-    else { id.mCustomizedData1.x = -1.f; }
-    if (mesh->mMeshData.mTextures[2] != "") { id.mCustomizedData1.y = 1.f; }
-    else { id.mCustomizedData1.y = -1.f; }
-    if (mesh->mMeshData.mTextures[3] != "") { id.mCustomizedData1.z = 1.f; }
-    else { id.mCustomizedData1.z = -1.f; }
-    if (mesh->mMeshData.mTextures[4] != "") { id.mCustomizedData1.w = 1.f; }
-    else { id.mCustomizedData1.w = -1.f; }
-    if (mesh->mMeshData.mTextures[4] != "") { id.mCustomizedData2.x = mEmissiveIntensity; }
-    else { id.mCustomizedData2.x = 0.f; }
+    id.MaterialData = mesh->mMeshData.Material;
+    if (mesh->mMeshData.Textures[1] != "") { id.CustomizedData1.x = 1.f; }
+    else { id.CustomizedData1.x = -1.f; }
+    if (mesh->mMeshData.Textures[2] != "") { id.CustomizedData1.y = 1.f; }
+    else { id.CustomizedData1.y = -1.f; }
+    if (mesh->mMeshData.Textures[3] != "") { id.CustomizedData1.z = 1.f; }
+    else { id.CustomizedData1.z = -1.f; }
+    if (mesh->mMeshData.Textures[4] != "") { id.CustomizedData1.w = 1.f; }
+    else { id.CustomizedData1.w = -1.f; }
+    if (mesh->mMeshData.Textures[4] != "") { id.CustomizedData2.x = mEmissiveIntensity; }
+    else { id.CustomizedData2.x = 0.f; }
 
     mesh->mInstanceMap.insert({ GetCompName(),id });
 
@@ -171,9 +171,9 @@ void AMeshComponent::SyncTransformDataToInstance()
                 DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
             mat = DirectX::XMMatrixMultiply(mat,
                 DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-            DirectX::XMStoreFloat4x4(&(ins_data.mWorldMat), mat);
+            DirectX::XMStoreFloat4x4(&(ins_data.WorldMatrix), mat);
 
-            ins_data.mCustomizedData2.x = mEmissiveIntensity;
+            ins_data.CustomizedData2.x = mEmissiveIntensity;
 
             ++index;
         }

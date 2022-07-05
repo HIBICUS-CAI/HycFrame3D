@@ -254,8 +254,8 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
     }
 
     std::vector<UINT> index = {};
-    std::vector<VertexType::TangentVertex> vertex = {};
-    std::vector<VertexType::AnimationVertex> aniVertex = {};
+    std::vector<vertex_type::TangentVertex> vertex = {};
+    std::vector<vertex_type::AnimationVertex> aniVertex = {};
     std::vector<MODEL_TEXTURE_INFO> texture = {};
     int indexSize = 0;
     int vertexSize = 0;
@@ -274,8 +274,8 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
 
         // each-sub-index
         UINT ind = 0;
-        VertexType::TangentVertex ver = {};
-        VertexType::AnimationVertex aniVer = {};
+        vertex_type::TangentVertex ver = {};
+        vertex_type::AnimationVertex aniVer = {};
         MODEL_TEXTURE_INFO tex = {};
         for (int j = 0; j < indexSize; j++)
         {
@@ -423,17 +423,17 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
     }
 
     SUBMESH_INFO si = {};
-    si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-    si.mIndeices = &index;
-    si.mVerteices = animated ? (void*)(&aniVertex) : (void*)(&vertex);
+    si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    si.IndeicesPtr = &index;
+    si.VerteicesPtr = animated ? (void*)(&aniVertex) : (void*)(&vertex);
     std::vector<std::string> t = {};
     for (auto& tex : texture) { t.emplace_back(tex.mPath); }
-    si.mTextures = &t;
-    si.mWithAnimation = animated;
+    si.TexturesPtr = &t;
+    si.AnimationFlag = animated;
     LAYOUT_TYPE layoutType = animated ?
         LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE :
         LAYOUT_TYPE::NORMAL_TANGENT_TEX;
-    GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
+    getRSDX11RootInstance()->getMeshHelper()->ProcessSubMesh(_result,
         &si, layoutType);
 
     inFile.close();
@@ -479,8 +479,8 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
     (void)subArraySize;
 
     std::vector<UINT> index = {};
-    std::vector<VertexType::TangentVertex> vertex = {};
-    std::vector<VertexType::AnimationVertex> aniVertex = {};
+    std::vector<vertex_type::TangentVertex> vertex = {};
+    std::vector<vertex_type::AnimationVertex> aniVertex = {};
     std::vector<MODEL_TEXTURE_INFO> texture = {};
     for (UINT i = 0; i < subSize; i++)
     {
@@ -511,7 +511,7 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
         {
             for (UINT j = 0; j < vertexSize; j++)
             {
-                static VertexType::AnimationVertex v = {};
+                static vertex_type::AnimationVertex v = {};
                 v = {};
 
                 v.Position.x =
@@ -565,7 +565,7 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
         {
             for (UINT j = 0; j < vertexSize; j++)
             {
-                static VertexType::TangentVertex v = {};
+                static vertex_type::TangentVertex v = {};
                 v = {};
 
                 v.Position.x =
@@ -636,17 +636,17 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
         }
 
         SUBMESH_INFO si = {};
-        si.mTopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.mIndeices = &index;
-        si.mVerteices = animated ? (void*)(&aniVertex) : (void*)(&vertex);
+        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+        si.IndeicesPtr = &index;
+        si.VerteicesPtr = animated ? (void*)(&aniVertex) : (void*)(&vertex);
         std::vector<std::string> t = {};
         for (auto& tex : texture) { t.emplace_back(tex.mPath); }
-        si.mTextures = &t;
-        si.mWithAnimation = animated;
+        si.TexturesPtr = &t;
+        si.AnimationFlag = animated;
         LAYOUT_TYPE layoutType = animated ?
             LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE :
             LAYOUT_TYPE::NORMAL_TANGENT_TEX;
-        GetRSRoot_DX11_Singleton()->MeshHelper()->ProcessSubMesh(_result,
+        getRSDX11RootInstance()->getMeshHelper()->ProcessSubMesh(_result,
             &si, layoutType);
     }
 
@@ -832,7 +832,7 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
 void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
     std::string _filePath, MESH_TEXTURE_TYPE _type)
 {
-    RSRoot_DX11* root = GetRSRoot_DX11_Singleton();
+    RSRoot_DX11* root = getRSDX11RootInstance();
 
     std::wstring wstr = L"";
     std::string name = "";
@@ -842,21 +842,21 @@ void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
     wstr = std::wstring(_filePath.begin(), _filePath.end());
     wstr = L".\\Assets\\Textures\\" + wstr;
 
-    if (root->ResourceManager()->GetMeshSrv(_filePath))
+    if (root->getResourceManager()->GetMeshSrv(_filePath))
     {
-        _result->mTextures[(size_t)_type] = _filePath;
+        _result->Textures[(size_t)_type] = _filePath;
         return;
     }
 
     if (_filePath.find(".dds") != std::string::npos ||
         _filePath.find(".DDS") != std::string::npos)
     {
-        hr = DirectX::CreateDDSTextureFromFile(root->Devices()->GetDevice(),
+        hr = DirectX::CreateDDSTextureFromFile(root->getDevices()->GetDevice(),
             wstr.c_str(), nullptr, &srv);
         if (SUCCEEDED(hr))
         {
             name = _filePath;
-            root->ResourceManager()->AddMeshSrv(name, srv);
+            root->getResourceManager()->AddMeshSrv(name, srv);
         }
         else
         {
@@ -867,12 +867,12 @@ void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
     }
     else
     {
-        hr = DirectX::CreateWICTextureFromFile(root->Devices()->GetDevice(),
+        hr = DirectX::CreateWICTextureFromFile(root->getDevices()->GetDevice(),
             wstr.c_str(), nullptr, &srv);
         if (SUCCEEDED(hr))
         {
             name = _filePath;
-            root->ResourceManager()->AddMeshSrv(name, srv);
+            root->getResourceManager()->AddMeshSrv(name, srv);
         }
         else
         {
@@ -882,5 +882,5 @@ void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
         }
     }
 
-    _result->mTextures[(size_t)_type] = _filePath;
+    _result->Textures[(size_t)_type] = _filePath;
 }
