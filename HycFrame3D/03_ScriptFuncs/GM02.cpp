@@ -93,6 +93,7 @@ void PlayerInput(AInputComponent* _aic, Timer& _timer)
     dirVec.y = 0.f;
     CreateBullet(g_PlayerAtc->GetProcessingPosition(), dirVec,
       _aic->GetActorOwner()->GetSceneNode());
+    PlaySE("se");
   }
 }
 
@@ -105,6 +106,8 @@ bool PlayerInit(AInteractComponent* _aitc)
   if (!g_Cam) { return false; }
   g_Cam->ChangeRSCameraPosition({ 0.f,0.f,0.f });
   g_Cam->ResetRSCameraRotation({ 0.f,0.f,1.f }, { 0.f,1.f,0.f });
+
+  PlayBGM("bgm");
 
   return true;
 }
@@ -148,6 +151,8 @@ void PlayerDestory(AInteractComponent* _aitc)
   g_PlayerAtc = nullptr;
   g_Cam = nullptr;
   g_BulletDirMap.clear();
+
+  StopBGM("bgm");
 }
 
 void CreateBullet(DirectX::XMFLOAT3 _startPos, DirectX::XMFLOAT3 _dirVec,

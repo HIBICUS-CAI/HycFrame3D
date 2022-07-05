@@ -61,7 +61,16 @@
             }
         }
     ],
-    "audio-assets": [],
+    "audio-assets": [
+        {
+            "audio-name": "bgm",
+            "audio-file": "bgm-success.wav"
+        },
+        {
+            "audio-name": "se",
+            "audio-file": "hit.wav"
+        }
+    ],
     "actor": [
         {
             "actor-name": "grid-actor",
@@ -206,6 +215,13 @@
                         10.0,
                         10.0,
                         10.0
+                    ]
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "bgm",
+                        "se"
                     ]
                 },
                 {
