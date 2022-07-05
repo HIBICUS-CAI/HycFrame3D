@@ -49,7 +49,7 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     {
         auto mouseOffset = input::getMouseOffset();
         float horiR = -mouseOffset.x * _timer.FloatDeltaTime() / 800.f;
-        _aic->GetSceneNode().GetMainCamera()->RotateRSCamera(0.f, horiR);
+        _aic->GetSceneNode().GetMainCamera()->rotateRSCamera(0.f, horiR);
     }
 
     if (input::isKeyPushedInSingle(KB_RETURN))
@@ -90,11 +90,11 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
         std::string simple = "simple-pipeline";
         if (simp)
         {
-            getRSDX11RootInstance()->getPipelinesManager()->SetPipeline(basic);
+            getRSDX11RootInstance()->getPipelinesManager()->setPipeline(basic);
         }
         else
         {
-            getRSDX11RootInstance()->getPipelinesManager()->SetPipeline(simple);
+            getRSDX11RootInstance()->getPipelinesManager()->setPipeline(simple);
         }
         simp = !simp;
     }

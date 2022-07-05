@@ -11,49 +11,74 @@
 
 #include "RSCommon.h"
 
-class RSCamera
-{
+class RSCamera {
+private:
+  LENS_TYPE LensType;
+
+  DirectX::XMFLOAT3 CameraPosition;
+  DirectX::XMFLOAT3 CameraUpVector;     // 基于原点的向量
+  DirectX::XMFLOAT3 CameraLookAtVector; // 基于原点的向量
+
+  float PerspFovAngleY;
+  float AspectRatio;
+  float OrthoWidth;
+  float OrthoHeight;
+  float NearZ;
+  float FarZ;
+
+  RS_CAM_INFO RSCameraInfo;
+
 public:
-    RSCamera(CAM_INFO* _info);
-    ~RSCamera();
+  RSCamera(const CAM_INFO *CamInfo);
+  ~RSCamera();
 
-    RS_CAM_INFO* GetRSCameraInfo();
-    void ResetRSCamera(CAM_INFO* _info);
+  RS_CAM_INFO *
+  getRSCameraInfo();
 
-    void TranslateRSCamera(DirectX::XMFLOAT3 _delta);
-    void RotateRSCamera(float _vertical, float _horizontal);
-    void RotateRSCamera(DirectX::XMFLOAT3 _deltaAngle);
-    void ChangeRSCameraFovY(float _angle);
-    void ChangeRSCameraNearFarZ(float _near, float _far);
+  void
+  resetRSCamera(const CAM_INFO *CamInfo);
 
-    DirectX::XMFLOAT3 GetRSCameraPosition() { return mCamPosition; }
-    DirectX::XMFLOAT3 GetRSCameraUpVector() { return mCamUpVec; }
-    DirectX::XMFLOAT3 GetRSCameraLookDir() { return mCamLookAt; }
+  void
+  translateRSCamera(const DirectX::XMFLOAT3& Delta);
 
-    void ChangeRSCameraPosition(DirectX::XMFLOAT3& _position);
-    void ChangeRSCameraPosition(DirectX::XMFLOAT3&& _position);
+  void
+  rotateRSCamera(float Vertical, float Horizontal);
 
-    void ResetRSCameraRotation(DirectX::XMFLOAT3 _lookAt,
-        DirectX::XMFLOAT3 _upVec);
+  void
+  rotateRSCamera(const DirectX::XMFLOAT3& DeltaAngle);
+
+  void
+  changeRSCameraFovY(float Angle);
+
+  void
+  changeRSCameraNearFarZ(float Near, float Far);
+
+  const DirectX::XMFLOAT3&
+  getRSCameraPosition() {
+    return CameraPosition;
+  }
+
+  const DirectX::XMFLOAT3&
+  getRSCameraUpVector() {
+    return CameraUpVector;
+  }
+
+  const DirectX::XMFLOAT3&
+  getRSCameraLookDir() {
+    return CameraLookAtVector;
+  }
+
+  void
+  changeRSCameraPosition(const DirectX::XMFLOAT3 &Position);
+
+  void
+  resetRSCameraRotation(const DirectX::XMFLOAT3 &LookAtVector,
+                        const DirectX::XMFLOAT3 &UpVector);
 
 private:
-    void CalcRSViewMat();
-    void CalcRSProjMat();
+  void
+  calcViewMatrix();
 
-private:
-    LENS_TYPE mLensType;
-
-    DirectX::XMFLOAT3 mCamPosition;
-    DirectX::XMFLOAT3 mCamUpVec;    // 基于原点的向量
-    DirectX::XMFLOAT3 mCamLookAt;   // 基于原点的向量
-
-    float mFovAngleYPersp;
-    float mAspectRatio;
-    float mWidthOrtho;
-    float mHeightOrtho;
-    float mNearZ;
-    float mFarZ;
-
-    RS_CAM_INFO mRSCameraInfo;
+  void
+  calcProjMatrix();
 };
-

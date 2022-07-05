@@ -42,25 +42,25 @@ bool RenderSystem::Init()
 
         std::string name = "temp-cam";
         CAM_INFO ci = {};
-        ci.mType = LENS_TYPE::PERSPECTIVE;
+        ci.Type = LENS_TYPE::PERSPECTIVE;
         ci.Position = { 0.f,0.f,0.f };
         ci.LookAtVector = { 0.f,0.f,1.f };
         ci.UpVector = { 0.f,1.f,0.f };
         ci.NearFarZ = { 1.f,800.f };
         ci.PerspFovYRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
         ci.OrthoWidthHeight = { 12.8f,7.2f };
-        mRenderSystemRoot->getCamerasContainer()->CreateRSCamera(name, &ci);
+        mRenderSystemRoot->getCamerasContainer()->createRSCamera(name, &ci);
 
         name = "temp-ui-cam";
         ci = {};
-        ci.mType = LENS_TYPE::ORTHOGRAPHIC;
+        ci.Type = LENS_TYPE::ORTHOGRAPHIC;
         ci.Position = { 0.f,0.f,0.f };
         ci.LookAtVector = { 0.f,0.f,1.f };
         ci.UpVector = { 0.f,1.f,0.f };
         ci.NearFarZ = { 1.f,100.f };
         ci.PerspFovYRatio = { DirectX::XM_PIDIV4,16.f / 9.f };
         ci.OrthoWidthHeight = { 1280.f,720.f };
-        mRenderSystemRoot->getCamerasContainer()->CreateRSCamera(name, &ci);
+        mRenderSystemRoot->getCamerasContainer()->createRSCamera(name, &ci);
 
         if (!CreateBasicPipeline()) { return false; }
     }
@@ -77,7 +77,7 @@ bool RenderSystem::Init()
     mSpecTex = GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetIBLSpecular();
 
-    getRSDX11RootInstance()->getParticlesContainer()->ResetRSParticleSystem();
+    getRSDX11RootInstance()->getParticlesContainer()->resetRSParticleSystem();
 
     return true;
 }
@@ -136,11 +136,11 @@ void RenderSystem::Run(Timer& _timer)
             {
                 drawCall.TextureData[i].EnabledFlag = true;
                 drawCall.TextureData[i].Srv = mRenderSystemRoot->
-                    getResourceManager()->GetMeshSrv(texArray[i]);
+                    getResourceManager()->getMeshSrv(texArray[i]);
             }
         }
 
-        drawCallPool->AddDrawCallToPipe(dType, drawCall);
+        drawCallPool->addDrawCallToPipe(dType, drawCall);
         if (mesh.first == SELECTED_BTN_SPRITE_NAME)
         {
             hasBtnSelect = true;
@@ -149,22 +149,22 @@ void RenderSystem::Run(Timer& _timer)
     }
     if (hasBtnSelect)
     {
-        mRenderSystemRoot->getDrawCallsPool()->AddDrawCallToPipe(
+        mRenderSystemRoot->getDrawCallsPool()->addDrawCallToPipe(
             DRAWCALL_TYPE::UI_SPRITE, btnSelectFlg);
     }
-    mRenderSystemRoot->getLightsContainer()->UploadLightBloomDrawCall();
+    mRenderSystemRoot->getLightsContainer()->uploadLightBloomDrawCall();
 
-    mRenderSystemRoot->getLightsContainer()->ForceCurrentAmbientLight(
+    mRenderSystemRoot->getLightsContainer()->forceCurrentAmbientLight(
         GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetCurrentAmbientFactor());
 
     SetPipelineIBLTextures(mEnvTex, mDiffTex, mSpecTex);
     SetPipelineDeltaTime(_timer.FloatDeltaTime());
 
-    getRSDX11RootInstance()->getPipelinesManager()->ProcessNextPipeline();
-    mRenderSystemRoot->getPipelinesManager()->ExecuateCurrentPipeline();
-    mRenderSystemRoot->getDevices()->PresentSwapChain();
-    mRenderSystemRoot->getDrawCallsPool()->ClearAllDrawCallsInPipes();
+    getRSDX11RootInstance()->getPipelinesManager()->useNextPipeline();
+    mRenderSystemRoot->getPipelinesManager()->execuateCurrentPipeline();
+    mRenderSystemRoot->getDevices()->presentSwapChain();
+    mRenderSystemRoot->getDrawCallsPool()->clearAllDrawCalls();
 }
 
 void RenderSystem::Destory()

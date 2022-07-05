@@ -8,52 +8,46 @@
 //---------------------------------------------------------------
 
 #include "RSDrawCallsPool.h"
+
 #include "RSRoot_DX11.h"
 
-RSDrawCallsPool::RSDrawCallsPool() :
-    mRootPtr(nullptr), mDrawCallsArray({ {} })
-{
+RSDrawCallsPool::RSDrawCallsPool()
+    : RenderSystemRoot(nullptr), DrawCallsPipeArray({{}}) {}
 
+RSDrawCallsPool::~RSDrawCallsPool() {}
+
+bool
+RSDrawCallsPool::startUp(RSRoot_DX11 *RootPtr) {
+  if (!RootPtr) {
+    return false;
+  }
+
+  RenderSystemRoot = RootPtr;
+
+  return true;
 }
 
-RSDrawCallsPool::~RSDrawCallsPool()
-{
-
+void
+RSDrawCallsPool::cleanAndStop() {
+  for (auto &Pipe : DrawCallsPipeArray) {
+    Pipe.Data.clear();
+  }
 }
 
-bool RSDrawCallsPool::StartUp(RSRoot_DX11* _root)
-{
-    if (!_root) { return false; }
-
-    mRootPtr = _root;
-
-    return true;
+void
+RSDrawCallsPool::addDrawCallToPipe(DRAWCALL_TYPE Type,
+                                   const RS_DRAWCALL_DATA &DrawCall) {
+  DrawCallsPipeArray[static_cast<size_t>(Type)].Data.emplace_back(DrawCall);
 }
 
-void RSDrawCallsPool::CleanAndStop()
-{
-    for (auto& pipe : mDrawCallsArray)
-    {
-        pipe.Data.clear();
-    }
+RSDrawCallsPipe *
+RSDrawCallsPool::getDrawCallsPipe(DRAWCALL_TYPE Type) {
+  return &DrawCallsPipeArray[static_cast<size_t>(Type)];
 }
 
-void RSDrawCallsPool::AddDrawCallToPipe(
-    DRAWCALL_TYPE _type, RS_DRAWCALL_DATA& _data)
-{
-    mDrawCallsArray[(size_t)_type].Data.emplace_back(_data);
-}
-
-RSDrawCallsPipe* RSDrawCallsPool::GetDrawCallsPipe(
-    DRAWCALL_TYPE _type)
-{
-    return &mDrawCallsArray[(size_t)_type];
-}
-
-void RSDrawCallsPool::ClearAllDrawCallsInPipes()
-{
-    for (auto& pipe : mDrawCallsArray)
-    {
-        pipe.Data.clear();
-    }
+void
+RSDrawCallsPool::clearAllDrawCalls() {
+  for (auto &Pipe : DrawCallsPipeArray) {
+    Pipe.Data.clear();
+  }
 }

@@ -84,19 +84,19 @@ bool UAnimateComponent::LoadAnimate(std::string _aniName, std::string _aniPath,
     texPathWStr = L".\\Assets\\Textures\\" + texPathWStr;
 
     auto resourceManager = getRSDX11RootInstance()->getResourceManager();
-    auto ifExist = resourceManager->GetMeshSrv(_aniPath);
+    auto ifExist = resourceManager->getMeshSrv(_aniPath);
 
     if (ifExist) {}
     else if (_aniPath.find(".dds") != std::string::npos ||
         _aniPath.find(".DDS") != std::string::npos)
     {
         hr = DirectX::CreateDDSTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->getDevice(),
             texPathWStr.c_str(), nullptr, &srv);
         if (SUCCEEDED(hr))
         {
             getRSDX11RootInstance()->getResourceManager()->
-                AddMeshSrv(_aniPath, srv);
+                addMeshSrv(_aniPath, srv);
         }
         else
         {
@@ -107,12 +107,12 @@ bool UAnimateComponent::LoadAnimate(std::string _aniName, std::string _aniPath,
     else
     {
         hr = DirectX::CreateWICTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->getDevice(),
             texPathWStr.c_str(), nullptr, &srv);
         if (SUCCEEDED(hr))
         {
             getRSDX11RootInstance()->getResourceManager()->
-                AddMeshSrv(_aniPath, srv);
+                addMeshSrv(_aniPath, srv);
         }
         else
         {

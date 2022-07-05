@@ -1,2396 +1,2220 @@
 ﻿//---------------------------------------------------------------
 // File: RSMeshHelper.cpp
 // Proj: RenderSystem_DX11
-// Info: 提供对SubMesh转换为DirectX可识别形式的方法
+// Info: 提供对SubMesh转换为dx可识别形式的方法
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
 // Comt: NULL
 //---------------------------------------------------------------
 
 #include "RSMeshHelper.h"
-#include "RSRoot_DX11.h"
+
+#include "DDSTextureLoader11.h"
 #include "RSDevices.h"
 #include "RSResourceManager.h"
+#include "RSRoot_DX11.h"
 #include "RSStaticResources.h"
-#include <assert.h>
 #include "WICTextureLoader11.h"
-#include "DDSTextureLoader11.h"
 
-using namespace DirectX;
+#include <cassert>
 
-RSMeshHelper::RSMeshHelper() :
-    mRootPtr(nullptr), mTexManagerPtr(nullptr),
-    mDevicesPtr(nullptr), mGeoGeneratorPtr(nullptr)
-{
+using namespace dx;
 
+RSMeshHelper::RSMeshHelper()
+    : RenderSystemRoot(nullptr), ResourceManager(nullptr), Devices(nullptr),
+      GeoGenerator(nullptr) {}
+
+RSMeshHelper::~RSMeshHelper() {}
+
+bool
+RSMeshHelper::startUp(RSRoot_DX11 *RootPtr, RSResourceManager *ResManagerPtr) {
+  if (!RootPtr || !ResManagerPtr) {
+    return false;
+  }
+
+  RenderSystemRoot = RootPtr;
+  ResourceManager = ResManagerPtr;
+  Devices = RootPtr->getDevices();
+  GeoGenerator = new RSGeometryGenerator(RootPtr);
+
+  return true;
 }
 
-RSMeshHelper::~RSMeshHelper()
-{
-
+void
+RSMeshHelper::cleanAndStop() {
+  if (GeoGenerator) {
+    delete GeoGenerator;
+    GeoGenerator = nullptr;
+  }
 }
 
-bool RSMeshHelper::StartUp(
-    RSRoot_DX11* _root, RSResourceManager* _texManager)
-{
-    if (!_root || !_texManager) { return false; }
-
-    mRootPtr = _root;
-    mTexManagerPtr = _texManager;
-    mDevicesPtr = _root->getDevices();
-    mGeoGeneratorPtr = new RSGeometryGenerator(_root);
-
-    return true;
+RSGeometryGenerator *
+RSMeshHelper::getGeoGenerator() {
+  return GeoGenerator;
 }
 
-void RSMeshHelper::CleanAndStop()
-{
-    if (mGeoGeneratorPtr)
-    {
-        delete mGeoGeneratorPtr;
-        mGeoGeneratorPtr = nullptr;
+void
+RSMeshHelper::processSubMesh(RS_SUBMESH_DATA *OutResult,
+                             const SUBMESH_INFO *Info,
+                             LAYOUT_TYPE LayoutType) {
+  assert(Info);
+
+  auto TopologyType = Info->TopologyType;
+  switch (TopologyType) {
+  case TOPOLOGY_TYPE::POINTLIST:
+    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+    break;
+  case TOPOLOGY_TYPE::LINELIST:
+    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+    break;
+  case TOPOLOGY_TYPE::LINESTRIP:
+    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+    break;
+  case TOPOLOGY_TYPE::TRIANGLELIST:
+    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    break;
+  case TOPOLOGY_TYPE::TRIANGLESTRIP:
+    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+    break;
+  default:
+    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+    break;
+  }
+  OutResult->AnimationFlag = Info->AnimationFlag;
+  OutResult->InputLayout = refStaticInputLayout(LayoutType);
+  OutResult->IndexBuffer = createIndexBuffer(Info->IndeicesPtr);
+  OutResult->VertexBuffer = createVertexBuffer(Info->VerteicesPtr, LayoutType);
+  OutResult->IndexSize = static_cast<UINT>(Info->IndeicesPtr->size());
+  createTexSrv(OutResult, Info->TexturesPtr);
+  if (Info->MaterialPtr) {
+    createSubMeshMaterial(OutResult, Info->MaterialPtr);
+  }
+}
+
+ID3D11InputLayout *
+RSMeshHelper::refStaticInputLayout(LAYOUT_TYPE LayoutType) {
+  ID3D11InputLayout *InputLayout = nullptr;
+  std::string Name = "";
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR:
+    Name = "ColorVertex";
+    break;
+  case LAYOUT_TYPE::NORMAL_TEX:
+    Name = "BasicVertex";
+    break;
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
+    Name = "TangentVertex";
+    break;
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE:
+    Name = "AnimationVertex";
+    break;
+  default:
+    return nullptr;
+  }
+  InputLayout =
+      RenderSystemRoot->getStaticResources()->getStaticInputLayout(Name);
+
+  return InputLayout;
+}
+
+ID3D11Buffer *
+RSMeshHelper::createIndexBuffer(const std::vector<UINT> *const IndicesArray) {
+  ID3D11Buffer *IndexBuffer = nullptr;
+  D3D11_BUFFER_DESC IBD = {};
+  D3D11_SUBRESOURCE_DATA InitData = {};
+  ZeroMemory(&IBD, sizeof(IBD));
+  ZeroMemory(&InitData, sizeof(InitData));
+  IBD.Usage = D3D11_USAGE_IMMUTABLE;
+  IBD.ByteWidth = static_cast<UINT>(sizeof(UINT) * IndicesArray->size());
+  IBD.BindFlags = D3D11_BIND_INDEX_BUFFER;
+  IBD.CPUAccessFlags = 0;
+  IBD.MiscFlags = 0;
+
+  InitData.pSysMem = IndicesArray->data();
+
+  HRESULT Hr = S_OK;
+  Hr = Devices->getDevice()->CreateBuffer(&IBD, &InitData, &IndexBuffer);
+  if (SUCCEEDED(Hr)) {
+    return IndexBuffer;
+  } else {
+    return nullptr;
+  }
+}
+
+ID3D11Buffer *
+RSMeshHelper::createVertexBuffer(const void *const ConstRawVerticesPtr,
+                                 LAYOUT_TYPE LayoutType) {
+  if (!ConstRawVerticesPtr) {
+    return nullptr;
+  }
+  void *RawVerticesPtr = const_cast<void *>(ConstRawVerticesPtr);
+  std::vector<vertex_type::BasicVertex> *BasicPtr = nullptr;
+  std::vector<vertex_type::ColorVertex> *ColorPtr = nullptr;
+  std::vector<vertex_type::TangentVertex> *TangentPtr = nullptr;
+  std::vector<vertex_type::AnimationVertex> *AnimatedPtr = nullptr;
+  UINT Size = 0;
+  UINT VertexSize = 0;
+  void *VertArray = nullptr;
+
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR:
+    ColorPtr =
+        static_cast<std::vector<vertex_type::ColorVertex> *>(RawVerticesPtr);
+    Size = static_cast<UINT>(ColorPtr->size());
+    VertexSize = static_cast<UINT>(sizeof(vertex_type::ColorVertex));
+    VertArray = ColorPtr->data();
+    break;
+  case LAYOUT_TYPE::NORMAL_TEX:
+    BasicPtr =
+        static_cast<std::vector<vertex_type::BasicVertex> *>(RawVerticesPtr);
+    Size = static_cast<UINT>(BasicPtr->size());
+    VertexSize = static_cast<UINT>(sizeof(vertex_type::BasicVertex));
+    VertArray = BasicPtr->data();
+    break;
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
+    TangentPtr =
+        static_cast<std::vector<vertex_type::TangentVertex> *>(RawVerticesPtr);
+    Size = static_cast<UINT>(TangentPtr->size());
+    VertexSize = static_cast<UINT>(sizeof(vertex_type::TangentVertex));
+    VertArray = TangentPtr->data();
+    break;
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE:
+    AnimatedPtr = static_cast<std::vector<vertex_type::AnimationVertex> *>(
+        RawVerticesPtr);
+    Size = static_cast<UINT>(AnimatedPtr->size());
+    VertexSize = static_cast<UINT>(sizeof(vertex_type::AnimationVertex));
+    VertArray = AnimatedPtr->data();
+    break;
+  default:
+    return nullptr;
+  }
+
+  ID3D11Buffer *VertexBuffer = nullptr;
+  D3D11_BUFFER_DESC VBD = {};
+  D3D11_SUBRESOURCE_DATA InitData = {};
+  ZeroMemory(&VBD, sizeof(VBD));
+  ZeroMemory(&InitData, sizeof(InitData));
+  VBD.Usage = D3D11_USAGE_IMMUTABLE;
+  VBD.ByteWidth = VertexSize * Size;
+  VBD.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+  VBD.CPUAccessFlags = 0;
+  VBD.MiscFlags = 0;
+
+  InitData.pSysMem = VertArray;
+
+  HRESULT Hr = S_OK;
+  Hr = Devices->getDevice()->CreateBuffer(&VBD, &InitData, &VertexBuffer);
+  if (SUCCEEDED(Hr)) {
+    return VertexBuffer;
+  } else {
+    return nullptr;
+  }
+}
+
+void
+RSMeshHelper::createTexSrv(RS_SUBMESH_DATA *OutResult,
+                           const std::vector<std::string> *const Textures) {
+  auto &TexArrat = OutResult->Textures;
+  static std::wstring WStr = L"";
+  static std::string Name = "";
+  static HRESULT Hr = S_OK;
+  ID3D11ShaderResourceView *Srv = nullptr;
+
+  for (auto &Tex : *Textures) {
+    Name = Tex;
+    auto ExistedSrv = ResourceManager->getMeshSrv(Name);
+    if (ExistedSrv) {
+      TexArrat[0] = Name;
+      continue;
     }
-}
 
-RSGeometryGenerator* RSMeshHelper::GeoGenerate()
-{
-    return mGeoGeneratorPtr;
-}
-
-void RSMeshHelper::ProcessSubMesh(
-    RS_SUBMESH_DATA* _result,
-    SUBMESH_INFO* _info, LAYOUT_TYPE _layoutType)
-{
-    assert(_info);
-
-    auto type = _info->TopologyType;
-    switch (type)
-    {
-    case TOPOLOGY_TYPE::POINTLIST:
-        _result->TopologyType =
-            D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
-        break;
-    case TOPOLOGY_TYPE::LINELIST:
-        _result->TopologyType =
-            D3D_PRIMITIVE_TOPOLOGY_LINELIST;
-        break;
-    case TOPOLOGY_TYPE::LINESTRIP:
-        _result->TopologyType =
-            D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
-        break;
-    case TOPOLOGY_TYPE::TRIANGLELIST:
-        _result->TopologyType =
-            D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-        break;
-    case TOPOLOGY_TYPE::TRIANGLESTRIP:
-        _result->TopologyType =
-            D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
-        break;
-    default:
-        _result->TopologyType =
-            D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
-        break;
+    WStr = std::wstring(Tex.begin(), Tex.end());
+    WStr = L".\\Assets\\Textures\\" + WStr;
+    if (Tex.find(".dds") != std::string::npos ||
+        Tex.find(".DDS") != std::string::npos) {
+      Hr = dx::CreateDDSTextureFromFile(Devices->getDevice(), WStr.c_str(),
+                                        nullptr, &Srv);
+      if (SUCCEEDED(Hr)) {
+        Name = Tex;
+        ResourceManager->addMeshSrv(Name, Srv);
+        TexArrat[0] = Name;
+      } else {
+        char ErrorLog[128] = "";
+        sprintf_s(ErrorLog, 128,
+                  "[[[WARNING]]] : cannot load this texture %s\n",
+                  Name.c_str());
+        OutputDebugString(ErrorLog);
+      }
+    } else {
+      Hr = dx::CreateWICTextureFromFile(Devices->getDevice(), WStr.c_str(),
+                                        nullptr, &Srv);
+      if (SUCCEEDED(Hr)) {
+        Name = Tex;
+        ResourceManager->addMeshSrv(Name, Srv);
+        TexArrat[0] = Name;
+      } else {
+        char ErrorLog[128] = "";
+        sprintf_s(ErrorLog, 128,
+                  "[[[WARNING]]] : cannot load this texture %s\n",
+                  Name.c_str());
+        OutputDebugString(ErrorLog);
+      }
     }
-    _result->AnimationFlag = _info->AnimationFlag;
-    _result->InputLayout = RefStaticInputLayout(_layoutType);
-    _result->IndexBuffer = CreateIndexBuffer(_info->IndeicesPtr);
-    _result->VertexBuffer = CreateVertexBuffer(_info->VerteicesPtr,
-        _layoutType);
-    _result->IndexSize = (UINT)_info->IndeicesPtr->size();
-    CreateTexSrv(_result, _info->TexturesPtr);
-    if (_info->MaterialPtr)
-    {
-        CreateSubMeshMaterial(_result, _info->MaterialPtr);
-    }
+  }
 }
 
-ID3D11InputLayout* RSMeshHelper::RefStaticInputLayout(
-    LAYOUT_TYPE _layoutType)
-{
-    ID3D11InputLayout* layout = nullptr;
-    static std::string name = "";
-    switch (_layoutType)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-        name = "ColorVertex";
-        break;
+void
+RSMeshHelper::createSubMeshMaterial(RS_SUBMESH_DATA *OutResult,
+                                    const MATERIAL_INFO *const Info) {
+  assert(Info);
+
+  RS_MATERIAL_INFO *MaterialPtr = &(OutResult->Material);
+  memcpy_s(MaterialPtr, sizeof(RS_MATERIAL_INFO), Info, sizeof(MATERIAL_INFO));
+}
+
+void
+RSMeshHelper::releaseSubMesh(RS_SUBMESH_DATA &MeshData) {
+  SAFE_RELEASE(MeshData.IndexBuffer);
+  SAFE_RELEASE(MeshData.VertexBuffer);
+}
+
+static bool G_SpriteRectHasBuilt = false;
+static RS_SUBMESH_DATA G_SpriteData = {};
+
+RSGeometryGenerator::RSGeometryGenerator(RSRoot_DX11 *RootPtr)
+    : MeshHelper(RootPtr->getMeshHelper()), Devices(RootPtr->getDevices()),
+      ResourceManager(RootPtr->getResourceManager()) {}
+
+RSGeometryGenerator::~RSGeometryGenerator() {
+  SAFE_RELEASE(G_SpriteData.IndexBuffer);
+  SAFE_RELEASE(G_SpriteData.VertexBuffer);
+}
+
+RS_SUBMESH_DATA
+RSGeometryGenerator::createBox(float Width,
+                               float Height,
+                               float Depth,
+                               UINT DivideNumber,
+                               LAYOUT_TYPE LayoutType,
+                               bool EnabledVertexColorFlag,
+                               const dx::XMFLOAT4 &VertexColor,
+                               const std::string &TextureName) {
+  RS_SUBMESH_DATA RSD = {};
+  SUBMESH_INFO SI = {};
+  MATERIAL_INFO MI = {};
+  std::vector<UINT> Indeices = {};
+  std::vector<vertex_type::BasicVertex> BasicPtr = {};
+  std::vector<vertex_type::TangentVertex> TangentPtr = {};
+  std::vector<vertex_type::ColorVertex> ColorPtr = {};
+  std::vector<std::string> Textures = {};
+  std::string Str = "";
+  float HW = 0.5f * Width;
+  float HH = 0.5f * Height;
+  float HD = 0.5f * Depth;
+  Indeices.resize(36);
+
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR:
+    if (!EnabledVertexColorFlag) {
+      assert(false && "not using vert color");
+    }
+    ColorPtr.resize(24);
+    // front face
+    ColorPtr[0] = {{-HW, -HH, -HD}, {0.0f, 0.0f, -1.0f}, VertexColor};
+    ColorPtr[1] = {{-HW, +HH, -HD}, {0.0f, 0.0f, -1.0f}, VertexColor};
+    ColorPtr[2] = {{+HW, +HH, -HD}, {0.0f, 0.0f, -1.0f}, VertexColor};
+    ColorPtr[3] = {{+HW, -HH, -HD}, {0.0f, 0.0f, -1.0f}, VertexColor};
+    // back face
+    ColorPtr[4] = {{-HW, -HH, +HD}, {0.0f, 0.0f, 1.0f}, VertexColor};
+    ColorPtr[5] = {{+HW, -HH, +HD}, {0.0f, 0.0f, 1.0f}, VertexColor};
+    ColorPtr[6] = {{+HW, +HH, +HD}, {0.0f, 0.0f, 1.0f}, VertexColor};
+    ColorPtr[7] = {{-HW, +HH, +HD}, {0.0f, 0.0f, 1.0f}, VertexColor};
+    // top face
+    ColorPtr[8] = {{-HW, +HH, -HD}, {0.0f, 1.0f, 0.0f}, VertexColor};
+    ColorPtr[9] = {{-HW, +HH, +HD}, {0.0f, 1.0f, 0.0f}, VertexColor};
+    ColorPtr[10] = {{+HW, +HH, +HD}, {0.0f, 1.0f, 0.0f}, VertexColor};
+    ColorPtr[11] = {{+HW, +HH, -HD}, {0.0f, 1.0f, 0.0f}, VertexColor};
+    // bottom face
+    ColorPtr[12] = {{-HW, -HH, -HD}, {0.0f, -1.0f, 0.0f}, VertexColor};
+    ColorPtr[13] = {{+HW, -HH, -HD}, {0.0f, -1.0f, 0.0f}, VertexColor};
+    ColorPtr[14] = {{+HW, -HH, +HD}, {0.0f, -1.0f, 0.0f}, VertexColor};
+    ColorPtr[15] = {{-HW, -HH, +HD}, {0.0f, -1.0f, 0.0f}, VertexColor};
+    // left face
+    ColorPtr[16] = {{-HW, -HH, +HD}, {-1.0f, 0.0f, 0.0f}, VertexColor};
+    ColorPtr[17] = {{-HW, +HH, +HD}, {-1.0f, 0.0f, 0.0f}, VertexColor};
+    ColorPtr[18] = {{-HW, +HH, -HD}, {-1.0f, 0.0f, 0.0f}, VertexColor};
+    ColorPtr[19] = {{-HW, -HH, -HD}, {-1.0f, 0.0f, 0.0f}, VertexColor};
+    // right face
+    ColorPtr[20] = {{+HW, -HH, -HD}, {1.0f, 0.0f, 0.0f}, VertexColor};
+    ColorPtr[21] = {{+HW, +HH, -HD}, {1.0f, 0.0f, 0.0f}, VertexColor};
+    ColorPtr[22] = {{+HW, +HH, +HD}, {1.0f, 0.0f, 0.0f}, VertexColor};
+    ColorPtr[23] = {{+HW, -HH, +HD}, {1.0f, 0.0f, 0.0f}, VertexColor};
+
+    // front face index
+    Indeices[0] = 0;
+    Indeices[1] = 1;
+    Indeices[2] = 2;
+    Indeices[3] = 0;
+    Indeices[4] = 2;
+    Indeices[5] = 3;
+    // back face index
+    Indeices[6] = 4;
+    Indeices[7] = 5;
+    Indeices[8] = 6;
+    Indeices[9] = 4;
+    Indeices[10] = 6;
+    Indeices[11] = 7;
+    // top face index
+    Indeices[12] = 8;
+    Indeices[13] = 9;
+    Indeices[14] = 10;
+    Indeices[15] = 8;
+    Indeices[16] = 10;
+    Indeices[17] = 11;
+    // bottom face index
+    Indeices[18] = 12;
+    Indeices[19] = 13;
+    Indeices[20] = 14;
+    Indeices[21] = 12;
+    Indeices[22] = 14;
+    Indeices[23] = 15;
+    // left face index
+    Indeices[24] = 16;
+    Indeices[25] = 17;
+    Indeices[26] = 18;
+    Indeices[27] = 16;
+    Indeices[28] = 18;
+    Indeices[29] = 19;
+    // right face index
+    Indeices[30] = 20;
+    Indeices[31] = 21;
+    Indeices[32] = 22;
+    Indeices[33] = 20;
+    Indeices[34] = 22;
+    Indeices[35] = 23;
+
+    if (DivideNumber > 6) {
+      DivideNumber = 6;
+    }
+    for (UINT I = 0; I < DivideNumber; I++) {
+      processSubDivide(LayoutType, &ColorPtr, &Indeices);
+    }
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &ColorPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+
+  case LAYOUT_TYPE::NORMAL_TEX:
+    if (EnabledVertexColorFlag) {
+      assert(false && "using vert color");
+    }
+    BasicPtr.resize(24);
+    // front face
+    BasicPtr[0] = {{-HW, -HH, -HD}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}};
+    BasicPtr[1] = {{-HW, +HH, -HD}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}};
+    BasicPtr[2] = {{+HW, +HH, -HD}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}};
+    BasicPtr[3] = {{+HW, -HH, -HD}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}};
+    // back face
+    BasicPtr[4] = {{-HW, -HH, +HD}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}};
+    BasicPtr[5] = {{+HW, -HH, +HD}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}};
+    BasicPtr[6] = {{+HW, +HH, +HD}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}};
+    BasicPtr[7] = {{-HW, +HH, +HD}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}};
+    // top face
+    BasicPtr[8] = {{-HW, +HH, -HD}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}};
+    BasicPtr[9] = {{-HW, +HH, +HD}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}};
+    BasicPtr[10] = {{+HW, +HH, +HD}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}};
+    BasicPtr[11] = {{+HW, +HH, -HD}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}};
+    // bottom face
+    BasicPtr[12] = {{-HW, -HH, -HD}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}};
+    BasicPtr[13] = {{+HW, -HH, -HD}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}};
+    BasicPtr[14] = {{+HW, -HH, +HD}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}};
+    BasicPtr[15] = {{-HW, -HH, +HD}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}};
+    // left face
+    BasicPtr[16] = {{-HW, -HH, +HD}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}};
+    BasicPtr[17] = {{-HW, +HH, +HD}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}};
+    BasicPtr[18] = {{-HW, +HH, -HD}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}};
+    BasicPtr[19] = {{-HW, -HH, -HD}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}};
+    // right face
+    BasicPtr[20] = {{+HW, -HH, -HD}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}};
+    BasicPtr[21] = {{+HW, +HH, -HD}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}};
+    BasicPtr[22] = {{+HW, +HH, +HD}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}};
+    BasicPtr[23] = {{+HW, -HH, +HD}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}};
+
+    // front face index
+    Indeices[0] = 0;
+    Indeices[1] = 1;
+    Indeices[2] = 2;
+    Indeices[3] = 0;
+    Indeices[4] = 2;
+    Indeices[5] = 3;
+    // back face index
+    Indeices[6] = 4;
+    Indeices[7] = 5;
+    Indeices[8] = 6;
+    Indeices[9] = 4;
+    Indeices[10] = 6;
+    Indeices[11] = 7;
+    // top face index
+    Indeices[12] = 8;
+    Indeices[13] = 9;
+    Indeices[14] = 10;
+    Indeices[15] = 8;
+    Indeices[16] = 10;
+    Indeices[17] = 11;
+    // bottom face index
+    Indeices[18] = 12;
+    Indeices[19] = 13;
+    Indeices[20] = 14;
+    Indeices[21] = 12;
+    Indeices[22] = 14;
+    Indeices[23] = 15;
+    // left face index
+    Indeices[24] = 16;
+    Indeices[25] = 17;
+    Indeices[26] = 18;
+    Indeices[27] = 16;
+    Indeices[28] = 18;
+    Indeices[29] = 19;
+    // right face index
+    Indeices[30] = 20;
+    Indeices[31] = 21;
+    Indeices[32] = 22;
+    Indeices[33] = 20;
+    Indeices[34] = 22;
+    Indeices[35] = 23;
+
+    if (DivideNumber > 6) {
+      DivideNumber = 6;
+    }
+    for (UINT I = 0; I < DivideNumber; I++) {
+      processSubDivide(LayoutType, &BasicPtr, &Indeices);
+    }
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &BasicPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
+    if (EnabledVertexColorFlag) {
+      assert(false && "using vert color");
+    }
+    TangentPtr.resize(24);
+    // front face
+    TangentPtr[0] = {
+        {-HW, -HH, -HD}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}};
+    TangentPtr[1] = {
+        {-HW, +HH, -HD}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}};
+    TangentPtr[2] = {
+        {+HW, +HH, -HD}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}};
+    TangentPtr[3] = {
+        {+HW, -HH, -HD}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}};
+    // back face
+    TangentPtr[4] = {
+        {-HW, -HH, +HD}, {0.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}};
+    TangentPtr[5] = {
+        {+HW, -HH, +HD}, {0.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}};
+    TangentPtr[6] = {
+        {+HW, +HH, +HD}, {0.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}};
+    TangentPtr[7] = {
+        {-HW, +HH, +HD}, {0.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}};
+    // top face
+    TangentPtr[8] = {
+        {-HW, +HH, -HD}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}};
+    TangentPtr[9] = {
+        {-HW, +HH, +HD}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}};
+    TangentPtr[10] = {
+        {+HW, +HH, +HD}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}};
+    TangentPtr[11] = {
+        {+HW, +HH, -HD}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}};
+    // bottom face
+    TangentPtr[12] = {{-HW, -HH, -HD},
+                      {0.0f, -1.0f, 0.0f},
+                      {-1.0f, 0.0f, 0.0f},
+                      {1.0f, 1.0f}};
+    TangentPtr[13] = {{+HW, -HH, -HD},
+                      {0.0f, -1.0f, 0.0f},
+                      {-1.0f, 0.0f, 0.0f},
+                      {0.0f, 1.0f}};
+    TangentPtr[14] = {{+HW, -HH, +HD},
+                      {0.0f, -1.0f, 0.0f},
+                      {-1.0f, 0.0f, 0.0f},
+                      {0.0f, 0.0f}};
+    TangentPtr[15] = {{-HW, -HH, +HD},
+                      {0.0f, -1.0f, 0.0f},
+                      {-1.0f, 0.0f, 0.0f},
+                      {1.0f, 0.0f}};
+    // left face
+    TangentPtr[16] = {{-HW, -HH, +HD},
+                      {-1.0f, 0.0f, 0.0f},
+                      {0.0f, 0.0f, -1.0f},
+                      {0.0f, 1.0f}};
+    TangentPtr[17] = {{-HW, +HH, +HD},
+                      {-1.0f, 0.0f, 0.0f},
+                      {0.0f, 0.0f, -1.0f},
+                      {0.0f, 0.0f}};
+    TangentPtr[18] = {{-HW, +HH, -HD},
+                      {-1.0f, 0.0f, 0.0f},
+                      {0.0f, 0.0f, -1.0f},
+                      {1.0f, 0.0f}};
+    TangentPtr[19] = {{-HW, -HH, -HD},
+                      {-1.0f, 0.0f, 0.0f},
+                      {0.0f, 0.0f, -1.0f},
+                      {1.0f, 1.0f}};
+    // right face
+    TangentPtr[20] = {
+        {+HW, -HH, -HD}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}};
+    TangentPtr[21] = {
+        {+HW, +HH, -HD}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}};
+    TangentPtr[22] = {
+        {+HW, +HH, +HD}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}};
+    TangentPtr[23] = {
+        {+HW, -HH, +HD}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}};
+
+    // front face index
+    Indeices[0] = 0;
+    Indeices[1] = 1;
+    Indeices[2] = 2;
+    Indeices[3] = 0;
+    Indeices[4] = 2;
+    Indeices[5] = 3;
+    // back face index
+    Indeices[6] = 4;
+    Indeices[7] = 5;
+    Indeices[8] = 6;
+    Indeices[9] = 4;
+    Indeices[10] = 6;
+    Indeices[11] = 7;
+    // top face index
+    Indeices[12] = 8;
+    Indeices[13] = 9;
+    Indeices[14] = 10;
+    Indeices[15] = 8;
+    Indeices[16] = 10;
+    Indeices[17] = 11;
+    // bottom face index
+    Indeices[18] = 12;
+    Indeices[19] = 13;
+    Indeices[20] = 14;
+    Indeices[21] = 12;
+    Indeices[22] = 14;
+    Indeices[23] = 15;
+    // left face index
+    Indeices[24] = 16;
+    Indeices[25] = 17;
+    Indeices[26] = 18;
+    Indeices[27] = 16;
+    Indeices[28] = 18;
+    Indeices[29] = 19;
+    // right face index
+    Indeices[30] = 20;
+    Indeices[31] = 21;
+    Indeices[32] = 22;
+    Indeices[33] = 20;
+    Indeices[34] = 22;
+    Indeices[35] = 23;
+
+    if (DivideNumber > 6) {
+      DivideNumber = 6;
+    }
+    for (UINT I = 0; I < DivideNumber; I++) {
+      processSubDivide(LayoutType, &TangentPtr, &Indeices);
+    }
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &TangentPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+
+  default:
+    assert(false && "unvalid layout");
+  }
+
+  return RSD;
+}
+
+RS_SUBMESH_DATA
+RSGeometryGenerator::createSphere(float Radius,
+                                  UINT SliceCount,
+                                  UINT StackCount,
+                                  LAYOUT_TYPE LayoutType,
+                                  bool EnabledVertexColorFlag,
+                                  const dx::XMFLOAT4 &VertexColor,
+                                  const std::string &TextureName) {
+  RS_SUBMESH_DATA RSD = {};
+  SUBMESH_INFO SI = {};
+  MATERIAL_INFO MI = {};
+  std::vector<UINT> Indeices = {};
+  std::vector<vertex_type::BasicVertex> BasicPtr = {};
+  std::vector<vertex_type::TangentVertex> TangentPtr = {};
+  std::vector<vertex_type::ColorVertex> ColorPtr = {};
+  std::vector<std::string> Textures = {};
+
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR: {
+    if (!EnabledVertexColorFlag) {
+      assert(false && "not using vert color");
+    }
+    vertex_type::ColorVertex TopVertex = {
+        {0.0f, +Radius, 0.0f}, {0.0f, +1.0f, 0.0f}, VertexColor};
+    vertex_type::ColorVertex BottomVertex = {
+        {0.0f, -Radius, 0.0f}, {0.0f, -1.0f, 0.0f}, VertexColor};
+
+    ColorPtr.emplace_back(TopVertex);
+
+    float PhiStep = dx::XM_PI / StackCount;
+    float ThetaStep = 2.0f * dx::XM_PI / SliceCount;
+
+    for (UINT I = 1; I <= StackCount - 1; I++) {
+      float Phi = I * PhiStep;
+
+      for (UINT J = 0; J <= SliceCount; J++) {
+        float Theta = J * ThetaStep;
+        vertex_type::ColorVertex V = {};
+
+        V.Position.x = Radius * sinf(Phi) * cosf(Theta);
+        V.Position.y = Radius * cosf(Phi);
+        V.Position.z = Radius * sinf(Phi) * sinf(Theta);
+
+        XMVECTOR P = XMLoadFloat3(&V.Position);
+        XMStoreFloat3(&V.Normal, XMVector3Normalize(P));
+
+        V.Color = VertexColor;
+
+        ColorPtr.emplace_back(V);
+      }
+    }
+
+    ColorPtr.emplace_back(BottomVertex);
+
+    for (UINT I = 1; I <= SliceCount; I++) {
+      Indeices.emplace_back(0);
+      Indeices.emplace_back(I + 1);
+      Indeices.emplace_back(I);
+    }
+
+    UINT BaseIndex = 1;
+    UINT RingVertexCount = SliceCount + 1;
+    for (UINT I = 0; I < StackCount - 2; I++) {
+      for (UINT J = 0; J < SliceCount; J++) {
+        Indeices.emplace_back(BaseIndex + I * RingVertexCount + J);
+        Indeices.emplace_back(BaseIndex + I * RingVertexCount + J + 1);
+        Indeices.emplace_back(BaseIndex + (I + 1) * RingVertexCount + J);
+
+        Indeices.emplace_back(BaseIndex + (I + 1) * RingVertexCount + J);
+        Indeices.emplace_back(BaseIndex + I * RingVertexCount + J + 1);
+        Indeices.emplace_back(BaseIndex + (I + 1) * RingVertexCount + J + 1);
+      }
+    }
+
+    UINT SouthPoleIndex = static_cast<UINT>(ColorPtr.size() - 1);
+    BaseIndex = SouthPoleIndex - RingVertexCount;
+
+    for (UINT I = 0; I < SliceCount; I++) {
+      Indeices.emplace_back(SouthPoleIndex);
+      Indeices.emplace_back(BaseIndex + I);
+      Indeices.emplace_back(BaseIndex + I + 1);
+    }
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &ColorPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TEX: {
+    if (EnabledVertexColorFlag) {
+      assert(false && "using vert color");
+    }
+    vertex_type::BasicVertex TopVertex = {
+        {0.0f, +Radius, 0.0f}, {0.0f, +1.0f, 0.0f}, {0.0f, 0.0f}};
+    vertex_type::BasicVertex BottomVertex = {
+        {0.0f, -Radius, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}};
+
+    BasicPtr.emplace_back(TopVertex);
+
+    float PhiStep = dx::XM_PI / StackCount;
+    float ThetaStep = 2.0f * dx::XM_PI / SliceCount;
+
+    for (UINT I = 1; I <= StackCount - 1; I++) {
+      float Phi = I * PhiStep;
+
+      for (UINT J = 0; J <= SliceCount; J++) {
+        float Theta = J * ThetaStep;
+        vertex_type::BasicVertex V = {};
+
+        V.Position.x = Radius * sinf(Phi) * cosf(Theta);
+        V.Position.y = Radius * cosf(Phi);
+        V.Position.z = Radius * sinf(Phi) * sinf(Theta);
+
+        XMVECTOR P = XMLoadFloat3(&V.Position);
+        XMStoreFloat3(&V.Normal, XMVector3Normalize(P));
+
+        V.TexCoord.x = Theta / dx::XM_2PI;
+        V.TexCoord.y = Phi / dx::XM_PI;
+
+        BasicPtr.emplace_back(V);
+      }
+    }
+
+    BasicPtr.emplace_back(BottomVertex);
+
+    for (UINT I = 1; I <= SliceCount; I++) {
+      Indeices.emplace_back(0);
+      Indeices.emplace_back(I + 1);
+      Indeices.emplace_back(I);
+    }
+
+    UINT BaseIndex = 1;
+    UINT RingVertexCount = SliceCount + 1;
+    for (UINT I = 0; I < StackCount - 2; I++) {
+      for (UINT J = 0; J < SliceCount; J++) {
+        Indeices.emplace_back(BaseIndex + I * RingVertexCount + J);
+        Indeices.emplace_back(BaseIndex + I * RingVertexCount + J + 1);
+        Indeices.emplace_back(BaseIndex + (I + 1) * RingVertexCount + J);
+
+        Indeices.emplace_back(BaseIndex + (I + 1) * RingVertexCount + J);
+        Indeices.emplace_back(BaseIndex + I * RingVertexCount + J + 1);
+        Indeices.emplace_back(BaseIndex + (I + 1) * RingVertexCount + J + 1);
+      }
+    }
+
+    UINT SouthPoleIndex = (UINT)BasicPtr.size() - 1;
+    BaseIndex = SouthPoleIndex - RingVertexCount;
+
+    for (UINT I = 0; I < SliceCount; I++) {
+      Indeices.emplace_back(SouthPoleIndex);
+      Indeices.emplace_back(BaseIndex + I);
+      Indeices.emplace_back(BaseIndex + I + 1);
+    }
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &BasicPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX: {
+    if (EnabledVertexColorFlag) {
+      assert(false && "using vert color");
+    }
+    vertex_type::TangentVertex TopVertex = {{0.0f, +Radius, 0.0f},
+                                            {0.0f, +1.0f, 0.0f},
+                                            {1.0f, 0.0f, 0.0f},
+                                            {0.0f, 0.0f}};
+    vertex_type::TangentVertex BottomVertex = {{0.0f, -Radius, 0.0f},
+                                               {0.0f, -1.0f, 0.0f},
+                                               {1.0f, 0.0f, 0.0f},
+                                               {0.0f, 1.0f}};
+
+    TangentPtr.emplace_back(TopVertex);
+
+    float PhiStep = dx::XM_PI / StackCount;
+    float ThetaStep = 2.0f * dx::XM_PI / SliceCount;
+
+    for (UINT I = 1; I <= StackCount - 1; I++) {
+      float Phi = I * PhiStep;
+
+      for (UINT J = 0; J <= SliceCount; J++) {
+        float Theta = J * ThetaStep;
+        vertex_type::TangentVertex V = {};
+
+        V.Position.x = Radius * sinf(Phi) * cosf(Theta);
+        V.Position.y = Radius * cosf(Phi);
+        V.Position.z = Radius * sinf(Phi) * sinf(Theta);
+        V.Tangent.x = -Radius * sinf(Phi) * sinf(Theta);
+        V.Tangent.y = 0.0f;
+        V.Tangent.z = +Radius * sinf(Phi) * cosf(Theta);
+
+        XMVECTOR T = XMLoadFloat3(&V.Tangent);
+        XMStoreFloat3(&V.Tangent, XMVector3Normalize(T));
+        XMVECTOR P = XMLoadFloat3(&V.Position);
+        XMStoreFloat3(&V.Normal, XMVector3Normalize(P));
+
+        V.TexCoord.x = Theta / dx::XM_2PI;
+        V.TexCoord.y = Phi / dx::XM_PI;
+
+        TangentPtr.emplace_back(V);
+      }
+    }
+
+    TangentPtr.emplace_back(BottomVertex);
+
+    for (UINT I = 1; I <= SliceCount; I++) {
+      Indeices.emplace_back(0);
+      Indeices.emplace_back(I + 1);
+      Indeices.emplace_back(I);
+    }
+
+    UINT BaseIndex = 1;
+    UINT RingVertexCount = SliceCount + 1;
+    for (UINT I = 0; I < StackCount - 2; I++) {
+      for (UINT J = 0; J < SliceCount; J++) {
+        Indeices.emplace_back(BaseIndex + I * RingVertexCount + J);
+        Indeices.emplace_back(BaseIndex + I * RingVertexCount + J + 1);
+        Indeices.emplace_back(BaseIndex + (I + 1) * RingVertexCount + J);
+
+        Indeices.emplace_back(BaseIndex + (I + 1) * RingVertexCount + J);
+        Indeices.emplace_back(BaseIndex + I * RingVertexCount + J + 1);
+        Indeices.emplace_back(BaseIndex + (I + 1) * RingVertexCount + J + 1);
+      }
+    }
+
+    UINT SouthPoleIndex = static_cast<UINT>(TangentPtr.size() - 1);
+    BaseIndex = SouthPoleIndex - RingVertexCount;
+
+    for (UINT I = 0; I < SliceCount; I++) {
+      Indeices.emplace_back(SouthPoleIndex);
+      Indeices.emplace_back(BaseIndex + I);
+      Indeices.emplace_back(BaseIndex + I + 1);
+    }
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &TangentPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  default:
+    assert(false && "unvalid layout");
+  }
+
+  return RSD;
+}
+
+RS_SUBMESH_DATA
+RSGeometryGenerator::createGeometrySphere(float Radius,
+                                          UINT DivideNumber,
+                                          LAYOUT_TYPE LayoutType,
+                                          bool EnabledVertexColorFlag,
+                                          const dx::XMFLOAT4 &VertexColor,
+                                          const std::string &TextureName) {
+  RS_SUBMESH_DATA RSD = {};
+  SUBMESH_INFO SI = {};
+  MATERIAL_INFO MI = {};
+  std::vector<UINT> Indeices = {};
+  std::vector<vertex_type::BasicVertex> BasicPtr = {};
+  std::vector<vertex_type::TangentVertex> TangentPtr = {};
+  std::vector<vertex_type::ColorVertex> ColorPtr = {};
+  std::vector<std::string> Textures = {};
+
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR: {
+    if (!EnabledVertexColorFlag) {
+      assert(false && "not using vert color");
+    }
+
+    if (DivideNumber > 6) {
+      DivideNumber = 6;
+    }
+
+    const float X = 0.525731f;
+    const float Z = 0.850651f;
+    XMFLOAT3 Pos[12] = {
+        XMFLOAT3(-X, 0.0f, Z), XMFLOAT3(X, 0.0f, Z),   XMFLOAT3(-X, 0.0f, -Z),
+        XMFLOAT3(X, 0.0f, -Z), XMFLOAT3(0.0f, Z, X),   XMFLOAT3(0.0f, Z, -X),
+        XMFLOAT3(0.0f, -Z, X), XMFLOAT3(0.0f, -Z, -X), XMFLOAT3(Z, X, 0.0f),
+        XMFLOAT3(-Z, X, 0.0f), XMFLOAT3(Z, -X, 0.0f),  XMFLOAT3(-Z, -X, 0.0f)};
+    UINT K[60] = {1,  4,  0, 4,  9, 0, 4, 5,  9, 8, 5, 4,  1,  8, 4,
+                  1,  10, 8, 10, 3, 8, 8, 3,  5, 3, 2, 5,  3,  7, 2,
+                  3,  10, 7, 10, 6, 7, 6, 11, 7, 6, 0, 11, 6,  1, 0,
+                  10, 1,  6, 11, 0, 9, 2, 11, 9, 5, 2, 9,  11, 2, 7};
+
+    ColorPtr.resize(ARRAYSIZE(Pos));
+    Indeices.assign(&K[0], &K[60]);
+
+    for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
+      ColorPtr[I].Position = Pos[I];
+    }
+    for (UINT I = 0; I < DivideNumber; I++) {
+      processSubDivide(LayoutType, &ColorPtr, &Indeices);
+    }
+
+    for (UINT I = 0, E = static_cast<UINT>(ColorPtr.size()); I < E; ++I) {
+      XMVECTOR N = XMVector3Normalize(XMLoadFloat3(&ColorPtr[I].Position));
+      XMVECTOR P = Radius * N;
+
+      XMStoreFloat3(&ColorPtr[I].Position, P);
+      XMStoreFloat3(&ColorPtr[I].Normal, N);
+
+      float Theta = atan2f(ColorPtr[I].Position.z, ColorPtr[I].Position.x);
+
+      if (Theta < 0.0f) {
+        Theta += dx::XM_2PI;
+      }
+
+      float Phi = acosf(ColorPtr[I].Position.y / Radius);
+      ColorPtr[I].Color = VertexColor;
+      (void)Phi;
+      (void)Theta;
+    }
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &ColorPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TEX: {
+    if (EnabledVertexColorFlag) {
+      assert(false && "using vert color");
+    }
+
+    if (DivideNumber > 6) {
+      DivideNumber = 6;
+    }
+
+    const float X = 0.525731f;
+    const float Z = 0.850651f;
+    XMFLOAT3 Pos[12] = {
+        XMFLOAT3(-X, 0.0f, Z), XMFLOAT3(X, 0.0f, Z),   XMFLOAT3(-X, 0.0f, -Z),
+        XMFLOAT3(X, 0.0f, -Z), XMFLOAT3(0.0f, Z, X),   XMFLOAT3(0.0f, Z, -X),
+        XMFLOAT3(0.0f, -Z, X), XMFLOAT3(0.0f, -Z, -X), XMFLOAT3(Z, X, 0.0f),
+        XMFLOAT3(-Z, X, 0.0f), XMFLOAT3(Z, -X, 0.0f),  XMFLOAT3(-Z, -X, 0.0f)};
+    UINT K[60] = {1,  4,  0, 4,  9, 0, 4, 5,  9, 8, 5, 4,  1,  8, 4,
+                  1,  10, 8, 10, 3, 8, 8, 3,  5, 3, 2, 5,  3,  7, 2,
+                  3,  10, 7, 10, 6, 7, 6, 11, 7, 6, 0, 11, 6,  1, 0,
+                  10, 1,  6, 11, 0, 9, 2, 11, 9, 5, 2, 9,  11, 2, 7};
+
+    BasicPtr.resize(ARRAYSIZE(Pos));
+    Indeices.assign(&K[0], &K[60]);
+
+    for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
+      BasicPtr[I].Position = Pos[I];
+    }
+    for (UINT I = 0; I < DivideNumber; I++) {
+      processSubDivide(LayoutType, &BasicPtr, &Indeices);
+    }
+
+    for (UINT I = 0; I < (UINT)BasicPtr.size(); ++I) {
+      XMVECTOR N = XMVector3Normalize(XMLoadFloat3(&BasicPtr[I].Position));
+      XMVECTOR P = Radius * N;
+
+      XMStoreFloat3(&BasicPtr[I].Position, P);
+      XMStoreFloat3(&BasicPtr[I].Normal, N);
+
+      float Theta = atan2f(BasicPtr[I].Position.z, BasicPtr[I].Position.x);
+
+      if (Theta < 0.0f) {
+        Theta += dx::XM_2PI;
+      }
+
+      float Phi = acosf(BasicPtr[I].Position.y / Radius);
+
+      BasicPtr[I].TexCoord.x = Theta / dx::XM_2PI;
+      BasicPtr[I].TexCoord.y = Phi / dx::XM_PI;
+    }
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &BasicPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX: {
+    if (EnabledVertexColorFlag) {
+      assert(false && "using vert color");
+    }
+
+    if (DivideNumber > 6) {
+      DivideNumber = 6;
+    }
+
+    const float X = 0.525731f;
+    const float Z = 0.850651f;
+    XMFLOAT3 Pos[12] = {
+        XMFLOAT3(-X, 0.0f, Z), XMFLOAT3(X, 0.0f, Z),   XMFLOAT3(-X, 0.0f, -Z),
+        XMFLOAT3(X, 0.0f, -Z), XMFLOAT3(0.0f, Z, X),   XMFLOAT3(0.0f, Z, -X),
+        XMFLOAT3(0.0f, -Z, X), XMFLOAT3(0.0f, -Z, -X), XMFLOAT3(Z, X, 0.0f),
+        XMFLOAT3(-Z, X, 0.0f), XMFLOAT3(Z, -X, 0.0f),  XMFLOAT3(-Z, -X, 0.0f)};
+    UINT K[60] = {1,  4,  0, 4,  9, 0, 4, 5,  9, 8, 5, 4,  1,  8, 4,
+                  1,  10, 8, 10, 3, 8, 8, 3,  5, 3, 2, 5,  3,  7, 2,
+                  3,  10, 7, 10, 6, 7, 6, 11, 7, 6, 0, 11, 6,  1, 0,
+                  10, 1,  6, 11, 0, 9, 2, 11, 9, 5, 2, 9,  11, 2, 7};
+
+    TangentPtr.resize(ARRAYSIZE(Pos));
+    Indeices.assign(&K[0], &K[60]);
+
+    for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
+      TangentPtr[I].Position = Pos[I];
+    }
+    for (UINT I = 0; I < DivideNumber; I++) {
+      processSubDivide(LayoutType, &TangentPtr, &Indeices);
+    }
+
+    for (UINT I = 0, E = static_cast<UINT>(TangentPtr.size()); I < E; I++) {
+      XMVECTOR N = XMVector3Normalize(XMLoadFloat3(&TangentPtr[I].Position));
+      XMVECTOR P = Radius * N;
+
+      XMStoreFloat3(&TangentPtr[I].Position, P);
+      XMStoreFloat3(&TangentPtr[I].Normal, N);
+
+      float Theta = atan2f(TangentPtr[I].Position.z, TangentPtr[I].Position.x);
+
+      if (Theta < 0.0f) {
+        Theta += dx::XM_2PI;
+      }
+
+      float Phi = acosf(TangentPtr[I].Position.y / Radius);
+
+      TangentPtr[I].TexCoord.x = Theta / dx::XM_2PI;
+      TangentPtr[I].TexCoord.y = Phi / dx::XM_PI;
+
+      TangentPtr[I].Tangent.x = -Radius * sinf(Phi) * sinf(Theta);
+      TangentPtr[I].Tangent.y = 0.0f;
+      TangentPtr[I].Tangent.z = +Radius * sinf(Phi) * cosf(Theta);
+
+      XMVECTOR T = XMLoadFloat3(&TangentPtr[I].Tangent);
+      XMStoreFloat3(&TangentPtr[I].Tangent, XMVector3Normalize(T));
+    }
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &TangentPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  default:
+    assert(false && "unvalid layout");
+  }
+
+  return RSD;
+}
+
+RS_SUBMESH_DATA
+RSGeometryGenerator::createCylinder(float BottomRadius,
+                                    float TopRadius,
+                                    float Height,
+                                    UINT SliceCount,
+                                    UINT StackCount,
+                                    LAYOUT_TYPE LayoutType,
+                                    bool EnabledVertexColorFlag,
+                                    const dx::XMFLOAT4 &VertexColor,
+                                    const std::string &TextureName) {
+  RS_SUBMESH_DATA RSD = {};
+  SUBMESH_INFO SI = {};
+  MATERIAL_INFO MI = {};
+  std::vector<UINT> Indeices = {};
+  std::vector<vertex_type::BasicVertex> BasicPtr = {};
+  std::vector<vertex_type::TangentVertex> TangentPtr = {};
+  std::vector<vertex_type::ColorVertex> ColorPtr = {};
+  std::vector<std::string> Textures = {};
+
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR: {
+    float StackHeight = Height / StackCount;
+    float RadiusStep = (TopRadius - BottomRadius) / StackCount;
+    UINT RingCount = StackCount + 1;
+
+    for (UINT I = 0; I < RingCount; I++) {
+      float Y = -0.5f * Height + I * StackHeight;
+      float R = BottomRadius + I * RadiusStep;
+      float DTheta = 2.0f * dx::XM_PI / SliceCount;
+
+      for (UINT J = 0; J <= SliceCount; J++) {
+        vertex_type::ColorVertex Vertex = {};
+
+        float C = cosf(J * DTheta);
+        float S = sinf(J * DTheta);
+
+        Vertex.Color = VertexColor;
+        Vertex.Position = dx::XMFLOAT3(R * C, Y, R * S);
+        dx::XMFLOAT3 TangentV = dx::XMFLOAT3(-S, 0.f, C);
+
+        float DR = BottomRadius - TopRadius;
+        XMFLOAT3 Bitangent(DR * C, -Height, DR * S);
+        XMVECTOR T = dx::XMLoadFloat3(&TangentV);
+        XMVECTOR B = dx::XMLoadFloat3(&Bitangent);
+        XMVECTOR N = dx::XMVector3Normalize(dx::XMVector3Cross(T, B));
+        dx::XMStoreFloat3(&Vertex.Normal, N);
+
+        ColorPtr.emplace_back(Vertex);
+      }
+    }
+
+    UINT RingVertexCount = SliceCount + 1;
+
+    for (UINT I = 0; I < StackCount; ++I) {
+      for (UINT J = 0; J < SliceCount; ++J) {
+        Indeices.emplace_back(I * RingVertexCount + J);
+        Indeices.emplace_back((I + 1) * RingVertexCount + J);
+        Indeices.emplace_back((I + 1) * RingVertexCount + J + 1);
+
+        Indeices.emplace_back(I * RingVertexCount + J);
+        Indeices.emplace_back((I + 1) * RingVertexCount + J + 1);
+        Indeices.emplace_back(I * RingVertexCount + J + 1);
+      }
+    }
+
+    buildCylinderTopCap(BottomRadius, TopRadius, Height, SliceCount, StackCount,
+                        LayoutType, &ColorPtr, &Indeices, VertexColor);
+    buildCylinderBottomCap(BottomRadius, TopRadius, Height, SliceCount,
+                           StackCount, LayoutType, &ColorPtr, &Indeices,
+                           VertexColor);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &ColorPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TEX: {
+    float StackHeight = Height / StackCount;
+    float RadiusStep = (TopRadius - BottomRadius) / StackCount;
+    UINT RingCount = StackCount + 1;
+
+    for (UINT I = 0; I < RingCount; I++) {
+      float Y = -0.5f * Height + I * StackHeight;
+      float R = BottomRadius + I * RadiusStep;
+      float DTheta = 2.0f * dx::XM_PI / SliceCount;
+
+      for (UINT J = 0; J <= SliceCount; J++) {
+        vertex_type::BasicVertex Vertex = {};
+
+        float C = cosf(J * DTheta);
+        float S = sinf(J * DTheta);
+
+        Vertex.Position = dx::XMFLOAT3(R * C, Y, R * S);
+        Vertex.TexCoord.x = (float)J / SliceCount;
+        Vertex.TexCoord.y = 1.0f - (float)I / StackCount;
+        dx::XMFLOAT3 TangentV = dx::XMFLOAT3(-S, 0.f, C);
+
+        float DR = BottomRadius - TopRadius;
+        XMFLOAT3 Bitangent(DR * C, -Height, DR * S);
+        XMVECTOR T = dx::XMLoadFloat3(&TangentV);
+        XMVECTOR B = dx::XMLoadFloat3(&Bitangent);
+        XMVECTOR N = dx::XMVector3Normalize(dx::XMVector3Cross(T, B));
+        dx::XMStoreFloat3(&Vertex.Normal, N);
+
+        BasicPtr.emplace_back(Vertex);
+      }
+    }
+
+    UINT RingVertexCount = SliceCount + 1;
+
+    for (UINT I = 0; I < StackCount; ++I) {
+      for (UINT J = 0; J < SliceCount; ++J) {
+        Indeices.emplace_back(I * RingVertexCount + J);
+        Indeices.emplace_back((I + 1) * RingVertexCount + J);
+        Indeices.emplace_back((I + 1) * RingVertexCount + J + 1);
+
+        Indeices.emplace_back(I * RingVertexCount + J);
+        Indeices.emplace_back((I + 1) * RingVertexCount + J + 1);
+        Indeices.emplace_back(I * RingVertexCount + J + 1);
+      }
+    }
+
+    buildCylinderTopCap(BottomRadius, TopRadius, Height, SliceCount, StackCount,
+                        LayoutType, &BasicPtr, &Indeices, VertexColor);
+    buildCylinderBottomCap(BottomRadius, TopRadius, Height, SliceCount,
+                           StackCount, LayoutType, &BasicPtr, &Indeices,
+                           VertexColor);
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &BasicPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX: {
+    float StackHeight = Height / StackCount;
+    float RadiusStep = (TopRadius - BottomRadius) / StackCount;
+    UINT RingCount = StackCount + 1;
+
+    for (UINT I = 0; I < RingCount; I++) {
+      float Y = -0.5f * Height + I * StackHeight;
+      float R = BottomRadius + I * RadiusStep;
+      float DTheta = 2.0f * dx::XM_PI / SliceCount;
+
+      for (UINT J = 0; J <= SliceCount; J++) {
+        vertex_type::TangentVertex Vertex = {};
+
+        float C = cosf(J * DTheta);
+        float S = sinf(J * DTheta);
+
+        Vertex.Position = dx::XMFLOAT3(R * C, Y, R * S);
+        Vertex.TexCoord.x = (float)J / SliceCount;
+        Vertex.TexCoord.y = 1.0f - (float)I / StackCount;
+        Vertex.Tangent = dx::XMFLOAT3(-S, 0.f, C);
+
+        float DR = BottomRadius - TopRadius;
+        XMFLOAT3 Bitangent(DR * C, -Height, DR * S);
+        XMVECTOR T = dx::XMLoadFloat3(&Vertex.Tangent);
+        XMVECTOR B = dx::XMLoadFloat3(&Bitangent);
+        XMVECTOR N = dx::XMVector3Normalize(dx::XMVector3Cross(T, B));
+        dx::XMStoreFloat3(&Vertex.Normal, N);
+
+        TangentPtr.emplace_back(Vertex);
+      }
+    }
+
+    UINT RingVertexCount = SliceCount + 1;
+
+    for (UINT I = 0; I < StackCount; ++I) {
+      for (UINT J = 0; J < SliceCount; ++J) {
+        Indeices.emplace_back(I * RingVertexCount + J);
+        Indeices.emplace_back((I + 1) * RingVertexCount + J);
+        Indeices.emplace_back((I + 1) * RingVertexCount + J + 1);
+
+        Indeices.emplace_back(I * RingVertexCount + J);
+        Indeices.emplace_back((I + 1) * RingVertexCount + J + 1);
+        Indeices.emplace_back(I * RingVertexCount + J + 1);
+      }
+    }
+
+    buildCylinderTopCap(BottomRadius, TopRadius, Height, SliceCount, StackCount,
+                        LayoutType, &TangentPtr, &Indeices, VertexColor);
+    buildCylinderBottomCap(BottomRadius, TopRadius, Height, SliceCount,
+                           StackCount, LayoutType, &TangentPtr, &Indeices,
+                           VertexColor);
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &TangentPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  default:
+    assert(false && "null layout");
+  }
+
+  return RSD;
+}
+
+RS_SUBMESH_DATA
+RSGeometryGenerator::createGrid(float Width,
+                                float Depth,
+                                UINT RowCount,
+                                UINT ColCount,
+                                LAYOUT_TYPE LayoutType,
+                                bool EnabledVertexColorFlag,
+                                const dx::XMFLOAT4 &VertexColor,
+                                const std::string &TextureName) {
+  RS_SUBMESH_DATA RSD = {};
+  SUBMESH_INFO SI = {};
+  MATERIAL_INFO MI = {};
+  std::vector<UINT> Indeices = {};
+  std::vector<vertex_type::BasicVertex> BasicPtr = {};
+  std::vector<vertex_type::TangentVertex> TangentPtr = {};
+  std::vector<vertex_type::ColorVertex> ColorPtr = {};
+  std::vector<std::string> Textures = {};
+
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR: {
+    UINT VertexCount = RowCount * ColCount;
+    UINT FaceCount = (RowCount - 1) * (ColCount - 1) * 2;
+    float HalfWidth = 0.5f * Width;
+    float HalfDepth = 0.5f * Depth;
+    float DX = Width / (ColCount - 1);
+    float DZ = Depth / (RowCount - 1);
+    float DU = 1.f / (ColCount - 1);
+    float DV = 1.f / (RowCount - 1);
+    (void)DU;
+    (void)DV;
+
+    ColorPtr.resize(VertexCount);
+    for (UINT I = 0; I < RowCount; I++) {
+      float Z = HalfDepth - I * DZ;
+      for (UINT J = 0; J < ColCount; J++) {
+        float X = -HalfWidth + J * DX;
+
+        ColorPtr[static_cast<std::vector<
+                     vertex_type::ColorVertex,
+                     std::allocator<vertex_type::ColorVertex>>::size_type>(I) *
+                     ColCount +
+                 J]
+            .Position = dx::XMFLOAT3(X, 0.f, Z);
+        ColorPtr[static_cast<std::vector<
+                     vertex_type::ColorVertex,
+                     std::allocator<vertex_type::ColorVertex>>::size_type>(I) *
+                     ColCount +
+                 J]
+            .Normal = dx::XMFLOAT3(0.0f, 1.0f, 0.0f);
+        ColorPtr[static_cast<std::vector<
+                     vertex_type::ColorVertex,
+                     std::allocator<vertex_type::ColorVertex>>::size_type>(I) *
+                     ColCount +
+                 J]
+            .Color = VertexColor;
+      }
+    }
+
+    Indeices.resize(
+        static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(
+            FaceCount) *
+        3);
+
+    UINT K = 0;
+    for (UINT I = 0; I < RowCount - 1; I++) {
+      for (UINT J = 0; J < ColCount - 1; J++) {
+        Indeices[static_cast<
+            std::vector<UINT, std::allocator<UINT>>::size_type>(K)] =
+            I * ColCount + J;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 1] = I * ColCount + J + 1;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 2] = (I + 1) * ColCount + J;
+
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 3] = (I + 1) * ColCount + J;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 4] = I * ColCount + J + 1;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 5] = (I + 1) * ColCount + J + 1;
+
+        K += 6;
+      }
+    }
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &ColorPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TEX: {
+    UINT VertexCount = RowCount * ColCount;
+    UINT FaceCount = (RowCount - 1) * (ColCount - 1) * 2;
+    float HalfWidth = 0.5f * Width;
+    float HalfDepth = 0.5f * Depth;
+    float DX = Width / (ColCount - 1);
+    float DZ = Depth / (RowCount - 1);
+    float DU = 1.f / (ColCount - 1);
+    float DV = 1.f / (RowCount - 1);
+
+    BasicPtr.resize(VertexCount);
+    for (UINT I = 0; I < RowCount; I++) {
+      float Z = HalfDepth - I * DZ;
+      for (UINT J = 0; J < ColCount; J++) {
+        float X = -HalfWidth + J * DX;
+
+        BasicPtr[static_cast<std::vector<
+                     vertex_type::BasicVertex,
+                     std::allocator<vertex_type::BasicVertex>>::size_type>(I) *
+                     ColCount +
+                 J]
+            .Position = dx::XMFLOAT3(X, 0.f, Z);
+        BasicPtr[static_cast<std::vector<
+                     vertex_type::BasicVertex,
+                     std::allocator<vertex_type::BasicVertex>>::size_type>(I) *
+                     ColCount +
+                 J]
+            .Normal = dx::XMFLOAT3(0.0f, 1.0f, 0.0f);
+        BasicPtr[static_cast<std::vector<
+                     vertex_type::BasicVertex,
+                     std::allocator<vertex_type::BasicVertex>>::size_type>(I) *
+                     ColCount +
+                 J]
+            .TexCoord.x = J * DU;
+        BasicPtr[static_cast<std::vector<
+                     vertex_type::BasicVertex,
+                     std::allocator<vertex_type::BasicVertex>>::size_type>(I) *
+                     ColCount +
+                 J]
+            .TexCoord.y = I * DV;
+      }
+    }
+
+    Indeices.resize(
+        static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(
+            FaceCount) *
+        3);
+
+    UINT K = 0;
+    for (UINT I = 0; I < RowCount - 1; I++) {
+      for (UINT J = 0; J < ColCount - 1; J++) {
+        Indeices[static_cast<
+            std::vector<UINT, std::allocator<UINT>>::size_type>(K)] =
+            I * ColCount + J;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 1] = I * ColCount + J + 1;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 2] = (I + 1) * ColCount + J;
+
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 3] = (I + 1) * ColCount + J;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 4] = I * ColCount + J + 1;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 5] = (I + 1) * ColCount + J + 1;
+
+        K += 6;
+      }
+    }
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &BasicPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX: {
+    UINT VertexCount = RowCount * ColCount;
+    UINT FaceCount = (RowCount - 1) * (ColCount - 1) * 2;
+    float HalfWidth = 0.5f * Width;
+    float HalfDepth = 0.5f * Depth;
+    float DX = Width / (ColCount - 1);
+    float DZ = Depth / (RowCount - 1);
+    float DU = 1.f / (ColCount - 1);
+    float DV = 1.f / (RowCount - 1);
+
+    TangentPtr.resize(VertexCount);
+    for (UINT I = 0; I < RowCount; I++) {
+      float Z = HalfDepth - I * DZ;
+      for (UINT J = 0; J < ColCount; J++) {
+        float X = -HalfWidth + J * DX;
+
+        TangentPtr[static_cast<std::vector<
+                       vertex_type::TangentVertex,
+                       std::allocator<vertex_type::TangentVertex>>::size_type>(
+                       I) *
+                       ColCount +
+                   J]
+            .Position = dx::XMFLOAT3(X, 0.f, Z);
+        TangentPtr[static_cast<std::vector<
+                       vertex_type::TangentVertex,
+                       std::allocator<vertex_type::TangentVertex>>::size_type>(
+                       I) *
+                       ColCount +
+                   J]
+            .Normal = dx::XMFLOAT3(0.0f, 1.0f, 0.0f);
+        TangentPtr[static_cast<std::vector<
+                       vertex_type::TangentVertex,
+                       std::allocator<vertex_type::TangentVertex>>::size_type>(
+                       I) *
+                       ColCount +
+                   J]
+            .Tangent = dx::XMFLOAT3(1.0f, 0.0f, 0.0f);
+
+        TangentPtr[static_cast<std::vector<
+                       vertex_type::TangentVertex,
+                       std::allocator<vertex_type::TangentVertex>>::size_type>(
+                       I) *
+                       ColCount +
+                   J]
+            .TexCoord.x = J * DU;
+        TangentPtr[static_cast<std::vector<
+                       vertex_type::TangentVertex,
+                       std::allocator<vertex_type::TangentVertex>>::size_type>(
+                       I) *
+                       ColCount +
+                   J]
+            .TexCoord.y = I * DV;
+      }
+    }
+
+    Indeices.resize(
+        static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(
+            FaceCount) *
+        3);
+
+    UINT K = 0;
+    for (UINT I = 0; I < RowCount - 1; I++) {
+      for (UINT J = 0; J < ColCount - 1; J++) {
+        Indeices[static_cast<
+            std::vector<UINT, std::allocator<UINT>>::size_type>(K)] =
+            I * ColCount + J;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 1] = I * ColCount + J + 1;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 2] = (I + 1) * ColCount + J;
+
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 3] = (I + 1) * ColCount + J;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 4] = I * ColCount + J + 1;
+        Indeices[static_cast<
+                     std::vector<UINT, std::allocator<UINT>>::size_type>(K) +
+                 5] = (I + 1) * ColCount + J + 1;
+
+        K += 6;
+      }
+    }
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.VerteicesPtr = &TangentPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+  }
+
+  default:
+    assert(false && "nullLayout");
+  }
+
+  return RSD;
+}
+
+RS_SUBMESH_DATA
+RSGeometryGenerator::createSpriteRect(LAYOUT_TYPE LayoutType,
+                                      const std::string &TexturePath) {
+  static SUBMESH_INFO SI = {};
+  static MATERIAL_INFO MI = {};
+  static std::vector<UINT> Indeices = {};
+  static std::vector<vertex_type::BasicVertex> BasicPtr = {};
+  static std::vector<vertex_type::TangentVertex> TangentPtr = {};
+  static std::vector<std::string> Textures = {};
+
+  if (!G_SpriteRectHasBuilt) {
+    BasicPtr.resize(4);
+    TangentPtr.resize(4);
+    Indeices.resize(6);
+
+    BasicPtr[0].Position = {-0.5f, -0.5f, 0.f};
+    BasicPtr[0].Normal = {0.0f, 0.0f, -1.0f};
+    BasicPtr[0].TexCoord = {0.0f, 1.0f};
+    BasicPtr[1].Position = {-0.5f, +0.5f, 0.f};
+    BasicPtr[1].Normal = {0.0f, 0.0f, -1.0f};
+    BasicPtr[1].TexCoord = {0.0f, 0.0f};
+    BasicPtr[2].Position = {+0.5f, +0.5f, 0.f};
+    BasicPtr[2].Normal = {0.0f, 0.0f, -1.0f};
+    BasicPtr[2].TexCoord = {1.0f, 0.0f};
+    BasicPtr[3].Position = {+0.5f, -0.5f, 0.f};
+    BasicPtr[3].Normal = {0.0f, 0.0f, -1.0f};
+    BasicPtr[3].TexCoord = {1.0f, 1.0f};
+    TangentPtr[0].Position = BasicPtr[0].Position;
+    TangentPtr[0].Normal = BasicPtr[0].Normal;
+    TangentPtr[0].Tangent = {1.0f, 0.0f, 0.0f};
+    TangentPtr[0].TexCoord = BasicPtr[0].TexCoord;
+    TangentPtr[1].Position = BasicPtr[1].Position;
+    TangentPtr[1].Normal = BasicPtr[1].Normal;
+    TangentPtr[1].Tangent = {1.0f, 0.0f, 0.0f};
+    TangentPtr[1].TexCoord = BasicPtr[1].TexCoord;
+    TangentPtr[2].Position = BasicPtr[2].Position;
+    TangentPtr[2].Normal = BasicPtr[2].Normal;
+    TangentPtr[2].Tangent = {1.0f, 0.0f, 0.0f};
+    TangentPtr[2].TexCoord = BasicPtr[2].TexCoord;
+    TangentPtr[3].Position = BasicPtr[3].Position;
+    TangentPtr[3].Normal = BasicPtr[3].Normal;
+    TangentPtr[3].Tangent = {1.0f, 0.0f, 0.0f};
+    TangentPtr[3].TexCoord = BasicPtr[3].TexCoord;
+    Indeices[0] = 0;
+    Indeices[1] = 1;
+    Indeices[2] = 2;
+    Indeices[3] = 0;
+    Indeices[4] = 2;
+    Indeices[5] = 3;
+
+    SI.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
+    SI.IndeicesPtr = &Indeices;
+    switch (LayoutType) {
     case LAYOUT_TYPE::NORMAL_TEX:
-        name = "BasicVertex";
-        break;
+      SI.VerteicesPtr = &BasicPtr;
+      break;
     case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-        name = "TangentVertex";
-        break;
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE:
-        name = "AnimationVertex";
-        break;
+      SI.VerteicesPtr = &TangentPtr;
+      break;
     default:
-        return nullptr;
+      assert(false && "unvalid layout");
+      break;
     }
-    layout = mRootPtr->getStaticResources()->
-        GetStaticInputLayout(name);
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&G_SpriteData, &SI, LayoutType);
+    G_SpriteRectHasBuilt = true;
+  }
 
-    return layout;
+  static std::wstring WStr = L"";
+  static std::string Name = "";
+  static HRESULT Hr = S_OK;
+  ID3D11ShaderResourceView *Srv = nullptr;
+  WStr = std::wstring(TexturePath.begin(), TexturePath.end());
+  WStr = L".\\Assets\\Textures\\" + WStr;
+  if (TexturePath.find(".dds") != std::string::npos ||
+      TexturePath.find(".DDS") != std::string::npos) {
+    Hr = dx::CreateDDSTextureFromFile(Devices->getDevice(), WStr.c_str(),
+                                      nullptr, &Srv);
+    if (SUCCEEDED(Hr)) {
+      Name = TexturePath;
+      ResourceManager->addMeshSrv(Name, Srv);
+      G_SpriteData.Textures[0] = Name;
+    } else {
+      assert(false && "texture load fail");
+    }
+  } else {
+    Hr = dx::CreateWICTextureFromFile(Devices->getDevice(), WStr.c_str(),
+                                      nullptr, &Srv);
+    if (SUCCEEDED(Hr)) {
+      Name = TexturePath;
+      ResourceManager->addMeshSrv(Name, Srv);
+      G_SpriteData.Textures[0] = Name;
+    } else {
+      assert(false && "texture load fail");
+    }
+  }
+
+  return G_SpriteData;
 }
 
-ID3D11Buffer* RSMeshHelper::CreateIndexBuffer(
-    const std::vector<UINT>* const _indices)
-{
-    ID3D11Buffer* indexBuffer = nullptr;
-    D3D11_BUFFER_DESC ibd = {};
-    D3D11_SUBRESOURCE_DATA initData = {};
-    ZeroMemory(&ibd, sizeof(ibd));
-    ZeroMemory(&initData, sizeof(initData));
-    ibd.Usage = D3D11_USAGE_IMMUTABLE;
-    ibd.ByteWidth =
-        (UINT)(sizeof(UINT) * _indices->size());
-    ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-    ibd.CPUAccessFlags = 0;
-    ibd.MiscFlags = 0;
+void
+RSGeometryGenerator::processSubDivide(LAYOUT_TYPE LayoutType,
+                                      void *RawVertexArray,
+                                      std::vector<UINT> *RawIndexArray) {
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR: {
+    std::vector<vertex_type::ColorVertex> *ColorArray =
+        static_cast<std::vector<vertex_type::ColorVertex> *>(RawVertexArray);
+    std::vector<vertex_type::ColorVertex> ColorCopy = *ColorArray;
+    std::vector<UINT> IndexCopy = *RawIndexArray;
 
-    initData.pSysMem = &((*_indices)[0]);
+    ColorArray->resize(0);
+    RawIndexArray->resize(0);
 
-    HRESULT hr = S_OK;
-    hr = mDevicesPtr->GetDevice()->
-        CreateBuffer(&ibd, &initData, &indexBuffer);
-    if (SUCCEEDED(hr))
-    {
-        return indexBuffer;
+    UINT NumTris = static_cast<UINT>(IndexCopy.size()) / 3;
+    for (UINT I = 0; I < NumTris; I++) {
+      vertex_type::ColorVertex V0 = ColorCopy[IndexCopy[I * 3 + 0]];
+      vertex_type::ColorVertex V1 = ColorCopy[IndexCopy[I * 3 + 1]];
+      vertex_type::ColorVertex V2 = ColorCopy[IndexCopy[I * 3 + 2]];
+
+      vertex_type::ColorVertex M0 = createColorMidPoint(V0, V1);
+      vertex_type::ColorVertex M1 = createColorMidPoint(V1, V2);
+      vertex_type::ColorVertex M2 = createColorMidPoint(V0, V2);
+
+      ColorArray->emplace_back(V0);
+      ColorArray->emplace_back(V1);
+      ColorArray->emplace_back(V2);
+      ColorArray->emplace_back(M0);
+      ColorArray->emplace_back(M1);
+      ColorArray->emplace_back(M2);
+      RawIndexArray->emplace_back(I * 6 + 0);
+      RawIndexArray->emplace_back(I * 6 + 3);
+      RawIndexArray->emplace_back(I * 6 + 5);
+      RawIndexArray->emplace_back(I * 6 + 3);
+      RawIndexArray->emplace_back(I * 6 + 4);
+      RawIndexArray->emplace_back(I * 6 + 5);
+      RawIndexArray->emplace_back(I * 6 + 5);
+      RawIndexArray->emplace_back(I * 6 + 4);
+      RawIndexArray->emplace_back(I * 6 + 2);
+      RawIndexArray->emplace_back(I * 6 + 3);
+      RawIndexArray->emplace_back(I * 6 + 1);
+      RawIndexArray->emplace_back(I * 6 + 4);
     }
-    else
-    {
-        return nullptr;
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TEX: {
+    std::vector<vertex_type::BasicVertex> *BasicArray =
+        static_cast<std::vector<vertex_type::BasicVertex> *>(RawVertexArray);
+    std::vector<vertex_type::BasicVertex> BasicCopy = *BasicArray;
+    std::vector<UINT> IndexCopy = *RawIndexArray;
+
+    BasicArray->resize(0);
+    RawIndexArray->resize(0);
+
+    UINT NumTris = static_cast<UINT>(IndexCopy.size()) / 3;
+    for (UINT I = 0; I < NumTris; I++) {
+      vertex_type::BasicVertex V0 = BasicCopy[IndexCopy[I * 3 + 0]];
+      vertex_type::BasicVertex V1 = BasicCopy[IndexCopy[I * 3 + 1]];
+      vertex_type::BasicVertex V2 = BasicCopy[IndexCopy[I * 3 + 2]];
+
+      vertex_type::BasicVertex M0 = createBasicMidPoint(V0, V1);
+      vertex_type::BasicVertex M1 = createBasicMidPoint(V1, V2);
+      vertex_type::BasicVertex M2 = createBasicMidPoint(V0, V2);
+
+      BasicArray->emplace_back(V0);
+      BasicArray->emplace_back(V1);
+      BasicArray->emplace_back(V2);
+      BasicArray->emplace_back(M0);
+      BasicArray->emplace_back(M1);
+      BasicArray->emplace_back(M2);
+      RawIndexArray->emplace_back(I * 6 + 0);
+      RawIndexArray->emplace_back(I * 6 + 3);
+      RawIndexArray->emplace_back(I * 6 + 5);
+      RawIndexArray->emplace_back(I * 6 + 3);
+      RawIndexArray->emplace_back(I * 6 + 4);
+      RawIndexArray->emplace_back(I * 6 + 5);
+      RawIndexArray->emplace_back(I * 6 + 5);
+      RawIndexArray->emplace_back(I * 6 + 4);
+      RawIndexArray->emplace_back(I * 6 + 2);
+      RawIndexArray->emplace_back(I * 6 + 3);
+      RawIndexArray->emplace_back(I * 6 + 1);
+      RawIndexArray->emplace_back(I * 6 + 4);
     }
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX: {
+    std::vector<vertex_type::TangentVertex> *TangentArray =
+        static_cast<std::vector<vertex_type::TangentVertex> *>(RawVertexArray);
+    std::vector<vertex_type::TangentVertex> TangentCopy = *TangentArray;
+    std::vector<UINT> IndexCopy = *RawIndexArray;
+
+    TangentArray->resize(0);
+    RawIndexArray->resize(0);
+
+    UINT NumTris = static_cast<UINT>(IndexCopy.size()) / 3;
+    for (UINT I = 0; I < NumTris; I++) {
+      vertex_type::TangentVertex V0 = TangentCopy[IndexCopy[I * 3 + 0]];
+      vertex_type::TangentVertex V1 = TangentCopy[IndexCopy[I * 3 + 1]];
+      vertex_type::TangentVertex V2 = TangentCopy[IndexCopy[I * 3 + 2]];
+
+      vertex_type::TangentVertex M0 = createTangentMidPoint(V0, V1);
+      vertex_type::TangentVertex M1 = createTangentMidPoint(V1, V2);
+      vertex_type::TangentVertex M2 = createTangentMidPoint(V0, V2);
+
+      TangentArray->emplace_back(V0);
+      TangentArray->emplace_back(V1);
+      TangentArray->emplace_back(V2);
+      TangentArray->emplace_back(M0);
+      TangentArray->emplace_back(M1);
+      TangentArray->emplace_back(M2);
+      RawIndexArray->emplace_back(I * 6 + 0);
+      RawIndexArray->emplace_back(I * 6 + 3);
+      RawIndexArray->emplace_back(I * 6 + 5);
+      RawIndexArray->emplace_back(I * 6 + 3);
+      RawIndexArray->emplace_back(I * 6 + 4);
+      RawIndexArray->emplace_back(I * 6 + 5);
+      RawIndexArray->emplace_back(I * 6 + 5);
+      RawIndexArray->emplace_back(I * 6 + 4);
+      RawIndexArray->emplace_back(I * 6 + 2);
+      RawIndexArray->emplace_back(I * 6 + 3);
+      RawIndexArray->emplace_back(I * 6 + 1);
+      RawIndexArray->emplace_back(I * 6 + 4);
+    }
+
+    break;
+  }
+
+  default:
+    assert(false && "null layout");
+  }
 }
 
-ID3D11Buffer* RSMeshHelper::CreateVertexBuffer(
-    const void* const _vertices,
-    LAYOUT_TYPE _layoutType)
-{
-    if (!_vertices) { return nullptr; }
-    std::vector<vertex_type::BasicVertex>* basic = nullptr;
-    std::vector<vertex_type::ColorVertex>* color = nullptr;
-    std::vector<vertex_type::TangentVertex>* tangent = nullptr;
-    std::vector<vertex_type::AnimationVertex>* animated = nullptr;
-    UINT size = 0;
-    UINT vertexSize = 0;
-    void* vertArray = nullptr;
+vertex_type::BasicVertex
+RSGeometryGenerator::createBasicMidPoint(const vertex_type::BasicVertex &V0,
+                                         const vertex_type::BasicVertex &V1) {
+  dx::XMVECTOR P0 = dx::XMLoadFloat3(&V0.Position);
+  dx::XMVECTOR P1 = dx::XMLoadFloat3(&V1.Position);
+  dx::XMVECTOR N0 = dx::XMLoadFloat3(&V0.Normal);
+  dx::XMVECTOR N1 = dx::XMLoadFloat3(&V1.Normal);
+  dx::XMVECTOR Tex0 = dx::XMLoadFloat2(&V0.TexCoord);
+  dx::XMVECTOR Tex1 = dx::XMLoadFloat2(&V1.TexCoord);
+  dx::XMVECTOR Pos = 0.5f * (P0 + P1);
+  dx::XMVECTOR Normal = dx::XMVector3Normalize(0.5f * (N0 + N1));
+  dx::XMVECTOR Tex = 0.5f * (Tex0 + Tex1);
 
-    switch (_layoutType)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-        color =
-            (std::vector<vertex_type::ColorVertex>*)_vertices;
-        size = (UINT)color->size();
-        vertexSize = (UINT)sizeof(vertex_type::ColorVertex);
-        vertArray = &((*color)[0]);
-        break;
-    case LAYOUT_TYPE::NORMAL_TEX:
-        basic =
-            (std::vector<vertex_type::BasicVertex>*)_vertices;
-        size = (UINT)basic->size();
-        vertexSize = (UINT)sizeof(vertex_type::BasicVertex);
-        vertArray = &((*basic)[0]);
-        break;
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-        tangent =
-            (std::vector<vertex_type::TangentVertex>*)_vertices;
-        size = (UINT)tangent->size();
-        vertexSize = (UINT)sizeof(vertex_type::TangentVertex);
-        vertArray = &((*tangent)[0]);
-        break;
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE:
-        animated =
-            (std::vector<vertex_type::AnimationVertex>*)_vertices;
-        size = (UINT)animated->size();
-        vertexSize = (UINT)sizeof(vertex_type::AnimationVertex);
-        vertArray = &((*animated)[0]);
-        break;
-    default:
-        return nullptr;
-    }
+  vertex_type::BasicVertex V = {};
+  dx::XMStoreFloat3(&V.Position, Pos);
+  dx::XMStoreFloat3(&V.Normal, Normal);
+  dx::XMStoreFloat2(&V.TexCoord, Tex);
 
-    ID3D11Buffer* vertexBuffer = nullptr;
-    D3D11_BUFFER_DESC vbd = {};
-    D3D11_SUBRESOURCE_DATA initData = {};
-    ZeroMemory(&vbd, sizeof(vbd));
-    ZeroMemory(&initData, sizeof(initData));
-    vbd.Usage = D3D11_USAGE_IMMUTABLE;
-    vbd.ByteWidth = vertexSize * size;
-    vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vbd.CPUAccessFlags = 0;
-    vbd.MiscFlags = 0;
-
-    initData.pSysMem = vertArray;
-
-    HRESULT hr = S_OK;
-    hr = mDevicesPtr->GetDevice()->
-        CreateBuffer(&vbd, &initData, &vertexBuffer);
-    if (SUCCEEDED(hr))
-    {
-        return vertexBuffer;
-    }
-    else
-    {
-        return nullptr;
-    }
+  return V;
 }
 
-void RSMeshHelper::CreateTexSrv(
-    RS_SUBMESH_DATA* _result,
-    const std::vector<std::string>* const _textures)
-{
-    auto& texVec = _result->Textures;
-    static std::wstring wstr = L"";
-    static std::string name = "";
-    static HRESULT hr = S_OK;
-    ID3D11ShaderResourceView* srv = nullptr;
+vertex_type::TangentVertex
+RSGeometryGenerator::createTangentMidPoint(
+    const vertex_type::TangentVertex &V0,
+    const vertex_type::TangentVertex &V1) {
+  dx::XMVECTOR P0 = dx::XMLoadFloat3(&V0.Position);
+  dx::XMVECTOR P1 = dx::XMLoadFloat3(&V1.Position);
+  dx::XMVECTOR N0 = dx::XMLoadFloat3(&V0.Normal);
+  dx::XMVECTOR N1 = dx::XMLoadFloat3(&V1.Normal);
+  dx::XMVECTOR Tan0 = dx::XMLoadFloat3(&V0.Tangent);
+  dx::XMVECTOR Tan1 = dx::XMLoadFloat3(&V1.Tangent);
+  dx::XMVECTOR Tex0 = dx::XMLoadFloat2(&V0.TexCoord);
+  dx::XMVECTOR Tex1 = dx::XMLoadFloat2(&V1.TexCoord);
+  dx::XMVECTOR Pos = 0.5f * (P0 + P1);
+  dx::XMVECTOR Normal = dx::XMVector3Normalize(0.5f * (N0 + N1));
+  dx::XMVECTOR TangentPtr = dx::XMVector3Normalize(0.5f * (Tan0 + Tan1));
+  dx::XMVECTOR Tex = 0.5f * (Tex0 + Tex1);
 
-    for (auto& tex : *_textures)
-    {
-        name = tex;
-        auto existSrv = mTexManagerPtr->GetMeshSrv(name);
-        if (existSrv) { texVec[0] = name; continue; }
+  vertex_type::TangentVertex V = {};
+  dx::XMStoreFloat3(&V.Position, Pos);
+  dx::XMStoreFloat3(&V.Normal, Normal);
+  dx::XMStoreFloat3(&V.Tangent, TangentPtr);
+  dx::XMStoreFloat2(&V.TexCoord, Tex);
 
-        wstr = std::wstring(tex.begin(), tex.end());
-        wstr = L".\\Assets\\Textures\\" + wstr;
-        if (tex.find(".dds") != std::string::npos ||
-            tex.find(".DDS") != std::string::npos)
-        {
-            hr = DirectX::CreateDDSTextureFromFile(
-                mDevicesPtr->GetDevice(),
-                wstr.c_str(), nullptr, &srv);
-            if (SUCCEEDED(hr))
-            {
-                name = tex;
-                mTexManagerPtr->AddMeshSrv(name, srv);
-                texVec[0] = name;
-            }
-            else
-            {
-                char errorLog[128] = "";
-                sprintf_s(errorLog, 128,
-                    "[[[WARNING]]] : cannot load this texture %s\n",
-                    name.c_str());
-                OutputDebugString(errorLog);
-            }
-        }
-        else
-        {
-            hr = DirectX::CreateWICTextureFromFile(
-                mDevicesPtr->GetDevice(),
-                wstr.c_str(), nullptr, &srv);
-            if (SUCCEEDED(hr))
-            {
-                name = tex;
-                mTexManagerPtr->AddMeshSrv(name, srv);
-                texVec[0] = name;
-            }
-            else
-            {
-                char errorLog[128] = "";
-                sprintf_s(errorLog, 128,
-                    "[[[WARNING]]] : cannot load this texture %s\n",
-                    name.c_str());
-                OutputDebugString(errorLog);
-            }
-        }
-    }
+  return V;
 }
 
-void RSMeshHelper::CreateSubMeshMaterial(
-    RS_SUBMESH_DATA* _result,
-    const MATERIAL_INFO* const _info)
-{
-    assert(_info);
+vertex_type::ColorVertex
+RSGeometryGenerator::createColorMidPoint(const vertex_type::ColorVertex &V0,
+                                         const vertex_type::ColorVertex &V1) {
+  dx::XMVECTOR P0 = dx::XMLoadFloat3(&V0.Position);
+  dx::XMVECTOR P1 = dx::XMLoadFloat3(&V1.Position);
+  dx::XMVECTOR N0 = dx::XMLoadFloat3(&V0.Normal);
+  dx::XMVECTOR N1 = dx::XMLoadFloat3(&V1.Normal);
+  dx::XMVECTOR Col0 = dx::XMLoadFloat4(&V0.Color);
+  dx::XMVECTOR Col1 = dx::XMLoadFloat4(&V1.Color);
+  dx::XMVECTOR Pos = 0.5f * (P0 + P1);
+  dx::XMVECTOR ColorPtr = 0.5f * (Col0 + Col1);
+  dx::XMVECTOR Normal = dx::XMVector3Normalize(0.5f * (N0 + N1));
 
-    RS_MATERIAL_INFO* material = &(_result->Material);
-    memcpy_s(material, sizeof(RS_MATERIAL_INFO),
-        _info, sizeof(MATERIAL_INFO));
+  vertex_type::ColorVertex V = {};
+  dx::XMStoreFloat3(&V.Position, Pos);
+  dx::XMStoreFloat3(&V.Normal, Normal);
+  dx::XMStoreFloat4(&V.Color, ColorPtr);
+
+  return V;
 }
 
-void RSMeshHelper::ReleaseSubMesh(RS_SUBMESH_DATA& _result)
-{
-    SAFE_RELEASE(_result.IndexBuffer);
-    SAFE_RELEASE(_result.VertexBuffer);
+void
+RSGeometryGenerator::buildCylinderTopCap(float BottomRadius,
+                                         float TopRadius,
+                                         float Height,
+                                         UINT SliceCount,
+                                         UINT StackCount,
+                                         LAYOUT_TYPE LayoutType,
+                                         void *RawVertexArray,
+                                         std::vector<UINT> *RawIndexArray,
+                                         const dx::XMFLOAT4 &VertexColor) {
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR: {
+    std::vector<vertex_type::ColorVertex> *ColorArray =
+        static_cast<std::vector<vertex_type::ColorVertex> *>(RawVertexArray);
+
+    UINT BaseIndex = static_cast<UINT>(ColorArray->size());
+    float Y = 0.5f * Height;
+    float DTheta = 2.f * dx::XM_PI / SliceCount;
+
+    for (UINT I = 0; I <= SliceCount; I++) {
+      float X = TopRadius * cosf(I * DTheta);
+      float Z = TopRadius * sinf(I * DTheta);
+      float U = X / Height + 0.5f;
+      float V = Z / Height + 0.5f;
+      (void)U;
+      (void)V;
+
+      vertex_type::ColorVertex Vert = {
+          {X, Y, Z}, {0.0f, 1.0f, 0.0f}, VertexColor};
+      ColorArray->emplace_back(Vert);
+    }
+
+    vertex_type::ColorVertex Vert = {
+        {0.0f, Y, 0.0f}, {0.0f, 1.0f, 0.0f}, VertexColor};
+    ColorArray->emplace_back(Vert);
+
+    UINT CenterIndex = static_cast<UINT>(ColorArray->size()) - 1;
+
+    for (UINT I = 0; I < SliceCount; I++) {
+      RawIndexArray->emplace_back(CenterIndex);
+      RawIndexArray->emplace_back(BaseIndex + I + 1);
+      RawIndexArray->emplace_back(BaseIndex + I);
+    }
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TEX: {
+    std::vector<vertex_type::BasicVertex> *BasicArray =
+        static_cast<std::vector<vertex_type::BasicVertex> *>(RawVertexArray);
+
+    UINT BaseIndex = static_cast<UINT>(BasicArray->size());
+    float Y = 0.5f * Height;
+    float DTheta = 2.f * dx::XM_PI / SliceCount;
+
+    for (UINT I = 0; I <= SliceCount; I++) {
+      float X = TopRadius * cosf(I * DTheta);
+      float Z = TopRadius * sinf(I * DTheta);
+      float U = X / Height + 0.5f;
+      float V = Z / Height + 0.5f;
+
+      vertex_type::BasicVertex Vert = {{X, Y, Z}, {0.0f, 1.0f, 0.0f}, {U, V}};
+      BasicArray->emplace_back(Vert);
+    }
+
+    vertex_type::BasicVertex Vert = {
+        {0.0f, Y, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.5f, 0.5f}};
+    BasicArray->emplace_back(Vert);
+
+    UINT CenterIndex = static_cast<UINT>(BasicArray->size()) - 1;
+
+    for (UINT I = 0; I < SliceCount; I++) {
+      RawIndexArray->emplace_back(CenterIndex);
+      RawIndexArray->emplace_back(BaseIndex + I + 1);
+      RawIndexArray->emplace_back(BaseIndex + I);
+    }
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX: {
+    std::vector<vertex_type::TangentVertex> *TangentArray =
+        static_cast<std::vector<vertex_type::TangentVertex> *>(RawVertexArray);
+
+    UINT BaseIndex = static_cast<UINT>(TangentArray->size());
+    float Y = 0.5f * Height;
+    float DTheta = 2.f * dx::XM_PI / SliceCount;
+
+    for (UINT I = 0; I <= SliceCount; I++) {
+      float X = TopRadius * cosf(I * DTheta);
+      float Z = TopRadius * sinf(I * DTheta);
+      float U = X / Height + 0.5f;
+      float V = Z / Height + 0.5f;
+
+      vertex_type::TangentVertex Vert = {
+          {X, Y, Z}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {U, V}};
+      TangentArray->emplace_back(Vert);
+    }
+
+    vertex_type::TangentVertex Vert = {
+        {0.0f, Y, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.5f, 0.5f}};
+    TangentArray->emplace_back(Vert);
+
+    UINT CenterIndex = static_cast<UINT>(TangentArray->size()) - 1;
+
+    for (UINT I = 0; I < SliceCount; I++) {
+      RawIndexArray->emplace_back(CenterIndex);
+      RawIndexArray->emplace_back(BaseIndex + I + 1);
+      RawIndexArray->emplace_back(BaseIndex + I);
+    }
+
+    break;
+  }
+
+  default:
+    assert(false && "null layout");
+  }
 }
 
-static bool g_SpriteRectHasBuilt = false;
-static RS_SUBMESH_DATA g_SpriteData = {};
+void
+RSGeometryGenerator::buildCylinderBottomCap(float BottomRadius,
+                                            float TopRadius,
+                                            float Height,
+                                            UINT SliceCount,
+                                            UINT StackCount,
+                                            LAYOUT_TYPE LayoutType,
+                                            void *RawVertexArray,
+                                            std::vector<UINT> *RawIndexArray,
+                                            const dx::XMFLOAT4 &VertexColor) {
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_COLOR: {
+    std::vector<vertex_type::ColorVertex> *ColorArray =
+        static_cast<std::vector<vertex_type::ColorVertex> *>(RawVertexArray);
 
-RSGeometryGenerator::RSGeometryGenerator(RSRoot_DX11* _root) :
-    mMeshHelperPtr(_root->getMeshHelper()),
-    mDevicesPtr(_root->getDevices()),
-    mTexManagerPtr(_root->getResourceManager()) {}
+    UINT BaseIndex = static_cast<UINT>(ColorArray->size());
+    float Y = -0.5f * Height;
+    float DTheta = 2.f * dx::XM_PI / SliceCount;
 
-RSGeometryGenerator::~RSGeometryGenerator()
-{
-    SAFE_RELEASE(g_SpriteData.IndexBuffer);
-    SAFE_RELEASE(g_SpriteData.VertexBuffer);
+    for (UINT I = 0; I <= SliceCount; I++) {
+      float X = BottomRadius * cosf(I * DTheta);
+      float Z = BottomRadius * sinf(I * DTheta);
+      float U = X / Height + 0.5f;
+      float V = Z / Height + 0.5f;
+      (void)U;
+      (void)V;
+
+      vertex_type::ColorVertex Vert = {
+          {X, Y, Z}, {0.0f, -1.0f, 0.0f}, VertexColor};
+      ColorArray->emplace_back(Vert);
+    }
+
+    vertex_type::ColorVertex Vert = {
+        {0.0f, Y, 0.0f}, {0.0f, -1.0f, 0.0f}, VertexColor};
+    ColorArray->emplace_back(Vert);
+
+    UINT CenterIndex = static_cast<UINT>(ColorArray->size()) - 1;
+
+    for (UINT I = 0; I < SliceCount; I++) {
+      RawIndexArray->emplace_back(CenterIndex);
+      RawIndexArray->emplace_back(BaseIndex + I);
+      RawIndexArray->emplace_back(BaseIndex + I + 1);
+    }
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TEX: {
+    std::vector<vertex_type::BasicVertex> *BasicArray =
+        static_cast<std::vector<vertex_type::BasicVertex> *>(RawVertexArray);
+
+    UINT BaseIndex = static_cast<UINT>(BasicArray->size());
+    float Y = -0.5f * Height;
+    float DTheta = 2.f * dx::XM_PI / SliceCount;
+
+    for (UINT I = 0; I <= SliceCount; I++) {
+      float X = BottomRadius * cosf(I * DTheta);
+      float Z = BottomRadius * sinf(I * DTheta);
+      float U = X / Height + 0.5f;
+      float V = Z / Height + 0.5f;
+
+      vertex_type::BasicVertex Vert = {{X, Y, Z}, {0.0f, -1.0f, 0.0f}, {U, V}};
+      BasicArray->emplace_back(Vert);
+    }
+
+    vertex_type::BasicVertex Vert = {
+        {0.0f, Y, 0.0f}, {0.0f, -1.0f, 0.0f}, {0.5f, 0.5f}};
+    BasicArray->emplace_back(Vert);
+
+    UINT CenterIndex = static_cast<UINT>(BasicArray->size()) - 1;
+
+    for (UINT I = 0; I < SliceCount; I++) {
+      RawIndexArray->emplace_back(CenterIndex);
+      RawIndexArray->emplace_back(BaseIndex + I);
+      RawIndexArray->emplace_back(BaseIndex + I + 1);
+    }
+
+    break;
+  }
+
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX: {
+    std::vector<vertex_type::TangentVertex> *TangentArray =
+        static_cast<std::vector<vertex_type::TangentVertex> *>(RawVertexArray);
+
+    UINT BaseIndex = static_cast<UINT>(TangentArray->size());
+    float Y = -0.5f * Height;
+    float DTheta = 2.f * dx::XM_PI / SliceCount;
+
+    for (UINT I = 0; I <= SliceCount; I++) {
+      float X = BottomRadius * cosf(I * DTheta);
+      float Z = BottomRadius * sinf(I * DTheta);
+      float U = X / Height + 0.5f;
+      float V = Z / Height + 0.5f;
+
+      vertex_type::TangentVertex Vert = {
+          {X, Y, Z}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {U, V}};
+      TangentArray->emplace_back(Vert);
+    }
+
+    vertex_type::TangentVertex Vert = {
+        {0.0f, Y, 0.0f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.5f, 0.5f}};
+    TangentArray->emplace_back(Vert);
+
+    UINT CenterIndex = static_cast<UINT>(TangentArray->size()) - 1;
+
+    for (UINT I = 0; I < SliceCount; I++) {
+      RawIndexArray->emplace_back(CenterIndex);
+      RawIndexArray->emplace_back(BaseIndex + I);
+      RawIndexArray->emplace_back(BaseIndex + I + 1);
+    }
+
+    break;
+  }
+
+  default:
+    assert(false && "null layout");
+  }
 }
 
-RS_SUBMESH_DATA RSGeometryGenerator::CreateBox(
-    float _width, float _height, float _depth, UINT _diviNum,
-    LAYOUT_TYPE _layout, bool _useVertexColor,
-    DirectX::XMFLOAT4&& _vertColor, std::string&& _texColorName)
-{
-    RS_SUBMESH_DATA rsd = {};
-    SUBMESH_INFO si = {};
-    MATERIAL_INFO mi = {};
-    std::vector<UINT> indeices = {};
-    std::vector<vertex_type::BasicVertex> basic = {};
-    std::vector<vertex_type::TangentVertex> tangent = {};
-    std::vector<vertex_type::ColorVertex> color = {};
-    std::vector<std::string> textures = {};
-    std::string str = "";
-    float hw = 0.5f * _width;
-    float hh = 0.5f * _height;
-    float hd = 0.5f * _depth;
-    indeices.resize(36);
-
-    switch (_layout)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-        if (!_useVertexColor)
-        {
-            bool notUsingVertColor = false;
-            assert(notUsingVertColor);
-            (void)notUsingVertColor;
-        }
-        color.resize(24);
-        // front face
-        color[0] = { { -hw, -hh, -hd }, { 0.0f, 0.0f, -1.0f }, _vertColor };
-        color[1] = { { -hw, +hh, -hd }, { 0.0f, 0.0f, -1.0f }, _vertColor };
-        color[2] = { { +hw, +hh, -hd }, { 0.0f, 0.0f, -1.0f }, _vertColor };
-        color[3] = { { +hw, -hh, -hd }, { 0.0f, 0.0f, -1.0f }, _vertColor };
-        // back face
-        color[4] = { { -hw, -hh, +hd }, { 0.0f, 0.0f, 1.0f }, _vertColor };
-        color[5] = { { +hw, -hh, +hd }, { 0.0f, 0.0f, 1.0f }, _vertColor };
-        color[6] = { { +hw, +hh, +hd }, { 0.0f, 0.0f, 1.0f }, _vertColor };
-        color[7] = { { -hw, +hh, +hd }, { 0.0f, 0.0f, 1.0f }, _vertColor };
-        // top face
-        color[8] = { { -hw, +hh, -hd }, { 0.0f, 1.0f, 0.0f }, _vertColor };
-        color[9] = { { -hw, +hh, +hd }, { 0.0f, 1.0f, 0.0f }, _vertColor };
-        color[10] = { { +hw, +hh, +hd }, { 0.0f, 1.0f, 0.0f }, _vertColor };
-        color[11] = { { +hw, +hh, -hd }, { 0.0f, 1.0f, 0.0f }, _vertColor };
-        // bottom face
-        color[12] = { { -hw, -hh, -hd }, { 0.0f, -1.0f, 0.0f }, _vertColor };
-        color[13] = { { +hw, -hh, -hd }, { 0.0f, -1.0f, 0.0f }, _vertColor };
-        color[14] = { { +hw, -hh, +hd }, { 0.0f, -1.0f, 0.0f }, _vertColor };
-        color[15] = { { -hw, -hh, +hd }, { 0.0f, -1.0f, 0.0f }, _vertColor };
-        // left face
-        color[16] = { { -hw, -hh, +hd }, { -1.0f, 0.0f, 0.0f }, _vertColor };
-        color[17] = { { -hw, +hh, +hd }, { -1.0f, 0.0f, 0.0f }, _vertColor };
-        color[18] = { { -hw, +hh, -hd }, { -1.0f, 0.0f, 0.0f }, _vertColor };
-        color[19] = { { -hw, -hh, -hd }, { -1.0f, 0.0f, 0.0f }, _vertColor };
-        // right face
-        color[20] = { { +hw, -hh, -hd }, { 1.0f, 0.0f, 0.0f }, _vertColor };
-        color[21] = { { +hw, +hh, -hd }, { 1.0f, 0.0f, 0.0f }, _vertColor };
-        color[22] = { { +hw, +hh, +hd }, { 1.0f, 0.0f, 0.0f }, _vertColor };
-        color[23] = { { +hw, -hh, +hd }, { 1.0f, 0.0f, 0.0f }, _vertColor };
-
-        // front face index
-        indeices[0] = 0; indeices[1] = 1; indeices[2] = 2;
-        indeices[3] = 0; indeices[4] = 2; indeices[5] = 3;
-        // back face index
-        indeices[6] = 4; indeices[7] = 5; indeices[8] = 6;
-        indeices[9] = 4; indeices[10] = 6; indeices[11] = 7;
-        // top face index
-        indeices[12] = 8; indeices[13] = 9; indeices[14] = 10;
-        indeices[15] = 8; indeices[16] = 10; indeices[17] = 11;
-        // bottom face index
-        indeices[18] = 12; indeices[19] = 13; indeices[20] = 14;
-        indeices[21] = 12; indeices[22] = 14; indeices[23] = 15;
-        // left face index
-        indeices[24] = 16; indeices[25] = 17; indeices[26] = 18;
-        indeices[27] = 16; indeices[28] = 18; indeices[29] = 19;
-        // right face index
-        indeices[30] = 20; indeices[31] = 21; indeices[32] = 22;
-        indeices[33] = 20; indeices[34] = 22; indeices[35] = 23;
-
-        if (_diviNum > 6) { _diviNum = 6; }
-        for (UINT i = 0; i < _diviNum; i++)
-        {
-            SubDivide(_layout, &color, &indeices);
-        }
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &color;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-
-    case LAYOUT_TYPE::NORMAL_TEX:
-        if (_useVertexColor)
-        {
-            bool usingVertColor = false;
-            assert(usingVertColor);
-            (void)usingVertColor;
-        }
-        basic.resize(24);
-        // front face
-        basic[0] = { { -hw, -hh, -hd }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f } };
-        basic[1] = { { -hw, +hh, -hd }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f } };
-        basic[2] = { { +hw, +hh, -hd }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f } };
-        basic[3] = { { +hw, -hh, -hd }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f } };
-        // back face
-        basic[4] = { { -hw, -hh, +hd }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } };
-        basic[5] = { { +hw, -hh, +hd }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } };
-        basic[6] = { { +hw, +hh, +hd }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } };
-        basic[7] = { { -hw, +hh, +hd }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } };
-        // top face
-        basic[8] = { { -hw, +hh, -hd }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } };
-        basic[9] = { { -hw, +hh, +hd }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } };
-        basic[10] = { { +hw, +hh, +hd }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } };
-        basic[11] = { { +hw, +hh, -hd }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } };
-        // bottom face
-        basic[12] = { { -hw, -hh, -hd }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 1.0f } };
-        basic[13] = { { +hw, -hh, -hd }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f } };
-        basic[14] = { { +hw, -hh, +hd }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f } };
-        basic[15] = { { -hw, -hh, +hd }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 0.0f } };
-        // left face
-        basic[16] = { { -hw, -hh, +hd }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } };
-        basic[17] = { { -hw, +hh, +hd }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } };
-        basic[18] = { { -hw, +hh, -hd }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } };
-        basic[19] = { { -hw, -hh, -hd }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f } };
-        // right face
-        basic[20] = { { +hw, -hh, -hd }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } };
-        basic[21] = { { +hw, +hh, -hd }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } };
-        basic[22] = { { +hw, +hh, +hd }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } };
-        basic[23] = { { +hw, -hh, +hd }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f } };
-
-        // front face index
-        indeices[0] = 0; indeices[1] = 1; indeices[2] = 2;
-        indeices[3] = 0; indeices[4] = 2; indeices[5] = 3;
-        // back face index
-        indeices[6] = 4; indeices[7] = 5; indeices[8] = 6;
-        indeices[9] = 4; indeices[10] = 6; indeices[11] = 7;
-        // top face index
-        indeices[12] = 8; indeices[13] = 9; indeices[14] = 10;
-        indeices[15] = 8; indeices[16] = 10; indeices[17] = 11;
-        // bottom face index
-        indeices[18] = 12; indeices[19] = 13; indeices[20] = 14;
-        indeices[21] = 12; indeices[22] = 14; indeices[23] = 15;
-        // left face index
-        indeices[24] = 16; indeices[25] = 17; indeices[26] = 18;
-        indeices[27] = 16; indeices[28] = 18; indeices[29] = 19;
-        // right face index
-        indeices[30] = 20; indeices[31] = 21; indeices[32] = 22;
-        indeices[33] = 20; indeices[34] = 22; indeices[35] = 23;
-
-        if (_diviNum > 6) { _diviNum = 6; }
-        for (UINT i = 0; i < _diviNum; i++)
-        {
-            SubDivide(_layout, &basic, &indeices);
-        }
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &basic;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-        if (_useVertexColor)
-        {
-            bool usingVertColor = false;
-            assert(usingVertColor);
-            (void)usingVertColor;
-        }
-        tangent.resize(24);
-        // front face
-        tangent[0] = { { -hw, -hh, -hd }, { 0.0f, 0.0f, -1.0f }, {1.0f, 0.0f, 0.0f}, { 0.0f, 1.0f } };
-        tangent[1] = { { -hw, +hh, -hd }, { 0.0f, 0.0f, -1.0f }, {1.0f, 0.0f, 0.0f}, { 0.0f, 0.0f } };
-        tangent[2] = { { +hw, +hh, -hd }, { 0.0f, 0.0f, -1.0f }, {1.0f, 0.0f, 0.0f}, { 1.0f, 0.0f } };
-        tangent[3] = { { +hw, -hh, -hd }, { 0.0f, 0.0f, -1.0f }, {1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f } };
-        // back face
-        tangent[4] = { { -hw, -hh, +hd }, { 0.0f, 0.0f, 1.0f }, {-1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f } };
-        tangent[5] = { { +hw, -hh, +hd }, { 0.0f, 0.0f, 1.0f }, {-1.0f, 0.0f, 0.0f}, { 0.0f, 1.0f } };
-        tangent[6] = { { +hw, +hh, +hd }, { 0.0f, 0.0f, 1.0f }, {-1.0f, 0.0f, 0.0f}, { 0.0f, 0.0f } };
-        tangent[7] = { { -hw, +hh, +hd }, { 0.0f, 0.0f, 1.0f }, {-1.0f, 0.0f, 0.0f}, { 1.0f, 0.0f } };
-        // top face
-        tangent[8] = { { -hw, +hh, -hd }, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f, 0.0f}, { 0.0f, 1.0f } };
-        tangent[9] = { { -hw, +hh, +hd }, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f, 0.0f}, { 0.0f, 0.0f } };
-        tangent[10] = { { +hw, +hh, +hd }, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f, 0.0f}, { 1.0f, 0.0f } };
-        tangent[11] = { { +hw, +hh, -hd }, { 0.0f, 1.0f, 0.0f }, {1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f } };
-        // bottom face
-        tangent[12] = { { -hw, -hh, -hd }, { 0.0f, -1.0f, 0.0f }, {-1.0f, 0.0f, 0.0f}, { 1.0f, 1.0f } };
-        tangent[13] = { { +hw, -hh, -hd }, { 0.0f, -1.0f, 0.0f }, {-1.0f, 0.0f, 0.0f}, { 0.0f, 1.0f } };
-        tangent[14] = { { +hw, -hh, +hd }, { 0.0f, -1.0f, 0.0f }, {-1.0f, 0.0f, 0.0f}, { 0.0f, 0.0f } };
-        tangent[15] = { { -hw, -hh, +hd }, { 0.0f, -1.0f, 0.0f }, {-1.0f, 0.0f, 0.0f}, { 1.0f, 0.0f } };
-        // left face
-        tangent[16] = { { -hw, -hh, +hd }, { -1.0f, 0.0f, 0.0f }, {0.0f, 0.0f, -1.0f}, { 0.0f, 1.0f } };
-        tangent[17] = { { -hw, +hh, +hd }, { -1.0f, 0.0f, 0.0f }, {0.0f, 0.0f, -1.0f}, { 0.0f, 0.0f } };
-        tangent[18] = { { -hw, +hh, -hd }, { -1.0f, 0.0f, 0.0f }, {0.0f, 0.0f, -1.0f}, { 1.0f, 0.0f } };
-        tangent[19] = { { -hw, -hh, -hd }, { -1.0f, 0.0f, 0.0f }, {0.0f, 0.0f, -1.0f}, { 1.0f, 1.0f } };
-        // right face
-        tangent[20] = { { +hw, -hh, -hd }, { 1.0f, 0.0f, 0.0f }, {0.0f, 0.0f, 1.0f}, { 0.0f, 1.0f } };
-        tangent[21] = { { +hw, +hh, -hd }, { 1.0f, 0.0f, 0.0f }, {0.0f, 0.0f, 1.0f}, { 0.0f, 0.0f } };
-        tangent[22] = { { +hw, +hh, +hd }, { 1.0f, 0.0f, 0.0f }, {0.0f, 0.0f, 1.0f}, { 1.0f, 0.0f } };
-        tangent[23] = { { +hw, -hh, +hd }, { 1.0f, 0.0f, 0.0f }, {0.0f, 0.0f, 1.0f}, { 1.0f, 1.0f } };
-
-        // front face index
-        indeices[0] = 0; indeices[1] = 1; indeices[2] = 2;
-        indeices[3] = 0; indeices[4] = 2; indeices[5] = 3;
-        // back face index
-        indeices[6] = 4; indeices[7] = 5; indeices[8] = 6;
-        indeices[9] = 4; indeices[10] = 6; indeices[11] = 7;
-        // top face index
-        indeices[12] = 8; indeices[13] = 9; indeices[14] = 10;
-        indeices[15] = 8; indeices[16] = 10; indeices[17] = 11;
-        // bottom face index
-        indeices[18] = 12; indeices[19] = 13; indeices[20] = 14;
-        indeices[21] = 12; indeices[22] = 14; indeices[23] = 15;
-        // left face index
-        indeices[24] = 16; indeices[25] = 17; indeices[26] = 18;
-        indeices[27] = 16; indeices[28] = 18; indeices[29] = 19;
-        // right face index
-        indeices[30] = 20; indeices[31] = 21; indeices[32] = 22;
-        indeices[33] = 20; indeices[34] = 22; indeices[35] = 23;
-
-        if (_diviNum > 6) { _diviNum = 6; }
-        for (UINT i = 0; i < _diviNum; i++)
-        {
-            SubDivide(_layout, &tangent, &indeices);
-        }
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &tangent;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-
-    default:
-        bool nullLayout = false;
-        assert(nullLayout);
-        (void)nullLayout;
-    }
-
-    return rsd;
-}
-
-RS_SUBMESH_DATA RSGeometryGenerator::CreateSphere(
-    float _radius, UINT _sliceCount, UINT _stackCount,
-    LAYOUT_TYPE _layout, bool _useVertexColor,
-    DirectX::XMFLOAT4&& _vertColor, std::string&& _texColorName)
-{
-    RS_SUBMESH_DATA rsd = {};
-    SUBMESH_INFO si = {};
-    MATERIAL_INFO mi = {};
-    std::vector<UINT> indeices = {};
-    std::vector<vertex_type::BasicVertex> basic = {};
-    std::vector<vertex_type::TangentVertex> tangent = {};
-    std::vector<vertex_type::ColorVertex> color = {};
-    std::vector<std::string> textures = {};
-
-    switch (_layout)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-    {
-        if (!_useVertexColor)
-        {
-            bool notUsingVertColor = false;
-            assert(notUsingVertColor);
-            (void)notUsingVertColor;
-        }
-        vertex_type::ColorVertex topVertex =
-        {
-            { 0.0f, +_radius, 0.0f }, { 0.0f, +1.0f, 0.0f },
-            _vertColor
-        };
-        vertex_type::ColorVertex bottomVertex =
-        {
-            { 0.0f, -_radius, 0.0f }, { 0.0f, -1.0f, 0.0f },
-            _vertColor
-        };
-
-        color.emplace_back(topVertex);
-
-        float phiStep = DirectX::XM_PI / _stackCount;
-        float thetaStep = 2.0f * DirectX::XM_PI / _sliceCount;
-
-        for (UINT i = 1; i <= _stackCount - 1; i++)
-        {
-            float phi = i * phiStep;
-
-            for (UINT j = 0; j <= _sliceCount; j++)
-            {
-                float theta = j * thetaStep;
-                vertex_type::ColorVertex v = {};
-
-                v.Position.x = _radius * sinf(phi) * cosf(theta);
-                v.Position.y = _radius * cosf(phi);
-                v.Position.z = _radius * sinf(phi) * sinf(theta);
-
-                XMVECTOR P = XMLoadFloat3(&v.Position);
-                XMStoreFloat3(&v.Normal, XMVector3Normalize(P));
-
-                v.Color = _vertColor;
-
-                color.emplace_back(v);
-            }
-        }
-
-        color.emplace_back(bottomVertex);
-
-        for (UINT i = 1; i <= _sliceCount; i++)
-        {
-            indeices.emplace_back(0);
-            indeices.emplace_back(i + 1);
-            indeices.emplace_back(i);
-        }
-
-        UINT baseIndex = 1;
-        UINT ringVertexCount = _sliceCount + 1;
-        for (UINT i = 0; i < _stackCount - 2; i++)
-        {
-            for (UINT j = 0; j < _sliceCount; j++)
-            {
-                indeices.emplace_back(
-                    baseIndex + i * ringVertexCount + j);
-                indeices.emplace_back(
-                    baseIndex + i * ringVertexCount + j + 1);
-                indeices.emplace_back(
-                    baseIndex + (i + 1) * ringVertexCount + j);
-
-                indeices.emplace_back(
-                    baseIndex + (i + 1) * ringVertexCount + j);
-                indeices.emplace_back(
-                    baseIndex + i * ringVertexCount + j + 1);
-                indeices.emplace_back(
-                    baseIndex + (i + 1) * ringVertexCount + j + 1);
-            }
-        }
-
-        UINT southPoleIndex = (UINT)color.size() - 1;
-        baseIndex = southPoleIndex - ringVertexCount;
-
-        for (UINT i = 0; i < _sliceCount; i++)
-        {
-            indeices.emplace_back(southPoleIndex);
-            indeices.emplace_back(baseIndex + i);
-            indeices.emplace_back(baseIndex + i + 1);
-        }
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &color;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TEX:
-    {
-        if (_useVertexColor)
-        {
-            bool usingVertColor = false;
-            assert(usingVertColor);
-            (void)usingVertColor;
-        }
-        vertex_type::BasicVertex topVertex =
-        {
-            { 0.0f, +_radius, 0.0f }, { 0.0f, +1.0f, 0.0f },
-            { 0.0f, 0.0f }
-        };
-        vertex_type::BasicVertex bottomVertex =
-        {
-            { 0.0f, -_radius, 0.0f }, { 0.0f, -1.0f, 0.0f },
-            { 0.0f, 1.0f }
-        };
-
-        basic.emplace_back(topVertex);
-
-        float phiStep = DirectX::XM_PI / _stackCount;
-        float thetaStep = 2.0f * DirectX::XM_PI / _sliceCount;
-
-        for (UINT i = 1; i <= _stackCount - 1; i++)
-        {
-            float phi = i * phiStep;
-
-            for (UINT j = 0; j <= _sliceCount; j++)
-            {
-                float theta = j * thetaStep;
-                vertex_type::BasicVertex v = {};
-
-                v.Position.x = _radius * sinf(phi) * cosf(theta);
-                v.Position.y = _radius * cosf(phi);
-                v.Position.z = _radius * sinf(phi) * sinf(theta);
-
-                XMVECTOR P = XMLoadFloat3(&v.Position);
-                XMStoreFloat3(&v.Normal, XMVector3Normalize(P));
-
-                v.TexCoord.x = theta / DirectX::XM_2PI;
-                v.TexCoord.y = phi / DirectX::XM_PI;
-
-                basic.emplace_back(v);
-            }
-        }
-
-        basic.emplace_back(bottomVertex);
-
-        for (UINT i = 1; i <= _sliceCount; i++)
-        {
-            indeices.emplace_back(0);
-            indeices.emplace_back(i + 1);
-            indeices.emplace_back(i);
-        }
-
-        UINT baseIndex = 1;
-        UINT ringVertexCount = _sliceCount + 1;
-        for (UINT i = 0; i < _stackCount - 2; i++)
-        {
-            for (UINT j = 0; j < _sliceCount; j++)
-            {
-                indeices.emplace_back(
-                    baseIndex + i * ringVertexCount + j);
-                indeices.emplace_back(
-                    baseIndex + i * ringVertexCount + j + 1);
-                indeices.emplace_back(
-                    baseIndex + (i + 1) * ringVertexCount + j);
-
-                indeices.emplace_back(
-                    baseIndex + (i + 1) * ringVertexCount + j);
-                indeices.emplace_back(
-                    baseIndex + i * ringVertexCount + j + 1);
-                indeices.emplace_back(
-                    baseIndex + (i + 1) * ringVertexCount + j + 1);
-            }
-        }
-
-        UINT southPoleIndex = (UINT)basic.size() - 1;
-        baseIndex = southPoleIndex - ringVertexCount;
-
-        for (UINT i = 0; i < _sliceCount; i++)
-        {
-            indeices.emplace_back(southPoleIndex);
-            indeices.emplace_back(baseIndex + i);
-            indeices.emplace_back(baseIndex + i + 1);
-        }
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &basic;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-    {
-        if (_useVertexColor)
-        {
-            bool usingVertColor = false;
-            assert(usingVertColor);
-            (void)usingVertColor;
-        }
-        vertex_type::TangentVertex topVertex =
-        {
-            { 0.0f, +_radius, 0.0f }, { 0.0f, +1.0f, 0.0f },
-            { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }
-        };
-        vertex_type::TangentVertex bottomVertex =
-        {
-            { 0.0f, -_radius, 0.0f }, { 0.0f, -1.0f, 0.0f },
-            { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }
-        };
-
-        tangent.emplace_back(topVertex);
-
-        float phiStep = DirectX::XM_PI / _stackCount;
-        float thetaStep = 2.0f * DirectX::XM_PI / _sliceCount;
-
-        for (UINT i = 1; i <= _stackCount - 1; i++)
-        {
-            float phi = i * phiStep;
-
-            for (UINT j = 0; j <= _sliceCount; j++)
-            {
-                float theta = j * thetaStep;
-                vertex_type::TangentVertex v = {};
-
-                v.Position.x = _radius * sinf(phi) * cosf(theta);
-                v.Position.y = _radius * cosf(phi);
-                v.Position.z = _radius * sinf(phi) * sinf(theta);
-                v.Tangent.x = -_radius * sinf(phi) * sinf(theta);
-                v.Tangent.y = 0.0f;
-                v.Tangent.z = +_radius * sinf(phi) * cosf(theta);
-
-                XMVECTOR T = XMLoadFloat3(&v.Tangent);
-                XMStoreFloat3(&v.Tangent, XMVector3Normalize(T));
-                XMVECTOR P = XMLoadFloat3(&v.Position);
-                XMStoreFloat3(&v.Normal, XMVector3Normalize(P));
-
-                v.TexCoord.x = theta / DirectX::XM_2PI;
-                v.TexCoord.y = phi / DirectX::XM_PI;
-
-                tangent.emplace_back(v);
-            }
-        }
-
-        tangent.emplace_back(bottomVertex);
-
-        for (UINT i = 1; i <= _sliceCount; i++)
-        {
-            indeices.emplace_back(0);
-            indeices.emplace_back(i + 1);
-            indeices.emplace_back(i);
-        }
-
-        UINT baseIndex = 1;
-        UINT ringVertexCount = _sliceCount + 1;
-        for (UINT i = 0; i < _stackCount - 2; i++)
-        {
-            for (UINT j = 0; j < _sliceCount; j++)
-            {
-                indeices.emplace_back(
-                    baseIndex + i * ringVertexCount + j);
-                indeices.emplace_back(
-                    baseIndex + i * ringVertexCount + j + 1);
-                indeices.emplace_back(
-                    baseIndex + (i + 1) * ringVertexCount + j);
-
-                indeices.emplace_back(
-                    baseIndex + (i + 1) * ringVertexCount + j);
-                indeices.emplace_back(
-                    baseIndex + i * ringVertexCount + j + 1);
-                indeices.emplace_back(
-                    baseIndex + (i + 1) * ringVertexCount + j + 1);
-            }
-        }
-
-        UINT southPoleIndex = (UINT)tangent.size() - 1;
-        baseIndex = southPoleIndex - ringVertexCount;
-
-        for (UINT i = 0; i < _sliceCount; i++)
-        {
-            indeices.emplace_back(southPoleIndex);
-            indeices.emplace_back(baseIndex + i);
-            indeices.emplace_back(baseIndex + i + 1);
-        }
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &tangent;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    default:
-        bool nullLayout = false;
-        assert(nullLayout);
-        (void)nullLayout;
-    }
-
-    return rsd;
-}
-
-RS_SUBMESH_DATA RSGeometryGenerator::CreateGeometrySphere(
-    float _radius, UINT _diviNum,
-    LAYOUT_TYPE _layout, bool _useVertexColor,
-    DirectX::XMFLOAT4&& _vertColor, std::string&& _texColorName)
-{
-    RS_SUBMESH_DATA rsd = {};
-    SUBMESH_INFO si = {};
-    MATERIAL_INFO mi = {};
-    std::vector<UINT> indeices = {};
-    std::vector<vertex_type::BasicVertex> basic = {};
-    std::vector<vertex_type::TangentVertex> tangent = {};
-    std::vector<vertex_type::ColorVertex> color = {};
-    std::vector<std::string> textures = {};
-
-    switch (_layout)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-    {
-        if (!_useVertexColor)
-        {
-            bool notUsingVertColor = false;
-            assert(notUsingVertColor);
-            (void)notUsingVertColor;
-        }
-
-        if (_diviNum > 6) { _diviNum = 6; }
-
-        const float X = 0.525731f;
-        const float Z = 0.850651f;
-        XMFLOAT3 pos[12] =
-        {
-            XMFLOAT3(-X, 0.0f, Z),  XMFLOAT3(X, 0.0f, Z),
-            XMFLOAT3(-X, 0.0f, -Z), XMFLOAT3(X, 0.0f, -Z),
-            XMFLOAT3(0.0f, Z, X),   XMFLOAT3(0.0f, Z, -X),
-            XMFLOAT3(0.0f, -Z, X),  XMFLOAT3(0.0f, -Z, -X),
-            XMFLOAT3(Z, X, 0.0f),   XMFLOAT3(-Z, X, 0.0f),
-            XMFLOAT3(Z, -X, 0.0f),  XMFLOAT3(-Z, -X, 0.0f)
-        };
-        UINT k[60] =
-        {
-            1,4,0,  4,9,0,  4,5,9,  8,5,4,  1,8,4,
-            1,10,8, 10,3,8, 8,3,5,  3,2,5,  3,7,2,
-            3,10,7, 10,6,7, 6,11,7, 6,0,11, 6,1,0,
-            10,1,6, 11,0,9, 2,11,9, 5,2,9,  11,2,7
-        };
-
-        color.resize(ARRAYSIZE(pos));
-        indeices.assign(&k[0], &k[60]);
-
-        for (UINT i = 0; i < ARRAYSIZE(pos); i++)
-        {
-            color[i].Position = pos[i];
-        }
-        for (UINT i = 0; i < _diviNum; i++)
-        {
-            SubDivide(_layout, &color, &indeices);
-        }
-
-        for (UINT i = 0; i < (UINT)color.size(); ++i)
-        {
-            XMVECTOR n = XMVector3Normalize(
-                XMLoadFloat3(&color[i].Position));
-            XMVECTOR p = _radius * n;
-
-            XMStoreFloat3(&color[i].Position, p);
-            XMStoreFloat3(&color[i].Normal, n);
-
-            float theta = atan2f(
-                color[i].Position.z, color[i].Position.x);
-
-            if (theta < 0.0f)
-            {
-                theta += DirectX::XM_2PI;
-            }
-
-            float phi = acosf(color[i].Position.y / _radius);
-            color[i].Color = _vertColor;
-            (void)phi;
-            (void)theta;
-        }
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &color;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TEX:
-    {
-        if (_useVertexColor)
-        {
-            bool usingVertColor = false;
-            assert(usingVertColor);
-            (void)usingVertColor;
-        }
-
-        if (_diviNum > 6) { _diviNum = 6; }
-
-        const float X = 0.525731f;
-        const float Z = 0.850651f;
-        XMFLOAT3 pos[12] =
-        {
-            XMFLOAT3(-X, 0.0f, Z),  XMFLOAT3(X, 0.0f, Z),
-            XMFLOAT3(-X, 0.0f, -Z), XMFLOAT3(X, 0.0f, -Z),
-            XMFLOAT3(0.0f, Z, X),   XMFLOAT3(0.0f, Z, -X),
-            XMFLOAT3(0.0f, -Z, X),  XMFLOAT3(0.0f, -Z, -X),
-            XMFLOAT3(Z, X, 0.0f),   XMFLOAT3(-Z, X, 0.0f),
-            XMFLOAT3(Z, -X, 0.0f),  XMFLOAT3(-Z, -X, 0.0f)
-        };
-        UINT k[60] =
-        {
-            1,4,0,  4,9,0,  4,5,9,  8,5,4,  1,8,4,
-            1,10,8, 10,3,8, 8,3,5,  3,2,5,  3,7,2,
-            3,10,7, 10,6,7, 6,11,7, 6,0,11, 6,1,0,
-            10,1,6, 11,0,9, 2,11,9, 5,2,9,  11,2,7
-        };
-
-        basic.resize(ARRAYSIZE(pos));
-        indeices.assign(&k[0], &k[60]);
-
-        for (UINT i = 0; i < ARRAYSIZE(pos); i++)
-        {
-            basic[i].Position = pos[i];
-        }
-        for (UINT i = 0; i < _diviNum; i++)
-        {
-            SubDivide(_layout, &basic, &indeices);
-        }
-
-        for (UINT i = 0; i < (UINT)basic.size(); ++i)
-        {
-            XMVECTOR n = XMVector3Normalize(
-                XMLoadFloat3(&basic[i].Position));
-            XMVECTOR p = _radius * n;
-
-            XMStoreFloat3(&basic[i].Position, p);
-            XMStoreFloat3(&basic[i].Normal, n);
-
-            float theta = atan2f(
-                basic[i].Position.z, basic[i].Position.x);
-
-            if (theta < 0.0f)
-            {
-                theta += DirectX::XM_2PI;
-            }
-
-            float phi = acosf(basic[i].Position.y / _radius);
-
-            basic[i].TexCoord.x = theta / DirectX::XM_2PI;
-            basic[i].TexCoord.y = phi / DirectX::XM_PI;
-        }
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &basic;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-    {
-        if (_useVertexColor)
-        {
-            bool usingVertColor = false;
-            assert(usingVertColor);
-            (void)usingVertColor;
-        }
-
-        if (_diviNum > 6) { _diviNum = 6; }
-
-        const float X = 0.525731f;
-        const float Z = 0.850651f;
-        XMFLOAT3 pos[12] =
-        {
-            XMFLOAT3(-X, 0.0f, Z),  XMFLOAT3(X, 0.0f, Z),
-            XMFLOAT3(-X, 0.0f, -Z), XMFLOAT3(X, 0.0f, -Z),
-            XMFLOAT3(0.0f, Z, X),   XMFLOAT3(0.0f, Z, -X),
-            XMFLOAT3(0.0f, -Z, X),  XMFLOAT3(0.0f, -Z, -X),
-            XMFLOAT3(Z, X, 0.0f),   XMFLOAT3(-Z, X, 0.0f),
-            XMFLOAT3(Z, -X, 0.0f),  XMFLOAT3(-Z, -X, 0.0f)
-        };
-        UINT k[60] =
-        {
-            1,4,0,  4,9,0,  4,5,9,  8,5,4,  1,8,4,
-            1,10,8, 10,3,8, 8,3,5,  3,2,5,  3,7,2,
-            3,10,7, 10,6,7, 6,11,7, 6,0,11, 6,1,0,
-            10,1,6, 11,0,9, 2,11,9, 5,2,9,  11,2,7
-        };
-
-        tangent.resize(ARRAYSIZE(pos));
-        indeices.assign(&k[0], &k[60]);
-
-        for (UINT i = 0; i < ARRAYSIZE(pos); i++)
-        {
-            tangent[i].Position = pos[i];
-        }
-        for (UINT i = 0; i < _diviNum; i++)
-        {
-            SubDivide(_layout, &tangent, &indeices);
-        }
-
-        for (UINT i = 0; i < (UINT)tangent.size(); ++i)
-        {
-            XMVECTOR n = XMVector3Normalize(
-                XMLoadFloat3(&tangent[i].Position));
-            XMVECTOR p = _radius * n;
-
-            XMStoreFloat3(&tangent[i].Position, p);
-            XMStoreFloat3(&tangent[i].Normal, n);
-
-            float theta = atan2f(
-                tangent[i].Position.z, tangent[i].Position.x);
-
-            if (theta < 0.0f)
-            {
-                theta += DirectX::XM_2PI;
-            }
-
-            float phi = acosf(tangent[i].Position.y / _radius);
-
-            tangent[i].TexCoord.x = theta / DirectX::XM_2PI;
-            tangent[i].TexCoord.y = phi / DirectX::XM_PI;
-
-            tangent[i].Tangent.x = -_radius * sinf(phi) * sinf(theta);
-            tangent[i].Tangent.y = 0.0f;
-            tangent[i].Tangent.z = +_radius * sinf(phi) * cosf(theta);
-
-            XMVECTOR T = XMLoadFloat3(&tangent[i].Tangent);
-            XMStoreFloat3(&tangent[i].Tangent, XMVector3Normalize(T));
-        }
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &tangent;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    default:
-        bool nullLayout = false;
-        assert(nullLayout);
-        (void)nullLayout;
-    }
-
-    return rsd;
-}
-
-RS_SUBMESH_DATA RSGeometryGenerator::CreateCylinder(
-    float _bottomRadius, float _topRadius, float _height,
-    UINT _sliceCount, UINT _stackCount,
-    LAYOUT_TYPE _layout, bool _useVertexColor,
-    DirectX::XMFLOAT4&& _vertColor, std::string&& _texColorName)
-{
-    RS_SUBMESH_DATA rsd = {};
-    SUBMESH_INFO si = {};
-    MATERIAL_INFO mi = {};
-    std::vector<UINT> indeices = {};
-    std::vector<vertex_type::BasicVertex> basic = {};
-    std::vector<vertex_type::TangentVertex> tangent = {};
-    std::vector<vertex_type::ColorVertex> color = {};
-    std::vector<std::string> textures = {};
-
-    switch (_layout)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-    {
-        float stackHeight = _height / _stackCount;
-        float radiusStep = (_topRadius - _bottomRadius) / _stackCount;
-        UINT ringCount = _stackCount + 1;
-
-        for (UINT i = 0; i < ringCount; i++)
-        {
-            float y = -0.5f * _height + i * stackHeight;
-            float r = _bottomRadius + i * radiusStep;
-            float dTheta = 2.0f * DirectX::XM_PI / _sliceCount;
-
-            for (UINT j = 0; j <= _sliceCount; j++)
-            {
-                vertex_type::ColorVertex vertex = {};
-
-                float c = cosf(j * dTheta);
-                float s = sinf(j * dTheta);
-
-                vertex.Color = _vertColor;
-                vertex.Position =
-                    DirectX::XMFLOAT3(r * c, y, r * s);
-                DirectX::XMFLOAT3 tangentV =
-                    DirectX::XMFLOAT3(-s, 0.f, c);
-
-                float dr = _bottomRadius - _topRadius;
-                XMFLOAT3 bitangent(dr * c, -_height, dr * s);
-                XMVECTOR T = DirectX::XMLoadFloat3(&tangentV);
-                XMVECTOR B = DirectX::XMLoadFloat3(&bitangent);
-                XMVECTOR N = DirectX::XMVector3Normalize(
-                    DirectX::XMVector3Cross(T, B));
-                DirectX::XMStoreFloat3(&vertex.Normal, N);
-
-                color.emplace_back(vertex);
-            }
-        }
-
-        UINT ringVertexCount = _sliceCount + 1;
-
-        for (UINT i = 0; i < _stackCount; ++i)
-        {
-            for (UINT j = 0; j < _sliceCount; ++j)
-            {
-                indeices.emplace_back(i * ringVertexCount + j);
-                indeices.emplace_back((i + 1) * ringVertexCount + j);
-                indeices.emplace_back((i + 1) * ringVertexCount + j + 1);
-
-                indeices.emplace_back(i * ringVertexCount + j);
-                indeices.emplace_back((i + 1) * ringVertexCount + j + 1);
-                indeices.emplace_back(i * ringVertexCount + j + 1);
-            }
-        }
-
-        BuildCylinderTopCap(_bottomRadius, _topRadius, _height,
-            _sliceCount, _stackCount, _layout,
-            &color, &indeices, _vertColor);
-        BuildCylinderBottomCap(_bottomRadius, _topRadius, _height,
-            _sliceCount, _stackCount, _layout,
-            &color, &indeices, _vertColor);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &color;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TEX:
-    {
-        float stackHeight = _height / _stackCount;
-        float radiusStep = (_topRadius - _bottomRadius) / _stackCount;
-        UINT ringCount = _stackCount + 1;
-
-        for (UINT i = 0; i < ringCount; i++)
-        {
-            float y = -0.5f * _height + i * stackHeight;
-            float r = _bottomRadius + i * radiusStep;
-            float dTheta = 2.0f * DirectX::XM_PI / _sliceCount;
-
-            for (UINT j = 0; j <= _sliceCount; j++)
-            {
-                vertex_type::BasicVertex vertex = {};
-
-                float c = cosf(j * dTheta);
-                float s = sinf(j * dTheta);
-
-                vertex.Position =
-                    DirectX::XMFLOAT3(r * c, y, r * s);
-                vertex.TexCoord.x = (float)j / _sliceCount;
-                vertex.TexCoord.y = 1.0f - (float)i / _stackCount;
-                DirectX::XMFLOAT3 tangentV =
-                    DirectX::XMFLOAT3(-s, 0.f, c);
-
-                float dr = _bottomRadius - _topRadius;
-                XMFLOAT3 bitangent(dr * c, -_height, dr * s);
-                XMVECTOR T = DirectX::XMLoadFloat3(&tangentV);
-                XMVECTOR B = DirectX::XMLoadFloat3(&bitangent);
-                XMVECTOR N = DirectX::XMVector3Normalize(
-                    DirectX::XMVector3Cross(T, B));
-                DirectX::XMStoreFloat3(&vertex.Normal, N);
-
-                basic.emplace_back(vertex);
-            }
-        }
-
-        UINT ringVertexCount = _sliceCount + 1;
-
-        for (UINT i = 0; i < _stackCount; ++i)
-        {
-            for (UINT j = 0; j < _sliceCount; ++j)
-            {
-                indeices.emplace_back(i * ringVertexCount + j);
-                indeices.emplace_back((i + 1) * ringVertexCount + j);
-                indeices.emplace_back((i + 1) * ringVertexCount + j + 1);
-
-                indeices.emplace_back(i * ringVertexCount + j);
-                indeices.emplace_back((i + 1) * ringVertexCount + j + 1);
-                indeices.emplace_back(i * ringVertexCount + j + 1);
-            }
-        }
-
-        BuildCylinderTopCap(_bottomRadius, _topRadius, _height,
-            _sliceCount, _stackCount, _layout,
-            &basic, &indeices, _vertColor);
-        BuildCylinderBottomCap(_bottomRadius, _topRadius, _height,
-            _sliceCount, _stackCount, _layout,
-            &basic, &indeices, _vertColor);
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &basic;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-    {
-        float stackHeight = _height / _stackCount;
-        float radiusStep = (_topRadius - _bottomRadius) / _stackCount;
-        UINT ringCount = _stackCount + 1;
-
-        for (UINT i = 0; i < ringCount; i++)
-        {
-            float y = -0.5f * _height + i * stackHeight;
-            float r = _bottomRadius + i * radiusStep;
-            float dTheta = 2.0f * DirectX::XM_PI / _sliceCount;
-
-            for (UINT j = 0; j <= _sliceCount; j++)
-            {
-                vertex_type::TangentVertex vertex = {};
-
-                float c = cosf(j * dTheta);
-                float s = sinf(j * dTheta);
-
-                vertex.Position = DirectX::XMFLOAT3(r * c, y, r * s);
-                vertex.TexCoord.x = (float)j / _sliceCount;
-                vertex.TexCoord.y = 1.0f - (float)i / _stackCount;
-                vertex.Tangent = DirectX::XMFLOAT3(-s, 0.f, c);
-
-                float dr = _bottomRadius - _topRadius;
-                XMFLOAT3 bitangent(dr * c, -_height, dr * s);
-                XMVECTOR T = DirectX::XMLoadFloat3(&vertex.Tangent);
-                XMVECTOR B = DirectX::XMLoadFloat3(&bitangent);
-                XMVECTOR N = DirectX::XMVector3Normalize(
-                    DirectX::XMVector3Cross(T, B));
-                DirectX::XMStoreFloat3(&vertex.Normal, N);
-
-                tangent.emplace_back(vertex);
-            }
-        }
-
-        UINT ringVertexCount = _sliceCount + 1;
-
-        for (UINT i = 0; i < _stackCount; ++i)
-        {
-            for (UINT j = 0; j < _sliceCount; ++j)
-            {
-                indeices.emplace_back(i * ringVertexCount + j);
-                indeices.emplace_back((i + 1) * ringVertexCount + j);
-                indeices.emplace_back((i + 1) * ringVertexCount + j + 1);
-
-                indeices.emplace_back(i * ringVertexCount + j);
-                indeices.emplace_back((i + 1) * ringVertexCount + j + 1);
-                indeices.emplace_back(i * ringVertexCount + j + 1);
-            }
-        }
-
-        BuildCylinderTopCap(_bottomRadius, _topRadius, _height,
-            _sliceCount, _stackCount, _layout,
-            &tangent, &indeices, _vertColor);
-        BuildCylinderBottomCap(_bottomRadius, _topRadius, _height,
-            _sliceCount, _stackCount, _layout,
-            &tangent, &indeices, _vertColor);
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &tangent;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    default:
-        bool nullLayout = false;
-        assert(nullLayout);
-        (void)nullLayout;
-    }
-
-    return rsd;
-}
-
-RS_SUBMESH_DATA RSGeometryGenerator::CreateGrid(
-    float _width, float _depth, UINT _rowCount, UINT _colCount,
-    LAYOUT_TYPE _layout, bool _useVertexColor,
-    DirectX::XMFLOAT4&& _vertColor, std::string&& _texColorName)
-{
-    RS_SUBMESH_DATA rsd = {};
-    SUBMESH_INFO si = {};
-    MATERIAL_INFO mi = {};
-    std::vector<UINT> indeices = {};
-    std::vector<vertex_type::BasicVertex> basic = {};
-    std::vector<vertex_type::TangentVertex> tangent = {};
-    std::vector<vertex_type::ColorVertex> color = {};
-    std::vector<std::string> textures = {};
-
-    switch (_layout)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-    {
-        UINT vertexCount = _rowCount * _colCount;
-        UINT faceCount = (_rowCount - 1) * (_colCount - 1) * 2;
-        float halfWidth = 0.5f * _width;
-        float halfDepth = 0.5f * _depth;
-        float dx = _width / (_colCount - 1);
-        float dz = _depth / (_rowCount - 1);
-        float du = 1.f / (_colCount - 1);
-        float dv = 1.f / (_rowCount - 1);
-        (void)du;
-        (void)dv;
-
-        color.resize(vertexCount);
-        for (UINT i = 0; i < _rowCount; i++)
-        {
-            float z = halfDepth - i * dz;
-            for (UINT j = 0; j < _colCount; j++)
-            {
-                float x = -halfWidth + j * dx;
-
-                color[static_cast<std::vector<vertex_type::ColorVertex, std::allocator<vertex_type::ColorVertex>>::size_type>(i) * _colCount + j].Position =
-                    DirectX::XMFLOAT3(x, 0.f, z);
-                color[static_cast<std::vector<vertex_type::ColorVertex, std::allocator<vertex_type::ColorVertex>>::size_type>(i) * _colCount + j].Normal =
-                    DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-                color[static_cast<std::vector<vertex_type::ColorVertex, std::allocator<vertex_type::ColorVertex>>::size_type>(i) * _colCount + j].Color = _vertColor;
-            }
-        }
-
-        indeices.resize(static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(faceCount) * 3);
-
-        UINT k = 0;
-        for (UINT i = 0; i < _rowCount - 1; i++)
-        {
-            for (UINT j = 0; j < _colCount - 1; j++)
-            {
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k)] = i * _colCount + j;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 1] = i * _colCount + j + 1;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 2] = (i + 1) * _colCount + j;
-
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 3] = (i + 1) * _colCount + j;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 4] = i * _colCount + j + 1;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 5] = (i + 1) * _colCount + j + 1;
-
-                k += 6;
-            }
-        }
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &color;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TEX:
-    {
-        UINT vertexCount = _rowCount * _colCount;
-        UINT faceCount = (_rowCount - 1) * (_colCount - 1) * 2;
-        float halfWidth = 0.5f * _width;
-        float halfDepth = 0.5f * _depth;
-        float dx = _width / (_colCount - 1);
-        float dz = _depth / (_rowCount - 1);
-        float du = 1.f / (_colCount - 1);
-        float dv = 1.f / (_rowCount - 1);
-
-        basic.resize(vertexCount);
-        for (UINT i = 0; i < _rowCount; i++)
-        {
-            float z = halfDepth - i * dz;
-            for (UINT j = 0; j < _colCount; j++)
-            {
-                float x = -halfWidth + j * dx;
-
-                basic[static_cast<std::vector<vertex_type::BasicVertex, std::allocator<vertex_type::BasicVertex>>::size_type>(i) * _colCount + j].Position =
-                    DirectX::XMFLOAT3(x, 0.f, z);
-                basic[static_cast<std::vector<vertex_type::BasicVertex, std::allocator<vertex_type::BasicVertex>>::size_type>(i) * _colCount + j].Normal =
-                    DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-                basic[static_cast<std::vector<vertex_type::BasicVertex, std::allocator<vertex_type::BasicVertex>>::size_type>(i) * _colCount + j].TexCoord.x = j * du;
-                basic[static_cast<std::vector<vertex_type::BasicVertex, std::allocator<vertex_type::BasicVertex>>::size_type>(i) * _colCount + j].TexCoord.y = i * dv;
-            }
-        }
-
-        indeices.resize(static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(faceCount) * 3);
-
-        UINT k = 0;
-        for (UINT i = 0; i < _rowCount - 1; i++)
-        {
-            for (UINT j = 0; j < _colCount - 1; j++)
-            {
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k)] = i * _colCount + j;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 1] = i * _colCount + j + 1;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 2] = (i + 1) * _colCount + j;
-
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 3] = (i + 1) * _colCount + j;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 4] = i * _colCount + j + 1;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 5] = (i + 1) * _colCount + j + 1;
-
-                k += 6;
-            }
-        }
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &basic;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-    {
-        UINT vertexCount = _rowCount * _colCount;
-        UINT faceCount = (_rowCount - 1) * (_colCount - 1) * 2;
-        float halfWidth = 0.5f * _width;
-        float halfDepth = 0.5f * _depth;
-        float dx = _width / (_colCount - 1);
-        float dz = _depth / (_rowCount - 1);
-        float du = 1.f / (_colCount - 1);
-        float dv = 1.f / (_rowCount - 1);
-
-        tangent.resize(vertexCount);
-        for (UINT i = 0; i < _rowCount; i++)
-        {
-            float z = halfDepth - i * dz;
-            for (UINT j = 0; j < _colCount; j++)
-            {
-                float x = -halfWidth + j * dx;
-
-                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].Position =
-                    DirectX::XMFLOAT3(x, 0.f, z);
-                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].Normal =
-                    DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].Tangent =
-                    DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-
-                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].TexCoord.x = j * du;
-                tangent[static_cast<std::vector<vertex_type::TangentVertex, std::allocator<vertex_type::TangentVertex>>::size_type>(i) * _colCount + j].TexCoord.y = i * dv;
-            }
-        }
-
-        indeices.resize(static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(faceCount) * 3);
-
-        UINT k = 0;
-        for (UINT i = 0; i < _rowCount - 1; i++)
-        {
-            for (UINT j = 0; j < _colCount - 1; j++)
-            {
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k)] = i * _colCount + j;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 1] = i * _colCount + j + 1;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 2] = (i + 1) * _colCount + j;
-
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 3] = (i + 1) * _colCount + j;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 4] = i * _colCount + j + 1;
-                indeices[static_cast<std::vector<UINT, std::allocator<UINT>>::size_type>(k) + 5] = (i + 1) * _colCount + j + 1;
-
-                k += 6;
-            }
-        }
-
-        textures.emplace_back(_texColorName);
-
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.VerteicesPtr = &tangent;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-    }
-
-    default:
-        bool nullLayout = false;
-        assert(nullLayout);
-        (void)nullLayout;
-    }
-
-    return rsd;
-}
-
-RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
-    LAYOUT_TYPE _layout, std::string&& _texPath)
-{
-    static SUBMESH_INFO si = {};
-    static MATERIAL_INFO mi = {};
-    static std::vector<UINT> indeices = {};
-    static std::vector<vertex_type::BasicVertex> basic = {};
-    static std::vector<vertex_type::TangentVertex> tangent = {};
-    static std::vector<std::string> textures = {};
-
-    if (!g_SpriteRectHasBuilt)
-    {
-        basic.resize(4);
-        tangent.resize(4);
-        indeices.resize(6);
-
-        basic[0].Position = { -0.5f, -0.5f, 0.f };
-        basic[0].Normal = { 0.0f, 0.0f, -1.0f };
-        basic[0].TexCoord = { 0.0f, 1.0f };
-        basic[1].Position = { -0.5f, +0.5f, 0.f };
-        basic[1].Normal = { 0.0f, 0.0f, -1.0f };
-        basic[1].TexCoord = { 0.0f, 0.0f };
-        basic[2].Position = { +0.5f, +0.5f, 0.f };
-        basic[2].Normal = { 0.0f, 0.0f, -1.0f };
-        basic[2].TexCoord = { 1.0f, 0.0f };
-        basic[3].Position = { +0.5f, -0.5f, 0.f };
-        basic[3].Normal = { 0.0f, 0.0f, -1.0f };
-        basic[3].TexCoord = { 1.0f, 1.0f };
-        tangent[0].Position = basic[0].Position;
-        tangent[0].Normal = basic[0].Normal;
-        tangent[0].Tangent = { 1.0f, 0.0f, 0.0f };
-        tangent[0].TexCoord = basic[0].TexCoord;
-        tangent[1].Position = basic[1].Position;
-        tangent[1].Normal = basic[1].Normal;
-        tangent[1].Tangent = { 1.0f, 0.0f, 0.0f };
-        tangent[1].TexCoord = basic[1].TexCoord;
-        tangent[2].Position = basic[2].Position;
-        tangent[2].Normal = basic[2].Normal;
-        tangent[2].Tangent = { 1.0f, 0.0f, 0.0f };
-        tangent[2].TexCoord = basic[2].TexCoord;
-        tangent[3].Position = basic[3].Position;
-        tangent[3].Normal = basic[3].Normal;
-        tangent[3].Tangent = { 1.0f, 0.0f, 0.0f };
-        tangent[3].TexCoord = basic[3].TexCoord;
-        indeices[0] = 0; indeices[1] = 1; indeices[2] = 2;
-        indeices[3] = 0; indeices[4] = 2; indeices[5] = 3;
-
-        bool nullLayout = false;
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.IndeicesPtr = &indeices;
-        switch (_layout)
-        {
-        case LAYOUT_TYPE::NORMAL_TEX:
-            si.VerteicesPtr = &basic;
-            break;
-        case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-            si.VerteicesPtr = &tangent;
-            break;
-        default:
-            assert(nullLayout);
-            break;
-        }
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&g_SpriteData, &si, _layout);
-        g_SpriteRectHasBuilt = true;
-        (void)nullLayout;
-    }
-
-    static std::wstring wstr = L"";
-    static std::string name = "";
-    static HRESULT hr = S_OK;
-    ID3D11ShaderResourceView* srv = nullptr;
-    wstr = std::wstring(_texPath.begin(), _texPath.end());
-    wstr = L".\\Assets\\Textures\\" + wstr;
-    if (_texPath.find(".dds") != std::string::npos ||
-        _texPath.find(".DDS") != std::string::npos)
-    {
-        hr = DirectX::CreateDDSTextureFromFile(
-            mDevicesPtr->GetDevice(),
-            wstr.c_str(), nullptr, &srv);
-        if (SUCCEEDED(hr))
-        {
-            name = _texPath;
-            mTexManagerPtr->AddMeshSrv(name, srv);
-            g_SpriteData.Textures[0] = name;
-        }
-        else
-        {
-            bool texture_load_fail = false;
-            assert(texture_load_fail);
-            (void)texture_load_fail;
-        }
-    }
-    else
-    {
-        hr = DirectX::CreateWICTextureFromFile(
-            mDevicesPtr->GetDevice(),
-            wstr.c_str(), nullptr, &srv);
-        if (SUCCEEDED(hr))
-        {
-            name = _texPath;
-            mTexManagerPtr->AddMeshSrv(name, srv);
-            g_SpriteData.Textures[0] = name;
-        }
-        else
-        {
-            bool texture_load_fail = false;
-            assert(texture_load_fail);
-            (void)texture_load_fail;
-        }
-    }
-
-    return g_SpriteData;
-}
-
-RS_SUBMESH_DATA RSGeometryGenerator::CreateSpriteRect(
-    LAYOUT_TYPE _layout, std::string& _texPath)
-{
-    static SUBMESH_INFO si = {};
-    static MATERIAL_INFO mi = {};
-    static std::vector<UINT> indeices = {};
-    static std::vector<vertex_type::BasicVertex> basic = {};
-    static std::vector<vertex_type::TangentVertex> tangent = {};
-    static std::vector<std::string> textures = {};
-
-    if (!g_SpriteRectHasBuilt)
-    {
-        basic.resize(4);
-        tangent.resize(4);
-        indeices.resize(6);
-
-        basic[0].Position = { -0.5f, -0.5f, 0.f };
-        basic[0].Normal = { 0.0f, 0.0f, -1.0f };
-        basic[0].TexCoord = { 0.0f, 1.0f };
-        basic[1].Position = { -0.5f, +0.5f, 0.f };
-        basic[1].Normal = { 0.0f, 0.0f, -1.0f };
-        basic[1].TexCoord = { 0.0f, 0.0f };
-        basic[2].Position = { +0.5f, +0.5f, 0.f };
-        basic[2].Normal = { 0.0f, 0.0f, -1.0f };
-        basic[2].TexCoord = { 1.0f, 0.0f };
-        basic[3].Position = { +0.5f, -0.5f, 0.f };
-        basic[3].Normal = { 0.0f, 0.0f, -1.0f };
-        basic[3].TexCoord = { 1.0f, 1.0f };
-        tangent[0].Position = basic[0].Position;
-        tangent[0].Normal = basic[0].Normal;
-        tangent[0].Tangent = { 1.0f, 0.0f, 0.0f };
-        tangent[0].TexCoord = basic[0].TexCoord;
-        tangent[1].Position = basic[1].Position;
-        tangent[1].Normal = basic[1].Normal;
-        tangent[1].Tangent = { 1.0f, 0.0f, 0.0f };
-        tangent[1].TexCoord = basic[1].TexCoord;
-        tangent[2].Position = basic[2].Position;
-        tangent[2].Normal = basic[2].Normal;
-        tangent[2].Tangent = { 1.0f, 0.0f, 0.0f };
-        tangent[2].TexCoord = basic[2].TexCoord;
-        tangent[3].Position = basic[3].Position;
-        tangent[3].Normal = basic[3].Normal;
-        tangent[3].Tangent = { 1.0f, 0.0f, 0.0f };
-        tangent[3].TexCoord = basic[3].TexCoord;
-        indeices[0] = 0; indeices[1] = 1; indeices[2] = 2;
-        indeices[3] = 0; indeices[4] = 2; indeices[5] = 3;
-
-        bool nullLayout = false;
-        si.TopologyType = TOPOLOGY_TYPE::TRIANGLELIST;
-        si.IndeicesPtr = &indeices;
-        switch (_layout)
-        {
-        case LAYOUT_TYPE::NORMAL_TEX:
-            si.VerteicesPtr = &basic;
-            break;
-        case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-            si.VerteicesPtr = &tangent;
-            break;
-        default:
-            assert(nullLayout);
-            break;
-        }
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&g_SpriteData, &si, _layout);
-        g_SpriteRectHasBuilt = true;
-        (void)nullLayout;
-    }
-
-    static std::wstring wstr = L"";
-    static std::string name = "";
-    static HRESULT hr = S_OK;
-    ID3D11ShaderResourceView* srv = nullptr;
-    wstr = std::wstring(_texPath.begin(), _texPath.end());
-    wstr = L".\\Assets\\Textures\\" + wstr;
-    if (_texPath.find(".dds") != std::string::npos ||
-        _texPath.find(".DDS") != std::string::npos)
-    {
-        hr = DirectX::CreateDDSTextureFromFile(
-            mDevicesPtr->GetDevice(),
-            wstr.c_str(), nullptr, &srv);
-        if (SUCCEEDED(hr))
-        {
-            name = _texPath;
-            mTexManagerPtr->AddMeshSrv(name, srv);
-            g_SpriteData.Textures[0] = name;
-        }
-        else
-        {
-            bool texture_load_fail = false;
-            assert(texture_load_fail);
-            (void)texture_load_fail;
-        }
-    }
-    else
-    {
-        hr = DirectX::CreateWICTextureFromFile(
-            mDevicesPtr->GetDevice(),
-            wstr.c_str(), nullptr, &srv);
-        if (SUCCEEDED(hr))
-        {
-            name = _texPath;
-            mTexManagerPtr->AddMeshSrv(name, srv);
-            g_SpriteData.Textures[0] = name;
-        }
-        else
-        {
-            bool texture_load_fail = false;
-            assert(texture_load_fail);
-            (void)texture_load_fail;
-        }
-    }
-
-    return g_SpriteData;
-}
-
-void RSGeometryGenerator::SubDivide(LAYOUT_TYPE _layout,
-    void* _vertexVec, std::vector<UINT>* _indexVec)
-{
-    switch (_layout)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-    {
-        std::vector<vertex_type::ColorVertex>* _colorVec =
-            (std::vector<vertex_type::ColorVertex>*)_vertexVec;
-        std::vector<vertex_type::ColorVertex> colorCopy = *_colorVec;
-        std::vector<UINT> indexCopy = *_indexVec;
-
-        _colorVec->resize(0);
-        _indexVec->resize(0);
-
-        UINT numTris = (UINT)indexCopy.size() / 3;
-        for (UINT i = 0; i < numTris; i++)
-        {
-            vertex_type::ColorVertex v0 =
-                colorCopy[indexCopy[i * 3 + 0]];
-            vertex_type::ColorVertex v1 =
-                colorCopy[indexCopy[i * 3 + 1]];
-            vertex_type::ColorVertex v2 =
-                colorCopy[indexCopy[i * 3 + 2]];
-
-            vertex_type::ColorVertex m0 = ColorMidPoint(v0, v1);
-            vertex_type::ColorVertex m1 = ColorMidPoint(v1, v2);
-            vertex_type::ColorVertex m2 = ColorMidPoint(v0, v2);
-
-            _colorVec->emplace_back(v0);
-            _colorVec->emplace_back(v1);
-            _colorVec->emplace_back(v2);
-            _colorVec->emplace_back(m0);
-            _colorVec->emplace_back(m1);
-            _colorVec->emplace_back(m2);
-            _indexVec->emplace_back(i * 6 + 0);
-            _indexVec->emplace_back(i * 6 + 3);
-            _indexVec->emplace_back(i * 6 + 5);
-            _indexVec->emplace_back(i * 6 + 3);
-            _indexVec->emplace_back(i * 6 + 4);
-            _indexVec->emplace_back(i * 6 + 5);
-            _indexVec->emplace_back(i * 6 + 5);
-            _indexVec->emplace_back(i * 6 + 4);
-            _indexVec->emplace_back(i * 6 + 2);
-            _indexVec->emplace_back(i * 6 + 3);
-            _indexVec->emplace_back(i * 6 + 1);
-            _indexVec->emplace_back(i * 6 + 4);
-        }
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TEX:
-    {
-        std::vector<vertex_type::BasicVertex>* _basicVec =
-            (std::vector<vertex_type::BasicVertex>*)_vertexVec;
-        std::vector<vertex_type::BasicVertex> basicCopy = *_basicVec;
-        std::vector<UINT> indexCopy = *_indexVec;
-
-        _basicVec->resize(0);
-        _indexVec->resize(0);
-
-        UINT numTris = (UINT)indexCopy.size() / 3;
-        for (UINT i = 0; i < numTris; i++)
-        {
-            vertex_type::BasicVertex v0 =
-                basicCopy[indexCopy[i * 3 + 0]];
-            vertex_type::BasicVertex v1 =
-                basicCopy[indexCopy[i * 3 + 1]];
-            vertex_type::BasicVertex v2 =
-                basicCopy[indexCopy[i * 3 + 2]];
-
-            vertex_type::BasicVertex m0 = BasicMidPoint(v0, v1);
-            vertex_type::BasicVertex m1 = BasicMidPoint(v1, v2);
-            vertex_type::BasicVertex m2 = BasicMidPoint(v0, v2);
-
-            _basicVec->emplace_back(v0);
-            _basicVec->emplace_back(v1);
-            _basicVec->emplace_back(v2);
-            _basicVec->emplace_back(m0);
-            _basicVec->emplace_back(m1);
-            _basicVec->emplace_back(m2);
-            _indexVec->emplace_back(i * 6 + 0);
-            _indexVec->emplace_back(i * 6 + 3);
-            _indexVec->emplace_back(i * 6 + 5);
-            _indexVec->emplace_back(i * 6 + 3);
-            _indexVec->emplace_back(i * 6 + 4);
-            _indexVec->emplace_back(i * 6 + 5);
-            _indexVec->emplace_back(i * 6 + 5);
-            _indexVec->emplace_back(i * 6 + 4);
-            _indexVec->emplace_back(i * 6 + 2);
-            _indexVec->emplace_back(i * 6 + 3);
-            _indexVec->emplace_back(i * 6 + 1);
-            _indexVec->emplace_back(i * 6 + 4);
-        }
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-    {
-        std::vector<vertex_type::TangentVertex>* _tangeVec =
-            (std::vector<vertex_type::TangentVertex>*)_vertexVec;
-        std::vector<vertex_type::TangentVertex> tangeCopy = *_tangeVec;
-        std::vector<UINT> indexCopy = *_indexVec;
-
-        _tangeVec->resize(0);
-        _indexVec->resize(0);
-
-        UINT numTris = (UINT)indexCopy.size() / 3;
-        for (UINT i = 0; i < numTris; i++)
-        {
-            vertex_type::TangentVertex v0 =
-                tangeCopy[indexCopy[i * 3 + 0]];
-            vertex_type::TangentVertex v1 =
-                tangeCopy[indexCopy[i * 3 + 1]];
-            vertex_type::TangentVertex v2 =
-                tangeCopy[indexCopy[i * 3 + 2]];
-
-            vertex_type::TangentVertex m0 = TangentMidPoint(v0, v1);
-            vertex_type::TangentVertex m1 = TangentMidPoint(v1, v2);
-            vertex_type::TangentVertex m2 = TangentMidPoint(v0, v2);
-
-            _tangeVec->emplace_back(v0);
-            _tangeVec->emplace_back(v1);
-            _tangeVec->emplace_back(v2);
-            _tangeVec->emplace_back(m0);
-            _tangeVec->emplace_back(m1);
-            _tangeVec->emplace_back(m2);
-            _indexVec->emplace_back(i * 6 + 0);
-            _indexVec->emplace_back(i * 6 + 3);
-            _indexVec->emplace_back(i * 6 + 5);
-            _indexVec->emplace_back(i * 6 + 3);
-            _indexVec->emplace_back(i * 6 + 4);
-            _indexVec->emplace_back(i * 6 + 5);
-            _indexVec->emplace_back(i * 6 + 5);
-            _indexVec->emplace_back(i * 6 + 4);
-            _indexVec->emplace_back(i * 6 + 2);
-            _indexVec->emplace_back(i * 6 + 3);
-            _indexVec->emplace_back(i * 6 + 1);
-            _indexVec->emplace_back(i * 6 + 4);
-        }
-
-        break;
-    }
-
-    default:
-        bool nullLayout = false;
-        assert(nullLayout);
-        (void)nullLayout;
-    }
-}
-
-vertex_type::BasicVertex RSGeometryGenerator::BasicMidPoint(
-    const vertex_type::BasicVertex& _v0,
-    const vertex_type::BasicVertex& _v1)
-{
-    DirectX::XMVECTOR p0 = DirectX::XMLoadFloat3(&_v0.Position);
-    DirectX::XMVECTOR p1 = DirectX::XMLoadFloat3(&_v1.Position);
-    DirectX::XMVECTOR n0 = DirectX::XMLoadFloat3(&_v0.Normal);
-    DirectX::XMVECTOR n1 = DirectX::XMLoadFloat3(&_v1.Normal);
-    DirectX::XMVECTOR tex0 = DirectX::XMLoadFloat2(&_v0.TexCoord);
-    DirectX::XMVECTOR tex1 = DirectX::XMLoadFloat2(&_v1.TexCoord);
-    DirectX::XMVECTOR pos = 0.5f * (p0 + p1);
-    DirectX::XMVECTOR normal =
-        DirectX::XMVector3Normalize(0.5f * (n0 + n1));
-    DirectX::XMVECTOR tex = 0.5f * (tex0 + tex1);
-
-    vertex_type::BasicVertex v = {};
-    DirectX::XMStoreFloat3(&v.Position, pos);
-    DirectX::XMStoreFloat3(&v.Normal, normal);
-    DirectX::XMStoreFloat2(&v.TexCoord, tex);
-
-    return v;
-}
-
-vertex_type::TangentVertex RSGeometryGenerator::TangentMidPoint(
-    const vertex_type::TangentVertex& _v0,
-    const vertex_type::TangentVertex& _v1)
-{
-    DirectX::XMVECTOR p0 = DirectX::XMLoadFloat3(&_v0.Position);
-    DirectX::XMVECTOR p1 = DirectX::XMLoadFloat3(&_v1.Position);
-    DirectX::XMVECTOR n0 = DirectX::XMLoadFloat3(&_v0.Normal);
-    DirectX::XMVECTOR n1 = DirectX::XMLoadFloat3(&_v1.Normal);
-    DirectX::XMVECTOR tan0 = DirectX::XMLoadFloat3(&_v0.Tangent);
-    DirectX::XMVECTOR tan1 = DirectX::XMLoadFloat3(&_v1.Tangent);
-    DirectX::XMVECTOR tex0 = DirectX::XMLoadFloat2(&_v0.TexCoord);
-    DirectX::XMVECTOR tex1 = DirectX::XMLoadFloat2(&_v1.TexCoord);
-    DirectX::XMVECTOR pos = 0.5f * (p0 + p1);
-    DirectX::XMVECTOR normal =
-        DirectX::XMVector3Normalize(0.5f * (n0 + n1));
-    DirectX::XMVECTOR tangent =
-        DirectX::XMVector3Normalize(0.5f * (tan0 + tan1));
-    DirectX::XMVECTOR tex = 0.5f * (tex0 + tex1);
-
-    vertex_type::TangentVertex v = {};
-    DirectX::XMStoreFloat3(&v.Position, pos);
-    DirectX::XMStoreFloat3(&v.Normal, normal);
-    DirectX::XMStoreFloat3(&v.Tangent, tangent);
-    DirectX::XMStoreFloat2(&v.TexCoord, tex);
-
-    return v;
-}
-
-vertex_type::ColorVertex RSGeometryGenerator::ColorMidPoint(
-    const vertex_type::ColorVertex& _v0,
-    const vertex_type::ColorVertex& _v1)
-{
-    DirectX::XMVECTOR p0 = DirectX::XMLoadFloat3(&_v0.Position);
-    DirectX::XMVECTOR p1 = DirectX::XMLoadFloat3(&_v1.Position);
-    DirectX::XMVECTOR n0 = DirectX::XMLoadFloat3(&_v0.Normal);
-    DirectX::XMVECTOR n1 = DirectX::XMLoadFloat3(&_v1.Normal);
-    DirectX::XMVECTOR col0 = DirectX::XMLoadFloat4(&_v0.Color);
-    DirectX::XMVECTOR col1 = DirectX::XMLoadFloat4(&_v1.Color);
-    DirectX::XMVECTOR pos = 0.5f * (p0 + p1);
-    DirectX::XMVECTOR color = 0.5f * (col0 + col1);
-    DirectX::XMVECTOR normal =
-        DirectX::XMVector3Normalize(0.5f * (n0 + n1));
-
-    vertex_type::ColorVertex v = {};
-    DirectX::XMStoreFloat3(&v.Position, pos);
-    DirectX::XMStoreFloat3(&v.Normal, normal);
-    DirectX::XMStoreFloat4(&v.Color, color);
-
-    return v;
-}
-
-void RSGeometryGenerator::BuildCylinderTopCap(
-    float _bottomRadius, float _topRadius, float _height,
-    UINT _sliceCount, UINT _stackCount,
-    LAYOUT_TYPE _layout, void* _vertexVec,
-    std::vector<UINT>* _indexVec,
-    DirectX::XMFLOAT4& _vertColor)
-{
-    switch (_layout)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-    {
-        std::vector<vertex_type::ColorVertex>* _colorVec =
-            (std::vector<vertex_type::ColorVertex>*)_vertexVec;
-
-        UINT baseIndex = (UINT)_colorVec->size();
-        float y = 0.5f * _height;
-        float dTheta = 2.f * DirectX::XM_PI / _sliceCount;
-
-        for (UINT i = 0; i <= _sliceCount; i++)
-        {
-            float x = _topRadius * cosf(i * dTheta);
-            float z = _topRadius * sinf(i * dTheta);
-            float u = x / _height + 0.5f;
-            float v = z / _height + 0.5f;
-            (void)u; (void)v;
-
-            vertex_type::ColorVertex vert =
-            {
-                { x, y, z }, { 0.0f, 1.0f, 0.0f }, _vertColor
-            };
-            _colorVec->emplace_back(vert);
-        }
-
-        vertex_type::ColorVertex vert =
-        {
-            { 0.0f, y, 0.0f }, { 0.0f, 1.0f, 0.0f }, _vertColor
-        };
-        _colorVec->emplace_back(vert);
-
-        UINT centerIndex = (UINT)_colorVec->size() - 1;
-
-        for (UINT i = 0; i < _sliceCount; i++)
-        {
-            _indexVec->emplace_back(centerIndex);
-            _indexVec->emplace_back(baseIndex + i + 1);
-            _indexVec->emplace_back(baseIndex + i);
-        }
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TEX:
-    {
-        std::vector<vertex_type::BasicVertex>* _basicVec =
-            (std::vector<vertex_type::BasicVertex>*)_vertexVec;
-
-        UINT baseIndex = (UINT)_basicVec->size();
-        float y = 0.5f * _height;
-        float dTheta = 2.f * DirectX::XM_PI / _sliceCount;
-
-        for (UINT i = 0; i <= _sliceCount; i++)
-        {
-            float x = _topRadius * cosf(i * dTheta);
-            float z = _topRadius * sinf(i * dTheta);
-            float u = x / _height + 0.5f;
-            float v = z / _height + 0.5f;
-
-            vertex_type::BasicVertex vert =
-            {
-                { x, y, z }, { 0.0f, 1.0f, 0.0f }, { u, v }
-            };
-            _basicVec->emplace_back(vert);
-        }
-
-        vertex_type::BasicVertex vert =
-        {
-            { 0.0f, y, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.5f, 0.5f }
-        };
-        _basicVec->emplace_back(vert);
-
-        UINT centerIndex = (UINT)_basicVec->size() - 1;
-
-        for (UINT i = 0; i < _sliceCount; i++)
-        {
-            _indexVec->emplace_back(centerIndex);
-            _indexVec->emplace_back(baseIndex + i + 1);
-            _indexVec->emplace_back(baseIndex + i);
-        }
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-    {
-        std::vector<vertex_type::TangentVertex>* _tangeVec =
-            (std::vector<vertex_type::TangentVertex>*)_vertexVec;
-
-        UINT baseIndex = (UINT)_tangeVec->size();
-        float y = 0.5f * _height;
-        float dTheta = 2.f * DirectX::XM_PI / _sliceCount;
-
-        for (UINT i = 0; i <= _sliceCount; i++)
-        {
-            float x = _topRadius * cosf(i * dTheta);
-            float z = _topRadius * sinf(i * dTheta);
-            float u = x / _height + 0.5f;
-            float v = z / _height + 0.5f;
-
-            vertex_type::TangentVertex vert =
-            {
-                { x, y, z }, { 0.0f, 1.0f, 0.0f },
-                { 1.0f, 0.0f, 0.0f }, { u, v }
-            };
-            _tangeVec->emplace_back(vert);
-        }
-
-        vertex_type::TangentVertex vert =
-        {
-            { 0.0f, y, 0.0f }, { 0.0f, 1.0f, 0.0f },
-            { 1.0f, 0.0f, 0.0f }, { 0.5f, 0.5f }
-        };
-        _tangeVec->emplace_back(vert);
-
-        UINT centerIndex = (UINT)_tangeVec->size() - 1;
-
-        for (UINT i = 0; i < _sliceCount; i++)
-        {
-            _indexVec->emplace_back(centerIndex);
-            _indexVec->emplace_back(baseIndex + i + 1);
-            _indexVec->emplace_back(baseIndex + i);
-        }
-
-        break;
-    }
-
-    default:
-        bool nullLayout = false;
-        assert(nullLayout);
-        (void)nullLayout;
-    }
-}
-
-void RSGeometryGenerator::BuildCylinderBottomCap(
-    float _bottomRadius, float _topRadius, float _height,
-    UINT _sliceCount, UINT _stackCount,
-    LAYOUT_TYPE _layout, void* _vertexVec,
-    std::vector<UINT>* _indexVec,
-    DirectX::XMFLOAT4& _vertColor)
-{
-    switch (_layout)
-    {
-    case LAYOUT_TYPE::NORMAL_COLOR:
-    {
-        std::vector<vertex_type::ColorVertex>* _colorVec =
-            (std::vector<vertex_type::ColorVertex>*)_vertexVec;
-
-        UINT baseIndex = (UINT)_colorVec->size();
-        float y = -0.5f * _height;
-        float dTheta = 2.f * DirectX::XM_PI / _sliceCount;
-
-        for (UINT i = 0; i <= _sliceCount; i++)
-        {
-            float x = _bottomRadius * cosf(i * dTheta);
-            float z = _bottomRadius * sinf(i * dTheta);
-            float u = x / _height + 0.5f;
-            float v = z / _height + 0.5f;
-            (void)u; (void)v;
-
-            vertex_type::ColorVertex vert =
-            {
-                { x, y, z }, { 0.0f, -1.0f, 0.0f }, _vertColor
-            };
-            _colorVec->emplace_back(vert);
-        }
-
-        vertex_type::ColorVertex vert =
-        {
-            { 0.0f, y, 0.0f }, { 0.0f, -1.0f, 0.0f }, _vertColor
-        };
-        _colorVec->emplace_back(vert);
-
-        UINT centerIndex = (UINT)_colorVec->size() - 1;
-
-        for (UINT i = 0; i < _sliceCount; i++)
-        {
-            _indexVec->emplace_back(centerIndex);
-            _indexVec->emplace_back(baseIndex + i);
-            _indexVec->emplace_back(baseIndex + i + 1);
-        }
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TEX:
-    {
-        std::vector<vertex_type::BasicVertex>* _basicVec =
-            (std::vector<vertex_type::BasicVertex>*)_vertexVec;
-
-        UINT baseIndex = (UINT)_basicVec->size();
-        float y = -0.5f * _height;
-        float dTheta = 2.f * DirectX::XM_PI / _sliceCount;
-
-        for (UINT i = 0; i <= _sliceCount; i++)
-        {
-            float x = _bottomRadius * cosf(i * dTheta);
-            float z = _bottomRadius * sinf(i * dTheta);
-            float u = x / _height + 0.5f;
-            float v = z / _height + 0.5f;
-
-            vertex_type::BasicVertex vert =
-            {
-                { x, y, z }, { 0.0f, -1.0f, 0.0f }, { u, v }
-            };
-            _basicVec->emplace_back(vert);
-        }
-
-        vertex_type::BasicVertex vert =
-        {
-            { 0.0f, y, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.5f, 0.5f }
-        };
-        _basicVec->emplace_back(vert);
-
-        UINT centerIndex = (UINT)_basicVec->size() - 1;
-
-        for (UINT i = 0; i < _sliceCount; i++)
-        {
-            _indexVec->emplace_back(centerIndex);
-            _indexVec->emplace_back(baseIndex + i);
-            _indexVec->emplace_back(baseIndex + i + 1);
-        }
-
-        break;
-    }
-
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-    {
-        std::vector<vertex_type::TangentVertex>* _tangeVec =
-            (std::vector<vertex_type::TangentVertex>*)_vertexVec;
-
-        UINT baseIndex = (UINT)_tangeVec->size();
-        float y = -0.5f * _height;
-        float dTheta = 2.f * DirectX::XM_PI / _sliceCount;
-
-        for (UINT i = 0; i <= _sliceCount; i++)
-        {
-            float x = _bottomRadius * cosf(i * dTheta);
-            float z = _bottomRadius * sinf(i * dTheta);
-            float u = x / _height + 0.5f;
-            float v = z / _height + 0.5f;
-
-            vertex_type::TangentVertex vert =
-            {
-                { x, y, z }, { 0.0f, -1.0f, 0.0f },
-                { 1.0f, 0.0f, 0.0f }, { u, v }
-            };
-            _tangeVec->emplace_back(vert);
-        }
-
-        vertex_type::TangentVertex vert =
-        {
-            { 0.0f, y, 0.0f }, { 0.0f, -1.0f, 0.0f },
-            { 1.0f, 0.0f, 0.0f }, { 0.5f, 0.5f }
-        };
-        _tangeVec->emplace_back(vert);
-
-        UINT centerIndex = (UINT)_tangeVec->size() - 1;
-
-        for (UINT i = 0; i < _sliceCount; i++)
-        {
-            _indexVec->emplace_back(centerIndex);
-            _indexVec->emplace_back(baseIndex + i);
-            _indexVec->emplace_back(baseIndex + i + 1);
-        }
-
-        break;
-    }
-
-    default:
-        bool nullLayout = false;
-        assert(nullLayout);
-        (void)nullLayout;
-    }
-}
-
-RS_SUBMESH_DATA RSGeometryGenerator::CreatePointWithTexture(LAYOUT_TYPE _layout,
-    std::string&& _texName)
-{
-    RS_SUBMESH_DATA rsd = {};
-    SUBMESH_INFO si = {};
-    MATERIAL_INFO mi = {};
-    std::vector<UINT> indeices = {};
-    std::vector<vertex_type::TangentVertex> basic = {};
-    std::vector<std::string> textures = {};
-    std::string str = "";
-
-    indeices.push_back(0);
-
-    switch (_layout)
-    {
-    case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
-        basic.resize(1);
-        basic[0] = { { 0.f, 0.f, 0.f }, { 0.f, 0.f, -1.f }, {1.f, 0.f, 0.f}, {0.0f, 0.0f} };
-
-        textures.emplace_back(_texName);
-
-        si.TopologyType = TOPOLOGY_TYPE::POINTLIST;
-        si.VerteicesPtr = &basic;
-        si.IndeicesPtr = &indeices;
-        si.TexturesPtr = &textures;
-        si.MaterialPtr = &mi;
-        mMeshHelperPtr->ProcessSubMesh(&rsd, &si, _layout);
-
-        break;
-
-    default:
-        bool unvalidLayout = false;
-        assert(unvalidLayout);
-        (void)unvalidLayout;
-    }
-
-    return rsd;
+RS_SUBMESH_DATA
+RSGeometryGenerator::createPointWithTexture(LAYOUT_TYPE LayoutType,
+                                            const std::string &TextureName) {
+  RS_SUBMESH_DATA RSD = {};
+  SUBMESH_INFO SI = {};
+  MATERIAL_INFO MI = {};
+  std::vector<UINT> Indeices = {};
+  std::vector<vertex_type::TangentVertex> BasicPtr = {};
+  std::vector<std::string> Textures = {};
+  std::string Str = "";
+
+  Indeices.push_back(0);
+
+  switch (LayoutType) {
+  case LAYOUT_TYPE::NORMAL_TANGENT_TEX:
+    BasicPtr.resize(1);
+    BasicPtr[0] = {
+        {0.f, 0.f, 0.f}, {0.f, 0.f, -1.f}, {1.f, 0.f, 0.f}, {0.0f, 0.0f}};
+
+    Textures.emplace_back(TextureName);
+
+    SI.TopologyType = TOPOLOGY_TYPE::POINTLIST;
+    SI.VerteicesPtr = &BasicPtr;
+    SI.IndeicesPtr = &Indeices;
+    SI.TexturesPtr = &Textures;
+    SI.MaterialPtr = &MI;
+    MeshHelper->processSubMesh(&RSD, &SI, LayoutType);
+
+    break;
+
+  default:
+    assert(false && "unvalid layout");
+  }
+
+  return RSD;
 }

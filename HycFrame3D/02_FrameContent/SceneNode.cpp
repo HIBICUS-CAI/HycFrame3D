@@ -24,7 +24,7 @@ SceneNode::SceneNode(std::string&& _sceneName, SceneManager* _sceneManager) :
     {
         std::string cam = "temp-cam";
         mCameraAmbientInfo.mRSCameraPtr = getRSDX11RootInstance()->
-            getCamerasContainer()->GetRSCamera(cam);
+            getCamerasContainer()->getRSCamera(cam);
         bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
             mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
         assert(new_scene_fail);
@@ -46,7 +46,7 @@ SceneNode::SceneNode(std::string& _sceneName, SceneManager* _sceneManager) :
     {
         std::string cam = "temp-cam";
         mCameraAmbientInfo.mRSCameraPtr = getRSDX11RootInstance()->
-            getCamerasContainer()->GetRSCamera(cam);
+            getCamerasContainer()->getRSCamera(cam);
         bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
             mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
         assert(new_scene_fail);
@@ -124,7 +124,7 @@ void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string 
         wstr = std::wstring(_env.begin(), _env.end());
         wstr = L".\\Assets\\Textures\\" + wstr;
         hr = DirectX::CreateDDSTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->getDevice(),
             wstr.c_str(), nullptr, &srv);
         assert(!FAILED(hr));
         (void)hr;
@@ -136,7 +136,7 @@ void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string 
         wstr = std::wstring(_diff.begin(), _diff.end());
         wstr = L".\\Assets\\Textures\\" + wstr;
         hr = DirectX::CreateDDSTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->getDevice(),
             wstr.c_str(), nullptr, &srv);
         assert(!FAILED(hr));
         (void)hr;
@@ -148,7 +148,7 @@ void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string 
         wstr = std::wstring(_spc.begin(), _spc.end());
         wstr = L".\\Assets\\Textures\\" + wstr;
         hr = DirectX::CreateDDSTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->GetDevice(),
+            getRSDX11RootInstance()->getDevices()->getDevice(),
             wstr.c_str(), nullptr, &srv);
         assert(!FAILED(hr));
         (void)hr;

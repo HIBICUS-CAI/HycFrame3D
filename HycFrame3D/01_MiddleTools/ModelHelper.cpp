@@ -433,7 +433,7 @@ void LoadByBinary(const std::string _filePath, RS_SUBMESH_DATA* _result,
     LAYOUT_TYPE layoutType = animated ?
         LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE :
         LAYOUT_TYPE::NORMAL_TANGENT_TEX;
-    getRSDX11RootInstance()->getMeshHelper()->ProcessSubMesh(_result,
+    getRSDX11RootInstance()->getMeshHelper()->processSubMesh(_result,
         &si, layoutType);
 
     inFile.close();
@@ -646,7 +646,7 @@ void LoadByJson(const std::string _filePath, RS_SUBMESH_DATA* _result,
         LAYOUT_TYPE layoutType = animated ?
             LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE :
             LAYOUT_TYPE::NORMAL_TANGENT_TEX;
-        getRSDX11RootInstance()->getMeshHelper()->ProcessSubMesh(_result,
+        getRSDX11RootInstance()->getMeshHelper()->processSubMesh(_result,
             &si, layoutType);
     }
 
@@ -842,7 +842,7 @@ void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
     wstr = std::wstring(_filePath.begin(), _filePath.end());
     wstr = L".\\Assets\\Textures\\" + wstr;
 
-    if (root->getResourceManager()->GetMeshSrv(_filePath))
+    if (root->getResourceManager()->getMeshSrv(_filePath))
     {
         _result->Textures[(size_t)_type] = _filePath;
         return;
@@ -851,12 +851,12 @@ void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
     if (_filePath.find(".dds") != std::string::npos ||
         _filePath.find(".DDS") != std::string::npos)
     {
-        hr = DirectX::CreateDDSTextureFromFile(root->getDevices()->GetDevice(),
+        hr = DirectX::CreateDDSTextureFromFile(root->getDevices()->getDevice(),
             wstr.c_str(), nullptr, &srv);
         if (SUCCEEDED(hr))
         {
             name = _filePath;
-            root->getResourceManager()->AddMeshSrv(name, srv);
+            root->getResourceManager()->addMeshSrv(name, srv);
         }
         else
         {
@@ -867,12 +867,12 @@ void AddTextureToSubMesh(RS_SUBMESH_DATA* _result,
     }
     else
     {
-        hr = DirectX::CreateWICTextureFromFile(root->getDevices()->GetDevice(),
+        hr = DirectX::CreateWICTextureFromFile(root->getDevices()->getDevice(),
             wstr.c_str(), nullptr, &srv);
         if (SUCCEEDED(hr))
         {
             name = _filePath;
-            root->getResourceManager()->AddMeshSrv(name, srv);
+            root->getResourceManager()->addMeshSrv(name, srv);
         }
         else
         {

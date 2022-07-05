@@ -8,88 +8,67 @@
 //---------------------------------------------------------------
 
 #include "RSParticleEmitter.h"
-#include <assert.h>
 
-static UINT g_ParticleEmitterCounter = 0;
+#include <cassert>
 
-RSParticleEmitter::RSParticleEmitter(PARTICLE_EMITTER_INFO* _info)
-    : mRSParticleEmitterInfo({}),
-    mActiveFlg(false), mStaticFlg(false)
-{
-    ResetParticleEmitterInfo(_info);
-    (void)mStaticFlg;
+static UINT G_ParticleEmitterCounter = 0;
+
+RSParticleEmitter::RSParticleEmitter(const PARTICLE_EMITTER_INFO *Info)
+    : RSParticleEmitterInfo({}), ActiveFlag(false), StaticFlag(false) {
+  resetParticleEmitterInfo(Info);
+  (void)StaticFlag;
 }
 
-RSParticleEmitter::~RSParticleEmitter()
-{
+RSParticleEmitter::~RSParticleEmitter() {}
 
+void
+RSParticleEmitter::resetParticleEmitterInfo(const PARTICLE_EMITTER_INFO *Info) {
+  if (!Info) {
+    assert(false && "didnt pass a valid info to particle reset");
+    return;
+  }
+
+  RSParticleEmitterInfo.EmitterIndex = G_ParticleEmitterCounter++;
+  RSParticleEmitterInfo.EmitNumPerSecond = Info->EmitNumPerSecond;
+  RSParticleEmitterInfo.EmitSize = 0;
+  RSParticleEmitterInfo.Accumulation = 0.f;
+  RSParticleEmitterInfo.Position = Info->Position;
+  RSParticleEmitterInfo.Velocity = Info->Velocity;
+  RSParticleEmitterInfo.PosVariance = Info->PosVariance;
+  RSParticleEmitterInfo.VelVariance = Info->VelVariance;
+  RSParticleEmitterInfo.Acceleration = Info->Acceleration;
+  RSParticleEmitterInfo.ParticleMass = Info->ParticleMass;
+  RSParticleEmitterInfo.LifeSpan = Info->LifeSpan;
+  RSParticleEmitterInfo.StartSize = Info->StartSize;
+  RSParticleEmitterInfo.EndSize = Info->EndSize;
+  RSParticleEmitterInfo.StartColor = Info->StartColor;
+  RSParticleEmitterInfo.EndColor = Info->EndColor;
+  RSParticleEmitterInfo.TextureID = static_cast<UINT>(Info->TextureID);
+  RSParticleEmitterInfo.StreakFlag = (Info->StreakFlag ? 1 : 0);
+  RSParticleEmitterInfo.MiscFlag = 0;
 }
 
-void RSParticleEmitter::ResetParticleEmitterInfo(
-    PARTICLE_EMITTER_INFO* _info)
-{
-    if (!_info)
-    {
-        bool didnt_pass_a_valid_info_to_particle_reset = false;
-        assert(didnt_pass_a_valid_info_to_particle_reset);
-        (void)didnt_pass_a_valid_info_to_particle_reset;
-        return;
-    }
-
-    mRSParticleEmitterInfo.EmitterIndex =
-        g_ParticleEmitterCounter++;
-    mRSParticleEmitterInfo.EmitNumPerSecond =
-        _info->EmitNumPerSecond;
-    mRSParticleEmitterInfo.EmitSize = 0;
-    mRSParticleEmitterInfo.Accumulation = 0.f;
-    mRSParticleEmitterInfo.Position = _info->Position;
-    mRSParticleEmitterInfo.Velocity = _info->Velocity;
-    mRSParticleEmitterInfo.PosVariance = _info->PosVariance;
-    mRSParticleEmitterInfo.VelVariance = _info->VelVariance;
-    mRSParticleEmitterInfo.Acceleration = _info->Acceleration;
-    mRSParticleEmitterInfo.ParticleMass = _info->ParticleMass;
-    mRSParticleEmitterInfo.LifeSpan = _info->LifeSpan;
-    mRSParticleEmitterInfo.StartSize =
-        _info->StartSize;
-    mRSParticleEmitterInfo.EndSize =
-        _info->EndSize;
-    mRSParticleEmitterInfo.StartColor =
-        _info->StartColor;
-    mRSParticleEmitterInfo.EndColor =
-        _info->EndColor;
-    mRSParticleEmitterInfo.TextureID =
-        (UINT)(_info->TextureID);
-    mRSParticleEmitterInfo.StreakFlag =
-        (_info->StreakFlag ? 1 : 0);
-    mRSParticleEmitterInfo.MiscFlag = 0;
+RS_PARTICLE_EMITTER_INFO &
+RSParticleEmitter::getRSParticleEmitterInfo() {
+  return RSParticleEmitterInfo;
 }
 
-RS_PARTICLE_EMITTER_INFO& RSParticleEmitter::GetRSParticleEmitterInfo()
-{
-    return mRSParticleEmitterInfo;
+void
+RSParticleEmitter::startParticleEmitter() {
+  ActiveFlag = true;
 }
 
-void RSParticleEmitter::StartParticleEmitter()
-{
-    mActiveFlg = true;
+void
+RSParticleEmitter::pauseParticleEmitter() {
+  ActiveFlag = false;
 }
 
-void RSParticleEmitter::PauseParticleEmitter()
-{
-    mActiveFlg = false;
+void
+RSParticleEmitter::setEmitterPosition(const DirectX::XMFLOAT3 &Position) {
+  RSParticleEmitterInfo.Position = Position;
 }
 
-void RSParticleEmitter::SetEmitterPosition(DirectX::XMFLOAT3& _position)
-{
-    mRSParticleEmitterInfo.Position = _position;
-}
-
-void RSParticleEmitter::SetEmitterPosition(DirectX::XMFLOAT3&& _position)
-{
-    mRSParticleEmitterInfo.Position = _position;
-}
-
-void RSParticleEmitter::ResetEmitterIndex()
-{
-    g_ParticleEmitterCounter = 0;
+void
+RSParticleEmitter::resetEmitterIndex() {
+  G_ParticleEmitterCounter = 0;
 }

@@ -10,84 +10,110 @@
 #pragma once
 
 #include "RSCommon.h"
+
 #include <unordered_map>
 
-class RSStaticResources
-{
+class RSStaticResources {
+private:
+  class RSRoot_DX11 *RenderSystemRoot;
+
+  std::unordered_map<std::string, ID3D11VertexShader *> VertexShaderMap;
+  std::unordered_map<std::string, ID3D11GeometryShader *> GeometryShaderMap;
+  std::unordered_map<std::string, ID3D11PixelShader *> PixelShaderMap;
+  std::unordered_map<std::string, ID3D11ComputeShader *> ComputeShaderMap;
+
+  std::unordered_map<std::string, ID3D11RasterizerState *> RasterizerStateMap;
+  std::unordered_map<std::string, ID3D11DepthStencilState *>
+      DepthStencilStateMap;
+  std::unordered_map<std::string, ID3D11BlendState *> BlendStateMap;
+
+  std::unordered_map<std::string, ID3D11SamplerState *> SamplerMap;
+
+  std::unordered_map<std::string, ID3D11InputLayout *> InputLayoutMap;
+
+  std::unordered_map<std::string, class RSPipeline *> StaticPipelineMap;
+  std::unordered_map<std::string, class RSTopic *> StaticTopicMap;
+
+  std::vector<RS_MATERIAL_DATA> MaterialVector;
+  std::unordered_map<std::string, UINT> MaterialIndexMap;
+  ID3D11Buffer *MaterialBuffer;
+  ID3D11ShaderResourceView *MaterialBufferSrv;
+
 public:
-    RSStaticResources();
-    ~RSStaticResources();
+  RSStaticResources();
+  ~RSStaticResources();
 
-    bool StartUp(class RSRoot_DX11* _root);
-    void CleanAndStop();
+  bool
+  startUp(class RSRoot_DX11 *RootPtr);
 
-    ID3D11VertexShader* GetStaticVertexShader(
-        std::string& _shaderName);
-    ID3D11GeometryShader* GetStaticGeometryShader(
-        std::string& _shaderName);
-    ID3D11PixelShader* GetStaticPixelShader(
-        std::string& _shaderName);
-    ID3D11ComputeShader* GetStaticComputeShader(
-        std::string& _shaderName);
-    ID3D11RasterizerState* GetStaticRasterizerState(
-        std::string& _stateName);
-    ID3D11DepthStencilState* GetStaticDepthStencilState(
-        std::string& _stateName);
-    ID3D11BlendState* GetStaticBlendState(
-        std::string& _stateName);
-    ID3D11SamplerState* GetStaticSampler(
-        std::string& _samplerName);
-    ID3D11InputLayout* GetStaticInputLayout(
-        std::string& _layoutName);
-    const class RSPipeline* const GetStaticPipeline(
-        std::string& _pipelineName);
-    const class RSTopic* const GetStaticTopic(
-        std::string& _topicName);
-    UINT GetStaticMaterialIndex(std::string& _materialName);
-    RS_MATERIAL_DATA* GetMaterialDataPtrForTest() { return &mMaterialVector[0]; }
-    void MapMaterialData();
-    ID3D11ShaderResourceView* GetMaterialSrv() { return mMaterialBufferSrv; }
+  void
+  cleanAndStop();
+
+  ID3D11VertexShader *
+  getStaticVertexShader(const std::string &ShaderName);
+
+  ID3D11GeometryShader *
+  getStaticGeometryShader(const std::string &ShaderName);
+
+  ID3D11PixelShader *
+  getStaticPixelShader(const std::string &ShaderName);
+
+  ID3D11ComputeShader *
+  getStaticComputeShader(const std::string &ShaderName);
+
+  ID3D11RasterizerState *
+  getStaticRasterizerState(const std::string &StateName);
+
+  ID3D11DepthStencilState *
+  getStaticDepthStencilState(const std::string &StateName);
+
+  ID3D11BlendState *
+  getStaticBlendState(const std::string &StateName);
+
+  ID3D11SamplerState *
+  getStaticSampler(const std::string &SamplerName);
+
+  ID3D11InputLayout *
+  getStaticInputLayout(const std::string &LayoutName);
+
+  const class RSPipeline *const
+  getStaticPipeline(const std::string &PipelineName);
+
+  const class RSTopic *const
+  getStaticTopic(const std::string &TopicName);
+
+  UINT
+  getStaticMaterialIndex(const std::string &MaterialName);
+
+  RS_MATERIAL_DATA *
+  getMaterialDataPtrForTest() {
+    return &MaterialVector[0];
+  }
+
+  void
+  remapMaterialData();
+
+  ID3D11ShaderResourceView *
+  getMaterialSrv() {
+    return MaterialBufferSrv;
+  }
 
 private:
-    bool CompileStaticShaders();
-    bool BuildStaticStates();
-    bool BuildStaticInputLayouts();
-    bool BuildStaticTopics();
-    bool BuildStaticPipelines();
-    bool BuildStaticMaterials();
+  bool
+  compileStaticShaders();
 
-private:
-    class RSRoot_DX11* mRootPtr;
+  bool
+  buildStaticStates();
 
-    std::unordered_map<std::string, ID3D11VertexShader*>
-        mVertexShaderMap;
-    std::unordered_map<std::string, ID3D11GeometryShader*>
-        mGeometryShaderMap;
-    std::unordered_map<std::string, ID3D11PixelShader*>
-        mPixelShaderMap;
-    std::unordered_map<std::string, ID3D11ComputeShader*>
-        mComputeShaderMap;
+  bool
+  buildStaticInputLayouts();
 
-    std::unordered_map<std::string, ID3D11RasterizerState*>
-        mRasterizerStateMap;
-    std::unordered_map<std::string, ID3D11DepthStencilState*>
-        mDepthStencilStateMap;
-    std::unordered_map<std::string, ID3D11BlendState*>
-        mBlendStateMap;
+  bool
+  buildStaticTopics();
 
-    std::unordered_map<std::string, ID3D11SamplerState*>
-        mSamplerMap;
+  bool
+  buildStaticPipelines();
 
-    std::unordered_map<std::string, ID3D11InputLayout*>
-        mInputLayoutMap;
-
-    std::unordered_map<std::string, class RSPipeline*>
-        mStaticPipelineMap;
-    std::unordered_map<std::string, class RSTopic*>
-        mStaticTopicMap;
-
-    std::vector<RS_MATERIAL_DATA> mMaterialVector;
-    std::unordered_map<std::string, UINT> mMaterialIndexMap;
-    ID3D11Buffer* mMaterialBuffer;
-    ID3D11ShaderResourceView* mMaterialBufferSrv;
+  bool
+  buildStaticMaterials();
 };

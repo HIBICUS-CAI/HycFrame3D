@@ -8,232 +8,201 @@
 //---------------------------------------------------------------
 
 #include "RSResourceManager.h"
+
 #include "RSRoot_DX11.h"
 
-#define R_LOCK EnterCriticalSection(&mResDataLock)
-#define R_UNLOCK LeaveCriticalSection(&mResDataLock)
-#define M_LOCK EnterCriticalSection(&mMesDataLock)
-#define M_UNLOCK LeaveCriticalSection(&mMesDataLock)
+#define R_LOCK EnterCriticalSection(&ResDataLock)
+#define R_UNLOCK LeaveCriticalSection(&ResDataLock)
+#define M_LOCK EnterCriticalSection(&MesDataLock)
+#define M_UNLOCK LeaveCriticalSection(&MesDataLock)
 
-RSResourceManager::RSResourceManager() :
-    mRootPtr(nullptr), mResourceMap({}), mMeshSrvMap({}),
-    mResDataLock({}), mMesDataLock({})
-{
+RSResourceManager::RSResourceManager()
+    : RenderSystemRoot(nullptr), ResourceMap({}), MeshSrvMap({}),
+      ResDataLock({}), MesDataLock({}) {}
 
+RSResourceManager::~RSResourceManager() {}
+
+bool
+RSResourceManager::startUp(RSRoot_DX11 *RootPtr) {
+  if (!RootPtr) {
+    return false;
+  }
+
+  RenderSystemRoot = RootPtr;
+
+  InitializeCriticalSection(&ResDataLock);
+  InitializeCriticalSection(&MesDataLock);
+
+  return true;
 }
 
-RSResourceManager::~RSResourceManager()
-{
-
-}
-
-bool RSResourceManager::StartUp(RSRoot_DX11* _root)
-{
-    if (!_root) { return false; }
-
-    mRootPtr = _root;
-
-    InitializeCriticalSection(&mResDataLock);
-    InitializeCriticalSection(&mMesDataLock);
-
-    return true;
-}
-
-void RSResourceManager::CleanAndStop()
-{
-    for (auto& meshSrv : mMeshSrvMap)
-    {
-        SAFE_RELEASE(meshSrv.second);
+void
+RSResourceManager::cleanAndStop() {
+  for (auto &RSMeshSrv : MeshSrvMap) {
+    SAFE_RELEASE(RSMeshSrv.second);
+  }
+  for (auto &RSResource : ResourceMap) {
+    SAFE_RELEASE(RSResource.second.Uav);
+    SAFE_RELEASE(RSResource.second.Srv);
+    SAFE_RELEASE(RSResource.second.Dsv);
+    SAFE_RELEASE(RSResource.second.Rtv);
+    auto Type = RSResource.second.Type;
+    switch (Type) {
+    case RS_RESOURCE_TYPE::BUFFER:
+      SAFE_RELEASE(RSResource.second.Resource.Buffer);
+      break;
+    case RS_RESOURCE_TYPE::TEXTURE1D:
+      SAFE_RELEASE(RSResource.second.Resource.Texture1D);
+      break;
+    case RS_RESOURCE_TYPE::TEXTURE2D:
+      SAFE_RELEASE(RSResource.second.Resource.Texture2D);
+      break;
+    case RS_RESOURCE_TYPE::TEXTURE3D:
+      SAFE_RELEASE(RSResource.second.Resource.Texture3D);
+      break;
+    default: {
+      assert(false && "unvalid resource type");
+      break;
     }
-    for (auto& resource : mResourceMap)
-    {
-        SAFE_RELEASE(resource.second.Uav);
-        SAFE_RELEASE(resource.second.Srv);
-        SAFE_RELEASE(resource.second.Dsv);
-        SAFE_RELEASE(resource.second.Rtv);
-        auto type = resource.second.Type;
-        switch (type)
-        {
-        case RS_RESOURCE_TYPE::BUFFER:
-            SAFE_RELEASE(resource.second.Resource.Buffer);
-            break;
-        case RS_RESOURCE_TYPE::TEXTURE1D:
-            SAFE_RELEASE(resource.second.Resource.Texture1D);
-            break;
-        case RS_RESOURCE_TYPE::TEXTURE2D:
-            SAFE_RELEASE(resource.second.Resource.Texture2D);
-            break;
-        case RS_RESOURCE_TYPE::TEXTURE3D:
-            SAFE_RELEASE(resource.second.Resource.Texture3D);
-            break;
-        default:
-        {
-            bool unvalid_resource_type = false;
-            assert(unvalid_resource_type);
-            (void)unvalid_resource_type;
-            break;
-        }
-        }
     }
-    mMeshSrvMap.clear();
-    mResourceMap.clear();
+  }
+  MeshSrvMap.clear();
+  ResourceMap.clear();
 
-    DeleteCriticalSection(&mResDataLock);
-    DeleteCriticalSection(&mMesDataLock);
+  DeleteCriticalSection(&ResDataLock);
+  DeleteCriticalSection(&MesDataLock);
 }
 
-void RSResourceManager::AddResource(
-    std::string& _name, RS_RESOURCE_INFO& _resource)
-{
-    R_LOCK;
-    if (mResourceMap.find(_name) == mResourceMap.end())
-    {
-        mResourceMap.insert({ _name,_resource });
-    }
+void
+RSResourceManager::addResource(const std::string &Name,
+                               const RS_RESOURCE_INFO &Resource) {
+  R_LOCK;
+  if (ResourceMap.find(Name) == ResourceMap.end()) {
+    ResourceMap.insert({Name, Resource});
+  }
+  R_UNLOCK;
+}
+
+void
+RSResourceManager::addMeshSrv(const std::string &Name,
+                              ID3D11ShaderResourceView *MeshSrv) {
+  M_LOCK;
+  if (MeshSrvMap.find(Name) == MeshSrvMap.end()) {
+    MeshSrvMap.insert({Name, MeshSrv});
+  }
+  M_UNLOCK;
+}
+
+RS_RESOURCE_INFO *
+RSResourceManager::getResource(const std::string &Name) {
+  R_LOCK;
+  auto Found = ResourceMap.find(Name);
+  if (Found != ResourceMap.end()) {
+    auto ResourcePtr = &(Found->second);
     R_UNLOCK;
-}
-
-void RSResourceManager::AddMeshSrv(
-    std::string& _name, ID3D11ShaderResourceView* _srv)
-{
-    M_LOCK;
-    if (mMeshSrvMap.find(_name) == mMeshSrvMap.end())
-    {
-        mMeshSrvMap.insert({ _name,_srv });
-    }
-    M_UNLOCK;
-}
-
-RS_RESOURCE_INFO* RSResourceManager::GetResourceInfo(
-    std::string& _name)
-{
-    R_LOCK;
-    auto found = mResourceMap.find(_name);
-    if (found != mResourceMap.end())
-    {
-        auto res = &(found->second);
-        R_UNLOCK;
-        return res;
-    }
-    else
-    {
-        R_UNLOCK;
-        return nullptr;
-    }
-}
-
-ID3D11ShaderResourceView* RSResourceManager::GetMeshSrv(
-    std::string& _name)
-{
-    M_LOCK;
-    auto found = mMeshSrvMap.find(_name);
-    if (found != mMeshSrvMap.end())
-    {
-        auto srv = found->second;
-        M_UNLOCK;
-        return srv;
-    }
-    else
-    {
-        M_UNLOCK;
-        return nullptr;
-    }
-}
-
-void RSResourceManager::DeleteResource(std::string& _name)
-{
-    R_LOCK;
-    auto found = mResourceMap.find(_name);
-    if (found != mResourceMap.end())
-    {
-        SAFE_RELEASE(found->second.Uav);
-        SAFE_RELEASE(found->second.Srv);
-        SAFE_RELEASE(found->second.Dsv);
-        SAFE_RELEASE(found->second.Rtv);
-        auto type = found->second.Type;
-        switch (type)
-        {
-        case RS_RESOURCE_TYPE::BUFFER:
-            SAFE_RELEASE(found->second.Resource.Buffer);
-            break;
-        case RS_RESOURCE_TYPE::TEXTURE1D:
-            SAFE_RELEASE(found->second.Resource.Texture1D);
-            break;
-        case RS_RESOURCE_TYPE::TEXTURE2D:
-            SAFE_RELEASE(found->second.Resource.Texture2D);
-            break;
-        case RS_RESOURCE_TYPE::TEXTURE3D:
-            SAFE_RELEASE(found->second.Resource.Texture3D);
-            break;
-        default:
-        {
-            bool unvalid_resource_type = false;
-            assert(unvalid_resource_type);
-            (void)unvalid_resource_type;
-            break;
-        }
-        }
-        mResourceMap.erase(found);
-    }
+    return ResourcePtr;
+  } else {
     R_UNLOCK;
+    return nullptr;
+  }
 }
 
-void RSResourceManager::DeleteMeshSrv(std::string& _name)
-{
-    M_LOCK;
-    auto found = mMeshSrvMap.find(_name);
-    if (found != mMeshSrvMap.end())
-    {
-        SAFE_RELEASE(found->second);
-        mMeshSrvMap.erase(found);
-    }
+ID3D11ShaderResourceView *
+RSResourceManager::getMeshSrv(const std::string &Name) {
+  M_LOCK;
+  auto Found = MeshSrvMap.find(Name);
+  if (Found != MeshSrvMap.end()) {
+    auto MeshSrv = Found->second;
     M_UNLOCK;
-}
-
-void RSResourceManager::ClearResources()
-{
-    R_LOCK;
-    for (auto& resource : mResourceMap)
-    {
-        SAFE_RELEASE(resource.second.Uav);
-        SAFE_RELEASE(resource.second.Srv);
-        SAFE_RELEASE(resource.second.Dsv);
-        SAFE_RELEASE(resource.second.Rtv);
-        auto type = resource.second.Type;
-        switch (type)
-        {
-        case RS_RESOURCE_TYPE::BUFFER:
-            SAFE_RELEASE(resource.second.Resource.Buffer);
-            break;
-        case RS_RESOURCE_TYPE::TEXTURE1D:
-            SAFE_RELEASE(resource.second.Resource.Texture1D);
-            break;
-        case RS_RESOURCE_TYPE::TEXTURE2D:
-            SAFE_RELEASE(resource.second.Resource.Texture2D);
-            break;
-        case RS_RESOURCE_TYPE::TEXTURE3D:
-            SAFE_RELEASE(resource.second.Resource.Texture3D);
-            break;
-        default:
-        {
-            bool unvalid_resource_type = false;
-            assert(unvalid_resource_type);
-            (void)unvalid_resource_type;
-            break;
-        }
-        }
-    }
-    mResourceMap.clear();
-    R_UNLOCK;
-}
-
-void RSResourceManager::ClearMeshSrvs()
-{
-    M_LOCK;
-    for (auto& meshSrv : mMeshSrvMap)
-    {
-        SAFE_RELEASE(meshSrv.second);
-    }
-    mMeshSrvMap.clear();
+    return MeshSrv;
+  } else {
     M_UNLOCK;
+    return nullptr;
+  }
+}
+
+void
+RSResourceManager::deleteResource(const std::string &Name) {
+  R_LOCK;
+  auto Found = ResourceMap.find(Name);
+  if (Found != ResourceMap.end()) {
+    SAFE_RELEASE(Found->second.Uav);
+    SAFE_RELEASE(Found->second.Srv);
+    SAFE_RELEASE(Found->second.Dsv);
+    SAFE_RELEASE(Found->second.Rtv);
+    auto Type = Found->second.Type;
+    switch (Type) {
+    case RS_RESOURCE_TYPE::BUFFER:
+      SAFE_RELEASE(Found->second.Resource.Buffer);
+      break;
+    case RS_RESOURCE_TYPE::TEXTURE1D:
+      SAFE_RELEASE(Found->second.Resource.Texture1D);
+      break;
+    case RS_RESOURCE_TYPE::TEXTURE2D:
+      SAFE_RELEASE(Found->second.Resource.Texture2D);
+      break;
+    case RS_RESOURCE_TYPE::TEXTURE3D:
+      SAFE_RELEASE(Found->second.Resource.Texture3D);
+      break;
+    default: {
+      assert(false && "unvalid resource type");
+      break;
+    }
+    }
+    ResourceMap.erase(Found);
+  }
+  R_UNLOCK;
+}
+
+void
+RSResourceManager::deleteMeshSrv(const std::string &Name) {
+  M_LOCK;
+  auto Found = MeshSrvMap.find(Name);
+  if (Found != MeshSrvMap.end()) {
+    SAFE_RELEASE(Found->second);
+    MeshSrvMap.erase(Found);
+  }
+  M_UNLOCK;
+}
+
+void
+RSResourceManager::clearResources() {
+  R_LOCK;
+  for (auto &RSResource : ResourceMap) {
+    SAFE_RELEASE(RSResource.second.Uav);
+    SAFE_RELEASE(RSResource.second.Srv);
+    SAFE_RELEASE(RSResource.second.Dsv);
+    SAFE_RELEASE(RSResource.second.Rtv);
+    auto Type = RSResource.second.Type;
+    switch (Type) {
+    case RS_RESOURCE_TYPE::BUFFER:
+      SAFE_RELEASE(RSResource.second.Resource.Buffer);
+      break;
+    case RS_RESOURCE_TYPE::TEXTURE1D:
+      SAFE_RELEASE(RSResource.second.Resource.Texture1D);
+      break;
+    case RS_RESOURCE_TYPE::TEXTURE2D:
+      SAFE_RELEASE(RSResource.second.Resource.Texture2D);
+      break;
+    case RS_RESOURCE_TYPE::TEXTURE3D:
+      SAFE_RELEASE(RSResource.second.Resource.Texture3D);
+      break;
+    default: {
+      assert(false && "unvalid resource type");
+      break;
+    }
+    }
+  }
+  ResourceMap.clear();
+  R_UNLOCK;
+}
+
+void
+RSResourceManager::clearMeshSrvs() {
+  M_LOCK;
+  for (auto &RSMeshSrv : MeshSrvMap) {
+    SAFE_RELEASE(RSMeshSrv.second);
+  }
+  MeshSrvMap.clear();
+  M_UNLOCK;
 }

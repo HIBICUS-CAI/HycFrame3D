@@ -8,119 +8,108 @@
 //---------------------------------------------------------------
 
 #include "RSPipelinesManager.h"
-#include "RSRoot_DX11.h"
-#include "RSPipeline.h"
+
 #include "RSLightsContainer.h"
 #include "RSParticlesContainer.h"
+#include "RSPipeline.h"
+#include "RSRoot_DX11.h"
 
-#define LOCK EnterCriticalSection(&mDataLock)
-#define UNLOCK LeaveCriticalSection(&mDataLock)
+#define LOCK EnterCriticalSection(&DataLock)
+#define UNLOCK LeaveCriticalSection(&DataLock)
 
-RSPipelinesManager::RSPipelinesManager() :
-    mRootPtr(nullptr), mCurrentPipeline(nullptr),
-    mNextPipeline(nullptr), mPipelineMap({}), mDataLock({})
-{
+RSPipelinesManager::RSPipelinesManager()
+    : RenderSystemRoot(nullptr), CurrentPipeline(nullptr),
+      NextPipeline(nullptr), PipelineMap({}), DataLock({}) {}
 
+RSPipelinesManager::~RSPipelinesManager() {}
+
+bool
+RSPipelinesManager::startUp(RSRoot_DX11 *RootPtr) {
+  if (!RootPtr) {
+    return false;
+  }
+
+  RenderSystemRoot = RootPtr;
+  InitializeCriticalSection(&DataLock);
+
+  return true;
 }
 
-RSPipelinesManager::~RSPipelinesManager()
-{
+void
+RSPipelinesManager::cleanAndStop() {
+  NextPipeline = nullptr;
+  CurrentPipeline = nullptr;
 
+  for (auto &Pipeline : PipelineMap) {
+    Pipeline.second->releasePipeline();
+    delete Pipeline.second;
+  }
+
+  PipelineMap.clear();
+  DeleteCriticalSection(&DataLock);
 }
 
-bool RSPipelinesManager::StartUp(RSRoot_DX11* _root)
-{
-    if (!_root) { return false; }
-
-    mRootPtr = _root;
-    InitializeCriticalSection(&mDataLock);
-
-    return true;
+void
+RSPipelinesManager::addPipeline(const std::string &Name, RSPipeline *Pipeline) {
+  LOCK;
+  if (PipelineMap.find(Name) == PipelineMap.end()) {
+    PipelineMap.insert({Name, Pipeline});
+  }
+  UNLOCK;
 }
 
-void RSPipelinesManager::CleanAndStop()
-{
-    mNextPipeline = nullptr;
-    mCurrentPipeline = nullptr;
-    for (auto& pipeline : mPipelineMap)
-    {
-        pipeline.second->releasePipeline();
-        delete pipeline.second;
-    }
-    mPipelineMap.clear();
-    DeleteCriticalSection(&mDataLock);
-}
-
-void RSPipelinesManager::AddPipeline(
-    std::string& _name, RSPipeline* _pipeline)
-{
-    LOCK;
-    if (mPipelineMap.find(_name) == mPipelineMap.end())
-    {
-        mPipelineMap.insert({ _name,_pipeline });
-    }
+RSPipeline *
+RSPipelinesManager::getPipeline(const std::string &Name) {
+  LOCK;
+  auto Found = PipelineMap.find(Name);
+  if (Found != PipelineMap.end()) {
+    auto Pipeline = Found->second;
     UNLOCK;
-}
-
-RSPipeline* RSPipelinesManager::GetPipeline(
-    std::string& _name)
-{
-    LOCK;
-    auto found = mPipelineMap.find(_name);
-    if (found != mPipelineMap.end())
-    {
-        auto pipeline = found->second;
-        UNLOCK;
-        return pipeline;
-    }
-    else
-    {
-        UNLOCK;
-        return nullptr;
-    }
-}
-
-void RSPipelinesManager::SetPipeline(std::string& _name)
-{
-    LOCK;
-    auto found = mPipelineMap.find(_name);
-    if (found != mPipelineMap.end())
-    {
-        mNextPipeline = (*found).second;
-    }
+    return Pipeline;
+  } else {
     UNLOCK;
+    return nullptr;
+  }
 }
 
-void RSPipelinesManager::SetPipeline(RSPipeline* _pipeline)
-{
-    mNextPipeline = _pipeline;
+void
+RSPipelinesManager::setPipeline(const std::string &Name) {
+  LOCK;
+  auto Found = PipelineMap.find(Name);
+  if (Found != PipelineMap.end()) {
+    NextPipeline = Found->second;
+  }
+  UNLOCK;
 }
 
-void RSPipelinesManager::ClearCurrentPipelineState()
-{
-    mCurrentPipeline = nullptr;
-    mNextPipeline = nullptr;
+void
+RSPipelinesManager::setPipeline(RSPipeline *Pipeline) {
+  NextPipeline = Pipeline;
 }
 
-void RSPipelinesManager::ExecuateCurrentPipeline()
-{
-    mRootPtr->getLightsContainer()->LockContainer();
-    mRootPtr->getParticlesContainer()->LockContainer();
-    mCurrentPipeline->execuatePipeline();
-    mRootPtr->getLightsContainer()->UnlockContainer();
-    mRootPtr->getParticlesContainer()->UnlockContainer();
+void
+RSPipelinesManager::clearCurrentPipelineState() {
+  CurrentPipeline = nullptr;
+  NextPipeline = nullptr;
 }
 
-void RSPipelinesManager::ProcessNextPipeline()
-{
-    if (mNextPipeline)
-    {
-        if (mCurrentPipeline)
-        {
-            mCurrentPipeline->suspendAllThread();
-        }
-        mCurrentPipeline = mNextPipeline;
-        mCurrentPipeline->resumeAllThread();
-        mNextPipeline = nullptr;
+void
+RSPipelinesManager::execuateCurrentPipeline() {
+  RenderSystemRoot->getLightsContainer()->lockContainer();
+  RenderSystemRoot->getParticlesContainer()->lockContainer();
+  CurrentPipeline->execuatePipeline();
+  RenderSystemRoot->getLightsContainer()->unlockContainer();
+  RenderSystemRoot->getParticlesContainer()->unlockContainer();
+}
+
+void
+RSPipelinesManager::useNextPipeline() {
+  if (NextPipeline) {
+    if (CurrentPipeline) {
+      CurrentPipeline->suspendAllThread();
     }
+    CurrentPipeline = NextPipeline;
+    CurrentPipeline->resumeAllThread();
+    NextPipeline = nullptr;
+  }
 }

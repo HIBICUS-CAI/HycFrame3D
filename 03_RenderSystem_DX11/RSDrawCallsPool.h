@@ -10,26 +10,32 @@
 #pragma once
 
 #include "RSCommon.h"
+
 #include <array>
 
-class RSDrawCallsPool
-{
-public:
-    RSDrawCallsPool();
-    ~RSDrawCallsPool();
-
-    bool StartUp(class RSRoot_DX11* _root);
-    void CleanAndStop();
-
-    void AddDrawCallToPipe(
-        DRAWCALL_TYPE _type, RS_DRAWCALL_DATA& _data);
-    RSDrawCallsPipe* GetDrawCallsPipe(DRAWCALL_TYPE _type);
-
-    void ClearAllDrawCallsInPipes();
-
+class RSDrawCallsPool {
 private:
-    class RSRoot_DX11* mRootPtr;
-    std::array<RSDrawCallsPipe, (size_t)DRAWCALL_TYPE::MAX>
-        mDrawCallsArray;
-};
+  class RSRoot_DX11 *RenderSystemRoot;
 
+  std::array<RSDrawCallsPipe, static_cast<size_t>(DRAWCALL_TYPE::MAX)>
+      DrawCallsPipeArray;
+
+public:
+  RSDrawCallsPool();
+  ~RSDrawCallsPool();
+
+  bool
+  startUp(class RSRoot_DX11 *RootPtr);
+
+  void
+  cleanAndStop();
+
+  void
+  addDrawCallToPipe(DRAWCALL_TYPE Type, const RS_DRAWCALL_DATA &DrawCall);
+
+  RSDrawCallsPipe *
+  getDrawCallsPipe(DRAWCALL_TYPE Type);
+
+  void
+  clearAllDrawCalls();
+};

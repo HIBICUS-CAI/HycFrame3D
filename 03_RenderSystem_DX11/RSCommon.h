@@ -55,7 +55,7 @@ enum class DRAWCALL_TYPE {
 enum class LENS_TYPE { PERSPECTIVE, ORTHOGRAPHIC };
 
 struct CAM_INFO {
-  LENS_TYPE mType = LENS_TYPE::PERSPECTIVE;
+  LENS_TYPE Type = LENS_TYPE::PERSPECTIVE;
   dx::XMFLOAT3 Position = {};
   dx::XMFLOAT3 LookAtVector = {};
   dx::XMFLOAT3 UpVector = {};

@@ -11,26 +11,31 @@
 
 #include "RSCommon.h"
 
-class RSParticleEmitter
-{
-public:
-    RSParticleEmitter(PARTICLE_EMITTER_INFO* _info);
-    ~RSParticleEmitter();
-
-    void ResetParticleEmitterInfo(PARTICLE_EMITTER_INFO* _info);
-
-    RS_PARTICLE_EMITTER_INFO& GetRSParticleEmitterInfo();
-
-    void StartParticleEmitter();
-    void PauseParticleEmitter();
-
-    void SetEmitterPosition(DirectX::XMFLOAT3& _position);
-    void SetEmitterPosition(DirectX::XMFLOAT3&& _position);
-
-    static void ResetEmitterIndex();
-
+class RSParticleEmitter {
 private:
-    RS_PARTICLE_EMITTER_INFO mRSParticleEmitterInfo;
-    bool mActiveFlg;
-    bool mStaticFlg;
+  RS_PARTICLE_EMITTER_INFO RSParticleEmitterInfo;
+  bool ActiveFlag;
+  bool StaticFlag;
+
+public:
+  RSParticleEmitter(const PARTICLE_EMITTER_INFO *Info);
+  ~RSParticleEmitter();
+
+  void
+  resetParticleEmitterInfo(const PARTICLE_EMITTER_INFO *Info);
+
+  RS_PARTICLE_EMITTER_INFO &
+  getRSParticleEmitterInfo();
+
+  void
+  startParticleEmitter();
+
+  void
+  pauseParticleEmitter();
+
+  void
+  setEmitterPosition(const DirectX::XMFLOAT3 &Position);
+
+  static void
+  resetEmitterIndex();
 };

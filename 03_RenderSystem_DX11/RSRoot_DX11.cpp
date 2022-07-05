@@ -47,47 +47,47 @@ RSRoot_DX11::~RSRoot_DX11() {}
 bool
 RSRoot_DX11::startUp(HWND WndHandle) {
   DevicesPtr = new RSDevices();
-  if (!DevicesPtr->StartUp(this, WndHandle)) {
+  if (!DevicesPtr->startUp(this, WndHandle)) {
     return false;
   }
 
   PipelinesManagerPtr = new RSPipelinesManager();
-  if (!PipelinesManagerPtr->StartUp(this)) {
+  if (!PipelinesManagerPtr->startUp(this)) {
     return false;
   }
 
   DrawCallsPoolPtr = new RSDrawCallsPool();
-  if (!DrawCallsPoolPtr->StartUp(this)) {
+  if (!DrawCallsPoolPtr->startUp(this)) {
     return false;
   }
 
   ResourceManagerPtr = new RSResourceManager();
-  if (!ResourceManagerPtr->StartUp(this)) {
+  if (!ResourceManagerPtr->startUp(this)) {
     return false;
   }
 
   StaticResourcesPtr = new RSStaticResources();
-  if (!StaticResourcesPtr->StartUp(this)) {
+  if (!StaticResourcesPtr->startUp(this)) {
     return false;
   }
 
   LightsContainerPtr = new RSLightsContainer();
-  if (!LightsContainerPtr->StartUp(this)) {
+  if (!LightsContainerPtr->startUp(this)) {
     return false;
   }
 
   CamerasContainerPtr = new RSCamerasContainer();
-  if (!CamerasContainerPtr->StartUp(this)) {
+  if (!CamerasContainerPtr->startUp(this)) {
     return false;
   }
 
   ParticlesContainerPtr = new RSParticlesContainer();
-  if (!ParticlesContainerPtr->StartUp(this)) {
+  if (!ParticlesContainerPtr->startUp(this)) {
     return false;
   }
 
   MeshHelperPtr = new RSMeshHelper();
-  if (!MeshHelperPtr->StartUp(this, ResourceManagerPtr)) {
+  if (!MeshHelperPtr->startUp(this, ResourceManagerPtr)) {
     return false;
   }
 
@@ -103,55 +103,55 @@ RSRoot_DX11::startUp(HWND WndHandle) {
 void
 RSRoot_DX11::cleanAndStop() {
   if (PipelinesManagerPtr) {
-    PipelinesManagerPtr->CleanAndStop();
+    PipelinesManagerPtr->cleanAndStop();
     delete PipelinesManagerPtr;
     PipelinesManagerPtr = nullptr;
   }
 
   if (MeshHelperPtr) {
-    MeshHelperPtr->CleanAndStop();
+    MeshHelperPtr->cleanAndStop();
     delete MeshHelperPtr;
     MeshHelperPtr = nullptr;
   }
 
   if (CamerasContainerPtr) {
-    CamerasContainerPtr->CleanAndStop();
+    CamerasContainerPtr->cleanAndStop();
     delete CamerasContainerPtr;
     CamerasContainerPtr = nullptr;
   }
 
   if (LightsContainerPtr) {
-    LightsContainerPtr->CleanAndStop();
+    LightsContainerPtr->cleanAndStop();
     delete LightsContainerPtr;
     LightsContainerPtr = nullptr;
   }
 
   if (ParticlesContainerPtr) {
-    ParticlesContainerPtr->CleanAndStop();
+    ParticlesContainerPtr->cleanAndStop();
     delete ParticlesContainerPtr;
     ParticlesContainerPtr = nullptr;
   }
 
   if (StaticResourcesPtr) {
-    StaticResourcesPtr->CleanAndStop();
+    StaticResourcesPtr->cleanAndStop();
     delete StaticResourcesPtr;
     StaticResourcesPtr = nullptr;
   }
 
   if (ResourceManagerPtr) {
-    ResourceManagerPtr->CleanAndStop();
+    ResourceManagerPtr->cleanAndStop();
     delete ResourceManagerPtr;
     ResourceManagerPtr = nullptr;
   }
 
   if (DrawCallsPoolPtr) {
-    DrawCallsPoolPtr->CleanAndStop();
+    DrawCallsPoolPtr->cleanAndStop();
     delete DrawCallsPoolPtr;
     DrawCallsPoolPtr = nullptr;
   }
 
   if (DevicesPtr) {
-    DevicesPtr->CleanAndStop();
+    DevicesPtr->cleanAndStop();
     delete DevicesPtr;
     DevicesPtr = nullptr;
   }

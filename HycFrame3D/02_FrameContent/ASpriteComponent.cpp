@@ -91,8 +91,8 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
     if (!_scene) { return false; }
 
     RS_SUBMESH_DATA point = getRSDX11RootInstance()->
-        getMeshHelper()->GeoGenerate()->
-        CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
+        getMeshHelper()->getGeoGenerator()->
+        createPointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
             _texName.c_str());
     mGeoPointName = GetCompName();
     mTextureName = _texName;
@@ -118,8 +118,8 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
     if (!_scene) { return false; }
 
     RS_SUBMESH_DATA point = getRSDX11RootInstance()->
-        getMeshHelper()->GeoGenerate()->
-        CreatePointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
+        getMeshHelper()->getGeoGenerator()->
+        createPointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
             _texName.c_str());
     mGeoPointName = GetCompName();
     mTextureName = _texName;

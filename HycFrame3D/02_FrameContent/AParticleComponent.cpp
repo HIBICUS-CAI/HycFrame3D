@@ -40,19 +40,19 @@ void AParticleComponent::Destory()
 {
     std::string name = GetCompName();
     getRSDX11RootInstance()->getParticlesContainer()->
-        DeleteRSParticleEmitter(name);
+        deleteRSParticleEmitter(name);
 }
 
 void AParticleComponent::CreateEmitter(PARTICLE_EMITTER_INFO* _emitterInfo)
 {
     std::string name = GetCompName();
     mRSParticleEmitterPtr = getRSDX11RootInstance()->getParticlesContainer()->
-        CreateRSParticleEmitter(name, _emitterInfo);
+        createRSParticleEmitter(name, _emitterInfo);
 }
 
 void AParticleComponent::ResetEmitter(PARTICLE_EMITTER_INFO* _emitterInfo)
 {
-    mRSParticleEmitterPtr->ResetParticleEmitterInfo(_emitterInfo);
+    mRSParticleEmitterPtr->resetParticleEmitterInfo(_emitterInfo);
 }
 
 RS_PARTICLE_EMITTER_INFO& AParticleComponent::GetEmitterInfo()
@@ -60,7 +60,7 @@ RS_PARTICLE_EMITTER_INFO& AParticleComponent::GetEmitterInfo()
 #ifdef _DEBUG
     assert(mRSParticleEmitterPtr);
 #endif // _DEBUG
-    return mRSParticleEmitterPtr->GetRSParticleEmitterInfo();
+    return mRSParticleEmitterPtr->getRSParticleEmitterInfo();
 }
 
 void AParticleComponent::SyncDataFromTransform()
@@ -73,5 +73,5 @@ void AParticleComponent::SyncDataFromTransform()
 #endif // _DEBUG
 
     DirectX::XMFLOAT3 world = atc->GetPosition();
-    mRSParticleEmitterPtr->SetEmitterPosition(world);
+    mRSParticleEmitterPtr->setEmitterPosition(world);
 }

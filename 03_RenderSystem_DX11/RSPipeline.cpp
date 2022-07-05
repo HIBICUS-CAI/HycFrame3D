@@ -110,8 +110,8 @@ RSPipeline::initAllTopics(RSDevices *DevicesPtr, bool ForceSingleThreadFlag) {
   if (!DevicesPtr) {
     return false;
   }
-  ImmediateContext = DevicesPtr->GetSTContext();
-  MultipleThreadModeFlag = DevicesPtr->GetCommandListSupport();
+  ImmediateContext = DevicesPtr->getSTContext();
+  MultipleThreadModeFlag = DevicesPtr->getCommandListSupport();
   MultipleThreadModeFlag = MultipleThreadModeFlag && (!ForceSingleThreadFlag);
 
   if (AssemblyFinishFlag) {
@@ -122,7 +122,7 @@ RSPipeline::initAllTopics(RSDevices *DevicesPtr, bool ForceSingleThreadFlag) {
       if (MultipleThreadModeFlag) {
         ID3D11DeviceContext *Deferred = nullptr;
         HRESULT Hr =
-            DevicesPtr->GetDevice()->CreateDeferredContext(0, &Deferred);
+            DevicesPtr->getDevice()->CreateDeferredContext(0, &Deferred);
         FAIL_HR_RETURN(Hr);
         Topic->setMTContext(Deferred);
 

@@ -76,12 +76,12 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         if (simp)
         {
             getRSDX11RootInstance()->getPipelinesManager()->
-                SetPipeline(basic);
+                setPipeline(basic);
         }
         else
         {
             getRSDX11RootInstance()->getPipelinesManager()->
-                SetPipeline(simple);
+                setPipeline(simple);
         }
         simp = !simp;
     }
@@ -245,13 +245,13 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
     {
         *editValue += deltatime / 1000.f;
         if (*editValue > 1.f) { *editValue = 1.f; }
-        getRSDX11RootInstance()->getStaticResources()->MapMaterialData();
+        getRSDX11RootInstance()->getStaticResources()->remapMaterialData();
     }
     if (input::isKeyDownInSingle(KB_LEFT))
     {
         *editValue -= deltatime / 1000.f;
         if (*editValue < 0.f) { *editValue = 0.f; }
-        getRSDX11RootInstance()->getStaticResources()->MapMaterialData();
+        getRSDX11RootInstance()->getStaticResources()->remapMaterialData();
     }
 
     float& factor = g_MatBallMesh->mInstanceMap.begin()->
@@ -280,7 +280,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 bool MatEditorInit(AInteractComponent* _aitc)
 {
     std::string basic = "light-pipeline";
-    getRSDX11RootInstance()->getPipelinesManager()->SetPipeline(basic);
+    getRSDX11RootInstance()->getPipelinesManager()->setPipeline(basic);
 
     g_PointLightAtc = _aitc->GetActorObject("point-light-actor")->
         GetComponent<ATransformComponent>();
@@ -295,7 +295,7 @@ bool MatEditorInit(AInteractComponent* _aitc)
     if (!g_MatBallMesh) { return false; }
 
     g_Material = getRSDX11RootInstance()->getStaticResources()->
-        GetMaterialDataPtrForTest();
+        getMaterialDataPtrForTest();
     if (!g_Material) { return false; }
 
     g_EditingMatTerm = MAT_TYPE::ROUGHNESS;

@@ -10,27 +10,36 @@
 #pragma once
 
 #include "RSCommon.h"
+
 #include <unordered_map>
 
-class RSCamerasContainer
-{
-public:
-    RSCamerasContainer();
-    ~RSCamerasContainer();
-
-    bool StartUp(class RSRoot_DX11* _root);
-    void CleanAndStop();
-
-    class RSCamera* CreateRSCamera(std::string& _name, CAM_INFO* _info);
-    class RSCamera* GetRSCamera(std::string& _name);
-    RS_CAM_INFO* GetRSCameraInfo(std::string& _name);
-    void DeleteRSCamera(std::string& _name);
-
+class RSCamerasContainer {
 private:
-    class RSRoot_DX11* mRootPtr;
+  class RSRoot_DX11 *RenderSystemRoot;
 
-    CRITICAL_SECTION mDataLock;
+  CRITICAL_SECTION DataLock;
 
-    std::unordered_map<std::string, class RSCamera*> mCameraMap;
+  std::unordered_map<std::string, class RSCamera *> CameraMap;
+
+public:
+  RSCamerasContainer();
+  ~RSCamerasContainer();
+
+  bool
+  startUp(class RSRoot_DX11 *RootPtr);
+
+  void
+  cleanAndStop();
+
+  class RSCamera *
+  createRSCamera(const std::string &Name, const CAM_INFO *Info);
+
+  class RSCamera *
+  getRSCamera(const std::string &Name);
+
+  RS_CAM_INFO *
+  getRSCameraInfo(const std::string &Name);
+
+  void
+  deleteRSCamera(const std::string &Name);
 };
-

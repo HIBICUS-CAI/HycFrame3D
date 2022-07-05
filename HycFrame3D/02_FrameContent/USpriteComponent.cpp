@@ -62,8 +62,8 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
     if (!_scene) { return false; }
 
     RS_SUBMESH_DATA sprite = getRSDX11RootInstance()->
-        getMeshHelper()->GeoGenerate()->
-        CreateSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
+        getMeshHelper()->getGeoGenerator()->
+        createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
 
     mMeshesName = GetCompName();
     _scene->GetAssetsPool()->InsertNewSubMesh(mMeshesName, sprite,
@@ -89,8 +89,8 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
     if (!_scene) { return false; }
 
     RS_SUBMESH_DATA sprite = getRSDX11RootInstance()->
-        getMeshHelper()->GeoGenerate()->
-        CreateSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
+        getMeshHelper()->getGeoGenerator()->
+        createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
 
     mMeshesName = GetCompName();
     _scene->GetAssetsPool()->InsertNewSubMesh(mMeshesName, sprite,

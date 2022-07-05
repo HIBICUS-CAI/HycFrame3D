@@ -8,308 +8,249 @@
 //---------------------------------------------------------------
 
 #include "RSLightsContainer.h"
+
 #include "RSCamerasContainer.h"
-#include "RSRoot_DX11.h"
 #include "RSLight.h"
+#include "RSRoot_DX11.h"
+
 #include <algorithm>
 
-#define LOCK EnterCriticalSection(&mDataLock)
-#define UNLOCK LeaveCriticalSection(&mDataLock)
+#define LOCK EnterCriticalSection(&DataLock)
+#define UNLOCK LeaveCriticalSection(&DataLock)
 
-RSLightsContainer::RSLightsContainer() :
-    mRootPtr(nullptr), mLightMap({}), mAmbientLights({}),
-    mCurrentAmbient({ 0.f,0.f,0.f,0.f }), mLights({}), mShadowLights({}),
-    mShadowLightIndeices({}), mDataLock({})
-{
+RSLightsContainer::RSLightsContainer()
+    : RenderSystemRoot(nullptr), LightsMap({}), AmbientLightsMap({}),
+      CurrentAmbient({0.f, 0.f, 0.f, 0.f}), LightsArray({}),
+      ShadowLightsArray({}), ShadowLightIndeicesArray({}), DataLock({}) {}
 
+RSLightsContainer::~RSLightsContainer() {}
+
+bool
+RSLightsContainer::startUp(RSRoot_DX11 *RootPtr) {
+  if (!RootPtr) {
+    return false;
+  }
+
+  RenderSystemRoot = RootPtr;
+  InitializeCriticalSection(&DataLock);
+
+  return true;
 }
 
-RSLightsContainer::~RSLightsContainer()
-{
-
+void
+RSLightsContainer::cleanAndStop() {
+  for (auto &Light : LightsMap) {
+    delete Light.second;
+  }
+  LightsMap.clear();
+  LightsArray.clear();
+  ShadowLightsArray.clear();
+  ShadowLightIndeicesArray.clear();
+  AmbientLightsMap.clear();
+  DeleteCriticalSection(&DataLock);
 }
 
-bool RSLightsContainer::StartUp(RSRoot_DX11* _root)
-{
-    if (!_root) { return false; }
-
-    mRootPtr = _root;
-    InitializeCriticalSection(&mDataLock);
-
-    return true;
+bool
+LightLessCompare(RSLight *A, RSLight *B) {
+  return static_cast<UINT>(A->getRSLightType()) <
+         static_cast<UINT>(B->getRSLightType());
 }
 
-void RSLightsContainer::CleanAndStop()
-{
-    for (auto& light : mLightMap)
-    {
-        delete light.second;
-    }
-    mLightMap.clear();
-    mLights.clear();
-    mShadowLights.clear();
-    mShadowLightIndeices.clear();
-    mAmbientLights.clear();
-    DeleteCriticalSection(&mDataLock);
-}
+RSLight *
+RSLightsContainer::createRSLight(const std::string &Name,
+                                 const LIGHT_INFO *Info) {
+  if (!Info) {
+    return nullptr;
+  }
 
-bool LightLessCompare(RSLight* a, RSLight* b)
-{
-    return (UINT)a->GetRSLightType() < (UINT)b->GetRSLightType();
-}
-
-RSLight* RSLightsContainer::CreateRSLight(
-    std::string& _name, LIGHT_INFO* _info)
-{
-    if (!_info) { return nullptr; }
-
-    LOCK;
-    if (mLightMap.find(_name) == mLightMap.end())
-    {
-        UNLOCK;
-        RSLight* light = new RSLight(_info);
-        LOCK;
-        mLightMap.insert({ _name,light });
-        mLights.emplace_back(light);
-        std::sort(mLights.begin(), mLights.end(),
-            LightLessCompare);
-        if (_info->ShadowFlag)
-        {
-            mShadowLights.emplace_back(light);
-            mShadowLightIndeices.emplace_back(
-                (UINT)(mShadowLights.size() - 1));
-        }
-    }
-    auto light = mLightMap[_name];
+  LOCK;
+  if (LightsMap.find(Name) == LightsMap.end()) {
     UNLOCK;
+    RSLight *Light = new RSLight(Info);
+    LOCK;
+    LightsMap.insert({Name, Light});
+    LightsArray.emplace_back(Light);
+    std::sort(LightsArray.begin(), LightsArray.end(), LightLessCompare);
+    if (Info->ShadowFlag) {
+      ShadowLightsArray.emplace_back(Light);
+      ShadowLightIndeicesArray.emplace_back(
+          static_cast<UINT>(ShadowLightsArray.size() - 1));
+    }
+  }
+  auto Light = LightsMap[Name];
+  UNLOCK;
 
-    return light;
+  return Light;
 }
 
-RSLight* RSLightsContainer::GetRSLight(std::string& _name)
-{
-    LOCK;
-    auto found = mLightMap.find(_name);
-    if (found != mLightMap.end())
-    {
-        auto light = found->second;
-        UNLOCK;
-        return light;
-    }
-    else
-    {
-        UNLOCK;
-        return nullptr;
-    }
-}
-
-RS_LIGHT_INFO* RSLightsContainer::GetRSLightInfo(
-    std::string& _name)
-{
-    LOCK;
-    auto found = mLightMap.find(_name);
-    if (found != mLightMap.end())
-    {
-        auto light = found->second;
-        UNLOCK;
-        return light->GetRSLightInfo();
-    }
-    else
-    {
-        UNLOCK;
-        return nullptr;
-    }
-}
-
-void RSLightsContainer::DeleteRSLight(std::string& _name,
-    bool _bloomDeleteByFrame)
-{
-    LOCK;
-    auto found = mLightMap.find(_name);
-    if (found != mLightMap.end())
-    {
-        for (auto i = mLights.begin(); i != mLights.end(); i++)
-        {
-            if ((*i) == found->second)
-            {
-                mLights.erase(i);
-                break;
-            }
-        }
-
-        for (auto i = mShadowLightIndeices.begin();
-            i != mShadowLightIndeices.end(); i++)
-        {
-            if (mShadowLights[(*i)] == found->second)
-            {
-                for (auto& index : mShadowLightIndeices)
-                {
-                    if (index > (*i)) { --index; }
-                }
-                mShadowLightIndeices.erase(i);
-                std::string camName = _name + "-light-cam";
-                mRootPtr->getCamerasContainer()->DeleteRSCamera(camName);
-                break;
-            }
-        }
-        for (auto i = mShadowLights.begin();
-            i != mShadowLights.end(); i++)
-        {
-            if ((*i) == found->second)
-            {
-                mShadowLights.erase(i);
-                break;
-            }
-        }
-
-        /*int index = 0;
-        for (auto i = mShadowLights.begin();
-            i != mShadowLights.end(); i++)
-        {
-            if ((*i) == found->second)
-            {
-                mShadowLights.erase(i);
-                break;
-            }
-            ++index;
-        }
-        for (auto i = mShadowLightIndeices.begin();
-            i != mShadowLightIndeices.end(); i++)
-        {
-            if ((*i) == index)
-            {
-                mShadowLightIndeices.erase(i);
-                std::string camName = _name + "-light-cam";
-                mRootPtr->CamerasContainer()->DeleteRSCamera(camName);
-                break;
-            }
-        }*/
-        found->second->ReleaseLightBloom(_bloomDeleteByFrame);
-        delete found->second;
-        mLightMap.erase(found);
-    }
+RSLight *
+RSLightsContainer::getRSLight(const std::string &Name) {
+  LOCK;
+  auto Found = LightsMap.find(Name);
+  if (Found != LightsMap.end()) {
+    auto Light = Found->second;
     UNLOCK;
+    return Light;
+  } else {
+    UNLOCK;
+    return nullptr;
+  }
 }
 
-bool RSLightsContainer::CreateLightCameraFor(
-    std::string& _name, CAM_INFO* _info)
-{
-    LOCK;
-    auto found = mLightMap.find(_name);
-    if (found != mLightMap.end())
-    {
-        auto light = found->second;
-        UNLOCK;
-        auto cam = light->CreateLightCamera(
-            _name, _info, mRootPtr->getCamerasContainer());
-        if (cam)
-        {
-            return true;
+RS_LIGHT_INFO *
+RSLightsContainer::getRSLightInfo(const std::string &Name) {
+  LOCK;
+  auto Found = LightsMap.find(Name);
+  if (Found != LightsMap.end()) {
+    auto Light = Found->second;
+    UNLOCK;
+    return Light->getRSLightInfo();
+  } else {
+    UNLOCK;
+    return nullptr;
+  }
+}
+
+void
+RSLightsContainer::deleteRSLight(const std::string &Name,
+                                 bool DeleteByFrameWorkFlag) {
+  LOCK;
+  auto Found = LightsMap.find(Name);
+  if (Found != LightsMap.end()) {
+    for (auto I = LightsArray.begin(), E = LightsArray.end(); I != E; I++) {
+      if ((*I) == Found->second) {
+        LightsArray.erase(I);
+        break;
+      }
+    }
+
+    for (auto I = ShadowLightIndeicesArray.begin(),
+              E = ShadowLightIndeicesArray.end();
+         I != E; I++) {
+      if (ShadowLightsArray[(*I)] == Found->second) {
+        for (auto &index : ShadowLightIndeicesArray) {
+          if (index > (*I)) {
+            --index;
+          }
         }
-        else
-        {
-            return false;
-        }
+        ShadowLightIndeicesArray.erase(I);
+        std::string camName = Name + "-light-Cam";
+        RenderSystemRoot->getCamerasContainer()->deleteRSCamera(camName);
+        break;
+      }
     }
-    else
-    {
-        UNLOCK;
-        return false;
+    for (auto I = ShadowLightsArray.begin(), E = ShadowLightsArray.end();
+         I != E; I++) {
+      if ((*I) == Found->second) {
+        ShadowLightsArray.erase(I);
+        break;
+      }
     }
+
+    Found->second->releaseLightBloom(DeleteByFrameWorkFlag);
+    delete Found->second;
+    LightsMap.erase(Found);
+  }
+  UNLOCK;
 }
 
-std::vector<RSLight*>* RSLightsContainer::GetLights()
-{
-    return &mLights;
-}
-
-std::vector<RSLight*>* RSLightsContainer::GetShadowLights()
-{
-    return &mShadowLights;
-}
-
-std::vector<INT>* RSLightsContainer::GetShadowLightIndeices()
-{
-    return &mShadowLightIndeices;
-}
-
-void RSLightsContainer::InsertAmbientLight(std::string&& _name,
-    DirectX::XMFLOAT4&& _light)
-{
-    LOCK;
-    auto found = mAmbientLights.find(_name);
-    if (found == mAmbientLights.end())
-    {
-        mAmbientLights.insert({ _name,_light });
-    }
+bool
+RSLightsContainer::createLightCameraFor(const std::string &Name,
+                                        const CAM_INFO *Info) {
+  LOCK;
+  auto Found = LightsMap.find(Name);
+  if (Found != LightsMap.end()) {
+    auto Light = Found->second;
     UNLOCK;
-}
-
-void RSLightsContainer::EraseAmbientLight(std::string&& _name)
-{
-    LOCK;
-    auto found = mAmbientLights.find(_name);
-    if (found != mAmbientLights.end())
-    {
-        mAmbientLights.erase(_name);
+    auto Cam = Light->createLightCamera(
+        Name, Info, RenderSystemRoot->getCamerasContainer());
+    if (Cam) {
+      return true;
+    } else {
+      return false;
     }
+  } else {
     UNLOCK;
+    return false;
+  }
 }
 
-DirectX::XMFLOAT4& RSLightsContainer::GetAmbientLight(
-    std::string& _name)
-{
-    LOCK;
-    auto found = mAmbientLights.find(_name);
-    static DirectX::XMFLOAT4 ambient = {};
-    if (found != mAmbientLights.end())
-    {
-        DirectX::XMFLOAT4& refAmb = mAmbientLights[_name];
-        UNLOCK;
-        return refAmb;
-    }
+std::vector<RSLight *> *
+RSLightsContainer::getLightsArray() {
+  return &LightsArray;
+}
+
+std::vector<RSLight *> *
+RSLightsContainer::getShadowLightsArray() {
+  return &ShadowLightsArray;
+}
+
+std::vector<INT> *
+RSLightsContainer::getShadowLightIndeicesArray() {
+  return &ShadowLightIndeicesArray;
+}
+
+void
+RSLightsContainer::insertAmbientLight(const std::string &Name,
+                                      const dx::XMFLOAT4 &Ambient) {
+  LOCK;
+  auto Found = AmbientLightsMap.find(Name);
+  if (Found == AmbientLightsMap.end()) {
+    AmbientLightsMap.insert({Name, Ambient});
+  }
+  UNLOCK;
+}
+
+void
+RSLightsContainer::eraseAmbientLight(const std::string &Name) {
+  LOCK;
+  auto Found = AmbientLightsMap.find(Name);
+  if (Found != AmbientLightsMap.end()) {
+    AmbientLightsMap.erase(Name);
+  }
+  UNLOCK;
+}
+
+const dx::XMFLOAT4 &
+RSLightsContainer::getAmbientLight(const std::string &Name) {
+  LOCK;
+  auto Found = AmbientLightsMap.find(Name);
+  static dx::XMFLOAT4 ambient = {};
+  if (Found != AmbientLightsMap.end()) {
+    dx::XMFLOAT4 &refAmb = AmbientLightsMap[Name];
     UNLOCK;
-    return ambient;
+    return refAmb;
+  }
+  UNLOCK;
+  return ambient;
 }
 
-void RSLightsContainer::SetCurrentAmbientLight(std::string&& _name)
-{
-    mCurrentAmbient = GetAmbientLight(_name);
+void
+RSLightsContainer::setCurrentAmbientLight(const std::string &Name) {
+  CurrentAmbient = getAmbientLight(Name);
 }
 
-void RSLightsContainer::ForceCurrentAmbientLight(DirectX::XMFLOAT4&& _ambient)
-{
-    mCurrentAmbient = _ambient;
+void
+RSLightsContainer::forceCurrentAmbientLight(const dx::XMFLOAT4 &Ambient) {
+  CurrentAmbient = Ambient;
 }
 
-void RSLightsContainer::ForceCurrentAmbientLight(DirectX::XMFLOAT4& _ambient)
-{
-    mCurrentAmbient = _ambient;
+const dx::XMFLOAT4 &
+RSLightsContainer::getCurrentAmbientLight() {
+  return CurrentAmbient;
 }
 
-DirectX::XMFLOAT4& RSLightsContainer::GetCurrentAmbientLight()
-{
-    return mCurrentAmbient;
+void
+RSLightsContainer::uploadLightBloomDrawCall() {
+  LOCK;
+  for (auto &Light : LightsArray) {
+    Light->uploadLightDrawCall();
+  }
+  UNLOCK;
 }
 
-void RSLightsContainer::UploadLightBloomDrawCall()
-{
-    LOCK;
-    for (auto& light : mLights)
-    {
-        light->UploadLightDrawCall();
-    }
-    UNLOCK;
-}
-
-void RSLightsContainer::CreateLightBloom(std::string&& _name,
-    RS_SUBMESH_DATA&& _meshData)
-{
-    GetRSLight(_name)->SetLightBloom(_meshData);
-}
-
-void RSLightsContainer::CreateLightBloom(std::string& _name,
-    RS_SUBMESH_DATA&& _meshData)
-{
-    GetRSLight(_name)->SetLightBloom(_meshData);
+void
+RSLightsContainer::createLightBloom(const std::string &Name,
+                                    const RS_SUBMESH_DATA &MeshData) {
+  getRSLight(Name)->setLightBloom(MeshData);
 }

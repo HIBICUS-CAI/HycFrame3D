@@ -10,67 +10,90 @@
 #pragma once
 
 #include "RSCommon.h"
+
 #include <unordered_map>
 
-class RSLightsContainer
-{
+class RSLightsContainer {
+private:
+  class RSRoot_DX11 *RenderSystemRoot;
+
+  std::unordered_map<std::string, class RSLight *> LightsMap;
+  std::unordered_map<std::string, DirectX::XMFLOAT4> AmbientLightsMap;
+
+  DirectX::XMFLOAT4 CurrentAmbient;
+
+  std::vector<class RSLight *> LightsArray;
+  std::vector<class RSLight *> ShadowLightsArray;
+  std::vector<INT> ShadowLightIndeicesArray;
+
+  CRITICAL_SECTION DataLock;
+
 public:
-    RSLightsContainer();
-    ~RSLightsContainer();
+  RSLightsContainer();
+  ~RSLightsContainer();
 
-    bool StartUp(class RSRoot_DX11* _root);
-    void CleanAndStop();
+  bool
+  startUp(class RSRoot_DX11 *RootPtr);
 
-    class RSLight* CreateRSLight(std::string& _name, LIGHT_INFO* _info);
-    class RSLight* GetRSLight(std::string& _name);
-    RS_LIGHT_INFO* GetRSLightInfo(std::string& _name);
-    void DeleteRSLight(std::string& _name, bool _bloomDeleteByFrame);
+  void
+  cleanAndStop();
 
-    bool CreateLightCameraFor(std::string& _name, CAM_INFO* _info);
+  class RSLight *
+  createRSLight(const std::string &Name, const LIGHT_INFO *Info);
 
-    void InsertAmbientLight(std::string&& _name,
-        DirectX::XMFLOAT4&& _light);
-    void EraseAmbientLight(std::string&& _name);
-    void SetCurrentAmbientLight(std::string&& _name);
-    void ForceCurrentAmbientLight(DirectX::XMFLOAT4&& _ambient);
-    void ForceCurrentAmbientLight(DirectX::XMFLOAT4& _ambient);
-    DirectX::XMFLOAT4& GetCurrentAmbientLight();
+  class RSLight *
+  getRSLight(const std::string &Name);
 
-    std::vector<class RSLight*>* GetLights();
-    std::vector<class RSLight*>* GetShadowLights();
-    std::vector<INT>* GetShadowLightIndeices();
+  RS_LIGHT_INFO *
+  getRSLightInfo(const std::string &Name);
 
-    void CreateLightBloom(std::string&& _name,
-        RS_SUBMESH_DATA&& _meshData);
-    void CreateLightBloom(std::string& _name,
-        RS_SUBMESH_DATA&& _meshData);
-    void UploadLightBloomDrawCall();
+  void
+  deleteRSLight(const std::string &Name, bool DeleteByFrameFlag);
 
-    inline void LockContainer()
-    {
-        EnterCriticalSection(&mDataLock);
-    }
+  bool
+  createLightCameraFor(const std::string &Name, const CAM_INFO *Info);
 
-    inline void UnlockContainer()
-    {
-        LeaveCriticalSection(&mDataLock);
-    }
+  void
+  insertAmbientLight(const std::string &Name, const DirectX::XMFLOAT4 &Light);
+
+  void
+  eraseAmbientLight(const std::string &Name);
+
+  void
+  setCurrentAmbientLight(const std::string &Name);
+
+  void
+  forceCurrentAmbientLight(const DirectX::XMFLOAT4 &Ambient);
+
+  const DirectX::XMFLOAT4 &
+  getCurrentAmbientLight();
+
+  std::vector<class RSLight *> *
+  getLightsArray();
+
+  std::vector<class RSLight *> *
+  getShadowLightsArray();
+
+  std::vector<INT> *
+  getShadowLightIndeicesArray();
+
+  void
+  createLightBloom(const std::string &Name, const RS_SUBMESH_DATA &MeshData);
+
+  void
+  uploadLightBloomDrawCall();
+
+  void
+  lockContainer() {
+    EnterCriticalSection(&DataLock);
+  }
+
+  void
+  unlockContainer() {
+    LeaveCriticalSection(&DataLock);
+  }
 
 private:
-    DirectX::XMFLOAT4& GetAmbientLight(std::string& _name);
-
-private:
-    class RSRoot_DX11* mRootPtr;
-
-    std::unordered_map<std::string, class RSLight*> mLightMap;
-    std::unordered_map<std::string, DirectX::XMFLOAT4> mAmbientLights;
-
-    DirectX::XMFLOAT4 mCurrentAmbient;
-
-    std::vector<class RSLight*> mLights;
-    std::vector<class RSLight*> mShadowLights;
-    std::vector<INT> mShadowLightIndeices;
-
-    CRITICAL_SECTION mDataLock;
+  const DirectX::XMFLOAT4 &
+  getAmbientLight(const std::string &Name);
 };
-

@@ -10,35 +10,49 @@
 #pragma once
 
 #include "RSCommon.h"
+
 #include <unordered_map>
 
-class RSResourceManager
-{
-public:
-    RSResourceManager();
-    ~RSResourceManager();
-
-    bool StartUp(class RSRoot_DX11* _root);
-    void CleanAndStop();
-
-    void AddResource(
-        std::string& _name, RS_RESOURCE_INFO& _resource);
-    void AddMeshSrv(
-        std::string& _name, ID3D11ShaderResourceView* _srv);
-    RS_RESOURCE_INFO* GetResourceInfo(std::string& _name);
-    ID3D11ShaderResourceView* GetMeshSrv(std::string& _name);
-    void DeleteResource(std::string& _name);
-    void DeleteMeshSrv(std::string& _name);
-    void ClearResources();
-    void ClearMeshSrvs();
-
+class RSResourceManager {
 private:
-    class RSRoot_DX11* mRootPtr;
-    std::unordered_map<std::string, RS_RESOURCE_INFO>
-        mResourceMap;
-    std::unordered_map<std::string, ID3D11ShaderResourceView*>
-        mMeshSrvMap;
+  class RSRoot_DX11 *RenderSystemRoot;
+  std::unordered_map<std::string, RS_RESOURCE_INFO> ResourceMap;
+  std::unordered_map<std::string, ID3D11ShaderResourceView *> MeshSrvMap;
 
-    CRITICAL_SECTION mResDataLock;
-    CRITICAL_SECTION mMesDataLock;
+  CRITICAL_SECTION ResDataLock;
+  CRITICAL_SECTION MesDataLock;
+
+public:
+  RSResourceManager();
+  ~RSResourceManager();
+
+  bool
+  startUp(class RSRoot_DX11 *RootPtr);
+
+  void
+  cleanAndStop();
+
+  void
+  addResource(const std::string &Name, const RS_RESOURCE_INFO &Resource);
+
+  void
+  addMeshSrv(const std::string &Name, ID3D11ShaderResourceView *Srv);
+
+  RS_RESOURCE_INFO *
+  getResource(const std::string &Name);
+
+  ID3D11ShaderResourceView *
+  getMeshSrv(const std::string &Name);
+
+  void
+  deleteResource(const std::string &Name);
+
+  void
+  deleteMeshSrv(const std::string &Name);
+
+  void
+  clearResources();
+
+  void
+  clearMeshSrvs();
 };

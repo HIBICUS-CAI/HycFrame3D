@@ -73,7 +73,7 @@ bool UButtonComponent::Init()
         }
 
         RS_SUBMESH_DATA btnSelect = getRSDX11RootInstance()->
-            getMeshHelper()->GeoGenerate()->CreateSpriteRect(
+            getMeshHelper()->getGeoGenerator()->createSpriteRect(
                 LAYOUT_TYPE::NORMAL_TANGENT_TEX, g_SelectFlagTexture);
         GetUiOwner()->GetSceneNode().GetAssetsPool()->InsertNewSubMesh(
             SELECTED_BTN_SPRITE_NAME, btnSelect, MESH_TYPE::UI_SPRITE);

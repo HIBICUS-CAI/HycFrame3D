@@ -8,103 +8,92 @@
 //---------------------------------------------------------------
 
 #include "RSCamerasContainer.h"
-#include "RSRoot_DX11.h"
+
 #include "RSCamera.h"
+#include "RSRoot_DX11.h"
 
-#define LOCK EnterCriticalSection(&mDataLock)
-#define UNLOCK LeaveCriticalSection(&mDataLock)
+#define LOCK EnterCriticalSection(&(this->DataLock))
+#define UNLOCK LeaveCriticalSection(&(this->DataLock))
 
-RSCamerasContainer::RSCamerasContainer() :
-    mRootPtr(nullptr), mDataLock({}), mCameraMap({})
-{
+RSCamerasContainer::RSCamerasContainer()
+    : RenderSystemRoot(nullptr), DataLock({}), CameraMap({}) {}
 
+RSCamerasContainer::~RSCamerasContainer() {}
+
+bool
+RSCamerasContainer::startUp(RSRoot_DX11 *RootPtr) {
+  if (!RootPtr) {
+    return false;
+  }
+
+  RenderSystemRoot = RootPtr;
+  InitializeCriticalSection(&DataLock);
+
+  return true;
 }
 
-RSCamerasContainer::~RSCamerasContainer()
-{
-
+void
+RSCamerasContainer::cleanAndStop() {
+  for (auto &Cam : CameraMap) {
+    delete Cam.second;
+  }
+  CameraMap.clear();
+  DeleteCriticalSection(&DataLock);
 }
 
-bool RSCamerasContainer::StartUp(RSRoot_DX11* _root)
-{
-    if (!_root) { return false; }
+RSCamera *
+RSCamerasContainer::createRSCamera(const std::string &Name,
+                                   const CAM_INFO *Info) {
+  if (!Info) {
+    return nullptr;
+  }
 
-    mRootPtr = _root;
-    InitializeCriticalSection(&mDataLock);
+  LOCK;
+  if (CameraMap.find(Name) == CameraMap.end()) {
+    RSCamera *Cam = new RSCamera(Info);
+    CameraMap.insert({Name, Cam});
+  }
+  auto Cam = CameraMap[Name];
+  UNLOCK;
 
-    return true;
+  return Cam;
 }
 
-void RSCamerasContainer::CleanAndStop()
-{
-    for (auto& cam : mCameraMap)
-    {
-        delete cam.second;
-    }
-    mCameraMap.clear();
-    DeleteCriticalSection(&mDataLock);
-}
-
-RSCamera* RSCamerasContainer::CreateRSCamera(
-    std::string& _name, CAM_INFO* _info)
-{
-    if (!_info) { return nullptr; }
-
-    LOCK;
-    if (mCameraMap.find(_name) == mCameraMap.end())
-    {
-        RSCamera* cam = new RSCamera(_info);
-        mCameraMap.insert({ _name,cam });
-    }
-    auto cam = mCameraMap[_name];
+RSCamera *
+RSCamerasContainer::getRSCamera(const std::string &Name) {
+  LOCK;
+  auto Found = CameraMap.find(Name);
+  if (Found != CameraMap.end()) {
+    auto Cam = Found->second;
     UNLOCK;
-
-    return cam;
-}
-
-RSCamera* RSCamerasContainer::GetRSCamera(std::string& _name)
-{
-    LOCK;
-    auto found = mCameraMap.find(_name);
-    if (found != mCameraMap.end())
-    {
-        auto cam = found->second;
-        UNLOCK;
-        return cam;
-    }
-    else
-    {
-        UNLOCK;
-        return nullptr;
-    }
-}
-
-RS_CAM_INFO* RSCamerasContainer::GetRSCameraInfo(
-    std::string& _name)
-{
-    LOCK;
-    auto found = mCameraMap.find(_name);
-    if (found != mCameraMap.end())
-    {
-        auto cam = found->second;
-        UNLOCK;
-        return cam->GetRSCameraInfo();
-    }
-    else
-    {
-        UNLOCK;
-        return nullptr;
-    }
-}
-
-void RSCamerasContainer::DeleteRSCamera(std::string& _name)
-{
-    LOCK;
-    auto found = mCameraMap.find(_name);
-    if (found != mCameraMap.end())
-    {
-        delete found->second;
-        mCameraMap.erase(found);
-    }
+    return Cam;
+  } else {
     UNLOCK;
+    return nullptr;
+  }
+}
+
+RS_CAM_INFO *
+RSCamerasContainer::getRSCameraInfo(const std::string &Name) {
+  LOCK;
+  auto Found = CameraMap.find(Name);
+  if (Found != CameraMap.end()) {
+    auto Cam = Found->second;
+    UNLOCK;
+    return Cam->getRSCameraInfo();
+  } else {
+    UNLOCK;
+    return nullptr;
+  }
+}
+
+void
+RSCamerasContainer::deleteRSCamera(const std::string &Name) {
+  LOCK;
+  auto Found = CameraMap.find(Name);
+  if (Found != CameraMap.end()) {
+    delete Found->second;
+    CameraMap.erase(Found);
+  }
+  UNLOCK;
 }

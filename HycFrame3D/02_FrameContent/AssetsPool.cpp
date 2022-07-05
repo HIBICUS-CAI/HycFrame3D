@@ -312,7 +312,7 @@ void AssetsPool::DeleteAllAssets()
         }
 
         getRSDX11RootInstance()->getMeshHelper()->
-            ReleaseSubMesh(mesh_data.second.mMeshData);
+            releaseSubMesh(mesh_data.second.mMeshData);
     }
     mSubMeshPool.clear();
     mMeshPool.clear();

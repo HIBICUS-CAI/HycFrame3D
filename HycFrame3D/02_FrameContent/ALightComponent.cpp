@@ -60,14 +60,14 @@ void ALightComponent::Update(Timer& _timer)
 void ALightComponent::Destory()
 {
     getRSDX11RootInstance()->getLightsContainer()->
-        DeleteRSLight(mLightName, true);
+        deleteRSLight(mLightName, true);
 }
 
 void ALightComponent::CreateLight()
 {
     mLightName = GetCompName();
     mRSLightPtr = getRSDX11RootInstance()->getLightsContainer()->
-        CreateRSLight(mLightName, &mLightInfoForInit);
+        createRSLight(mLightName, &mLightInfoForInit);
 #ifdef _DEBUG
     assert(mRSLightPtr);
 #endif // _DEBUG
@@ -79,20 +79,20 @@ void ALightComponent::CreateLight()
         if (!mesh)
         {
             RS_SUBMESH_DATA boxBloom = getRSDX11RootInstance()->
-                getMeshHelper()->GeoGenerate()->
-                CreateBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
+                getMeshHelper()->getGeoGenerator()->
+                createBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
             GetActorOwner()->GetSceneNode().GetAssetsPool()->InsertNewSubMesh(
                 BOX_BLOOM_MESH_NAME, boxBloom, MESH_TYPE::LIGHT);
             mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
                 GetSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
         }
-        mRSLightPtr->SetLightBloom(mesh->mMeshData);
+        mRSLightPtr->setLightBloom(mesh->mMeshData);
     }
 
     if (mIsCamera)
     {
         bool cam_create = getRSDX11RootInstance()->getLightsContainer()->
-            CreateLightCameraFor(mLightName, &mLightCamInfoForInit);
+            createLightCameraFor(mLightName, &mLightCamInfoForInit);
 #ifdef _DEBUG
         assert(cam_create);
 #endif // _DEBUG
@@ -102,7 +102,7 @@ void ALightComponent::CreateLight()
 
 void ALightComponent::ResetLight(LIGHT_INFO* _lightInfo)
 {
-    mRSLightPtr->ResetRSLight(_lightInfo);
+    mRSLightPtr->resetRSLight(_lightInfo);
 }
 
 RSLight* ALightComponent::GetLightInfo()
@@ -122,7 +122,7 @@ void ALightComponent::SyncDataFromTransform()
     DirectX::XMFLOAT3 angle = atc->GetRotation();
     DirectX::XMFLOAT3 scale = atc->GetScaling();
 
-    mRSLightPtr->SetRSLightPosition(world);
+    mRSLightPtr->setRSLightPosition(world);
 
     if (mIsBloom)
     {
@@ -132,7 +132,7 @@ void ALightComponent::SyncDataFromTransform()
             DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
         mat = DirectX::XMMatrixMultiply(mat,
             DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-        DirectX::XMStoreFloat4x4(mRSLightPtr->GetLightWorldMat(), mat);
+        DirectX::XMStoreFloat4x4(mRSLightPtr->getLightWorldMat(), mat);
     }
 }
 

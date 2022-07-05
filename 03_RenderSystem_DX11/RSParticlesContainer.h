@@ -10,50 +10,66 @@
 #pragma once
 
 #include "RSCommon.h"
+
 #include "RSParticleEmitter.h"
+
 #include <unordered_map>
 
-class RSParticlesContainer
-{
-public:
-    RSParticlesContainer();
-    ~RSParticlesContainer();
-
-    bool StartUp(class RSRoot_DX11* _root);
-    void CleanAndStop();
-
-    bool GetResetFlg();
-    void ResetRSParticleSystem();
-    void FinishResetRSParticleSystem();
-
-    RSParticleEmitter* CreateRSParticleEmitter(
-        std::string& _name, PARTICLE_EMITTER_INFO* _info);
-    void DeleteRSParticleEmitter(std::string& _name);
-
-    RSParticleEmitter* GetRSParticleEmitter(std::string& _name);
-    std::vector<RSParticleEmitter*>* GetAllParticleEmitters();
-
-    void StartRSParticleEmitter(std::string& _name);
-    void PauseRSParticleEmitter(std::string& _name);
-
-    inline void LockContainer()
-    {
-        EnterCriticalSection(&mDataLock);
-    }
-
-    inline void UnlockContainer()
-    {
-        LeaveCriticalSection(&mDataLock);
-    }
-
+class RSParticlesContainer {
 private:
-    class RSRoot_DX11* mRootPtr;
+  class RSRoot_DX11 *RenderSystemRoot;
 
-    bool mResetFlg;
+  bool ResetFlag;
 
-    std::vector<RSParticleEmitter*> mParticleEmitterVec;
-    std::unordered_map<std::string, RSParticleEmitter*>
-        mParticleEmitterMap;
+  std::vector<RSParticleEmitter *> ParticleEmitterArray;
+  std::unordered_map<std::string, RSParticleEmitter *> ParticleEmitterMap;
 
-    CRITICAL_SECTION mDataLock;
+  CRITICAL_SECTION DataLock;
+
+public:
+  RSParticlesContainer();
+  ~RSParticlesContainer();
+
+  bool
+  startUp(class RSRoot_DX11 *RootPtr);
+
+  void
+  cleanAndStop();
+
+  bool
+  getResetFlg();
+
+  void
+  resetRSParticleSystem();
+
+  void
+  finishResetRSParticleSystem();
+
+  RSParticleEmitter *
+  createRSParticleEmitter(std::string &Name, PARTICLE_EMITTER_INFO *Info);
+
+  void
+  deleteRSParticleEmitter(std::string &Name);
+
+  RSParticleEmitter *
+  getRSParticleEmitter(std::string &Name);
+
+  std::vector<RSParticleEmitter *> *
+  getAllParticleEmitters();
+
+  void
+  startRSParticleEmitter(std::string &Name);
+
+  void
+  pauseRSParticleEmitter(std::string &Name);
+
+  inline void
+  lockContainer() {
+    EnterCriticalSection(&DataLock);
+  }
+
+  inline void
+  unlockContainer() {
+    LeaveCriticalSection(&DataLock);
+  }
 };

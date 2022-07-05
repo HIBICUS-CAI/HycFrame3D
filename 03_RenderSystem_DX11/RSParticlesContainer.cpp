@@ -8,141 +8,124 @@
 //---------------------------------------------------------------
 
 #include "RSParticlesContainer.h"
+
 #include "RSRoot_DX11.h"
 
-#define LOCK EnterCriticalSection(&mDataLock)
-#define UNLOCK LeaveCriticalSection(&mDataLock)
+#define LOCK EnterCriticalSection(&DataLock)
+#define UNLOCK LeaveCriticalSection(&DataLock)
 
-RSParticlesContainer::RSParticlesContainer() :
-    mRootPtr(nullptr), mResetFlg(true),
-    mParticleEmitterVec({}), mParticleEmitterMap({}),
-    mDataLock({})
-{
+RSParticlesContainer::RSParticlesContainer()
+    : RenderSystemRoot(nullptr), ResetFlag(true), ParticleEmitterArray({}),
+      ParticleEmitterMap({}), DataLock({}) {}
 
+RSParticlesContainer::~RSParticlesContainer() {}
+
+bool
+RSParticlesContainer::startUp(RSRoot_DX11 *RootPtr) {
+  if (!RootPtr) {
+    return false;
+  }
+  RenderSystemRoot = RootPtr;
+
+  InitializeCriticalSection(&DataLock);
+
+  ParticleEmitterArray.reserve(MAX_INSTANCE_SIZE);
+
+  return true;
 }
 
-RSParticlesContainer::~RSParticlesContainer()
-{
+void
+RSParticlesContainer::cleanAndStop() {
+  ParticleEmitterMap.clear();
+  ParticleEmitterArray.clear();
 
+  DeleteCriticalSection(&DataLock);
 }
 
-bool RSParticlesContainer::StartUp(RSRoot_DX11* _root)
-{
-    if (!_root) { return false; }
-    mRootPtr = _root;
-
-    InitializeCriticalSection(&mDataLock);
-
-    mParticleEmitterVec.reserve(MAX_INSTANCE_SIZE);
-
-    return true;
+bool
+RSParticlesContainer::getResetFlg() {
+  return ResetFlag;
 }
 
-void RSParticlesContainer::CleanAndStop()
-{
-    mParticleEmitterMap.clear();
-    mParticleEmitterVec.clear();
-
-    DeleteCriticalSection(&mDataLock);
+void
+RSParticlesContainer::resetRSParticleSystem() {
+  RSParticleEmitter::resetEmitterIndex();
+  ResetFlag = true;
 }
 
-bool RSParticlesContainer::GetResetFlg()
-{
-    return mResetFlg;
+void
+RSParticlesContainer::finishResetRSParticleSystem() {
+  ResetFlag = false;
 }
 
-void RSParticlesContainer::ResetRSParticleSystem()
-{
-    RSParticleEmitter::ResetEmitterIndex();
-    mResetFlg = true;
+RSParticleEmitter *
+RSParticlesContainer::createRSParticleEmitter(std::string &Name,
+                                              PARTICLE_EMITTER_INFO *Info) {
+  auto Size = ParticleEmitterArray.size();
+  (void)Size;
+  RSParticleEmitter *Emitter = new RSParticleEmitter(Info);
+  LOCK;
+  ParticleEmitterArray.push_back(Emitter);
+  ParticleEmitterMap.insert({Name, Emitter});
+  UNLOCK;
+
+  return Emitter;
 }
 
-void RSParticlesContainer::FinishResetRSParticleSystem()
-{
-    mResetFlg = false;
+void
+RSParticlesContainer::deleteRSParticleEmitter(std::string &Name) {
+  LOCK;
+  auto Found = ParticleEmitterMap.find(Name);
+  if (Found != ParticleEmitterMap.end()) {
+    RSParticleEmitter *EmitterPtr = Found->second;
+    for (auto I = ParticleEmitterArray.begin(), E = ParticleEmitterArray.end();
+         I != E; I++) {
+      if ((*I) == EmitterPtr) {
+        delete EmitterPtr;
+        ParticleEmitterArray.erase(I);
+        ParticleEmitterMap.erase(Found);
+        break;
+      }
+    }
+  }
+  UNLOCK;
 }
 
-RSParticleEmitter* RSParticlesContainer::CreateRSParticleEmitter(
-    std::string& _name, PARTICLE_EMITTER_INFO* _info)
-{
-    auto size = mParticleEmitterVec.size();
-    (void)size;
-    RSParticleEmitter* emitter = new RSParticleEmitter(_info);
-    LOCK;
-    mParticleEmitterVec.push_back(emitter);
-    mParticleEmitterMap.insert({ _name,emitter });
+RSParticleEmitter *
+RSParticlesContainer::getRSParticleEmitter(std::string &Name) {
+  LOCK;
+  auto Found = ParticleEmitterMap.find(Name);
+  if (Found != ParticleEmitterMap.end()) {
+    auto Emitter = Found->second;
     UNLOCK;
-
-    return emitter;
-}
-
-void RSParticlesContainer::DeleteRSParticleEmitter(
-    std::string& _name)
-{
-    LOCK;
-    auto found = mParticleEmitterMap.find(_name);
-    if (found != mParticleEmitterMap.end())
-    {
-        RSParticleEmitter* ptr = found->second;
-        for (auto i = mParticleEmitterVec.begin();
-            i != mParticleEmitterVec.end(); i++)
-        {
-            if ((*i) == ptr)
-            {
-                delete ptr;
-                mParticleEmitterVec.erase(i);
-                mParticleEmitterMap.erase(found);
-                break;
-            }
-        }
-    }
+    return Emitter;
+  } else {
     UNLOCK;
+    return nullptr;
+  }
 }
 
-RSParticleEmitter* RSParticlesContainer::GetRSParticleEmitter(
-    std::string& _name)
-{
-    LOCK;
-    auto found = mParticleEmitterMap.find(_name);
-    if (found != mParticleEmitterMap.end())
-    {
-        auto emt = found->second;
-        UNLOCK;
-        return emt;
-    }
-    else
-    {
-        UNLOCK;
-        return nullptr;
-    }
+std::vector<RSParticleEmitter *> *
+RSParticlesContainer::getAllParticleEmitters() {
+  return &ParticleEmitterArray;
 }
 
-std::vector<RSParticleEmitter*>*
-RSParticlesContainer::GetAllParticleEmitters()
-{
-    return &mParticleEmitterVec;
+void
+RSParticlesContainer::startRSParticleEmitter(std::string &Name) {
+  LOCK;
+  auto Found = ParticleEmitterMap.find(Name);
+  if (Found != ParticleEmitterMap.end()) {
+    Found->second->startParticleEmitter();
+  }
+  UNLOCK;
 }
 
-void RSParticlesContainer::StartRSParticleEmitter(
-    std::string& _name)
-{
-    LOCK;
-    auto found = mParticleEmitterMap.find(_name);
-    if (found != mParticleEmitterMap.end())
-    {
-        found->second->StartParticleEmitter();
-    }
-    UNLOCK;
-}
-
-void RSParticlesContainer::PauseRSParticleEmitter(
-    std::string& _name)
-{
-    LOCK;
-    auto found = mParticleEmitterMap.find(_name);
-    if (found != mParticleEmitterMap.end())
-    {
-        found->second->PauseParticleEmitter();
-    }
-    UNLOCK;
+void
+RSParticlesContainer::pauseRSParticleEmitter(std::string &Name) {
+  LOCK;
+  auto Found = ParticleEmitterMap.find(Name);
+  if (Found != ParticleEmitterMap.end()) {
+    Found->second->pauseParticleEmitter();
+  }
+  UNLOCK;
 }

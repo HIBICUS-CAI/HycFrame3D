@@ -403,9 +403,9 @@ bool CreateBasicPipeline()
     }
 
     name = g_BasicPipeline->getPipelineName();
-    g_Root->getPipelinesManager()->AddPipeline(name, g_BasicPipeline);
-    g_Root->getPipelinesManager()->SetPipeline(name);
-    g_Root->getPipelinesManager()->ProcessNextPipeline();
+    g_Root->getPipelinesManager()->addPipeline(name, g_BasicPipeline);
+    g_Root->getPipelinesManager()->setPipeline(name);
+    g_Root->getPipelinesManager()->useNextPipeline();
 
     name = "simp-mrt-pass";
     RSPass_MRT* simp_mrt = mrt->clonePass();
@@ -479,15 +479,15 @@ bool CreateBasicPipeline()
     }
 
     name = g_SimplePipeline->getPipelineName();
-    g_Root->getPipelinesManager()->AddPipeline(name, g_SimplePipeline);
+    g_Root->getPipelinesManager()->addPipeline(name, g_SimplePipeline);
     if (g_RenderEffectConfig.mSimplyLitOn)
     {
-        g_Root->getPipelinesManager()->SetPipeline(name);
-        g_Root->getPipelinesManager()->ProcessNextPipeline();
+        g_Root->getPipelinesManager()->setPipeline(name);
+        g_Root->getPipelinesManager()->useNextPipeline();
     }
 
-    g_ViewPort.Width = (float)g_Root->getDevices()->GetCurrWndWidth();
-    g_ViewPort.Height = (float)g_Root->getDevices()->GetCurrWndHeight();
+    g_ViewPort.Width = (float)g_Root->getDevices()->getCurrWndWidth();
+    g_ViewPort.Height = (float)g_Root->getDevices()->getCurrWndHeight();
     g_ViewPort.MinDepth = 0.f;
     g_ViewPort.MaxDepth = 1.f;
     g_ViewPort.TopLeftX = 0.f;
@@ -573,10 +573,10 @@ bool RSPass_MRT::initPass()
     if (!CreateSamplers()) { return false; }
 
     mDrawCallType = DRAWCALL_TYPE::OPACITY;
-    mDrawCallPipe = g_Root->getDrawCallsPool()->GetDrawCallsPipe(mDrawCallType);
+    mDrawCallPipe = g_Root->getDrawCallsPool()->getDrawCallsPipe(mDrawCallType);
 
     std::string name = "temp-cam";
-    mRSCameraInfo = g_Root->getCamerasContainer()->GetRSCameraInfo(name);
+    mRSCameraInfo = g_Root->getCamerasContainer()->getRSCameraInfo(name);
 
     HasBeenInited = true;
 
@@ -598,11 +598,11 @@ void RSPass_MRT::releasePass()
     RS_RELEASE(mLinearSampler);
 
     std::string name = "mrt-depth";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
     name = "mrt-geo-buffer";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
     name = "mrt-anisotropic";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
 }
 
 void RSPass_MRT::execuatePass()
@@ -643,7 +643,7 @@ void RSPass_MRT::execuatePass()
     static std::string A_NAME = "AnimationVertex";
     static const auto ANIMAT_LAYOUT =
         getRSDX11RootInstance()->getStaticResources()->
-        GetStaticInputLayout(A_NAME);
+        getStaticInputLayout(A_NAME);
 
     for (auto& call : mDrawCallPipe->Data)
     {
@@ -718,7 +718,7 @@ void RSPass_MRT::execuatePass()
         context()->IASetIndexBuffer(
             call.MeshData.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
         context()->VSSetShaderResources(1, 1, &mInstanceStructedBufferSrv);
-        ID3D11ShaderResourceView* matSrv = g_Root->getStaticResources()->GetMaterialSrv();
+        ID3D11ShaderResourceView* matSrv = g_Root->getStaticResources()->getMaterialSrv();
         context()->PSSetShaderResources(0, 1, &matSrv);
         for (UINT i = 0; i < (UINT)MESH_TEXTURE_TYPE::SIZE; i++)
         {
@@ -873,9 +873,9 @@ bool RSPass_MRT::CreateViews()
 
     ID3D11Texture2D* texture = nullptr;
     texDesc.Width = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndWidth();
+        getCurrWndWidth();
     texDesc.Height = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndHeight();
+        getCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
     texDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -909,12 +909,12 @@ bool RSPass_MRT::CreateViews()
     dti.Resource.Texture2D = texture;
     dti.Dsv = mDepthDsv;
     dti.Srv = srv;
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
 
     texDesc.Width = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndWidth();
+        getCurrWndWidth();
     texDesc.Height = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndHeight();
+        getCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
     texDesc.SampleDesc.Count = 1;
@@ -945,10 +945,10 @@ bool RSPass_MRT::CreateViews()
     dti.Resource.Texture2D = texture;
     dti.Rtv = mGeoBufferRtv;
     dti.Srv = srv;
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
 
-    texDesc.Width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
-    texDesc.Height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
+    texDesc.Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
+    texDesc.Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
     texDesc.SampleDesc.Count = 1;
@@ -979,7 +979,7 @@ bool RSPass_MRT::CreateViews()
     dti.Resource.Texture2D = texture;
     dti.Rtv = mAnisotropicRtv;
     dti.Srv = srv;
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
 
     return true;
 }
@@ -1141,7 +1141,7 @@ bool RSPass_Ssao::initPass()
 
     std::string name = "temp-cam";
     mRSCameraInfo = g_Root->getCamerasContainer()->
-        GetRSCameraInfo(name);
+        getRSCameraInfo(name);
 
     HasBeenInited = true;
 
@@ -1164,11 +1164,11 @@ void RSPass_Ssao::releasePass()
     RS_RELEASE(mIndexBuffer);
 
     std::string name = "random-tex-ssao";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
     name = "ssao-tex-ssao";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
     name = "ssao-tex-compress-ssao";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
 }
 
 void RSPass_Ssao::execuatePass()
@@ -1477,12 +1477,12 @@ bool RSPass_Ssao::CreateTextures()
     dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
     dti.Resource.Texture2D = texture;
     dti.Srv = srv;
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
 
     texDesc.Width = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndWidth();
+        getCurrWndWidth();
     texDesc.Height = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndHeight();
+        getCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
     texDesc.SampleDesc.Count = 1;
@@ -1517,12 +1517,12 @@ bool RSPass_Ssao::CreateTextures()
     dti.Resource.Texture2D = texture;
     dti.Rtv = rtv;
     dti.Srv = srv;
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
 
     texDesc.Width = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndWidth() / 2;
+        getCurrWndWidth() / 2;
     texDesc.Height = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndHeight() / 2;
+        getCurrWndHeight() / 2;
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
     texDesc.SampleDesc.Count = 1;
@@ -1566,7 +1566,7 @@ bool RSPass_Ssao::CreateTextures()
     dti.Rtv = rtv;
     dti.Srv = srv;
     dti.Uav = uav;
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
 
     return true;
 }
@@ -1575,21 +1575,21 @@ bool RSPass_Ssao::CreateViews()
 {
     std::string name = "random-tex-ssao";
     mRandomMapSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
     name = "mrt-geo-buffer";
     mGeoBufferSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
     name = "mrt-depth";
     mDepthMapSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
     name = "ssao-tex-ssao";
     mRenderTargetView = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Rtv;
+        getResource(name)->Rtv;
     mNotCompressSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
     name = "ssao-tex-compress-ssao";
     mCompressRtv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Rtv;
+        getResource(name)->Rtv;
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desSRV = {};
     HRESULT hr = S_OK;
@@ -1727,9 +1727,9 @@ void RSPass_KBBlur::execuatePass()
 
     static const UINT loopCount = g_RenderEffectConfig.mSsaoBlurCount;
     static UINT width = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndWidth() / 2;
+        getCurrWndWidth() / 2;
     static UINT height = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndHeight() / 2;
+        getCurrWndHeight() / 2;
     UINT dispatchVert = rs_tool::align(width, 256) / 256;
     UINT dispatchHori = rs_tool::align(height, 256) / 256;
 
@@ -1793,13 +1793,13 @@ bool RSPass_KBBlur::CreateViews()
 {
     std::string name = "mrt-geo-buffer";
     mGeoBufferSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
     name = "mrt-depth";
     mDepthMapSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
     name = "ssao-tex-compress-ssao";
     mSsaoTexUav = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Uav;
+        getResource(name)->Uav;
 
     return true;
 }
@@ -1863,7 +1863,7 @@ bool RSPass_Shadow::initPass()
 
     mDrawCallType = DRAWCALL_TYPE::OPACITY;
     mDrawCallPipe = g_Root->getDrawCallsPool()->
-        GetDrawCallsPipe(mDrawCallType);
+        getDrawCallsPipe(mDrawCallType);
 
     HasBeenInited = true;
 
@@ -1881,15 +1881,15 @@ void RSPass_Shadow::releasePass()
     RS_RELEASE(mInstanceStructedBuffer);
 
     std::string name = "light-depth-light-other";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
     name = "light-depth-light-dep0";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
     name = "light-depth-light-dep1";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
     name = "light-depth-light-dep2";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
     name = "light-depth-light-dep3";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
 }
 
 void RSPass_Shadow::execuatePass()
@@ -1904,14 +1904,14 @@ void RSPass_Shadow::execuatePass()
     UINT aniStride = sizeof(vertex_type::AnimationVertex);
     UINT offset = 0;
     auto shadowLights = g_Root->getLightsContainer()->
-        GetShadowLights();
+        getShadowLightsArray();
     UINT shadowSize = (UINT)shadowLights->size();
     D3D11_MAPPED_SUBRESOURCE msr = {};
 
     static std::string A_NAME = "AnimationVertex";
     static const auto ANIMAT_LAYOUT =
         getRSDX11RootInstance()->getStaticResources()->
-        GetStaticInputLayout(A_NAME);
+        getStaticInputLayout(A_NAME);
 
     for (UINT i = 0; i < shadowSize; i++)
     {
@@ -1925,13 +1925,13 @@ void RSPass_Shadow::execuatePass()
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
         ViewProj* vp_data = (ViewProj*)msr.pData;
         auto light = (*shadowLights)[i];
-        auto lcam = light->GetRSLightCamera();
+        auto lcam = light->getRSLightCamera();
         mat = DirectX::XMLoadFloat4x4(
-            &(lcam->GetRSCameraInfo()->ViewMatrix));
+            &(lcam->getRSCameraInfo()->ViewMatrix));
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&vp_data[0].mViewMat, mat);
         mat = DirectX::XMLoadFloat4x4(
-            &(lcam->GetRSCameraInfo()->ProjMatrix));
+            &(lcam->getRSCameraInfo()->ProjMatrix));
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
         context()->Unmap(mViewProjStructedBuffer, 0);
@@ -2137,9 +2137,9 @@ bool RSPass_Shadow::CreateViews()
     ID3D11Texture2D* depthTex = nullptr;
     D3D11_TEXTURE2D_DESC texDepSte = {};
     texDepSte.Width = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndWidth();
+        getCurrWndWidth();
     texDepSte.Height = getRSDX11RootInstance()->getDevices()->
-        GetCurrWndHeight();
+        getCurrWndHeight();
     texDepSte.MipLevels = 1;
     texDepSte.ArraySize = MAX_SHADOW_SIZE;
     texDepSte.Format = DXGI_FORMAT_R24G8_TYPELESS;
@@ -2185,21 +2185,21 @@ bool RSPass_Shadow::CreateViews()
     dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
     dti.Resource.Texture2D = depthTex;
     dti.Srv = srv;
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
 
     dti = {};
     name = "light-depth-light-dep0";
     dti.Dsv = mDepthStencilView[0];
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
     name = "light-depth-light-dep1";
     dti.Dsv = mDepthStencilView[1];
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
     name = "light-depth-light-dep2";
     dti.Dsv = mDepthStencilView[2];
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
     name = "light-depth-light-dep3";
     dti.Dsv = mDepthStencilView[3];
-    g_Root->getResourceManager()->AddResource(name, dti);
+    g_Root->getResourceManager()->addResource(name, dti);
 
     ZeroMemory(&desSRV, sizeof(desSRV));
     desSRV.Format = DXGI_FORMAT_UNKNOWN;
@@ -2310,7 +2310,7 @@ bool RSPass_Defered::initPass()
 
     std::string name = "temp-cam";
     mRSCameraInfo = g_Root->getCamerasContainer()->
-        GetRSCameraInfo(name);
+        getRSCameraInfo(name);
 
     HasBeenInited = true;
 
@@ -2355,11 +2355,11 @@ void RSPass_Defered::execuatePass()
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     Ambient* amb_data = (Ambient*)msr.pData;
     DirectX::XMFLOAT4 ambientL = getRSDX11RootInstance()->
-        getLightsContainer()->GetCurrentAmbientLight();
+        getLightsContainer()->getCurrentAmbientLight();
     amb_data[0].mAmbient = ambientL;
     context()->Unmap(mAmbientStructedBuffer, 0);
 
-    static auto lights = g_Root->getLightsContainer()->GetLights();
+    static auto lights = g_Root->getLightsContainer()->getLightsArray();
     context()->Map(mLightInfoStructedBuffer, 0,
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     LightInfo* li_data = (LightInfo*)msr.pData;
@@ -2369,7 +2369,7 @@ void RSPass_Defered::execuatePass()
     UINT pNum = 0;
     for (auto& l : *lights)
     {
-        auto type = l->GetRSLightType();
+        auto type = l->getRSLightType();
         switch (type)
         {
         case LIGHT_TYPE::DIRECT:
@@ -2385,13 +2385,13 @@ void RSPass_Defered::execuatePass()
     li_data[0].mPointLightNum = pNum;
     li_data[0].mSpotLightNum = sNum;
     li_data[0].mShadowLightNum = (UINT)g_Root->getLightsContainer()->
-        GetShadowLights()->size();
+        getShadowLightsArray()->size();
     li_data[0].mShadowLightIndex[0] = -1;
     li_data[0].mShadowLightIndex[1] = -1;
     li_data[0].mShadowLightIndex[2] = -1;
     li_data[0].mShadowLightIndex[3] = -1;
     auto shadowIndeices = g_Root->getLightsContainer()->
-        GetShadowLightIndeices();
+        getShadowLightIndeicesArray();
     for (UINT i = 0; i < li_data[0].mShadowLightNum; i++)
     {
         li_data[0].mShadowLightIndex[i] = (*shadowIndeices)[i];
@@ -2408,7 +2408,7 @@ void RSPass_Defered::execuatePass()
     UINT lightIndex = 0;
     for (auto& l : *lights)
     {
-        l_data[lightIndex++] = *(l->GetRSLightInfo());
+        l_data[lightIndex++] = *(l->getRSLightInfo());
     }
     context()->Unmap(mLightStructedBuffer, 0);
 
@@ -2416,17 +2416,17 @@ void RSPass_Defered::execuatePass()
         D3D11_MAP_WRITE_DISCARD, 0, &msr);
     ShadowInfo* s_data = (ShadowInfo*)msr.pData;
     auto shadowLights = g_Root->getLightsContainer()->
-        GetShadowLights();
+        getShadowLightsArray();
     UINT shadowSize = (UINT)shadowLights->size();
     for (UINT i = 0; i < shadowSize; i++)
     {
-        auto lcam = (*shadowLights)[i]->GetRSLightCamera();
+        auto lcam = (*shadowLights)[i]->getRSLightCamera();
         mat = DirectX::XMLoadFloat4x4(
-            &(lcam->GetRSCameraInfo()->ViewMatrix));
+            &(lcam->getRSCameraInfo()->ViewMatrix));
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&s_data[i].mShadowViewMat, mat);
         mat = DirectX::XMLoadFloat4x4(
-            &(lcam->GetRSCameraInfo()->ProjMatrix));
+            &(lcam->getRSCameraInfo()->ProjMatrix));
         mat = DirectX::XMMatrixTranspose(mat);
         DirectX::XMStoreFloat4x4(&s_data[i].mShadowProjMat, mat);
     }
@@ -2456,7 +2456,7 @@ void RSPass_Defered::execuatePass()
 
     static std::string depthSrvName = "mrt-depth";
     static auto depSrv = g_Root->getResourceManager()->
-        GetResourceInfo(depthSrvName)->Srv;
+        getResource(depthSrvName)->Srv;
     ID3D11ShaderResourceView* srvs[] =
     {
         mAmbientStructedBufferSrv,
@@ -2464,7 +2464,7 @@ void RSPass_Defered::execuatePass()
         mLightStructedBufferSrv,
         mShadowStructedBufferSrv,
         mCameraStructedBufferSrv,
-        g_Root->getStaticResources()->GetMaterialSrv(),
+        g_Root->getStaticResources()->getMaterialSrv(),
         mGeoBufferSrv, mAnisotropicSrv,
         mSsaoSrv, mShadowDepthSrv,
         g_IblBrdfSrv, g_DiffMapSrv, g_SpecMapSrv,
@@ -2638,20 +2638,20 @@ bool RSPass_Defered::CreateBuffers()
 
 bool RSPass_Defered::CreateViews()
 {
-    mRenderTargetView = g_Root->getDevices()->GetHighDynamicRtv();
+    mRenderTargetView = g_Root->getDevices()->getHighDynamicRtv();
 
     std::string name = "mrt-geo-buffer";
     mGeoBufferSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
     name = "mrt-anisotropic";
     mAnisotropicSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
     name = "ssao-tex-compress-ssao";
     mSsaoSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
     name = "light-depth-light-other";
     mShadowDepthSrv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Srv;
+        getResource(name)->Srv;
 
     HRESULT hr = S_OK;
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
@@ -2806,20 +2806,20 @@ bool RSPass_SkyShpere::initPass()
     if (!CreateViews()) { return false; }
     if (!CreateSamplers()) { return false; }
 
-    mSkySphereMesh = g_Root->getMeshHelper()->GeoGenerate()->
-        CreateGeometrySphere(10.f, 0,
+    mSkySphereMesh = g_Root->getMeshHelper()->getGeoGenerator()->
+        createGeometrySphere(10.f, 0,
             LAYOUT_TYPE::NORMAL_TANGENT_TEX, false,
             {},
             "this is not a bug about loading skybox texture failed :)");
     HRESULT hr = DirectX::CreateDDSTextureFromFile(
-        g_Root->getDevices()->GetDevice(),
+        g_Root->getDevices()->getDevice(),
         L".\\RenderSystem_StaticResources\\Textures\\ibl_brdf.dds",
         nullptr, &g_IblBrdfSrv);
     if (FAILED(hr)) { return false; }
 
     std::string name = "temp-cam";
     mRSCameraInfo = g_Root->getCamerasContainer()->
-        GetRSCameraInfo(name);
+        getRSCameraInfo(name);
 
     HasBeenInited = true;
 
@@ -2836,7 +2836,7 @@ void RSPass_SkyShpere::releasePass()
     RS_RELEASE(mSkyShpereInfoStructedBuffer);
     //RS_RELEASE(mSkyShpereInfoStructedBufferSrv);
 
-    g_Root->getMeshHelper()->ReleaseSubMesh(mSkySphereMesh);
+    g_Root->getMeshHelper()->releaseSubMesh(mSkySphereMesh);
 }
 
 void RSPass_SkyShpere::execuatePass()
@@ -2975,10 +2975,10 @@ bool RSPass_SkyShpere::CreateBuffers()
 
 bool RSPass_SkyShpere::CreateViews()
 {
-    mRenderTargerView = g_Root->getDevices()->GetHighDynamicRtv();
+    mRenderTargerView = g_Root->getDevices()->getHighDynamicRtv();
     std::string name = "mrt-depth";
     mDepthStencilView = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Dsv;
+        getResource(name)->Dsv;
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desSRV = {};
     HRESULT hr = S_OK;
@@ -3073,11 +3073,11 @@ bool RSPass_Bloom::initPass()
     if (!CreateSamplers()) { return false; }
 
     mDrawCallPipe = g_Root->getDrawCallsPool()->
-        GetDrawCallsPipe(mDrawCallType);
+        getDrawCallsPipe(mDrawCallType);
 
     std::string name = "temp-cam";
     mRSCameraInfo = g_Root->getCamerasContainer()->
-        GetRSCameraInfo(name);
+        getRSCameraInfo(name);
     if (!mRSCameraInfo) { return false; }
 
     HasBeenInited = true;
@@ -3088,9 +3088,9 @@ bool RSPass_Bloom::initPass()
 void RSPass_Bloom::releasePass()
 {
     std::string name = "bloom-light";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
     name = "bloom-compress-light";
-    g_Root->getResourceManager()->DeleteResource(name);
+    g_Root->getResourceManager()->deleteResource(name);
 
     RS_RELEASE(mVertexShader);
     RS_RELEASE(mPixelShader);
@@ -3331,11 +3331,11 @@ bool RSPass_Bloom::CreateViews()
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     std::string name = "";
 
-    mRtv = g_Root->getDevices()->GetHighDynamicRtv();
+    mRtv = g_Root->getDevices()->getHighDynamicRtv();
 
     name = "mrt-depth";
     mDepthDsv = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Dsv;
+        getResource(name)->Dsv;
     if (!mDepthDsv) { return false; }
 
     ZeroMemory(&srvDesc, sizeof(srvDesc));
@@ -3469,8 +3469,8 @@ bool RSPass_PriticleSetUp::initPass()
 {
     if (HasBeenInited) { return true; }
 
-    int width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
-    int height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
+    int width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
+    int height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
 
     mTilingConstant.mNumTilesX =
         rs_tool::align(width, PTC_TILE_X_SIZE) / PTC_TILE_X_SIZE;
@@ -3502,7 +3502,7 @@ bool RSPass_PriticleSetUp::initPass()
     res.Srv = mParticleRender_Srv;
     res.Uav = mParticleRender_Uav;
     name = PTC_RENDER_BUFFER_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
@@ -3510,14 +3510,14 @@ bool RSPass_PriticleSetUp::initPass()
     res.Srv = mPartA_Srv;
     res.Uav = mPartA_Uav;
     name = PTC_A_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mParticlePartB;
     res.Uav = mPartB_Uav;
     name = PTC_B_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
@@ -3525,7 +3525,7 @@ bool RSPass_PriticleSetUp::initPass()
     res.Srv = mViewSpacePos_Srv;
     res.Uav = mViewSpacePos_Uav;
     name = PTC_VIEW_SPCACE_POS_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
@@ -3533,7 +3533,7 @@ bool RSPass_PriticleSetUp::initPass()
     res.Srv = mMaxRadius_Srv;
     res.Uav = mMaxRadius_Uav;
     name = PTC_MAX_RADIUS_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
@@ -3541,7 +3541,7 @@ bool RSPass_PriticleSetUp::initPass()
     res.Srv = mStridedCoarseCull_Srv;
     res.Uav = mStridedCoarseCull_Uav;
     name = PTC_COARSE_CULL_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
@@ -3549,7 +3549,7 @@ bool RSPass_PriticleSetUp::initPass()
     res.Srv = mStridedCoarseCullCounter_Srv;
     res.Uav = mStridedCoarseCullCounter_Uav;
     name = PTC_COARSE_CULL_COUNTER_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
@@ -3557,14 +3557,14 @@ bool RSPass_PriticleSetUp::initPass()
     res.Srv = mTiledIndex_Srv;
     res.Uav = mTiledIndex_Uav;
     name = PTC_TILED_INDEX_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mDeadListBuffer;
     res.Uav = mDeadList_Uav;
     name = PTC_DEAD_LIST_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
@@ -3572,63 +3572,63 @@ bool RSPass_PriticleSetUp::initPass()
     res.Srv = mAliveIndex_Srv;
     res.Uav = mAliveIndex_Uav;
     name = PTC_ALIVE_INDEX_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mDeadListConstantBuffer;
     name = PTC_DEAD_LIST_CONSTANT_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mActiveListConstantBuffer;
     name = PTC_ALIVE_LIST_CONSTANT_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mEmitterConstantBuffer;
     name = PTC_EMITTER_CONSTANT_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mCameraConstantBuffer;
     name = PTC_CAMERA_CONSTANT_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mTilingConstantBuffer;
     name = PTC_TILING_CONSTANT_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mDebugCounterBuffer;
     name = PTC_DEBUG_COUNTER_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::TEXTURE2D;
     res.Resource.Texture2D = mParticleRandomTexture;
     res.Srv = mParticleRandom_Srv;
     name = PTC_RAMDOM_TEXTURE_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mSimulEmitterStructedBuffer;
     res.Srv = mSimulEmitterStructedBuffer_Srv;
     name = PTC_SIMU_EMITTER_STRU_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     res = {};
     res.Type = RS_RESOURCE_TYPE::BUFFER;
     res.Resource.Buffer = mTimeConstantBuffer;
     name = PTC_TIME_CONSTANT_NAME;
-    resManager->AddResource(name, res);
+    resManager->addResource(name, res);
 
     HasBeenInited = true;
 
@@ -3639,43 +3639,43 @@ void RSPass_PriticleSetUp::releasePass()
 {
     auto resManager = getRSDX11RootInstance()->getResourceManager();
     std::string name = PTC_RENDER_BUFFER_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_A_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_B_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_VIEW_SPCACE_POS_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_MAX_RADIUS_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_COARSE_CULL_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_COARSE_CULL_COUNTER_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_TILED_INDEX_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_DEAD_LIST_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_ALIVE_INDEX_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_DEAD_LIST_CONSTANT_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_ALIVE_LIST_CONSTANT_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_EMITTER_CONSTANT_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_CAMERA_CONSTANT_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_TILING_CONSTANT_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_DEBUG_COUNTER_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_RAMDOM_TEXTURE_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_SIMU_EMITTER_STRU_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
     name = PTC_TIME_CONSTANT_NAME;
-    resManager->DeleteResource(name);
+    resManager->deleteResource(name);
 }
 
 void RSPass_PriticleSetUp::execuatePass()
@@ -4054,14 +4054,14 @@ bool RSPass_PriticleEmitSimulate::initPass()
 
     std::string name = "temp-cam";
     mRSCameraInfo = getRSDX11RootInstance()->getCamerasContainer()->
-        GetRSCameraInfo(name);
+        getRSCameraInfo(name);
     if (!mRSCameraInfo) { return false; }
 
     if (!CreateShaders()) { return false; }
     if (!CreateSampler()) { return false; }
     if (!CheckResources()) { return false; }
 
-    mRSParticleContainerPtr->ResetRSParticleSystem();
+    mRSParticleContainerPtr->resetRSParticleSystem();
 
     HasBeenInited = true;
 
@@ -4078,12 +4078,12 @@ void RSPass_PriticleEmitSimulate::releasePass()
 
 void RSPass_PriticleEmitSimulate::execuatePass()
 {
-    if (!mRSParticleContainerPtr->GetAllParticleEmitters()->size())
+    if (!mRSParticleContainerPtr->getAllParticleEmitters()->size())
     {
         return;
     }
 
-    if (mRSParticleContainerPtr->GetResetFlg())
+    if (mRSParticleContainerPtr->getResetFlg())
     {
         {
             context()->CSSetShader(mInitDeadListShader,
@@ -4117,7 +4117,7 @@ void RSPass_PriticleEmitSimulate::execuatePass()
                 uav, nullptr);
         }
 
-        mRSParticleContainerPtr->FinishResetRSParticleSystem();
+        mRSParticleContainerPtr->finishResetRSParticleSystem();
     }
 
     {
@@ -4136,7 +4136,7 @@ void RSPass_PriticleEmitSimulate::execuatePass()
         context()->CSSetSamplers(0, ARRAYSIZE(sam), sam);
 
         auto emitters = mRSParticleContainerPtr->
-            GetAllParticleEmitters();
+            getAllParticleEmitters();
         D3D11_MAPPED_SUBRESOURCE msr = {};
         context()->Map(mTimeConstantBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
@@ -4148,7 +4148,7 @@ void RSPass_PriticleEmitSimulate::execuatePass()
         context()->Unmap(mTimeConstantBuffer, 0);
         for (auto& emitter : *emitters)
         {
-            auto& rsinfo = emitter->GetRSParticleEmitterInfo();
+            auto& rsinfo = emitter->getRSParticleEmitterInfo();
             rsinfo.Accumulation += rsinfo.EmitNumPerSecond *
                 g_DeltaTimeInSecond;
             if (rsinfo.Accumulation > 1.f)
@@ -4224,7 +4224,7 @@ void RSPass_PriticleEmitSimulate::execuatePass()
         context()->Unmap(mCameraConstantBuffer, 0);
 
         static auto emitterVec = mRSParticleContainerPtr->
-            GetAllParticleEmitters();
+            getAllParticleEmitters();
         auto size = emitterVec->size();
         context()->Map(mSimulEmitterStructedBuffer, 0,
             D3D11_MAP_WRITE_DISCARD, 0, &msr);
@@ -4233,7 +4233,7 @@ void RSPass_PriticleEmitSimulate::execuatePass()
         for (size_t i = 0; i < size; i++)
         {
             emitter[i].mWorldPosition = (*(*emitterVec)[i]).
-                GetRSParticleEmitterInfo().Position;
+                getRSParticleEmitterInfo().Position;
         }
         context()->Unmap(mSimulEmitterStructedBuffer, 0);
 
@@ -4331,61 +4331,61 @@ bool RSPass_PriticleEmitSimulate::CheckResources()
     if (!resManager) { return false; }
 
     std::string name = PTC_DEAD_LIST_NAME;
-    mDeadList_Uav = resManager->GetResourceInfo(name)->Uav;
+    mDeadList_Uav = resManager->getResource(name)->Uav;
     if (!mDeadList_Uav) { return false; }
 
     name = PTC_A_NAME;
-    mPartA_Uav = resManager->GetResourceInfo(name)->Uav;
+    mPartA_Uav = resManager->getResource(name)->Uav;
     if (!mPartA_Uav) { return false; }
 
     name = PTC_B_NAME;
-    mPartB_Uav = resManager->GetResourceInfo(name)->Uav;
+    mPartB_Uav = resManager->getResource(name)->Uav;
     if (!mPartB_Uav) { return false; }
 
     name = PTC_RAMDOM_TEXTURE_NAME;
-    mRandomTex_Srv = resManager->GetResourceInfo(name)->Srv;
+    mRandomTex_Srv = resManager->getResource(name)->Srv;
     if (!mRandomTex_Srv) { return false; }
 
     name = PTC_EMITTER_CONSTANT_NAME;
-    mEmitterConstantBuffer = resManager->GetResourceInfo(name)->
+    mEmitterConstantBuffer = resManager->getResource(name)->
         Resource.Buffer;
     if (!mEmitterConstantBuffer) { return false; }
 
     name = PTC_DEAD_LIST_CONSTANT_NAME;
-    mDeadListConstantBuffer = resManager->GetResourceInfo(name)->
+    mDeadListConstantBuffer = resManager->getResource(name)->
         Resource.Buffer;
     if (!mDeadListConstantBuffer) { return false; }
 
     name = PTC_CAMERA_CONSTANT_NAME;
-    mCameraConstantBuffer = resManager->GetResourceInfo(name)->
+    mCameraConstantBuffer = resManager->getResource(name)->
         Resource.Buffer;
     if (!mCameraConstantBuffer) { return false; }
 
     name = PTC_SIMU_EMITTER_STRU_NAME;
-    mSimulEmitterStructedBuffer_Srv = resManager->GetResourceInfo(name)->Srv;
-    mSimulEmitterStructedBuffer = resManager->GetResourceInfo(name)->
+    mSimulEmitterStructedBuffer_Srv = resManager->getResource(name)->Srv;
+    mSimulEmitterStructedBuffer = resManager->getResource(name)->
         Resource.Buffer;
     if (!mSimulEmitterStructedBuffer_Srv || !mSimulEmitterStructedBuffer) { return false; }
 
     name = PTC_ALIVE_INDEX_NAME;
-    mAliveIndex_Uav = resManager->GetResourceInfo(name)->Uav;
+    mAliveIndex_Uav = resManager->getResource(name)->Uav;
     if (!mAliveIndex_Uav) { return false; }
 
     name = PTC_VIEW_SPCACE_POS_NAME;
-    mViewSpacePos_Uav = resManager->GetResourceInfo(name)->Uav;
+    mViewSpacePos_Uav = resManager->getResource(name)->Uav;
     if (!mViewSpacePos_Uav) { return false; }
 
     name = PTC_MAX_RADIUS_NAME;
-    mMaxRadius_Uav = resManager->GetResourceInfo(name)->Uav;
+    mMaxRadius_Uav = resManager->getResource(name)->Uav;
     if (!mMaxRadius_Uav) { return false; }
 
     name = PTC_TIME_CONSTANT_NAME;
-    mTimeConstantBuffer = resManager->GetResourceInfo(name)->
+    mTimeConstantBuffer = resManager->getResource(name)->
         Resource.Buffer;
     if (!mTimeConstantBuffer) { return false; }
 
     name = "mrt-depth";
-    mDepthTex_Srv = resManager->GetResourceInfo(name)->Srv;
+    mDepthTex_Srv = resManager->getResource(name)->Srv;
     if (!mDepthTex_Srv) { return false; }
 
     return true;
@@ -4473,7 +4473,7 @@ bool RSPass_PriticleTileRender::initPass()
 
     std::string name = "temp-cam";
     mRSCameraInfo = getRSDX11RootInstance()->getCamerasContainer()->
-        GetRSCameraInfo(name);
+        getRSCameraInfo(name);
     if (!mRSCameraInfo) { return false; }
 
     if (!CreateShaders()) { return false; }
@@ -4503,7 +4503,7 @@ void RSPass_PriticleTileRender::releasePass()
 
 void RSPass_PriticleTileRender::execuatePass()
 {
-    if (!g_Root->getParticlesContainer()->GetAllParticleEmitters()->size())
+    if (!g_Root->getParticlesContainer()->getAllParticleEmitters()->size())
     {
         return;
     }
@@ -4709,7 +4709,7 @@ void RSPass_PriticleTileRender::execuatePass()
     }
 
     {
-        static auto rtv = getRSDX11RootInstance()->getDevices()->GetHighDynamicRtv();
+        static auto rtv = getRSDX11RootInstance()->getDevices()->getHighDynamicRtv();
         static D3D11_VIEWPORT vp = {};
         vp.Width = 1280.f; vp.Height = 720.f; vp.MinDepth = 0.f;
         vp.MaxDepth = 1.f; vp.TopLeftX = 0.f; vp.TopLeftY = 0.f;
@@ -4846,63 +4846,63 @@ bool RSPass_PriticleTileRender::CheckResources()
     if (!resManager) { return false; }
 
     std::string name = PTC_CAMERA_CONSTANT_NAME;
-    mCameraConstantBuffer = resManager->GetResourceInfo(name)->
+    mCameraConstantBuffer = resManager->getResource(name)->
         Resource.Buffer;
     if (!mCameraConstantBuffer) { return false; }
 
     name = PTC_TILING_CONSTANT_NAME;
-    mTilingConstantBuffer = resManager->GetResourceInfo(name)->
+    mTilingConstantBuffer = resManager->getResource(name)->
         Resource.Buffer;
     if (!mTilingConstantBuffer) { return false; }
 
     name = PTC_ALIVE_LIST_CONSTANT_NAME;
-    mActiveListConstantBuffer = resManager->GetResourceInfo(name)->
+    mActiveListConstantBuffer = resManager->getResource(name)->
         Resource.Buffer;
     if (!mActiveListConstantBuffer) { return false; }
 
     name = "mrt-depth";
-    mDepthTex_Srv = resManager->GetResourceInfo(name)->Srv;
+    mDepthTex_Srv = resManager->getResource(name)->Srv;
     if (!mDepthTex_Srv) { return false; }
 
     name = PTC_VIEW_SPCACE_POS_NAME;
-    mViewSpacePos_Srv = resManager->GetResourceInfo(name)->Srv;
+    mViewSpacePos_Srv = resManager->getResource(name)->Srv;
     if (!mViewSpacePos_Srv) { return false; }
 
     name = PTC_MAX_RADIUS_NAME;
-    mMaxRadius_Srv = resManager->GetResourceInfo(name)->Srv;
+    mMaxRadius_Srv = resManager->getResource(name)->Srv;
     if (!mMaxRadius_Srv) { return false; }
 
     name = PTC_ALIVE_INDEX_NAME;
-    mAliveIndex_Srv = resManager->GetResourceInfo(name)->Srv;
-    mAliveIndex_Uav = resManager->GetResourceInfo(name)->Uav;
+    mAliveIndex_Srv = resManager->getResource(name)->Srv;
+    mAliveIndex_Uav = resManager->getResource(name)->Uav;
     if (!mAliveIndex_Srv) { return false; }
     if (!mAliveIndex_Uav) { return false; }
 
     name = PTC_A_NAME;
-    mPartA_Srv = resManager->GetResourceInfo(name)->Srv;
+    mPartA_Srv = resManager->getResource(name)->Srv;
     if (!mPartA_Srv) { return false; }
 
     name = PTC_COARSE_CULL_NAME;
-    mCoarseTileIndex_Srv = resManager->GetResourceInfo(name)->Srv;
-    mCoarseTileIndex_Uav = resManager->GetResourceInfo(name)->Uav;
+    mCoarseTileIndex_Srv = resManager->getResource(name)->Srv;
+    mCoarseTileIndex_Uav = resManager->getResource(name)->Uav;
     if (!mCoarseTileIndex_Srv) { return false; }
     if (!mCoarseTileIndex_Uav) { return false; }
 
     name = PTC_COARSE_CULL_COUNTER_NAME;
-    mCoarseTileIndexCounter_Srv = resManager->GetResourceInfo(name)->Srv;
-    mCoarseTileIndexCounter_Uav = resManager->GetResourceInfo(name)->Uav;
+    mCoarseTileIndexCounter_Srv = resManager->getResource(name)->Srv;
+    mCoarseTileIndexCounter_Uav = resManager->getResource(name)->Uav;
     if (!mCoarseTileIndexCounter_Srv) { return false; }
     if (!mCoarseTileIndexCounter_Uav) { return false; }
 
     name = PTC_TILED_INDEX_NAME;
-    mTiledIndex_Srv = resManager->GetResourceInfo(name)->Srv;
-    mTiledIndex_Uav = resManager->GetResourceInfo(name)->Uav;
+    mTiledIndex_Srv = resManager->getResource(name)->Srv;
+    mTiledIndex_Uav = resManager->getResource(name)->Uav;
     if (!mTiledIndex_Srv) { return false; }
     if (!mTiledIndex_Uav) { return false; }
 
     name = PTC_RENDER_BUFFER_NAME;
-    mParticleRender_Srv = resManager->GetResourceInfo(name)->Srv;
-    mParticleRender_Uav = resManager->GetResourceInfo(name)->Uav;
+    mParticleRender_Srv = resManager->getResource(name)->Srv;
+    mParticleRender_Uav = resManager->getResource(name)->Uav;
     if (!mParticleRender_Srv) { return false; }
     if (!mParticleRender_Uav) { return false; }
 
@@ -4981,11 +4981,11 @@ bool RSPass_Sprite::initPass()
 
     mDrawCallType = DRAWCALL_TYPE::UI_SPRITE;
     mDrawCallPipe = g_Root->getDrawCallsPool()->
-        GetDrawCallsPipe(mDrawCallType);
+        getDrawCallsPipe(mDrawCallType);
 
     std::string name = "temp-ui-cam";
     mRSCameraInfo = g_Root->getCamerasContainer()->
-        GetRSCameraInfo(name);
+        getRSCameraInfo(name);
 
     HasBeenInited = true;
 
@@ -5169,7 +5169,7 @@ bool RSPass_Sprite::CreateBuffers()
 
 bool RSPass_Sprite::CreateViews()
 {
-    mRenderTargetView = g_Root->getDevices()->GetSwapChainRtv();
+    mRenderTargetView = g_Root->getDevices()->getSwapChainRtv();
 
     D3D11_SHADER_RESOURCE_VIEW_DESC desSRV = {};
     HRESULT hr = S_OK;
@@ -5405,12 +5405,12 @@ bool RSPass_SimpleLight::CreateBuffers()
 
 bool RSPass_SimpleLight::CreateViews()
 {
-    mRenderTargetView = g_Root->getDevices()->GetSwapChainRtv();
+    mRenderTargetView = g_Root->getDevices()->getSwapChainRtv();
 
     std::string name = "mrt-geo-buffer";
-    mGeoBufferSrv = g_Root->getResourceManager()->GetResourceInfo(name)->Srv;
+    mGeoBufferSrv = g_Root->getResourceManager()->getResource(name)->Srv;
     name = "ssao-tex-compress-ssao";
-    mSsaoSrv = g_Root->getResourceManager()->GetResourceInfo(name)->Srv;
+    mSsaoSrv = g_Root->getResourceManager()->getResource(name)->Srv;
 
     return true;
 }
@@ -5527,11 +5527,11 @@ bool RSPass_Billboard::initPass()
     if (!CreateSamplers()) { return false; }
 
     mDrawCallType = DRAWCALL_TYPE::TRANSPARENCY;
-    mDrawCallPipe = g_Root->getDrawCallsPool()->GetDrawCallsPipe(mDrawCallType);
+    mDrawCallPipe = g_Root->getDrawCallsPool()->getDrawCallsPipe(mDrawCallType);
 
     std::string name = "temp-cam";
-    mRSCameraInfo = g_Root->getCamerasContainer()->GetRSCameraInfo(name);
-    mRSCamera = g_Root->getCamerasContainer()->GetRSCamera(name);
+    mRSCameraInfo = g_Root->getCamerasContainer()->getRSCameraInfo(name);
+    mRSCamera = g_Root->getCamerasContainer()->getRSCamera(name);
 
     HasBeenInited = true;
 
@@ -5576,8 +5576,8 @@ void RSPass_Billboard::execuatePass()
     mat = DirectX::XMLoadFloat4x4(&mRSCameraInfo->ProjMatrix);
     mat = DirectX::XMMatrixTranspose(mat);
     DirectX::XMStoreFloat4x4(&vp_data[0].mProjMat, mat);
-    vp_data->mCamUpVec = mRSCamera->GetRSCameraUpVector();
-    vp_data->mCamPos = mRSCamera->GetRSCameraPosition();
+    vp_data->mCamUpVec = mRSCamera->getRSCameraUpVector();
+    vp_data->mCamPos = mRSCamera->getRSCameraPosition();
     context()->Unmap(mViewProjStructedBuffer, 0);
 
     context()->GSSetShaderResources(0, 1, &mViewProjStructedBufferSrv);
@@ -5724,12 +5724,12 @@ bool RSPass_Billboard::CreateBuffers()
 
 bool RSPass_Billboard::CreateViews()
 {
-    mRenderTargetView = g_Root->getDevices()->GetHighDynamicRtv();
+    mRenderTargetView = g_Root->getDevices()->getHighDynamicRtv();
 
     std::string name = "";
     name = "mrt-depth";
     mDepthStencilView = g_Root->getResourceManager()->
-        GetResourceInfo(name)->Dsv;
+        getResource(name)->Dsv;
     if (!mDepthStencilView) { return false; }
 
     HRESULT hr = S_OK;
@@ -5870,8 +5870,8 @@ void RSPass_Tonemapping::execuatePass()
     static ID3D11UnorderedAccessView* nullUav = nullptr;
     static ID3D11ShaderResourceView* nullSrv = nullptr;
 
-    UINT width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
-    UINT height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
+    UINT width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
+    UINT height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
     UINT dispatchX = rs_tool::align(width, 32) / 32;
     UINT dispatchY = rs_tool::align(height, 32) / 32;
 
@@ -5988,8 +5988,8 @@ bool RSPass_Tonemapping::CreateShaders()
 
 bool RSPass_Tonemapping::CreateViews()
 {
-    mHdrUav = g_Root->getDevices()->GetHighDynamicUav();
-    mHdrSrv = g_Root->getDevices()->GetHighDynamicSrv();
+    mHdrUav = g_Root->getDevices()->getHighDynamicUav();
+    mHdrSrv = g_Root->getDevices()->getHighDynamicSrv();
 
     HRESULT hr = S_OK;
     D3D11_BUFFER_DESC bfrDesc = {};
@@ -5997,8 +5997,8 @@ bool RSPass_Tonemapping::CreateViews()
     D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
     D3D11_UNORDERED_ACCESS_VIEW_DESC uavDesc = {};
 
-    UINT width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
-    UINT height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
+    UINT width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
+    UINT height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
     // TODO shader hasn't been supported for other sreen size
     UINT expoSize = rs_tool::align(width, 32) / 32 *
         rs_tool::align(height, 32) / 32;
@@ -6162,8 +6162,8 @@ void RSPass_BloomHdr::execuatePass()
 {
     static ID3D11UnorderedAccessView* nullUav = nullptr;
     static ID3D11ShaderResourceView* nullSrv = nullptr;
-    UINT width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
-    UINT height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
+    UINT width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
+    UINT height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
     UINT dispatchX = rs_tool::align(width, 16) / 16;
     UINT dispatchY = rs_tool::align(height, 16) / 16;
 
@@ -6433,8 +6433,8 @@ bool RSPass_BloomHdr::CreateShaders()
 
 bool RSPass_BloomHdr::CreateViews()
 {
-    mHdrUav = g_Root->getDevices()->GetHighDynamicUav();
-    mHdrSrv = g_Root->getDevices()->GetHighDynamicSrv();
+    mHdrUav = g_Root->getDevices()->getHighDynamicUav();
+    mHdrSrv = g_Root->getDevices()->getHighDynamicSrv();
 
     HRESULT hr = S_OK;
     D3D11_TEXTURE2D_DESC texDesc = {};
@@ -6449,8 +6449,8 @@ bool RSPass_BloomHdr::CreateViews()
     UINT downMips = g_RenderEffectConfig.mBloomDownSamplingCount + 1;
     UINT upMips = downMips - 2;
 
-    texDesc.Width = g_Root->getDevices()->GetCurrWndWidth();
-    texDesc.Height = g_Root->getDevices()->GetCurrWndHeight();
+    texDesc.Width = g_Root->getDevices()->getCurrWndWidth();
+    texDesc.Height = g_Root->getDevices()->getCurrWndHeight();
     texDesc.MipLevels = downMips;
     texDesc.ArraySize = 1;
     texDesc.SampleDesc.Count = 1;
@@ -6739,8 +6739,8 @@ bool RSPass_ToSwapChain::CreateShaders()
 
 bool RSPass_ToSwapChain::CreateViews()
 {
-    mSwapChainRtv = g_Root->getDevices()->GetSwapChainRtv();
-    mHdrSrv = g_Root->getDevices()->GetHighDynamicSrv();
+    mSwapChainRtv = g_Root->getDevices()->getSwapChainRtv();
+    mHdrSrv = g_Root->getDevices()->getHighDynamicSrv();
 
     return true;
 }
@@ -6844,12 +6844,12 @@ void RSPass_FXAA::releasePass()
 
 void RSPass_FXAA::execuatePass()
 {
-    UINT dispatchX = g_Root->getDevices()->GetCurrWndWidth();
-    UINT dispatchY = g_Root->getDevices()->GetCurrWndHeight();
+    UINT dispatchX = g_Root->getDevices()->getCurrWndWidth();
+    UINT dispatchY = g_Root->getDevices()->getCurrWndHeight();
     dispatchX = rs_tool::align(dispatchX, 16) / 16;
     dispatchY = rs_tool::align(dispatchY, 16) / 16;
 
-    g_Root->getDevices()->CopyHighDynamicTexture(context(), mCopyTex);
+    g_Root->getDevices()->copyHighDynamicTexture(context(), mCopyTex);
 
     context()->CSSetShader(mFXAAShader, nullptr, 0);
     context()->CSSetSamplers(0, 1, &mLinearBorderSampler);
@@ -6903,7 +6903,7 @@ bool RSPass_FXAA::CreateShaders()
 
 bool RSPass_FXAA::CreateViews()
 {
-    mHdrUav = g_Root->getDevices()->GetHighDynamicUav();
+    mHdrUav = g_Root->getDevices()->getHighDynamicUav();
 
     HRESULT hr = S_OK;
     D3D11_TEXTURE2D_DESC texDesc = {};
@@ -6911,8 +6911,8 @@ bool RSPass_FXAA::CreateViews()
     ZeroMemory(&texDesc, sizeof(texDesc));
     ZeroMemory(&srvDesc, sizeof(srvDesc));
 
-    texDesc.Width = getRSDX11RootInstance()->getDevices()->GetCurrWndWidth();
-    texDesc.Height = getRSDX11RootInstance()->getDevices()->GetCurrWndHeight();
+    texDesc.Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
+    texDesc.Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
     texDesc.MipLevels = 1;
     texDesc.ArraySize = 1;
     texDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;

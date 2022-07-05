@@ -183,9 +183,9 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                 std::string majName = majorNode->GetString();
                 std::string minName = minorNode->GetString();
                 matInfo.MajorMaterialID = staticResPtr->
-                    GetStaticMaterialIndex(majName);
+                    getStaticMaterialIndex(majName);
                 matInfo.MinorMaterialID = staticResPtr->
-                    GetStaticMaterialIndex(minName);
+                    getStaticMaterialIndex(minName);
                 matInfo.InterpolateFactor = factorNode->GetFloat();
             }
             else
@@ -274,7 +274,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                 UINT divide = getJsonNode(_json,
                     jsonPath + "/load-info/b-divide")->GetUint();
                 meshData = getRSDX11RootInstance()->getMeshHelper()->
-                    GeoGenerate()->CreateBox(width, height, depth, divide,
+                    getGeoGenerator()->createBox(width, height, depth, divide,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         getJsonNode(_json,
                             jsonPath + "/load-info/b-tex-file")->GetString());
@@ -288,7 +288,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                 UINT stack = getJsonNode(_json,
                     jsonPath + "/load-info/s-slice-stack-count/1")->GetUint();
                 meshData = getRSDX11RootInstance()->getMeshHelper()->
-                    GeoGenerate()->CreateSphere(radius, slice, stack,
+                    getGeoGenerator()->createSphere(radius, slice, stack,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         getJsonNode(_json,
                             jsonPath + "/load-info/s-tex-file")->GetString());
@@ -300,7 +300,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                 UINT divide = getJsonNode(_json,
                     jsonPath + "/load-info/gs-divide")->GetUint();
                 meshData = getRSDX11RootInstance()->getMeshHelper()->
-                    GeoGenerate()->CreateGeometrySphere(radius, divide,
+                    getGeoGenerator()->createGeometrySphere(radius, divide,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         getJsonNode(_json,
                             jsonPath + "/load-info/gs-tex-file")->GetString());
@@ -318,7 +318,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                 UINT stack = getJsonNode(_json,
                     jsonPath + "/load-info/c-slice-stack-count/1")->GetUint();
                 meshData = getRSDX11RootInstance()->getMeshHelper()->
-                    GeoGenerate()->CreateCylinder(bottomRadius, topRadius,
+                    getGeoGenerator()->createCylinder(bottomRadius, topRadius,
                         height, slice, stack, LAYOUT_TYPE::NORMAL_TANGENT_TEX,
                         false, {},
                         getJsonNode(_json,
@@ -335,7 +335,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                 UINT col = getJsonNode(_json,
                     jsonPath + "/load-info/g-row-col-count/1")->GetUint();
                 meshData = getRSDX11RootInstance()->getMeshHelper()->
-                    GeoGenerate()->CreateGrid(width, depth, row, col,
+                    getGeoGenerator()->createGrid(width, depth, row, col,
                         LAYOUT_TYPE::NORMAL_TANGENT_TEX, false, {},
                         getJsonNode(_json,
                             jsonPath + "/load-info/g-tex-file")->GetString());
@@ -380,7 +380,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                 P_LOG(LOG_ERROR, "invlaid model without diffuse : %s\n",
                     meshName.c_str());
                 getRSDX11RootInstance()->getMeshHelper()->
-                    ReleaseSubMesh(meshData);
+                    releaseSubMesh(meshData);
                 return;
             }
 
@@ -727,7 +727,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             _jsonPath + "/alc-spot-power")->GetFloat();
         if (getJsonNode(_json, _jsonPath + "/alc-cam-up-vec"))
         {
-            ci.mType = LENS_TYPE::ORTHOGRAPHIC;
+            ci.Type = LENS_TYPE::ORTHOGRAPHIC;
             ci.Position = li.Position;
             ci.LookAtVector = li.Direction;
             ci.NearFarZ = { 0.f,1000.f };

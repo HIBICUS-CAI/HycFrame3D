@@ -16,8 +16,8 @@ RSPass_Base::RSPass_Base(const std::string &Name,
                          PASS_TYPE Type,
                          RSRoot_DX11 *RootPtr)
     : PassName(Name), PassType(Type), ExecuateOrderInTopic(RS_INVALID_ORDER),
-      Device(RootPtr->getDevices()->GetDevice()),
-      STContext(RootPtr->getDevices()->GetSTContext()), MTContext(nullptr),
+      Device(RootPtr->getDevices()->getDevice()),
+      STContext(RootPtr->getDevices()->getSTContext()), MTContext(nullptr),
       HasBeenInited(false) {}
 
 RSPass_Base::RSPass_Base(const RSPass_Base &_source)

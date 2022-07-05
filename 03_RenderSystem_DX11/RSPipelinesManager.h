@@ -10,32 +10,45 @@
 #pragma once
 
 #include "RSCommon.h"
+
 #include <unordered_map>
 
-class RSPipelinesManager
-{
-public:
-    RSPipelinesManager();
-    ~RSPipelinesManager();
-
-    bool StartUp(class RSRoot_DX11* _root);
-    void CleanAndStop();
-
-    void AddPipeline(
-        std::string& _name, class RSPipeline* _pipeline);
-    class RSPipeline* GetPipeline(std::string& _name);
-
-    void SetPipeline(std::string& _name);
-    void SetPipeline(class RSPipeline* _pipeline);
-    void ClearCurrentPipelineState();
-
-    void ExecuateCurrentPipeline();
-    void ProcessNextPipeline();
-
+class RSPipelinesManager {
 private:
-    class RSRoot_DX11* mRootPtr;
-    class RSPipeline* mCurrentPipeline;
-    class RSPipeline* mNextPipeline;
-    std::unordered_map<std::string, class RSPipeline*> mPipelineMap;
-    CRITICAL_SECTION mDataLock;
+  class RSRoot_DX11 *RenderSystemRoot;
+  class RSPipeline *CurrentPipeline;
+  class RSPipeline *NextPipeline;
+  std::unordered_map<std::string, class RSPipeline *> PipelineMap;
+  CRITICAL_SECTION DataLock;
+
+public:
+  RSPipelinesManager();
+  ~RSPipelinesManager();
+
+  bool
+  startUp(class RSRoot_DX11 *RootPtr);
+
+  void
+  cleanAndStop();
+
+  void
+  addPipeline(const std::string &Name, class RSPipeline *Pipeline);
+
+  class RSPipeline *
+  getPipeline(const std::string &Name);
+
+  void
+  setPipeline(const std::string &Name);
+
+  void
+  setPipeline(class RSPipeline *Pipeline);
+
+  void
+  clearCurrentPipelineState();
+
+  void
+  execuateCurrentPipeline();
+
+  void
+  useNextPipeline();
 };
