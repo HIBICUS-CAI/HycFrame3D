@@ -1,10 +1,12 @@
 #pragma once
 
-#include <vector>
-#include <array>
 #include "RSPass_Base.h"
 
-bool CreateBasicPipeline();
+#include <array>
+#include <vector>
+
+bool
+createBasicPipeline();
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
@@ -31,7 +33,8 @@ constexpr auto PTC_SIMU_EMITTER_STRU_NAME = "particle-simu-emitter-structed";
 constexpr UINT PTC_MAX_PARTICLE_SIZE = 400 * 1024;
 constexpr UINT PTC_MAX_COARSE_CULL_TILE_X = 16;
 constexpr UINT PTC_MAX_COARSE_CULL_TILE_Y = 8;
-constexpr UINT PTC_MAX_COARSE_CULL_TILE_SIZE = PTC_MAX_COARSE_CULL_TILE_X * PTC_MAX_COARSE_CULL_TILE_Y;
+constexpr UINT PTC_MAX_COARSE_CULL_TILE_SIZE =
+    PTC_MAX_COARSE_CULL_TILE_X * PTC_MAX_COARSE_CULL_TILE_Y;
 constexpr UINT PTC_NUM_PER_TILE = 1023;
 constexpr UINT PTC_TILE_BUFFER_SIZE = PTC_NUM_PER_TILE + 1;
 constexpr UINT PTC_TILE_X_SIZE = 32;
@@ -40,882 +43,980 @@ constexpr UINT PTC_COARSE_CULLING_THREADS = 256;
 
 #pragma clang diagnostic pop
 
-struct BLM_BLUR_INFO
-{
-    UINT mTexWidth = 0;
-    UINT mTexHeight = 0;
-    UINT mPads[2] = { 0 };
+struct BLM_BLUR_INFO {
+  UINT TexWidth = 0;
+  UINT TexHeight = 0;
+  UINT Pads[2] = {0};
 };
 
-struct BLM_INTENSITY_INFO
-{
-    float mIntensityFactor = 0.f;
-    float mPads[3] = { 0.f };
+struct BLM_INTENSITY_INFO {
+  float IntensityFactor = 0.f;
+  float Pads[3] = {0.f};
 };
 
-struct RS_PARTICLE_PART_A
-{
-    DirectX::XMFLOAT4 mColorAndAlpha = {};
-    DirectX::XMFLOAT2 mViewSpaceVelocityXY = {};
-    float mEmitterNormalDotLight = 0.f;
-    UINT mEmitterProperties = 0;
-    float mRotation = 0.f;
-    UINT mIsSleeping = 0;
-    UINT mCollisionCount = 0;
-    float mPads[1] = { 0.f };
+struct RS_PARTICLE_PART_A {
+  dx::XMFLOAT4 ColorAndAlpha = {};
+  dx::XMFLOAT2 ViewSpaceVelocityXY = {};
+  float EmitterNormalDotLight = 0.f;
+  UINT EmitterProperties = 0;
+  float Rotation = 0.f;
+  UINT IsSleeping = 0;
+  UINT CollisionCount = 0;
+  float Pads[1] = {0.f};
 };
 
-struct RS_PARTICLE_PART_B
-{
-    DirectX::XMFLOAT3 mWorldPosition = {};
-    float mMass = 0.f;
-    DirectX::XMFLOAT3 mWorldSpaceVelocity = {};
-    float mLifeSpan = 0.f;
-    float mDistanceToEye = 0.f;
-    float mAge = 0.f;
-    float mStartSize = 0.f;
-    float mEndSize = 0.f;
-    DirectX::XMFLOAT4 mStartColor = {};
-    DirectX::XMFLOAT4 mEndColor = {};
-    DirectX::XMFLOAT3 mAcceleration = {};
-    float mPads[1] = { 0.f };
+struct RS_PARTICLE_PART_B {
+  dx::XMFLOAT3 WorldPosition = {};
+  float Mass = 0.f;
+  dx::XMFLOAT3 WorldSpaceVelocity = {};
+  float LifeSpan = 0.f;
+  float DistanceToEye = 0.f;
+  float Age = 0.f;
+  float StartSize = 0.f;
+  float EndSize = 0.f;
+  dx::XMFLOAT4 StartColor = {};
+  dx::XMFLOAT4 EndColor = {};
+  dx::XMFLOAT3 Acceleration = {};
+  float Pads[1] = {0.f};
 };
 
-struct RS_ALIVE_INDEX_BUFFER_ELEMENT
-{
-    float mDistance;
-    float mIndex;
+struct RS_ALIVE_INDEX_BUFFER_ELEMENT {
+  float Distance;
+  float Index;
 };
 
-struct CAMERA_STATUS
-{
-    DirectX::XMFLOAT4X4 mView = {};
-    DirectX::XMFLOAT4X4 mInvView = {};
-    DirectX::XMFLOAT4X4 mProj = {};
-    DirectX::XMFLOAT4X4 mInvProj = {};
-    DirectX::XMFLOAT4X4 mViewProj = {};
-    DirectX::XMFLOAT3 mEyePosition = {};
-    float mPad[1] = { 0.f };
+struct CAMERA_STATUS {
+  dx::XMFLOAT4X4 View = {};
+  dx::XMFLOAT4X4 InvView = {};
+  dx::XMFLOAT4X4 Proj = {};
+  dx::XMFLOAT4X4 InvProj = {};
+  dx::XMFLOAT4X4 ViewProj = {};
+  dx::XMFLOAT3 EyePosition = {};
+  float Pad[1] = {0.f};
 };
 
-struct SIMULATE_EMITTER_INFO
-{
-    DirectX::XMFLOAT3 mWorldPosition = {};
-    float mPads[1] = { 0.f };
+struct SIMULATE_EMITTER_INFO {
+  dx::XMFLOAT3 WorldPosition = {};
+  float Pads[1] = {0.f};
 };
 
-struct RS_TILING_CONSTANT
-{
-    UINT mNumTilesX = 0;
-    UINT mNumTilesY = 0;
-    UINT mNumCoarseCullingTilesX = 0;
-    UINT mNumCoarseCullingTilesY = 0;
-    UINT mNumCullingTilesPerCoarseTileX = 0;
-    UINT mNumCullingTilesPerCoarseTileY = 0;
-    UINT mPads[2] = { 0 };
+struct RS_TILING_CONSTANT {
+  UINT NumTilesX = 0;
+  UINT NumTilesY = 0;
+  UINT NumCoarseCullingTilesX = 0;
+  UINT NumCoarseCullingTilesY = 0;
+  UINT NumCullingTilesPerCoarseTileX = 0;
+  UINT NumCullingTilesPerCoarseTileY = 0;
+  UINT Pads[2] = {0};
 };
 
-struct PTC_TIME_CONSTANT
-{
-    float mDeltaTime = 0.016f;
-    float mTotalTime = 0.f;
-    float mPads[2] = { 0.f };
+struct PTC_TIME_CONSTANT {
+  float DeltaTime = 0.016f;
+  float TotalTime = 0.f;
+  float Pads[2] = {0.f};
 };
 
-struct ViewProj
-{
-    DirectX::XMFLOAT4X4 mViewMat = {};
-    DirectX::XMFLOAT4X4 mProjMat = {};
+struct ViewProj {
+  dx::XMFLOAT4X4 ViewMat = {};
+  dx::XMFLOAT4X4 ProjMat = {};
 };
 
-struct ViewProjCamUpPos
-{
-    DirectX::XMFLOAT4X4 mViewMat = {};
-    DirectX::XMFLOAT4X4 mProjMat = {};
-    DirectX::XMFLOAT3 mCamUpVec = {};
-    DirectX::XMFLOAT3 mCamPos = {};
+struct ViewProjCamUpPos {
+  dx::XMFLOAT4X4 ViewMat = {};
+  dx::XMFLOAT4X4 ProjMat = {};
+  dx::XMFLOAT3 CamUpVec = {};
+  dx::XMFLOAT3 CamPos = {};
 };
 
-struct Ambient
-{
-    DirectX::XMFLOAT4 mAmbient = {};
+struct Ambient {
+  dx::XMFLOAT4 Ambient = {};
 };
 
-struct LightInfo
-{
-    DirectX::XMFLOAT3 mCameraPos = {};
-    float mPad0 = 0.f;
-    UINT mDirectLightNum = 0;
-    UINT mSpotLightNum = 0;
-    UINT mPointLightNum = 0;
-    UINT mShadowLightNum = 0;
-    INT mShadowLightIndex[4] = { -1,-1,-1,-1 };
+struct LightInfo {
+  dx::XMFLOAT3 CameraPos = {};
+  float Pad0 = 0.f;
+  UINT DirectLightNum = 0;
+  UINT SpotLightNum = 0;
+  UINT PointLightNum = 0;
+  UINT ShadowLightNum = 0;
+  INT ShadowLightIndex[4] = {-1, -1, -1, -1};
 };
 
-struct ShadowInfo
-{
-    DirectX::XMFLOAT4X4 mShadowViewMat = {};
-    DirectX::XMFLOAT4X4 mShadowProjMat = {};
-    DirectX::XMFLOAT4X4 mSSAOMat = {};
+struct ShadowInfo {
+  dx::XMFLOAT4X4 ShadowViewMat = {};
+  dx::XMFLOAT4X4 ShadowProjMat = {};
+  dx::XMFLOAT4X4 SSAOMat = {};
 };
 
-struct SsaoInfo
-{
-    DirectX::XMFLOAT4X4 mProj;
-    DirectX::XMFLOAT4X4 mView;
-    DirectX::XMFLOAT4X4 mInvProj;
-    DirectX::XMFLOAT4X4 mTexProj;
-    DirectX::XMFLOAT4 mOffsetVec[14];
-    float mOcclusionRadius;
-    float mOcclusionFadeStart;
-    float mOcclusionFadeEnd;
-    float mSurfaceEpsilon;
+struct SsaoInfo {
+  dx::XMFLOAT4X4 Proj;
+  dx::XMFLOAT4X4 View;
+  dx::XMFLOAT4X4 InvProj;
+  dx::XMFLOAT4X4 TexProj;
+  dx::XMFLOAT4 OffsetVec[14];
+  float OcclusionRadius;
+  float OcclusionFadeStart;
+  float OcclusionFadeEnd;
+  float SurfaceEpsilon;
 };
 
-struct SkyShpereInfo
-{
-    DirectX::XMFLOAT4X4 mWorldMat = {};
-    DirectX::XMFLOAT4X4 mViewMat = {};
-    DirectX::XMFLOAT4X4 mProjMat = {};
-    DirectX::XMFLOAT3 mEyePosition = {};
-    float mPad = 0.f;
+struct SkyShpereInfo {
+  dx::XMFLOAT4X4 WorldMat = {};
+  dx::XMFLOAT4X4 ViewMat = {};
+  dx::XMFLOAT4X4 ProjMat = {};
+  dx::XMFLOAT3 EyePosition = {};
+  float Pad = 0.f;
 };
 
-struct OnlyProj
-{
-    DirectX::XMFLOAT4X4 mProjMat = {};
+struct OnlyProj {
+  dx::XMFLOAT4X4 ProjMat = {};
 };
 
-class RSPass_MRT :public RSPass_Base
-{
-public:
-    RSPass_MRT(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_MRT(const RSPass_MRT& _source);
-    virtual ~RSPass_MRT();
+class RSPass_MRT : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11VertexShader *AniVertexShader;
+  ID3D11PixelShader *PixelShader;
+  ID3D11PixelShader *NDPixelShader;
+  DRAWCALL_TYPE DrawCallType;
+  RSDrawCallsPipe *DrawCallPipe;
+  ID3D11Buffer *ViewProjStructedBuffer;
+  ID3D11ShaderResourceView *ViewProjStructedBufferSrv;
+  ID3D11Buffer *InstanceStructedBuffer;
+  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
+  ID3D11Buffer *BonesStructedBuffer;
+  ID3D11ShaderResourceView *BonesStructedBufferSrv;
+  ID3D11SamplerState *LinearSampler;
+  ID3D11RenderTargetView *GeoBufferRtv;
+  ID3D11RenderTargetView *AnisotropicRtv;
+  ID3D11DepthStencilView *DepthDsv;
+  RS_CAM_INFO *RSCameraInfo;
 
 public:
-    virtual RSPass_MRT* clonePass() override;
+  RSPass_MRT(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_MRT(const RSPass_MRT &Source);
+  virtual ~RSPass_MRT();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_MRT *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateBuffers();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11VertexShader* mAniVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11PixelShader* mNDPixelShader;
-    DRAWCALL_TYPE mDrawCallType;
-    RSDrawCallsPipe* mDrawCallPipe;
-    ID3D11Buffer* mViewProjStructedBuffer;
-    ID3D11ShaderResourceView* mViewProjStructedBufferSrv;
-    ID3D11Buffer* mInstanceStructedBuffer;
-    ID3D11ShaderResourceView* mInstanceStructedBufferSrv;
-    ID3D11Buffer* mBonesStructedBuffer;
-    ID3D11ShaderResourceView* mBonesStructedBufferSrv;
-    ID3D11SamplerState* mLinearSampler;
-    ID3D11RenderTargetView* mGeoBufferRtv;
-    ID3D11RenderTargetView* mAnisotropicRtv;
-    ID3D11DepthStencilView* mDepthDsv;
-    RS_CAM_INFO* mRSCameraInfo;
+  bool
+  createShaders();
+  bool
+  createBuffers();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_Ssao :public RSPass_Base
-{
-public:
-    RSPass_Ssao(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_Ssao(const RSPass_Ssao& _source);
-    virtual ~RSPass_Ssao();
+class RSPass_Ssao : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11PixelShader *PixelShader;
+  ID3D11VertexShader *CompressVertexShader;
+  ID3D11PixelShader *CompressPixelShader;
+  ID3D11RenderTargetView *RenderTargetView;
+  ID3D11ShaderResourceView *NotCompressSrv;
+  ID3D11RenderTargetView *CompressRtv;
+  ID3D11SamplerState *SamplePointClamp;
+  ID3D11SamplerState *SampleLinearClamp;
+  ID3D11SamplerState *SampleDepthMap;
+  ID3D11SamplerState *SampleLinearWrap;
+  ID3D11Buffer *SsaoInfoStructedBuffer;
+  ID3D11ShaderResourceView *SsaoInfoStructedBufferSrv;
+  ID3D11ShaderResourceView *GeoBufferSrv;
+  ID3D11ShaderResourceView *DepthMapSrv;
+  ID3D11ShaderResourceView *RandomMapSrv;
+  std::array<dx::XMFLOAT4, 14> OffsetVec;
+  ID3D11Buffer *VertexBuffer;
+  ID3D11Buffer *IndexBuffer;
+  RS_CAM_INFO *RSCameraInfo;
 
 public:
-    virtual RSPass_Ssao* clonePass() override;
+  RSPass_Ssao(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Ssao(const RSPass_Ssao &Source);
+  virtual ~RSPass_Ssao();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_Ssao *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateBuffers();
-    bool CreateTextures();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11VertexShader* mCompressVertexShader;
-    ID3D11PixelShader* mCompressPixelShader;
-    ID3D11RenderTargetView* mRenderTargetView;
-    ID3D11ShaderResourceView* mNotCompressSrv;
-    ID3D11RenderTargetView* mCompressRtv;
-    ID3D11SamplerState* mSamplePointClamp;
-    ID3D11SamplerState* mSampleLinearClamp;
-    ID3D11SamplerState* mSampleDepthMap;
-    ID3D11SamplerState* mSampleLinearWrap;
-    ID3D11Buffer* mSsaoInfoStructedBuffer;
-    ID3D11ShaderResourceView* mSsaoInfoStructedBufferSrv;
-    ID3D11ShaderResourceView* mGeoBufferSrv;
-    ID3D11ShaderResourceView* mDepthMapSrv;
-    ID3D11ShaderResourceView* mRandomMapSrv;
-    std::array<DirectX::XMFLOAT4, 14> mOffsetVec;
-    ID3D11Buffer* mVertexBuffer;
-    ID3D11Buffer* mIndexBuffer;
-    RS_CAM_INFO* mRSCameraInfo;
+  bool
+  createShaders();
+  bool
+  createBuffers();
+  bool
+  createTextures();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_KBBlur :public RSPass_Base
-{
-public:
-    RSPass_KBBlur(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_KBBlur(const RSPass_KBBlur& _source);
-    virtual ~RSPass_KBBlur();
+class RSPass_KBBlur : public RSPass_Base {
+private:
+  ID3D11ComputeShader *HoriBlurShader;
+  ID3D11ComputeShader *VertBlurShader;
+  ID3D11UnorderedAccessView *SsaoTexUav;
+  ID3D11ShaderResourceView *GeoBufferSrv;
+  ID3D11ShaderResourceView *DepthMapSrv;
 
 public:
-    virtual RSPass_KBBlur* clonePass() override;
+  RSPass_KBBlur(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_KBBlur(const RSPass_KBBlur &Source);
+  virtual ~RSPass_KBBlur();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_KBBlur *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateViews();
-
-private:
-    ID3D11ComputeShader* mHoriBlurShader;
-    ID3D11ComputeShader* mVertBlurShader;
-    ID3D11UnorderedAccessView* mSsaoTexUav;
-    ID3D11ShaderResourceView* mGeoBufferSrv;
-    ID3D11ShaderResourceView* mDepthMapSrv;
+  bool
+  createShaders();
+  bool
+  createViews();
 };
 
-class RSPass_Shadow :public RSPass_Base
-{
-public:
-    RSPass_Shadow(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_Shadow(const RSPass_Shadow& _source);
-    virtual ~RSPass_Shadow();
+class RSPass_Shadow : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11VertexShader *AniVertexShader;
+  ID3D11RasterizerState *RasterizerState;
+  std::array<ID3D11DepthStencilView *, MAX_SHADOW_SIZE> DepthStencilView;
+  DRAWCALL_TYPE DrawCallType;
+  RSDrawCallsPipe *DrawCallPipe;
+  ID3D11Buffer *ViewProjStructedBuffer;
+  ID3D11ShaderResourceView *ViewProjStructedBufferSrv;
+  ID3D11Buffer *InstanceStructedBuffer;
+  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
+  ID3D11Buffer *BonesStructedBuffer;
+  ID3D11ShaderResourceView *BonesStructedBufferSrv;
 
 public:
-    virtual RSPass_Shadow* clonePass() override;
+  RSPass_Shadow(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Shadow(const RSPass_Shadow &Source);
+  virtual ~RSPass_Shadow();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_Shadow *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateStates();
-    bool CreateBuffers();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11VertexShader* mAniVertexShader;
-    ID3D11RasterizerState* mRasterizerState;
-    std::array<ID3D11DepthStencilView*, MAX_SHADOW_SIZE> mDepthStencilView;
-    DRAWCALL_TYPE mDrawCallType;
-    RSDrawCallsPipe* mDrawCallPipe;
-    ID3D11Buffer* mViewProjStructedBuffer;
-    ID3D11ShaderResourceView* mViewProjStructedBufferSrv;
-    ID3D11Buffer* mInstanceStructedBuffer;
-    ID3D11ShaderResourceView* mInstanceStructedBufferSrv;
-    ID3D11Buffer* mBonesStructedBuffer;
-    ID3D11ShaderResourceView* mBonesStructedBufferSrv;
+  bool
+  createShaders();
+  bool
+  createStates();
+  bool
+  createBuffers();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_Defered :public RSPass_Base
-{
-public:
-    RSPass_Defered(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_Defered(const RSPass_Defered& _source);
-    virtual ~RSPass_Defered();
+class RSPass_Defered : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11PixelShader *PixelShader;
+  ID3D11RenderTargetView *RenderTargetView;
+  ID3D11SamplerState *LinearWrapSampler;
+  ID3D11SamplerState *PointClampSampler;
+  ID3D11SamplerState *ShadowTexSampler;
+  ID3D11Buffer *LightInfoStructedBuffer;
+  ID3D11ShaderResourceView *LightInfoStructedBufferSrv;
+  ID3D11Buffer *LightStructedBuffer;
+  ID3D11ShaderResourceView *LightStructedBufferSrv;
+  ID3D11Buffer *AmbientStructedBuffer;
+  ID3D11ShaderResourceView *AmbientStructedBufferSrv;
+  ID3D11Buffer *ShadowStructedBuffer;
+  ID3D11ShaderResourceView *ShadowStructedBufferSrv;
+  ID3D11Buffer *CameraStructedBuffer;
+  ID3D11ShaderResourceView *CameraStructedBufferSrv;
+  ID3D11ShaderResourceView *GeoBufferSrv;
+  ID3D11ShaderResourceView *AnisotropicSrv;
+  ID3D11ShaderResourceView *SsaoSrv;
+  ID3D11ShaderResourceView *ShadowDepthSrv;
+  ID3D11Buffer *VertexBuffer;
+  ID3D11Buffer *IndexBuffer;
+  RS_CAM_INFO *RSCameraInfo;
 
 public:
-    virtual RSPass_Defered* clonePass() override;
+  RSPass_Defered(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Defered(const RSPass_Defered &Source);
+  virtual ~RSPass_Defered();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_Defered *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateBuffers();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11RenderTargetView* mRenderTargetView;
-    ID3D11SamplerState* mLinearWrapSampler;
-    ID3D11SamplerState* mPointClampSampler;
-    ID3D11SamplerState* mShadowTexSampler;
-    ID3D11Buffer* mLightInfoStructedBuffer;
-    ID3D11ShaderResourceView* mLightInfoStructedBufferSrv;
-    ID3D11Buffer* mLightStructedBuffer;
-    ID3D11ShaderResourceView* mLightStructedBufferSrv;
-    ID3D11Buffer* mAmbientStructedBuffer;
-    ID3D11ShaderResourceView* mAmbientStructedBufferSrv;
-    ID3D11Buffer* mShadowStructedBuffer;
-    ID3D11ShaderResourceView* mShadowStructedBufferSrv;
-    ID3D11Buffer* mCameraStructedBuffer;
-    ID3D11ShaderResourceView* mCameraStructedBufferSrv;
-    ID3D11ShaderResourceView* mGeoBufferSrv;
-    ID3D11ShaderResourceView* mAnisotropicSrv;
-    ID3D11ShaderResourceView* mSsaoSrv;
-    ID3D11ShaderResourceView* mShadowDepthSrv;
-    ID3D11Buffer* mVertexBuffer;
-    ID3D11Buffer* mIndexBuffer;
-    RS_CAM_INFO* mRSCameraInfo;
+  bool
+  createShaders();
+  bool
+  createBuffers();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_SkyShpere :public RSPass_Base
-{
-public:
-    RSPass_SkyShpere(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_SkyShpere(const RSPass_SkyShpere& _source);
-    virtual ~RSPass_SkyShpere();
+class RSPass_SkyShpere : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11PixelShader *PixelShader;
+  ID3D11RasterizerState *RasterizerState;
+  ID3D11DepthStencilState *DepthStencilState;
+  ID3D11SamplerState *LinearWrapSampler;
+  ID3D11RenderTargetView *RenderTargerView;
+  ID3D11DepthStencilView *DepthStencilView;
+  ID3D11Buffer *SkyShpereInfoStructedBuffer;
+  ID3D11ShaderResourceView *SkyShpereInfoStructedBufferSrv;
+  RS_SUBMESH_DATA SkySphereMesh;
+  RS_CAM_INFO *RSCameraInfo;
 
 public:
-    virtual RSPass_SkyShpere* clonePass() override;
+  RSPass_SkyShpere(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_SkyShpere(const RSPass_SkyShpere &Source);
+  virtual ~RSPass_SkyShpere();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_SkyShpere *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateStates();
-    bool CreateBuffers();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11RasterizerState* mRasterizerState;
-    ID3D11DepthStencilState* mDepthStencilState;
-    ID3D11SamplerState* mLinearWrapSampler;
-    ID3D11RenderTargetView* mRenderTargerView;
-    ID3D11DepthStencilView* mDepthStencilView;
-    ID3D11Buffer* mSkyShpereInfoStructedBuffer;
-    ID3D11ShaderResourceView* mSkyShpereInfoStructedBufferSrv;
-    RS_SUBMESH_DATA mSkySphereMesh;
-    RS_CAM_INFO* mRSCameraInfo;
+  bool
+  createShaders();
+  bool
+  createStates();
+  bool
+  createBuffers();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_Bloom :public RSPass_Base
-{
-public:
-    RSPass_Bloom(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_Bloom(const RSPass_Bloom& _source);
-    virtual ~RSPass_Bloom();
+class RSPass_Bloom : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11PixelShader *PixelShader;
+  DRAWCALL_TYPE DrawCallType;
+  RSDrawCallsPipe *DrawCallPipe;
+  ID3D11Buffer *ViewProjStructedBuffer;
+  ID3D11ShaderResourceView *ViewProjStructedBufferSrv;
+  ID3D11Buffer *InstanceStructedBuffer;
+  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
+  ID3D11RenderTargetView *Rtv;
+  ID3D11DepthStencilView *DepthDsv;
+  RS_CAM_INFO *RSCameraInfo;
+  ID3D11Buffer *VertexBuffer;
+  ID3D11Buffer *IndexBuffer;
+  ID3D11SamplerState *Sampler;
 
 public:
-    virtual RSPass_Bloom* clonePass() override;
+  RSPass_Bloom(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Bloom(const RSPass_Bloom &Source);
+  virtual ~RSPass_Bloom();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_Bloom *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateBuffers();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    DRAWCALL_TYPE mDrawCallType;
-    RSDrawCallsPipe* mDrawCallPipe;
-    ID3D11Buffer* mViewProjStructedBuffer;
-    ID3D11ShaderResourceView* mViewProjStructedBufferSrv;
-    ID3D11Buffer* mInstanceStructedBuffer;
-    ID3D11ShaderResourceView* mInstanceStructedBufferSrv;
-    ID3D11RenderTargetView* mRtv;
-    ID3D11DepthStencilView* mDepthDsv;
-    RS_CAM_INFO* mRSCameraInfo;
-    ID3D11Buffer* mVertexBuffer;
-    ID3D11Buffer* mIndexBuffer;
-    ID3D11SamplerState* mSampler;
+  bool
+  createShaders();
+  bool
+  createBuffers();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_PriticleSetUp :public RSPass_Base
-{
+class RSPass_PriticleSetUp : public RSPass_Base {
+private:
+  RS_TILING_CONSTANT TilingConstant;
+
+  ID3D11Buffer *ParticleRenderBuffer;
+  ID3D11ShaderResourceView *ParticleRender_Srv;
+  ID3D11UnorderedAccessView *ParticleRender_Uav;
+
+  ID3D11Buffer *ParticlePartA;
+  ID3D11ShaderResourceView *PartA_Srv;
+  ID3D11UnorderedAccessView *PartA_Uav;
+
+  ID3D11Buffer *ParticlePartB;
+  ID3D11UnorderedAccessView *PartB_Uav;
+
+  ID3D11Buffer *ViewspacePosBuffer;
+  ID3D11ShaderResourceView *ViewSpacePos_Srv;
+  ID3D11UnorderedAccessView *ViewSpacePos_Uav;
+
+  ID3D11Buffer *MaxRadiusBuffer;
+  ID3D11ShaderResourceView *MaxRadius_Srv;
+  ID3D11UnorderedAccessView *MaxRadius_Uav;
+
+  ID3D11Buffer *StridedCoarseCullBuffer;
+  ID3D11ShaderResourceView *StridedCoarseCull_Srv;
+  ID3D11UnorderedAccessView *StridedCoarseCull_Uav;
+
+  ID3D11Buffer *StridedCoarseCullCounterBuffer;
+  ID3D11ShaderResourceView *StridedCoarseCullCounter_Srv;
+  ID3D11UnorderedAccessView *StridedCoarseCullCounter_Uav;
+
+  ID3D11Buffer *TiledIndexBuffer;
+  ID3D11ShaderResourceView *TiledIndex_Srv;
+  ID3D11UnorderedAccessView *TiledIndex_Uav;
+
+  ID3D11Buffer *DeadListBuffer;
+  ID3D11UnorderedAccessView *DeadList_Uav;
+
+  ID3D11Buffer *AliveIndexBuffer;
+  ID3D11ShaderResourceView *AliveIndex_Srv;
+  ID3D11UnorderedAccessView *AliveIndex_Uav;
+
+  ID3D11Buffer *DeadListConstantBuffer;
+  ID3D11Buffer *ActiveListConstantBuffer;
+
+  ID3D11Buffer *EmitterConstantBuffer;
+  ID3D11Buffer *CameraConstantBuffer;
+  ID3D11Buffer *TilingConstantBuffer;
+  ID3D11Buffer *TimeConstantBuffer;
+
+  ID3D11Buffer *DebugCounterBuffer;
+
+  ID3D11Texture2D *ParticleRandomTexture;
+  ID3D11ShaderResourceView *ParticleRandom_Srv;
+
+  ID3D11Buffer *SimulEmitterStructedBuffer;
+  ID3D11ShaderResourceView *SimulEmitterStructedBuffer_Srv;
+
 public:
-    RSPass_PriticleSetUp(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_PriticleSetUp(const RSPass_PriticleSetUp& _source);
-    virtual ~RSPass_PriticleSetUp();
+  RSPass_PriticleSetUp(std::string &Name,
+                       PASS_TYPE Type,
+                       class RSRoot_DX11 *Root);
+  RSPass_PriticleSetUp(const RSPass_PriticleSetUp &Source);
+  virtual ~RSPass_PriticleSetUp();
 
-    const RS_TILING_CONSTANT& GetTilingConstantInfo() const;
+  const RS_TILING_CONSTANT &
+  getTilingConstantInfo() const;
 
 public:
-    virtual RSPass_PriticleSetUp* clonePass() override;
+  virtual RSPass_PriticleSetUp *
+  clonePass() override;
 
-    virtual bool initPass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void releasePass() override;
+  virtual void
+  releasePass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateBuffers();
-    bool CreateViews();
-
-private:
-    RS_TILING_CONSTANT mTilingConstant;
-
-    ID3D11Buffer* mParticleRenderBuffer;
-    ID3D11ShaderResourceView* mParticleRender_Srv;
-    ID3D11UnorderedAccessView* mParticleRender_Uav;
-
-    ID3D11Buffer* mParticlePartA;
-    ID3D11ShaderResourceView* mPartA_Srv;
-    ID3D11UnorderedAccessView* mPartA_Uav;
-
-    ID3D11Buffer* mParticlePartB;
-    ID3D11UnorderedAccessView* mPartB_Uav;
-
-    ID3D11Buffer* mViewspacePosBuffer;
-    ID3D11ShaderResourceView* mViewSpacePos_Srv;
-    ID3D11UnorderedAccessView* mViewSpacePos_Uav;
-
-    ID3D11Buffer* mMaxRadiusBuffer;
-    ID3D11ShaderResourceView* mMaxRadius_Srv;
-    ID3D11UnorderedAccessView* mMaxRadius_Uav;
-
-    ID3D11Buffer* mStridedCoarseCullBuffer;
-    ID3D11ShaderResourceView* mStridedCoarseCull_Srv;
-    ID3D11UnorderedAccessView* mStridedCoarseCull_Uav;
-
-    ID3D11Buffer* mStridedCoarseCullCounterBuffer;
-    ID3D11ShaderResourceView* mStridedCoarseCullCounter_Srv;
-    ID3D11UnorderedAccessView* mStridedCoarseCullCounter_Uav;
-
-    ID3D11Buffer* mTiledIndexBuffer;
-    ID3D11ShaderResourceView* mTiledIndex_Srv;
-    ID3D11UnorderedAccessView* mTiledIndex_Uav;
-
-    ID3D11Buffer* mDeadListBuffer;
-    ID3D11UnorderedAccessView* mDeadList_Uav;
-
-    ID3D11Buffer* mAliveIndexBuffer;
-    ID3D11ShaderResourceView* mAliveIndex_Srv;
-    ID3D11UnorderedAccessView* mAliveIndex_Uav;
-
-    ID3D11Buffer* mDeadListConstantBuffer;
-    ID3D11Buffer* mActiveListConstantBuffer;
-
-    ID3D11Buffer* mEmitterConstantBuffer;
-    ID3D11Buffer* mCameraConstantBuffer;
-    ID3D11Buffer* mTilingConstantBuffer;
-    ID3D11Buffer* mTimeConstantBuffer;
-
-    ID3D11Buffer* mDebugCounterBuffer;
-
-    ID3D11Texture2D* mParticleRandomTexture;
-    ID3D11ShaderResourceView* mParticleRandom_Srv;
-
-    ID3D11Buffer* mSimulEmitterStructedBuffer;
-    ID3D11ShaderResourceView* mSimulEmitterStructedBuffer_Srv;
+  bool
+  createBuffers();
+  bool
+  createViews();
 };
 
-class RSPass_PriticleEmitSimulate :public RSPass_Base
-{
-public:
-    RSPass_PriticleEmitSimulate(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_PriticleEmitSimulate(const RSPass_PriticleEmitSimulate& _source);
-    virtual ~RSPass_PriticleEmitSimulate();
+class RSPass_PriticleEmitSimulate : public RSPass_Base {
+private:
+  class RSParticlesContainer *RSParticleContainerPtr;
+
+  ID3D11ComputeShader *InitDeadListShader;
+  ID3D11ComputeShader *ResetParticlesShader;
+  ID3D11ComputeShader *EmitParticleShader;
+  ID3D11ComputeShader *SimulateShader;
+
+  ID3D11ShaderResourceView *DepthTex_Srv;
+  ID3D11ShaderResourceView *RandomTex_Srv;
+  ID3D11ShaderResourceView *SimulEmitterStructedBuffer_Srv;
+  ID3D11UnorderedAccessView *DeadList_Uav;
+  ID3D11UnorderedAccessView *PartA_Uav;
+  ID3D11UnorderedAccessView *PartB_Uav;
+  ID3D11UnorderedAccessView *AliveIndex_Uav;
+  ID3D11UnorderedAccessView *ViewSpacePos_Uav;
+  ID3D11UnorderedAccessView *MaxRadius_Uav;
+  ID3D11Buffer *EmitterConstantBuffer;
+  ID3D11Buffer *CameraConstantBuffer;
+  ID3D11Buffer *DeadListConstantBuffer;
+  ID3D11Buffer *SimulEmitterStructedBuffer;
+  ID3D11Buffer *TimeConstantBuffer;
+
+  ID3D11SamplerState *LinearWrapSampler;
+
+  RS_CAM_INFO *RSCameraInfo;
 
 public:
-    virtual RSPass_PriticleEmitSimulate* clonePass() override;
+  RSPass_PriticleEmitSimulate(std::string &Name,
+                              PASS_TYPE Type,
+                              class RSRoot_DX11 *Root);
+  RSPass_PriticleEmitSimulate(const RSPass_PriticleEmitSimulate &Source);
+  virtual ~RSPass_PriticleEmitSimulate();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_PriticleEmitSimulate *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateSampler();
-    bool CheckResources();
-
-private:
-    class RSParticlesContainer* mRSParticleContainerPtr;
-
-    ID3D11ComputeShader* mInitDeadListShader;
-    ID3D11ComputeShader* mResetParticlesShader;
-    ID3D11ComputeShader* mEmitParticleShader;
-    ID3D11ComputeShader* mSimulateShader;
-
-    ID3D11ShaderResourceView* mDepthTex_Srv;
-    ID3D11ShaderResourceView* mRandomTex_Srv;
-    ID3D11ShaderResourceView* mSimulEmitterStructedBuffer_Srv;
-    ID3D11UnorderedAccessView* mDeadList_Uav;
-    ID3D11UnorderedAccessView* mPartA_Uav;
-    ID3D11UnorderedAccessView* mPartB_Uav;
-    ID3D11UnorderedAccessView* mAliveIndex_Uav;
-    ID3D11UnorderedAccessView* mViewSpacePos_Uav;
-    ID3D11UnorderedAccessView* mMaxRadius_Uav;
-    ID3D11Buffer* mEmitterConstantBuffer;
-    ID3D11Buffer* mCameraConstantBuffer;
-    ID3D11Buffer* mDeadListConstantBuffer;
-    ID3D11Buffer* mSimulEmitterStructedBuffer;
-    ID3D11Buffer* mTimeConstantBuffer;
-
-    ID3D11SamplerState* mLinearWrapSampler;
-
-    RS_CAM_INFO* mRSCameraInfo;
+  bool
+  createShaders();
+  bool
+  createSampler();
+  bool
+  checkResources();
 };
 
-class RSPass_PriticleTileRender :public RSPass_Base
-{
-public:
-    RSPass_PriticleTileRender(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_PriticleTileRender(const RSPass_PriticleTileRender& _source);
-    virtual ~RSPass_PriticleTileRender();
+class RSPass_PriticleTileRender : public RSPass_Base {
+private:
+  ID3D11ComputeShader *CoarseCullingShader;
+  ID3D11ComputeShader *TileCullingShader;
+  ID3D11ComputeShader *TileRenderShader;
+  ID3D11VertexShader *BlendVertexShader;
+  ID3D11PixelShader *BlendPixelShader;
+
+  ID3D11Buffer *CameraConstantBuffer;
+  ID3D11Buffer *TilingConstantBuffer;
+  ID3D11Buffer *ActiveListConstantBuffer;
+  ID3D11ShaderResourceView *DepthTex_Srv;
+  ID3D11ShaderResourceView *ViewSpacePos_Srv;
+  ID3D11ShaderResourceView *MaxRadius_Srv;
+  ID3D11ShaderResourceView *PartA_Srv;
+  ID3D11ShaderResourceView *AliveIndex_Srv;
+  ID3D11UnorderedAccessView *AliveIndex_Uav;
+  ID3D11ShaderResourceView *CoarseTileIndex_Srv;
+  ID3D11UnorderedAccessView *CoarseTileIndex_Uav;
+  ID3D11ShaderResourceView *CoarseTileIndexCounter_Srv;
+  ID3D11UnorderedAccessView *CoarseTileIndexCounter_Uav;
+  ID3D11ShaderResourceView *TiledIndex_Srv;
+  ID3D11UnorderedAccessView *TiledIndex_Uav;
+  ID3D11ShaderResourceView *ParticleRender_Srv;
+  ID3D11UnorderedAccessView *ParticleRender_Uav;
+
+  ID3D11SamplerState *LinearClampSampler;
+  ID3D11BlendState *ParticleBlendState;
+
+  ID3D11ShaderResourceView *ParticleTex_Srv;
+
+  RS_CAM_INFO *RSCameraInfo;
 
 public:
-    virtual RSPass_PriticleTileRender* clonePass() override;
+  RSPass_PriticleTileRender(std::string &Name,
+                            PASS_TYPE Type,
+                            class RSRoot_DX11 *Root);
+  RSPass_PriticleTileRender(const RSPass_PriticleTileRender &Source);
+  virtual ~RSPass_PriticleTileRender();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_PriticleTileRender *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateViews();
-    bool CreateSampler();
-    bool CreateBlend();
-    bool CheckResources();
-
-private:
-    ID3D11ComputeShader* mCoarseCullingShader;
-    ID3D11ComputeShader* mTileCullingShader;
-    ID3D11ComputeShader* mTileRenderShader;
-    ID3D11VertexShader* mBlendVertexShader;
-    ID3D11PixelShader* mBlendPixelShader;
-
-    ID3D11Buffer* mCameraConstantBuffer;
-    ID3D11Buffer* mTilingConstantBuffer;
-    ID3D11Buffer* mActiveListConstantBuffer;
-    ID3D11ShaderResourceView* mDepthTex_Srv;
-    ID3D11ShaderResourceView* mViewSpacePos_Srv;
-    ID3D11ShaderResourceView* mMaxRadius_Srv;
-    ID3D11ShaderResourceView* mPartA_Srv;
-    ID3D11ShaderResourceView* mAliveIndex_Srv;
-    ID3D11UnorderedAccessView* mAliveIndex_Uav;
-    ID3D11ShaderResourceView* mCoarseTileIndex_Srv;
-    ID3D11UnorderedAccessView* mCoarseTileIndex_Uav;
-    ID3D11ShaderResourceView* mCoarseTileIndexCounter_Srv;
-    ID3D11UnorderedAccessView* mCoarseTileIndexCounter_Uav;
-    ID3D11ShaderResourceView* mTiledIndex_Srv;
-    ID3D11UnorderedAccessView* mTiledIndex_Uav;
-    ID3D11ShaderResourceView* mParticleRender_Srv;
-    ID3D11UnorderedAccessView* mParticleRender_Uav;
-
-    ID3D11SamplerState* mLinearClampSampler;
-    ID3D11BlendState* mParticleBlendState;
-
-    ID3D11ShaderResourceView* mParticleTex_Srv;
-
-    RS_CAM_INFO* mRSCameraInfo;
+  bool
+  createShaders();
+  bool
+  createViews();
+  bool
+  createSampler();
+  bool
+  createBlend();
+  bool
+  checkResources();
 };
 
-class RSPass_Sprite :public RSPass_Base
-{
-public:
-    RSPass_Sprite(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_Sprite(const RSPass_Sprite& _source);
-    virtual ~RSPass_Sprite();
+class RSPass_Sprite : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11PixelShader *PixelShader;
+  ID3D11DepthStencilState *DepthStencilState;
+  ID3D11BlendState *BlendState;
+  ID3D11RenderTargetView *RenderTargetView;
+  DRAWCALL_TYPE DrawCallType;
+  RSDrawCallsPipe *DrawCallPipe;
+  ID3D11Buffer *ProjStructedBuffer;
+  ID3D11ShaderResourceView *ProjStructedBufferSrv;
+  ID3D11Buffer *InstanceStructedBuffer;
+  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
+  ID3D11SamplerState *LinearSampler;
+  RS_CAM_INFO *RSCameraInfo;
 
 public:
-    virtual RSPass_Sprite* clonePass() override;
+  RSPass_Sprite(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Sprite(const RSPass_Sprite &Source);
+  virtual ~RSPass_Sprite();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_Sprite *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateStates();
-    bool CreateBuffers();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11DepthStencilState* mDepthStencilState;
-    ID3D11BlendState* mBlendState;
-    ID3D11RenderTargetView* mRenderTargetView;
-    DRAWCALL_TYPE mDrawCallType;
-    RSDrawCallsPipe* mDrawCallPipe;
-    ID3D11Buffer* mProjStructedBuffer;
-    ID3D11ShaderResourceView* mProjStructedBufferSrv;
-    ID3D11Buffer* mInstanceStructedBuffer;
-    ID3D11ShaderResourceView* mInstanceStructedBufferSrv;
-    ID3D11SamplerState* mLinearSampler;
-    RS_CAM_INFO* mRSCameraInfo;
+  bool
+  createShaders();
+  bool
+  createStates();
+  bool
+  createBuffers();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_SimpleLight :public RSPass_Base
-{
-public:
-    RSPass_SimpleLight(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_SimpleLight(const RSPass_SimpleLight& _source);
-    virtual ~RSPass_SimpleLight();
+class RSPass_SimpleLight : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11PixelShader *PixelShader;
+  ID3D11RenderTargetView *RenderTargetView;
+  ID3D11SamplerState *LinearWrapSampler;
+  ID3D11ShaderResourceView *GeoBufferSrv;
+  ID3D11ShaderResourceView *SsaoSrv;
+  ID3D11Buffer *VertexBuffer;
+  ID3D11Buffer *IndexBuffer;
 
 public:
-    virtual RSPass_SimpleLight* clonePass() override;
+  RSPass_SimpleLight(std::string &Name,
+                     PASS_TYPE Type,
+                     class RSRoot_DX11 *Root);
+  RSPass_SimpleLight(const RSPass_SimpleLight &Source);
+  virtual ~RSPass_SimpleLight();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_SimpleLight *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateBuffers();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11RenderTargetView* mRenderTargetView;
-    ID3D11SamplerState* mLinearWrapSampler;
-    ID3D11ShaderResourceView* mGeoBufferSrv;
-    ID3D11ShaderResourceView* mSsaoSrv;
-    ID3D11Buffer* mVertexBuffer;
-    ID3D11Buffer* mIndexBuffer;
+  bool
+  createShaders();
+  bool
+  createBuffers();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_Billboard :public RSPass_Base
-{
-public:
-    RSPass_Billboard(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_Billboard(const RSPass_Billboard& _source);
-    virtual ~RSPass_Billboard();
+class RSPass_Billboard : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11GeometryShader *GeometryShader;
+  ID3D11PixelShader *PixelShader;
+  ID3D11BlendState *BlendState;
+  ID3D11RenderTargetView *RenderTargetView;
+  ID3D11DepthStencilView *DepthStencilView;
+  ID3D11SamplerState *LinearWrapSampler;
+  ID3D11Buffer *ViewProjStructedBuffer;
+  ID3D11ShaderResourceView *ViewProjStructedBufferSrv;
+  ID3D11Buffer *InstanceStructedBuffer;
+  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
+  DRAWCALL_TYPE DrawCallType;
+  RSDrawCallsPipe *DrawCallPipe;
+  RS_CAM_INFO *RSCameraInfo;
+  class RSCamera *RSCamera;
 
 public:
-    virtual RSPass_Billboard* clonePass() override;
+  RSPass_Billboard(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Billboard(const RSPass_Billboard &Source);
+  virtual ~RSPass_Billboard();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_Billboard *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateStates();
-    bool CreateShaders();
-    bool CreateBuffers();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11GeometryShader* mGeometryShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11BlendState* mBlendState;
-    ID3D11RenderTargetView* mRenderTargetView;
-    ID3D11DepthStencilView* mDepthStencilView;
-    ID3D11SamplerState* mLinearWrapSampler;
-    ID3D11Buffer* mViewProjStructedBuffer;
-    ID3D11ShaderResourceView* mViewProjStructedBufferSrv;
-    ID3D11Buffer* mInstanceStructedBuffer;
-    ID3D11ShaderResourceView* mInstanceStructedBufferSrv;
-    DRAWCALL_TYPE mDrawCallType;
-    RSDrawCallsPipe* mDrawCallPipe;
-    RS_CAM_INFO* mRSCameraInfo;
-    class RSCamera* mRSCamera;
+  bool
+  createStates();
+  bool
+  createShaders();
+  bool
+  createBuffers();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_Tonemapping :public RSPass_Base
-{
-public:
-    RSPass_Tonemapping(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_Tonemapping(const RSPass_Tonemapping& _source);
-    virtual ~RSPass_Tonemapping();
+class RSPass_Tonemapping : public RSPass_Base {
+private:
+  ID3D11ComputeShader *AverLuminShader;
+  ID3D11ComputeShader *DynamicExposureShader;
+  ID3D11ComputeShader *ToneMapShader;
+  ID3D11UnorderedAccessView *HdrUav;
+  ID3D11ShaderResourceView *HdrSrv;
+  std::array<ID3D11Buffer *, 2> AverageLuminBufferArray;
+  std::array<ID3D11ShaderResourceView *, 2> AverageLuminSrvArray;
+  std::array<ID3D11UnorderedAccessView *, 2> AverageLuminUavArray;
 
 public:
-    virtual RSPass_Tonemapping* clonePass() override;
+  RSPass_Tonemapping(std::string &Name,
+                     PASS_TYPE Type,
+                     class RSRoot_DX11 *Root);
+  RSPass_Tonemapping(const RSPass_Tonemapping &Source);
+  virtual ~RSPass_Tonemapping();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_Tonemapping *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateViews();
-
-private:
-    ID3D11ComputeShader* mAverLuminShader;
-    ID3D11ComputeShader* mDynamicExposureShader;
-    ID3D11ComputeShader* mToneMapShader;
-    ID3D11UnorderedAccessView* mHdrUav;
-    ID3D11ShaderResourceView* mHdrSrv;
-    std::array<ID3D11Buffer*, 2> mAverageLuminBufferArray;
-    std::array<ID3D11ShaderResourceView*, 2> mAverageLuminSrvArray;
-    std::array<ID3D11UnorderedAccessView*, 2> mAverageLuminUavArray;
+  bool
+  createShaders();
+  bool
+  createViews();
 };
 
-class RSPass_BloomHdr :public RSPass_Base
-{
-public:
-    RSPass_BloomHdr(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_BloomHdr(const RSPass_BloomHdr& _source);
-    virtual ~RSPass_BloomHdr();
+class RSPass_BloomHdr : public RSPass_Base {
+private:
+  ID3D11ComputeShader *FilterPixelShader;
+  ID3D11ComputeShader *KABlurHoriShader;
+  ID3D11ComputeShader *KABlurVertShader;
+  ID3D11ComputeShader *BlurHoriShader;
+  ID3D11ComputeShader *BlurVertShader;
+  ID3D11ComputeShader *UpSampleShader;
+  ID3D11ComputeShader *BlendShader;
+  ID3D11SamplerState *LinearBorderSampler;
+  ID3D11Buffer *BlurConstBuffer;
+  ID3D11Buffer *IntensityConstBuffer;
+  ID3D11ShaderResourceView *HdrSrv;
+  ID3D11UnorderedAccessView *HdrUav;
+  ID3D11Texture2D *NeedBloomTexture;
+  ID3D11ShaderResourceView *NeedBloomSrv;
+  std::array<ID3D11UnorderedAccessView *, 10> NeedBloomUavArray;
+  ID3D11Texture2D *UpSampleTexture;
+  ID3D11ShaderResourceView *UpSampleSrv;
+  std::array<ID3D11UnorderedAccessView *, 8> UpSampleUavArray;
 
 public:
-    virtual RSPass_BloomHdr* clonePass() override;
+  RSPass_BloomHdr(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_BloomHdr(const RSPass_BloomHdr &Source);
+  virtual ~RSPass_BloomHdr();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_BloomHdr *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateViews();
-    bool CreateBuffers();
-    bool CreateSampler();
-
-private:
-    ID3D11ComputeShader* mFilterPixelShader;
-    ID3D11ComputeShader* mKABlurHoriShader;
-    ID3D11ComputeShader* mKABlurVertShader;
-    ID3D11ComputeShader* mBlurHoriShader;
-    ID3D11ComputeShader* mBlurVertShader;
-    ID3D11ComputeShader* mUpSampleShader;
-    ID3D11ComputeShader* mBlendShader;
-    ID3D11SamplerState* mLinearBorderSampler;
-    ID3D11Buffer* mBlurConstBuffer;
-    ID3D11Buffer* mIntensityConstBuffer;
-    ID3D11ShaderResourceView* mHdrSrv;
-    ID3D11UnorderedAccessView* mHdrUav;
-    ID3D11Texture2D* mNeedBloomTexture;
-    ID3D11ShaderResourceView* mNeedBloomSrv;
-    std::array<ID3D11UnorderedAccessView*, 10> mNeedBloomUavArray;
-    ID3D11Texture2D* mUpSampleTexture;
-    ID3D11ShaderResourceView* mUpSampleSrv;
-    std::array<ID3D11UnorderedAccessView*, 8> mUpSampleUavArray;
+  bool
+  createShaders();
+  bool
+  createViews();
+  bool
+  createBuffers();
+  bool
+  createSampler();
 };
 
-class RSPass_FXAA :public RSPass_Base
-{
-public:
-    RSPass_FXAA(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_FXAA(const RSPass_FXAA& _source);
-    virtual ~RSPass_FXAA();
+class RSPass_FXAA : public RSPass_Base {
+private:
+  ID3D11ComputeShader *FXAAShader;
+  ID3D11UnorderedAccessView *HdrUav;
+  ID3D11Texture2D *CopyTex;
+  ID3D11ShaderResourceView *CopySrv;
+  ID3D11SamplerState *LinearBorderSampler;
 
 public:
-    virtual RSPass_FXAA* clonePass() override;
+  RSPass_FXAA(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_FXAA(const RSPass_FXAA &Source);
+  virtual ~RSPass_FXAA();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_FXAA *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateShaders();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11ComputeShader* mFXAAShader;
-    ID3D11UnorderedAccessView* mHdrUav;
-    ID3D11Texture2D* mCopyTex;
-    ID3D11ShaderResourceView* mCopySrv;
-    ID3D11SamplerState* mLinearBorderSampler;
+  bool
+  createShaders();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-class RSPass_ToSwapChain :public RSPass_Base
-{
-public:
-    RSPass_ToSwapChain(std::string& _name, PASS_TYPE _type,
-        class RSRoot_DX11* _root);
-    RSPass_ToSwapChain(const RSPass_ToSwapChain& _source);
-    virtual ~RSPass_ToSwapChain();
+class RSPass_ToSwapChain : public RSPass_Base {
+private:
+  ID3D11VertexShader *VertexShader;
+  ID3D11PixelShader *PixelShader;
+  ID3D11Buffer *VertexBuffer;
+  ID3D11Buffer *IndexBuffer;
+  ID3D11RenderTargetView *SwapChainRtv;
+  ID3D11ShaderResourceView *HdrSrv;
+  ID3D11SamplerState *LinearWrapSampler;
 
 public:
-    virtual RSPass_ToSwapChain* clonePass() override;
+  RSPass_ToSwapChain(std::string &Name,
+                     PASS_TYPE Type,
+                     class RSRoot_DX11 *Root);
+  RSPass_ToSwapChain(const RSPass_ToSwapChain &Source);
+  virtual ~RSPass_ToSwapChain();
 
-    virtual bool initPass() override;
+public:
+  virtual RSPass_ToSwapChain *
+  clonePass() override;
 
-    virtual void releasePass() override;
+  virtual bool
+  initPass() override;
 
-    virtual void execuatePass() override;
+  virtual void
+  releasePass() override;
+
+  virtual void
+  execuatePass() override;
 
 private:
-    bool CreateBuffers();
-    bool CreateShaders();
-    bool CreateViews();
-    bool CreateSamplers();
-
-private:
-    ID3D11VertexShader* mVertexShader;
-    ID3D11PixelShader* mPixelShader;
-    ID3D11Buffer* mVertexBuffer;
-    ID3D11Buffer* mIndexBuffer;
-    ID3D11RenderTargetView* mSwapChainRtv;
-    ID3D11ShaderResourceView* mHdrSrv;
-    ID3D11SamplerState* mLinearWrapSampler;
+  bool
+  createBuffers();
+  bool
+  createShaders();
+  bool
+  createViews();
+  bool
+  createSamplers();
 };
 
-void SetPipelineDeltaTime(float _deltaMilliSecond);
+void
+setPipelineDeltaTime(float DeltaMilliSecond);
 
-void SetPipelineIBLTextures(ID3D11ShaderResourceView* _envSrv,
-    ID3D11ShaderResourceView* _diffSrv,
-    ID3D11ShaderResourceView* _specSrv);
+void
+setPipelineIBLTextures(ID3D11ShaderResourceView *EnvSrv,
+                       ID3D11ShaderResourceView *DiffSrv,
+                       ID3D11ShaderResourceView *SpecSrv);

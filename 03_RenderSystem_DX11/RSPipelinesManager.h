@@ -50,5 +50,5 @@ public:
   execuateCurrentPipeline();
 
   void
-  useNextPipeline();
+  changeToNextPipeline();
 };

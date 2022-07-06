@@ -62,7 +62,7 @@ bool RenderSystem::Init()
         ci.OrthoWidthHeight = { 1280.f,720.f };
         mRenderSystemRoot->getCamerasContainer()->createRSCamera(name, &ci);
 
-        if (!CreateBasicPipeline()) { return false; }
+        if (!createBasicPipeline()) { return false; }
     }
 
     mAssetsPool = nullptr;
@@ -158,10 +158,10 @@ void RenderSystem::Run(Timer& _timer)
         GetSystemExecutive()->GetSceneManager()->
         GetCurrentSceneNode()->GetCurrentAmbientFactor());
 
-    SetPipelineIBLTextures(mEnvTex, mDiffTex, mSpecTex);
-    SetPipelineDeltaTime(_timer.floatDeltaTime());
+    setPipelineIBLTextures(mEnvTex, mDiffTex, mSpecTex);
+    setPipelineDeltaTime(_timer.floatDeltaTime());
 
-    getRSDX11RootInstance()->getPipelinesManager()->useNextPipeline();
+    getRSDX11RootInstance()->getPipelinesManager()->changeToNextPipeline();
     mRenderSystemRoot->getPipelinesManager()->execuateCurrentPipeline();
     mRenderSystemRoot->getDevices()->presentSwapChain();
     mRenderSystemRoot->getDrawCallsPool()->clearAllDrawCalls();

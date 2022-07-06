@@ -103,7 +103,7 @@ RSPipelinesManager::execuateCurrentPipeline() {
 }
 
 void
-RSPipelinesManager::useNextPipeline() {
+RSPipelinesManager::changeToNextPipeline() {
   if (NextPipeline) {
     if (CurrentPipeline) {
       CurrentPipeline->suspendAllThread();
