@@ -3,31 +3,44 @@
 #include <string>
 #include <xaudio2.h>
 
-using SOUND_HANDLE = IXAudio2SourceVoice*;
+using SOUND_HANDLE = IXAudio2SourceVoice *;
 using LOAD_HANDLE = std::string;
 
-bool SoundHasInited();
+bool
+soundHasInited();
 
-bool InitSound();
+bool
+initSound();
 
-void UninitSound();
+void
+uninitSound();
 
-void UpdateSound();
+void
+updateSound();
 
-void ClearSoundPool();
+void
+clearSoundPool();
 
-void LoadSound(std::string name, LOAD_HANDLE path);
+void
+loadSound(std::string name, LOAD_HANDLE path);
 
-void PlayBGM(std::string soundName);
+void
+playBGM(std::string soundName);
 
-void StopBGM(std::string soundName);
+void
+stopBGM(std::string soundName);
 
-void StopBGM();
+void
+stopBGM();
 
-void SetVolume(std::string soundName, float volume);
+void
+setVolume(std::string soundName, float volume);
 
-void PlaySE(std::string soundName);
+void
+playSE(std::string soundName);
 
-SOUND_HANDLE GetSoundHandle(std::string&& soundName);
+SOUND_HANDLE
+getSoundHandle(std::string &&soundName);
 
-SOUND_HANDLE GetSoundHandle(std::string& soundName);
+SOUND_HANDLE
+getSoundHandle(std::string &soundName);

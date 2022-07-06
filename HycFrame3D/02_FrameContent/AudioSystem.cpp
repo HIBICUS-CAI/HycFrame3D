@@ -22,7 +22,7 @@ AudioSystem::~AudioSystem()
 
 bool AudioSystem::Init()
 {
-    if (!SoundHasInited()) { if (!InitSound()) { return false; } }
+    if (!soundHasInited()) { if (!initSound()) { return false; } }
 
 #ifdef _DEBUG
     assert(GetSystemExecutive());
@@ -55,5 +55,5 @@ void AudioSystem::Run(Timer& _timer)
 
 void AudioSystem::Destory()
 {
-    UninitSound();
+    uninitSound();
 }

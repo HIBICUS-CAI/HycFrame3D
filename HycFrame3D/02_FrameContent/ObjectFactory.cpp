@@ -260,7 +260,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                         fileType.c_str());
                     return;
                 }
-                LoadModelFile(fileName, type, subIndex, &meshData,
+                loadModelFile(fileName, type, subIndex, &meshData,
                     &bonesData, &animationData);
             }
             else if (loadMode == "program-box")
@@ -351,27 +351,27 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
 
             if (forceDiffuse != "")
             {
-                AddTextureToSubMesh(&meshData, forceDiffuse,
+                addTextureToSubMesh(&meshData, forceDiffuse,
                     MESH_TEXTURE_TYPE::ALBEDO);
             }
             if (forceNormal != "")
             {
-                AddTextureToSubMesh(&meshData, forceNormal,
+                addTextureToSubMesh(&meshData, forceNormal,
                     MESH_TEXTURE_TYPE::NORMAL);
             }
             if (forceMetal != "")
             {
-                AddTextureToSubMesh(&meshData, forceMetal,
+                addTextureToSubMesh(&meshData, forceMetal,
                     MESH_TEXTURE_TYPE::METALLIC);
             }
             if (forceRough != "")
             {
-                AddTextureToSubMesh(&meshData, forceRough,
+                addTextureToSubMesh(&meshData, forceRough,
                     MESH_TEXTURE_TYPE::ROUGHNESS);
             }
             if (forceEmiss != "")
             {
-                AddTextureToSubMesh(&meshData, forceEmiss,
+                addTextureToSubMesh(&meshData, forceEmiss,
                     MESH_TEXTURE_TYPE::EMISSIVE);
             }
 
@@ -402,7 +402,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
             audio = getJsonNode(_json,
                 "/audio-assets/" + std::to_string(i) + "/audio-file");
             std::string file = audio->GetString();
-            LoadSound(name, file);
+            loadSound(name, file);
             _node->GetAssetsPool()->InsertNewSound(name);
         }
     }

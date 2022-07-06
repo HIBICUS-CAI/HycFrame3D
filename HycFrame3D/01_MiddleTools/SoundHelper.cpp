@@ -1,507 +1,444 @@
 #include "SoundHelper.h"
-#include <unordered_map>
-#include <Windows.h>
+
 #include "PrintLog.h"
 
-static bool g_SoundSystemHasInited = false;
-static IXAudio2* gp_XAudio2 = nullptr;
-static IXAudio2MasteringVoice* gp_MasteringVoice = nullptr;
-std::unordered_map<std::string, DWORD> g_SoundLengthPool;
-std::unordered_map<std::string, BYTE*> g_SoundDataPool;
-std::unordered_map<std::string, SOUND_HANDLE> g_SoundPool;
+#include <unordered_map>
+#include <windows.h>
 
-static CRITICAL_SECTION g_SoundLock = {};
-#define LOCK EnterCriticalSection(&g_SoundLock)
-#define UNLOCK LeaveCriticalSection(&g_SoundLock)
+static bool G_SoundSystemHasInited = false;
+static IXAudio2 *G_XAudio2 = nullptr;
+static IXAudio2MasteringVoice *G_MasteringVoice = nullptr;
+static std::unordered_map<std::string, DWORD> G_SoundLengthPool = {};
+static std::unordered_map<std::string, BYTE *> G_SoundDataPool = {};
+static std::unordered_map<std::string, SOUND_HANDLE> G_SoundPool = {};
 
-bool SoundHasInited()
-{
-    return g_SoundSystemHasInited;
+static CRITICAL_SECTION G_SoundLock = {};
+
+#define LOCK EnterCriticalSection(&G_SoundLock)
+#define UNLOCK LeaveCriticalSection(&G_SoundLock)
+
+bool
+soundHasInited() {
+  return G_SoundSystemHasInited;
 }
 
-HRESULT CheckChunk(HANDLE hFile, DWORD format,
-    DWORD* pChunkSize, DWORD* pChunkDataPosition)
-{
-    HRESULT hr = S_OK;
-    DWORD dwRead = 0;
-    DWORD dwChunkType = 0;
-    DWORD dwChunkDataSize = 0;
-    DWORD dwRIFFDataSize = 0;
-    DWORD dwFileType = 0;
-    DWORD dwBytesRead = 0;
-    DWORD dwOffset = 0;
+HRESULT
+CheckChunk(HANDLE FileHandle,
+           DWORD Format,
+           DWORD *ChunkSizePtr,
+           DWORD *ChunkDataPositionPtr) {
+  HRESULT Hr = S_OK;
+  DWORD DWRead = 0;
+  DWORD DWChunkType = 0;
+  DWORD DWChunkDataSize = 0;
+  DWORD DWRIFFDataSize = 0;
+  DWORD DWFileType = 0;
+  DWORD DWBytesRead = 0;
+  DWORD DWOffset = 0;
 
-    if (SetFilePointer(hFile, 0, NULL, FILE_BEGIN) ==
-        INVALID_SET_FILE_POINTER)
-    {
+  if (SetFilePointer(FileHandle, 0, NULL, FILE_BEGIN) ==
+      INVALID_SET_FILE_POINTER) {
+    return HRESULT_FROM_WIN32(GetLastError());
+  }
+
+  while (Hr == S_OK) {
+    if (ReadFile(FileHandle, &DWChunkType, sizeof(DWORD), &DWRead, NULL) == 0) {
+      Hr = HRESULT_FROM_WIN32(GetLastError());
+    }
+
+    if (ReadFile(FileHandle, &DWChunkDataSize, sizeof(DWORD), &DWRead, NULL) ==
+        0) {
+      Hr = HRESULT_FROM_WIN32(GetLastError());
+    }
+
+    switch (DWChunkType) {
+    case 'FFIR':
+      DWRIFFDataSize = DWChunkDataSize;
+      DWChunkDataSize = 4;
+      if (ReadFile(FileHandle, &DWFileType, sizeof(DWORD), &DWRead, NULL) ==
+          0) {
+        Hr = HRESULT_FROM_WIN32(GetLastError());
+      }
+      break;
+
+    default:
+      if (SetFilePointer(FileHandle, DWChunkDataSize, NULL, FILE_CURRENT) ==
+          INVALID_SET_FILE_POINTER) {
         return HRESULT_FROM_WIN32(GetLastError());
+      }
     }
 
-    while (hr == S_OK)
-    {
-        if (ReadFile(hFile, &dwChunkType, sizeof(DWORD),
-            &dwRead, NULL) == 0)
-        {
-            hr = HRESULT_FROM_WIN32(GetLastError());
-        }
+    DWOffset += sizeof(DWORD) * 2;
+    if (DWChunkType == Format) {
+      *ChunkSizePtr = DWChunkDataSize;
+      *ChunkDataPositionPtr = DWOffset;
 
-        if (ReadFile(hFile, &dwChunkDataSize, sizeof(DWORD),
-            &dwRead, NULL) == 0)
-        {
-            hr = HRESULT_FROM_WIN32(GetLastError());
-        }
-
-        switch (dwChunkType)
-        {
-        case 'FFIR':
-            dwRIFFDataSize = dwChunkDataSize;
-            dwChunkDataSize = 4;
-            if (ReadFile(hFile, &dwFileType, sizeof(DWORD),
-                &dwRead, NULL) == 0)
-            {
-                hr = HRESULT_FROM_WIN32(GetLastError());
-            }
-            break;
-
-        default:
-            if (SetFilePointer(hFile, dwChunkDataSize, NULL,
-                FILE_CURRENT) == INVALID_SET_FILE_POINTER)
-            {
-                return HRESULT_FROM_WIN32(GetLastError());
-            }
-        }
-
-        dwOffset += sizeof(DWORD) * 2;
-        if (dwChunkType == format)
-        {
-            *pChunkSize = dwChunkDataSize;
-            *pChunkDataPosition = dwOffset;
-
-            return S_OK;
-        }
-
-        dwOffset += dwChunkDataSize;
-        if (dwBytesRead >= dwRIFFDataSize)
-        {
-            return S_FALSE;
-        }
+      return S_OK;
     }
 
-    return S_OK;
+    DWOffset += DWChunkDataSize;
+    if (DWBytesRead >= DWRIFFDataSize) {
+      return S_FALSE;
+    }
+  }
+
+  return S_OK;
 }
 
-HRESULT ReadChunkData(HANDLE hFile, void* pBuffer,
-    DWORD dwBuffersize, DWORD dwBufferoffset)
-{
-    DWORD dwRead;
+HRESULT
+ReadChunkData(HANDLE FileHandle,
+              void *BufferPtr,
+              DWORD DWBuffersize,
+              DWORD DWBufferoffset) {
+  DWORD DWRead;
 
-    if (SetFilePointer(hFile, dwBufferoffset, NULL, FILE_BEGIN)
-        == INVALID_SET_FILE_POINTER)
-    {
-        return HRESULT_FROM_WIN32(GetLastError());
-    }
+  if (SetFilePointer(FileHandle, DWBufferoffset, NULL, FILE_BEGIN) ==
+      INVALID_SET_FILE_POINTER) {
+    return HRESULT_FROM_WIN32(GetLastError());
+  }
 
-    if (ReadFile(hFile, pBuffer, dwBuffersize, &dwRead, NULL)
-        == 0)
-    {
-        return HRESULT_FROM_WIN32(GetLastError());
-    }
+  if (ReadFile(FileHandle, BufferPtr, DWBuffersize, &DWRead, NULL) == 0) {
+    return HRESULT_FROM_WIN32(GetLastError());
+  }
 
-    return S_OK;
+  return S_OK;
 }
 
-void SplitByRomSymbolSound(const std::string& s,
-    std::vector<std::string>& v, const std::string& c)
-{
-    v.clear();
-    std::string::size_type pos1 = 0, pos2 = s.find(c);
-    while (std::string::npos != pos2)
-    {
-        v.push_back(s.substr(pos1, pos2 - pos1));
+void
+SplitByRomSymbolSound(const std::string &S,
+                      std::vector<std::string> &V,
+                      const std::string &C) {
+  V.clear();
+  std::string::size_type Pos1 = 0, Pos2 = S.find(C);
+  while (std::string::npos != Pos2) {
+    V.push_back(S.substr(Pos1, Pos2 - Pos1));
 
-        pos1 = pos2 + c.size();
-        pos2 = s.find(c, pos1);
-    }
-    if (pos1 != s.length())
-        v.push_back(s.substr(pos1));
+    Pos1 = Pos2 + C.size();
+    Pos2 = S.find(C, Pos1);
+  }
+  if (Pos1 != S.length())
+    V.push_back(S.substr(Pos1));
 }
 
-bool InitSound()
-{
-    InitializeCriticalSection(&g_SoundLock);
+bool
+initSound() {
+  InitializeCriticalSection(&G_SoundLock);
 
-    HRESULT hr;
+  HRESULT Hr;
 
-    hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to init com library in sound\n");
-    }
+  Hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to init com library in sound\n");
+  }
 
-    hr = XAudio2Create(&gp_XAudio2, 0);
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to create xaudio2 object\n");
+  Hr = XAudio2Create(&G_XAudio2, 0);
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to create xaudio2 object\n");
 
-        CoUninitialize();
+    CoUninitialize();
 
-        return false;
-    }
+    return false;
+  }
 
-    hr = gp_XAudio2->CreateMasteringVoice(&gp_MasteringVoice);
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to create master voice object\n");
+  Hr = G_XAudio2->CreateMasteringVoice(&G_MasteringVoice);
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to create master voice object\n");
 
-        if (gp_XAudio2)
-        {
-            gp_XAudio2->Release();
-            gp_XAudio2 = nullptr;
-        }
-
-        CoUninitialize();
-
-        return false;
-    }
-
-    g_SoundSystemHasInited = true;
-
-    return true;
-}
-
-void UninitSound()
-{
-    ClearSoundPool();
-
-    gp_MasteringVoice->DestroyVoice();
-    gp_MasteringVoice = nullptr;
-
-    if (gp_XAudio2)
-    {
-        gp_XAudio2->Release();
-        gp_XAudio2 = nullptr;
+    if (G_XAudio2) {
+      G_XAudio2->Release();
+      G_XAudio2 = nullptr;
     }
 
     CoUninitialize();
 
-    g_SoundSystemHasInited = false;
+    return false;
+  }
 
-    DeleteCriticalSection(&g_SoundLock);
+  G_SoundSystemHasInited = true;
+
+  return true;
 }
 
-void UpdateSound()
-{
+void
+uninitSound() {
+  clearSoundPool();
 
+  G_MasteringVoice->DestroyVoice();
+  G_MasteringVoice = nullptr;
+
+  if (G_XAudio2) {
+    G_XAudio2->Release();
+    G_XAudio2 = nullptr;
+  }
+
+  CoUninitialize();
+
+  G_SoundSystemHasInited = false;
+
+  DeleteCriticalSection(&G_SoundLock);
 }
 
-void ClearSoundPool()
-{
-    for (auto& sound : g_SoundPool)
-    {
-        if (sound.second)
-        {
-            sound.second->Stop(0);
-            sound.second->DestroyVoice();
-        }
+void
+updateSound() {}
+
+void
+clearSoundPool() {
+  for (auto &Sound : G_SoundPool) {
+    if (Sound.second) {
+      Sound.second->Stop(0);
+      Sound.second->DestroyVoice();
     }
-    for (auto& soundData : g_SoundDataPool)
-    {
-        if (soundData.second)
-        {
-            delete[] soundData.second;
-        }
+  }
+  for (auto &SoundData : G_SoundDataPool) {
+    if (SoundData.second) {
+      delete[] SoundData.second;
     }
-    g_SoundPool.clear();
-    g_SoundDataPool.clear();
-    g_SoundLengthPool.clear();
+  }
+  G_SoundPool.clear();
+  G_SoundDataPool.clear();
+  G_SoundLengthPool.clear();
 }
 
-void LoadSound(std::string name, LOAD_HANDLE path)
-{
-    HANDLE hFile;
-    DWORD dwChunkSize = 0;
-    DWORD dwChunkPosition = 0;
-    DWORD dwFiletype;
-    WAVEFORMATEXTENSIBLE wfx;
-    XAUDIO2_BUFFER buffer;
+void
+loadSound(std::string Name, LOAD_HANDLE Path) {
+  HANDLE FileHandle;
+  DWORD DWChunkSize = 0;
+  DWORD DWChunkPosition = 0;
+  DWORD DWFiletype = 0;
+  WAVEFORMATEXTENSIBLE WFX;
+  XAUDIO2_BUFFER Buffer;
 
-    LOCK;
-    if (g_SoundPool.find(name) != g_SoundPool.end())
-    {
-        UNLOCK;
-        return;
-    }
+  LOCK;
+  if (G_SoundPool.find(Name) != G_SoundPool.end()) {
     UNLOCK;
+    return;
+  }
+  UNLOCK;
 
-    path = ".\\Assets\\Sounds\\" + path;
+  Path = ".\\Assets\\Sounds\\" + Path;
 
-    memset(&wfx, 0, sizeof(WAVEFORMATEXTENSIBLE));
-    memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
+  memset(&WFX, 0, sizeof(WAVEFORMATEXTENSIBLE));
+  memset(&Buffer, 0, sizeof(XAUDIO2_BUFFER));
 
-    hFile = CreateFile(path.c_str(), GENERIC_READ,
-        FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-    {
-        P_LOG(LOG_ERROR,
-            "failed to create sound handle\n");
-        return;
-    }
-    if (SetFilePointer(hFile, 0, NULL, FILE_BEGIN) ==
-        INVALID_SET_FILE_POINTER)
-    {
-        P_LOG(LOG_ERROR,
-            "failed to check sound handle by SetFilePointer\n");
-        return;
-    }
+  FileHandle = CreateFile(Path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
+                          OPEN_EXISTING, 0, NULL);
+  if (FileHandle == INVALID_HANDLE_VALUE) {
+    P_LOG(LOG_ERROR, "failed to create sound handle\n");
+    return;
+  }
+  if (SetFilePointer(FileHandle, 0, NULL, FILE_BEGIN) ==
+      INVALID_SET_FILE_POINTER) {
+    P_LOG(LOG_ERROR, "failed to check sound handle by SetFilePointer\n");
+    return;
+  }
 
-    HRESULT hr = S_OK;
+  HRESULT Hr = S_OK;
 
-    hr = CheckChunk(hFile, 'FFIR',
-        &dwChunkSize, &dwChunkPosition);
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to check wav sound CheckChunk\n");
-        return;
-    }
-    hr = ReadChunkData(hFile, &dwFiletype,
-        sizeof(DWORD), dwChunkPosition);
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to check wav sound by ReadChunkData\n");
-        return;
-    }
-    if (dwFiletype != static_cast<DWORD>('EVAW'))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to check wav sound by dwFiletype\n");
-        return;
-    }
+  Hr = CheckChunk(FileHandle, 'FFIR', &DWChunkSize, &DWChunkPosition);
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to check wav sound CheckChunk\n");
+    return;
+  }
+  Hr = ReadChunkData(FileHandle, &DWFiletype, sizeof(DWORD), DWChunkPosition);
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to check wav sound by ReadChunkData\n");
+    return;
+  }
+  if (DWFiletype != static_cast<DWORD>('EVAW')) {
+    P_LOG(LOG_ERROR, "failed to check wav sound by DWFiletype\n");
+    return;
+  }
 
-    hr = CheckChunk(hFile, ' tmf',
-        &dwChunkSize, &dwChunkPosition);
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to check wav format by CheckChunk\n");
-        return;
-    }
-    hr = ReadChunkData(hFile, &wfx, dwChunkSize, dwChunkPosition);
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to check wav format by ReadChunkData\n");
-        return;
-    }
+  Hr = CheckChunk(FileHandle, ' tmf', &DWChunkSize, &DWChunkPosition);
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to check wav Format by CheckChunk\n");
+    return;
+  }
+  Hr = ReadChunkData(FileHandle, &WFX, DWChunkSize, DWChunkPosition);
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to check wav Format by ReadChunkData\n");
+    return;
+  }
 
-    DWORD size = 0;
-    hr = CheckChunk(hFile, 'atad', &size, &dwChunkPosition);
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to read wav file by CheckChunk\n");
-        return;
-    }
+  DWORD Size = 0;
+  Hr = CheckChunk(FileHandle, 'atad', &Size, &DWChunkPosition);
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to read wav file by CheckChunk\n");
+    return;
+  }
+  LOCK;
+  G_SoundLengthPool.insert(std::make_pair(Name, Size));
+  UNLOCK;
+  BYTE *DataPtr = new BYTE[Size];
+  Hr = ReadChunkData(FileHandle, DataPtr, Size, DWChunkPosition);
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to read wav file by ReadChunkData\n");
+    delete[] DataPtr;
     LOCK;
-    g_SoundLengthPool.insert(std::make_pair(name, size));
+    G_SoundLengthPool.erase(Name);
     UNLOCK;
-    BYTE* pData = new BYTE[size];
-    hr = ReadChunkData(hFile, pData,
-        size, dwChunkPosition);
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to read wav file by ReadChunkData\n");
-        delete[] pData;
-        LOCK;
-        g_SoundLengthPool.erase(name);
-        UNLOCK;
-        return;
-    }
-    LOCK;
-    g_SoundDataPool.insert(std::make_pair(name, pData));
-    UNLOCK;
+    return;
+  }
+  LOCK;
+  G_SoundDataPool.insert(std::make_pair(Name, DataPtr));
+  UNLOCK;
 
-    SOUND_HANDLE soundHandle = nullptr;
-    hr = gp_XAudio2->CreateSourceVoice(
-        &soundHandle, &(wfx.Format));
-    if (FAILED(hr))
-    {
-        P_LOG(LOG_ERROR,
-            "failed to create source wav file\n");
-        LOCK;
-        g_SoundLengthPool.erase(name);
-        delete[] pData;
-        g_SoundDataPool.erase(name);
-        UNLOCK;
-        return;
-    }
-    soundHandle->SetVolume(0.2f);
+  SOUND_HANDLE SoundHandle = nullptr;
+  Hr = G_XAudio2->CreateSourceVoice(&SoundHandle, &(WFX.Format));
+  if (FAILED(Hr)) {
+    P_LOG(LOG_ERROR, "failed to create source wav file\n");
     LOCK;
-    g_SoundPool.insert(std::make_pair(name, soundHandle));
+    G_SoundLengthPool.erase(Name);
+    delete[] DataPtr;
+    G_SoundDataPool.erase(Name);
     UNLOCK;
+    return;
+  }
+  SoundHandle->SetVolume(0.2f);
+  LOCK;
+  G_SoundPool.insert(std::make_pair(Name, SoundHandle));
+  UNLOCK;
 }
 
-void PlayBGM(std::string soundName)
-{
-    LOCK;
-    if (g_SoundPool.find(soundName) == g_SoundPool.end())
-    {
-        UNLOCK;
-        P_LOG(LOG_ERROR,
-            "you haven't loaded this sound : [ %s ]\n",
-            soundName.c_str());
-        return;
-    }
+void
+playBGM(std::string SoundName) {
+  LOCK;
+  if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    auto soundSize = g_SoundLengthPool[soundName];
-    auto soundData = g_SoundDataPool[soundName];
-    auto sound = g_SoundPool[soundName];
+    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ %s ]\n",
+          SoundName.c_str());
+    return;
+  }
+  UNLOCK;
+  auto SoundSize = G_SoundLengthPool[SoundName];
+  auto SoundData = G_SoundDataPool[SoundName];
+  auto Sound = G_SoundPool[SoundName];
 
-    XAUDIO2_VOICE_STATE xa2state;
-    XAUDIO2_BUFFER buffer;
+  XAUDIO2_VOICE_STATE Xa2State;
+  XAUDIO2_BUFFER Buffer;
 
-    memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
-    buffer.AudioBytes = soundSize;
-    buffer.pAudioData = soundData;
-    buffer.Flags = XAUDIO2_END_OF_STREAM;
-    buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
+  memset(&Buffer, 0, sizeof(XAUDIO2_BUFFER));
+  Buffer.AudioBytes = SoundSize;
+  Buffer.pAudioData = SoundData;
+  Buffer.Flags = XAUDIO2_END_OF_STREAM;
+  Buffer.LoopCount = XAUDIO2_LOOP_INFINITE;
 
-    sound->GetState(&xa2state);
-    if (xa2state.BuffersQueued != 0)
-    {
-        sound->Stop(0);
-        sound->FlushSourceBuffers();
-    }
+  Sound->GetState(&Xa2State);
+  if (Xa2State.BuffersQueued != 0) {
+    Sound->Stop(0);
+    Sound->FlushSourceBuffers();
+  }
 
-    sound->SubmitSourceBuffer(&buffer);
-    sound->Start(0);
+  Sound->SubmitSourceBuffer(&Buffer);
+  Sound->Start(0);
 }
 
-void StopBGM(std::string soundName)
-{
-    LOCK;
-    if (g_SoundPool.find(soundName) == g_SoundPool.end())
-    {
-        UNLOCK;
-        P_LOG(LOG_ERROR,
-            "you haven't loaded this sound : [ %s ]\n",
-            soundName.c_str());
-        return;
-    }
+void
+stopBGM(std::string SoundName) {
+  LOCK;
+  if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    auto sound = g_SoundPool[soundName];
-    XAUDIO2_VOICE_STATE xa2state;
+    P_LOG(LOG_ERROR, "you haven't loaded this Sound : [ %s ]\n",
+          SoundName.c_str());
+    return;
+  }
+  UNLOCK;
+  auto Sound = G_SoundPool[SoundName];
+  XAUDIO2_VOICE_STATE Xa2State;
 
-    sound->GetState(&xa2state);
-    if (xa2state.BuffersQueued != 0)
-    {
-        sound->Stop(0);
-        sound->FlushSourceBuffers();
-    }
+  Sound->GetState(&Xa2State);
+  if (Xa2State.BuffersQueued != 0) {
+    Sound->Stop(0);
+    Sound->FlushSourceBuffers();
+  }
 }
 
-void StopBGM()
-{
-    XAUDIO2_VOICE_STATE xa2state;
+void
+stopBGM() {
+  XAUDIO2_VOICE_STATE Xa2State;
 
-    LOCK;
-    for (auto& sound : g_SoundPool)
-    {
-        sound.second->GetState(&xa2state);
-        if (xa2state.BuffersQueued != 0)
-        {
-            sound.second->Stop(0);
-            sound.second->FlushSourceBuffers();
-        }
+  LOCK;
+  for (auto &Sound : G_SoundPool) {
+    Sound.second->GetState(&Xa2State);
+    if (Xa2State.BuffersQueued != 0) {
+      Sound.second->Stop(0);
+      Sound.second->FlushSourceBuffers();
     }
-    UNLOCK;
+  }
+  UNLOCK;
 }
 
-void SetVolume(std::string soundName, float volume)
-{
-    LOCK;
-    if (g_SoundPool.find(soundName) == g_SoundPool.end())
-    {
-        UNLOCK;
-        P_LOG(LOG_ERROR,
-            "you haven't loaded this sound : [ %s ]\n",
-            soundName.c_str());
-        return;
-    }
-    auto sound = g_SoundPool[soundName];
+void
+setVolume(std::string SoundName, float Volume) {
+  LOCK;
+  if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    sound->SetVolume(volume);
+    P_LOG(LOG_ERROR, "you haven't loaded this Sound : [ %s ]\n",
+          SoundName.c_str());
+    return;
+  }
+  auto Sound = G_SoundPool[SoundName];
+  UNLOCK;
+  Sound->SetVolume(Volume);
 }
 
-void PlaySE(std::string soundName)
-{
-    LOCK;
-    if (g_SoundPool.find(soundName) == g_SoundPool.end())
-    {
-        UNLOCK;
-        P_LOG(LOG_ERROR,
-            "you haven't loaded this sound : [ %s ]\n",
-            soundName.c_str());
-        return;
-    }
-    auto soundSize = g_SoundLengthPool[soundName];
-    auto soundData = g_SoundDataPool[soundName];
-    auto sound = g_SoundPool[soundName];
+void
+playSE(std::string SoundName) {
+  LOCK;
+  if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
+    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ %s ]\n",
+          SoundName.c_str());
+    return;
+  }
+  auto SoundSize = G_SoundLengthPool[SoundName];
+  auto SoundData = G_SoundDataPool[SoundName];
+  auto Sound = G_SoundPool[SoundName];
+  UNLOCK;
 
-    XAUDIO2_VOICE_STATE xa2state;
-    XAUDIO2_BUFFER buffer;
+  XAUDIO2_VOICE_STATE Xa2State;
+  XAUDIO2_BUFFER Buffer;
 
-    memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
-    buffer.AudioBytes = soundSize;
-    buffer.pAudioData = soundData;
-    buffer.Flags = XAUDIO2_END_OF_STREAM;
-    buffer.LoopCount = 0;
+  memset(&Buffer, 0, sizeof(XAUDIO2_BUFFER));
+  Buffer.AudioBytes = SoundSize;
+  Buffer.pAudioData = SoundData;
+  Buffer.Flags = XAUDIO2_END_OF_STREAM;
+  Buffer.LoopCount = 0;
 
-    sound->GetState(&xa2state);
-    if (xa2state.BuffersQueued != 0)
-    {
-        sound->Stop(0);
-        sound->FlushSourceBuffers();
-    }
+  Sound->GetState(&Xa2State);
+  if (Xa2State.BuffersQueued != 0) {
+    Sound->Stop(0);
+    Sound->FlushSourceBuffers();
+  }
 
-    sound->SubmitSourceBuffer(&buffer);
-    sound->Start(0);
+  Sound->SubmitSourceBuffer(&Buffer);
+  Sound->Start(0);
 }
 
-SOUND_HANDLE GetSoundHandle(std::string&& soundName)
-{
-    LOCK;
-    if (g_SoundPool.find(soundName) == g_SoundPool.end())
-    {
-        UNLOCK;
-        P_LOG(LOG_ERROR,
-            "you haven't loaded this sound : [ %s ]\n",
-            soundName.c_str());
-        return nullptr;
-    }
-    SOUND_HANDLE hnd = g_SoundPool[soundName];
+SOUND_HANDLE
+getSoundHandle(std::string &&SoundName) {
+  LOCK;
+  if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    return hnd;
+    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ %s ]\n",
+          SoundName.c_str());
+    return nullptr;
+  }
+  SOUND_HANDLE Handle = G_SoundPool[SoundName];
+  UNLOCK;
+  return Handle;
 }
 
-SOUND_HANDLE GetSoundHandle(std::string& soundName)
-{
-    LOCK;
-    if (g_SoundPool.find(soundName) == g_SoundPool.end())
-    {
-        UNLOCK;
-        P_LOG(LOG_ERROR,
-            "you haven't loaded this sound : [ %s ]\n",
-            soundName.c_str());
-        return nullptr;
-    }
-    SOUND_HANDLE hnd = g_SoundPool[soundName];
+SOUND_HANDLE
+getSoundHandle(std::string &SoundName) {
+  LOCK;
+  if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    return hnd;
+    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ %s ]\n",
+          SoundName.c_str());
+    return nullptr;
+  }
+  SOUND_HANDLE Handle = G_SoundPool[SoundName];
+  UNLOCK;
+  return Handle;
 }

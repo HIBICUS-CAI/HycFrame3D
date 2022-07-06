@@ -58,39 +58,39 @@ void AAudioComponent::AddAudio(std::string& _audioName, SceneNode& _scene)
 
 void AAudioComponent::PlayBgm(std::string&& _bgmName, float _volume)
 {
-    SetVolume(_bgmName, _volume);
-    PlayBGM(_bgmName);
+    setVolume(_bgmName, _volume);
+    playBGM(_bgmName);
 }
 
 void AAudioComponent::PlayBgm(std::string& _bgmName, float _volume)
 {
-    SetVolume(_bgmName, _volume);
-    PlayBGM(_bgmName);
+    setVolume(_bgmName, _volume);
+    playBGM(_bgmName);
 }
 
 void AAudioComponent::PlaySe(std::string&& _seName, float _volume)
 {
-    SetVolume(_seName, _volume);
-    PlaySE(_seName);
+    setVolume(_seName, _volume);
+    playSE(_seName);
 }
 
 void AAudioComponent::PlaySe(std::string& _seName, float _volume)
 {
-    SetVolume(_seName, _volume);
-    PlaySE(_seName);
+    setVolume(_seName, _volume);
+    playSE(_seName);
 }
 
 void AAudioComponent::StopBgm()
 {
-    StopBGM();
+    stopBGM();
 }
 
 void AAudioComponent::StopBgm(std::string&& _bgmName)
 {
-    StopBGM(_bgmName);
+    stopBGM(_bgmName);
 }
 
 void AAudioComponent::StopBgm(std::string& _bgmName)
 {
-    StopBGM(_bgmName);
+    stopBGM(_bgmName);
 }

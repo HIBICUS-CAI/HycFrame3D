@@ -282,7 +282,7 @@ void AssetsPool::InsertNewIndexedMesh(std::string& _meshName,
 
 void AssetsPool::InsertNewSound(std::string&& _soundName)
 {
-    SOUND_HANDLE sound = GetSoundHandle(_soundName);
+    SOUND_HANDLE sound = getSoundHandle(_soundName);
 #ifdef _DEBUG
     assert(sound);
 #endif // _DEBUG
@@ -291,7 +291,7 @@ void AssetsPool::InsertNewSound(std::string&& _soundName)
 
 void AssetsPool::InsertNewSound(std::string& _soundName)
 {
-    SOUND_HANDLE sound = GetSoundHandle(_soundName);
+    SOUND_HANDLE sound = getSoundHandle(_soundName);
 #ifdef _DEBUG
     assert(sound);
 #endif // _DEBUG
