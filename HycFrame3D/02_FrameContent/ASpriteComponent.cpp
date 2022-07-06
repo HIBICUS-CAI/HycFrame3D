@@ -51,7 +51,7 @@ ASpriteComponent::update(Timer &Timer) {
 void
 ASpriteComponent::destory() {
   SUBMESH_DATA *MeshPtr =
-      getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+      getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
           GeoPointName);
   if (MeshPtr) {
     MeshPtr->InstanceMap.erase(getCompName());
@@ -119,7 +119,7 @@ ASpriteComponent::setAnimationProperty(const DirectX::XMFLOAT2 &AniStride,
 void
 ASpriteComponent::syncTransformDataToInstance() {
   ATransformComponent *Atc =
-      getActorOwner()->GetComponent<ATransformComponent>();
+      getActorOwner()->getComponent<ATransformComponent>();
 #ifdef _DEBUG
   assert(Atc);
 #endif // _DEBUG
@@ -129,7 +129,7 @@ ASpriteComponent::syncTransformDataToInstance() {
   DirectX::XMFLOAT3 Scale = Atc->getScaling();
 
   auto &InsMap = getActorOwner()
-                     ->GetSceneNode()
+                     ->getSceneNode()
                      .GetAssetsPool()
                      ->getSubMeshIfExisted(getCompName())
                      ->InstanceMap;

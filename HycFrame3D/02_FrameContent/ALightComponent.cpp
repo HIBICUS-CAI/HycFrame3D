@@ -56,7 +56,7 @@ ALightComponent::createLight() {
 
   if (IsBloom) {
     SUBMESH_DATA *MeshPtr =
-        getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+        getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
             BOX_BLOOM_MESH_NAME);
     if (!MeshPtr) {
       RS_SUBMESH_DATA BoxBloom =
@@ -64,10 +64,10 @@ ALightComponent::createLight() {
               ->getMeshHelper()
               ->getGeoGenerator()
               ->createBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
-      getActorOwner()->GetSceneNode().GetAssetsPool()->insertNewSubMesh(
+      getActorOwner()->getSceneNode().GetAssetsPool()->insertNewSubMesh(
           BOX_BLOOM_MESH_NAME, BoxBloom, MESH_TYPE::LIGHT);
       MeshPtr =
-          getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+          getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
               BOX_BLOOM_MESH_NAME);
     }
     RSLightPtr->setLightBloom(MeshPtr->MeshData);
@@ -97,7 +97,7 @@ ALightComponent::getLightInfo() {
 void
 ALightComponent::syncDataFromTransform() {
   ATransformComponent *Atc =
-      getActorOwner()->GetComponent<ATransformComponent>();
+      getActorOwner()->getComponent<ATransformComponent>();
 #ifdef _DEBUG
   assert(Atc);
 #endif // _DEBUG

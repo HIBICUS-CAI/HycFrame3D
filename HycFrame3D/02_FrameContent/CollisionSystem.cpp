@@ -26,7 +26,7 @@ bool CollisionSystem::Init()
 
     mACollisionVecPtr = (std::vector<ACollisionComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_COLLISION);
+        GetComponentContainer()->getCompVecPtr(COMP_TYPE::A_COLLISION);
 
     if (!(mACollisionVecPtr)) { return false; }
 

@@ -1,37 +1,41 @@
 #pragma once
 
 #include "Object.h"
-#include <unordered_map>
-#include "SceneNode.h"
+
 #include "ComponentContainer.h"
 #include "ComponentGetter.h"
+#include "SceneNode.h"
 
-class ActorObject :public Object
-{
-public:
-    ActorObject(std::string&& _actorName, class SceneNode& _sceneNode);
-    ActorObject(std::string& _actorName, class SceneNode& _sceneNode);
-    virtual ~ActorObject();
+#include <unordered_map>
 
-    void AddAComponent(COMP_TYPE _compType);
-
-    template <typename T>
-    inline T* GetComponent()
-    {
-        auto container = GetSceneNode().GetComponentContainer();
-        std::string name = GetObjectName();
-        ComponentGetter::GenerateCompName<T>(name);
-
-        return (T*)(container->GetComponent(name));
-    }
+class ActorObject : public Object {
+private:
+  std::unordered_map<COMP_TYPE, std::string> ActorCompMap;
 
 public:
-    virtual bool Init();
-    virtual void Destory();
+  ActorObject(const std::string &ActorName, class SceneNode &SceneNode);
+  virtual ~ActorObject();
+
+  void
+  addAComponent(COMP_TYPE CompType);
+
+  template <typename T>
+  inline T *
+  getComponent() {
+    auto Container = getSceneNode().GetComponentContainer();
+    std::string Name = getObjectName();
+    component_name::generateCompName<T>(Name);
+
+    return static_cast<T *>(Container->getComponent(Name));
+  }
+
+public:
+  virtual bool
+  init();
+  virtual void
+  destory();
 
 protected:
-    virtual void SyncStatusToAllComps();
-
-private:
-    std::unordered_map<COMP_TYPE, std::string> mActorCompMap;
+  virtual void
+  syncStatusToAllComps();
 };

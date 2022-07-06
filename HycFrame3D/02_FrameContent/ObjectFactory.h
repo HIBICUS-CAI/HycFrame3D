@@ -1,73 +1,104 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
-#include <TextUtility.h>
-#include <string>
-#include <unordered_map>
+
 #include "AInputComponent.h"
-#include "UInputComponent.h"
 #include "AInteractComponent.h"
+#include "UInputComponent.h"
 #include "UInteractComponent.h"
 
-class ObjectFactory
-{
+#include <TextUtility.h>
+
+#include <string>
+#include <unordered_map>
+
+class ObjectFactory {
+private:
+  class SceneManager *SceneManagerPtr;
+
+  std::unordered_map<std::string, ActorInputProcessFuncType>
+      ActorInputFuncPtrMap;
+  std::unordered_map<std::string, ActorInteractInitFuncType>
+      ActorInteractInitFuncPtrMap;
+  std::unordered_map<std::string, ActorInteractUpdateFuncType>
+      ActorInteractUpdateFuncPtrMap;
+  std::unordered_map<std::string, ActorInteractDestoryFuncType>
+      ActorInteractDestoryFuncPtrMap;
+
+  std::unordered_map<std::string, UiInputProcessFuncType> UiInputFuncPtrMap;
+  std::unordered_map<std::string, UiInteractInitFuncType>
+      UiInteractInitFuncPtrMap;
+  std::unordered_map<std::string, UiInteractUpdateFuncType>
+      UiInteractUpdateFuncPtrMap;
+  std::unordered_map<std::string, UiInteractDestoryFuncType>
+      UiInteractDestoryFuncPtrMap;
+
 public:
-    ObjectFactory();
-    ~ObjectFactory();
+  ObjectFactory();
+  ~ObjectFactory();
 
-    bool StartUp(class SceneManager* _sceneManager);
-    void CleanAndStop();
+  bool
+  startUp(class SceneManager *SceneManager);
+  void
+  cleanAndStop();
 
-    class SceneNode* CreateSceneNode(std::string _name, std::string _file);
+  class SceneNode *
+  createSceneNode(const std::string &Name, const std::string &File);
 
-    std::unordered_map<std::string, ActorInputProcessFuncType>*
-        GetAInputMapPtr() { return &mActorInputFuncPtrMap; }
-    std::unordered_map<std::string, ActorInteractInitFuncType>*
-        GetAInitMapPtr() { return &mActorInteractInitFuncPtrMap; }
-    std::unordered_map<std::string, ActorInteractUpdateFuncType>*
-        GetAUpdateMapPtr() { return &mActorInteractUpdateFuncPtrMap; }
-    std::unordered_map<std::string, ActorInteractDestoryFuncType>*
-        GetADestoryMapPtr() { return &mActorInteractDestoryFuncPtrMap; }
-    std::unordered_map<std::string, UiInputProcessFuncType>*
-        GetUInputMapPtr() { return &mUiInputFuncPtrMap; }
-    std::unordered_map<std::string, UiInteractInitFuncType>*
-        GetUInitMapPtr() { return &mUiInteractInitFuncPtrMap; }
-    std::unordered_map<std::string, UiInteractUpdateFuncType>*
-        GetUUpdateMapPtr() { return &mUiInteractUpdateFuncPtrMap; }
-    std::unordered_map<std::string, UiInteractDestoryFuncType>*
-        GetUDestoryMapPtr() { return &mUiInteractDestoryFuncPtrMap; }
+  std::unordered_map<std::string, ActorInputProcessFuncType> &
+  getAInputMapPtr() {
+    return ActorInputFuncPtrMap;
+  }
+  std::unordered_map<std::string, ActorInteractInitFuncType> &
+  getAInitMapPtr() {
+    return ActorInteractInitFuncPtrMap;
+  }
+  std::unordered_map<std::string, ActorInteractUpdateFuncType> &
+  getAUpdateMapPtr() {
+    return ActorInteractUpdateFuncPtrMap;
+  }
+  std::unordered_map<std::string, ActorInteractDestoryFuncType> &
+  getADestoryMapPtr() {
+    return ActorInteractDestoryFuncPtrMap;
+  }
+  std::unordered_map<std::string, UiInputProcessFuncType> &
+  getUInputMapPtr() {
+    return UiInputFuncPtrMap;
+  }
+  std::unordered_map<std::string, UiInteractInitFuncType> &
+  getUInitMapPtr() {
+    return UiInteractInitFuncPtrMap;
+  }
+  std::unordered_map<std::string, UiInteractUpdateFuncType> &
+  getUUpdateMapPtr() {
+    return UiInteractUpdateFuncPtrMap;
+  }
+  std::unordered_map<std::string, UiInteractDestoryFuncType> &
+  getUDestoryMapPtr() {
+    return UiInteractDestoryFuncPtrMap;
+  }
 
 private:
-    void CreateSceneAssets(class SceneNode* _node, hyc::text::JsonFile& _json);
+  void
+  createSceneAssets(class SceneNode *Scene, hyc::text::JsonFile &Json);
 
-    void CreateActorObject(class SceneNode* _node, hyc::text::JsonFile& _json,
-        std::string _jsonPath);
-    void CreateUiObject(class SceneNode* _node, hyc::text::JsonFile& _json,
-        std::string _jsonPath);
+  void
+  createActorObject(class SceneNode *Scene,
+                    hyc::text::JsonFile &Json,
+                    const std::string &JsonPath);
+  void
+  createUiObject(class SceneNode *Scene,
+                 hyc::text::JsonFile &Json,
+                 const std::string &JsonPath);
 
-    void CreateActorComp(class SceneNode* _node, class ActorObject* _actor,
-        hyc::text::JsonFile& _json, std::string _jsonPath);
-    void CreateUiComp(class SceneNode* _node, class UiObject* _ui,
-        hyc::text::JsonFile& _json, std::string _jsonPath);
-
-private:
-    class SceneManager* mSceneManagerPtr;
-
-    std::unordered_map<std::string, ActorInputProcessFuncType>
-        mActorInputFuncPtrMap;
-    std::unordered_map<std::string, ActorInteractInitFuncType>
-        mActorInteractInitFuncPtrMap;
-    std::unordered_map<std::string, ActorInteractUpdateFuncType>
-        mActorInteractUpdateFuncPtrMap;
-    std::unordered_map<std::string, ActorInteractDestoryFuncType>
-        mActorInteractDestoryFuncPtrMap;
-
-    std::unordered_map<std::string, UiInputProcessFuncType>
-        mUiInputFuncPtrMap;
-    std::unordered_map<std::string, UiInteractInitFuncType>
-        mUiInteractInitFuncPtrMap;
-    std::unordered_map<std::string, UiInteractUpdateFuncType>
-        mUiInteractUpdateFuncPtrMap;
-    std::unordered_map<std::string, UiInteractDestoryFuncType>
-        mUiInteractDestoryFuncPtrMap;
+  void
+  createActorComp(class SceneNode *Scene,
+                  class ActorObject *Actor,
+                  hyc::text::JsonFile &Json,
+                  const std::string &JsonPath);
+  void
+  createUiComp(class SceneNode *Scene,
+               class UiObject *Ui,
+               hyc::text::JsonFile &Json,
+               const std::string &JsonPath);
 };

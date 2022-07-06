@@ -1,39 +1,50 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
+
+#include "ActorObject.h"
+#include "UiObject.h"
+
 #include <string>
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
-class ObjectContainer
-{
-public:
-    ObjectContainer(class SceneNode& _sceneNode);
-    ~ObjectContainer();
-
-    class ActorObject* GetActorObject(const std::string& _actorName);
-    void AddActorObject(class ActorObject& _newActor);
-    void DeleteActorObject(std::string&& _actorName);
-    void DeleteActorObject(std::string& _actorName);
-    class UiObject* GetUiObject(const std::string& _uiName);
-    void AddUiObject(class UiObject& _newUi);
-    void DeleteUiObject(std::string&& _uiName);
-    void DeleteUiObject(std::string& _uiName);
-
-    void DeleteAllActor();
-    void DeleteAllUi();
-
-    void InitAllNewObjects();
-    void DeleteAllDeadObjects();
-
+class ObjectContainer {
 private:
-    SceneNode& mSceneNodeOwner;
-    
-    std::unordered_map<std::string, class ActorObject> mActorObjMap;
-    std::unordered_map<std::string, class UiObject> mUiObjMap;
+  class SceneNode &SceneNodeOwner;
 
-    std::vector<class ActorObject> mNewActorObjVector;
-    std::vector<class UiObject> mNewUiObjVector;
-    std::vector<class ActorObject> mDeadActorObjVector;
-    std::vector<class UiObject> mDeadUiObjVector;
+  std::unordered_map<std::string, ActorObject> ActorObjectMap;
+  std::unordered_map<std::string, UiObject> UiObjectMap;
+
+  std::vector<ActorObject> NewActorObjectArray;
+  std::vector<UiObject> NewUiObjectArray;
+  std::vector<ActorObject> DeadActorObjectArray;
+  std::vector<UiObject> DeadUiObjectArray;
+
+public:
+  ObjectContainer(class SceneNode &SceneNode);
+  ~ObjectContainer();
+
+  class ActorObject *
+  getActorObject(const std::string &ActorName);
+  void
+  addActorObject(const ActorObject &NewActor);
+  void
+  deleteActorObject(const std::string &ActorName);
+  class UiObject *
+  getUiObject(const std::string &UiName);
+  void
+  addUiObject(const UiObject &NewUi);
+  void
+  deleteUiObject(const std::string &UiName);
+
+  void
+  deleteAllActor();
+  void
+  deleteAllUi();
+
+  void
+  initAllNewObjects();
+  void
+  deleteAllDeadObjects();
 };

@@ -53,7 +53,7 @@ bool RootSystem::StartUp(HINSTANCE _hInstance, int _iCmdShow)
         P_LOG(LOG_ERROR, "cannot init system executive correctly\n");
         return false;
     }
-    if (!mObjectFactoryPtr->StartUp(mSceneManagerPtr))
+    if (!mObjectFactoryPtr->startUp(mSceneManagerPtr))
     {
         P_LOG(LOG_ERROR, "cannot init object factory correctly\n");
         return false;
@@ -70,7 +70,7 @@ bool RootSystem::StartUp(HINSTANCE _hInstance, int _iCmdShow)
 void RootSystem::CleanAndStop()
 {
     mSceneManagerPtr->CleanAndStop();
-    mObjectFactoryPtr->CleanAndStop();
+    mObjectFactoryPtr->cleanAndStop();
     mSystemExecutivePtr->CleanAndStop();
     delete mSceneManagerPtr; mSceneManagerPtr = nullptr;
     delete mObjectFactoryPtr; mObjectFactoryPtr = nullptr;

@@ -16,8 +16,7 @@ struct CAMERA_AND_AMBIENT
 class SceneNode
 {
 public:
-    SceneNode(std::string&& _sceneName, class SceneManager* _sceneManager);
-    SceneNode(std::string& _sceneName, class SceneManager* _sceneManager);
+    SceneNode(const std::string& _sceneName, class SceneManager* _sceneManager);
     ~SceneNode();
 
     void ReleaseScene();

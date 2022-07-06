@@ -26,7 +26,7 @@ bool AnimationSystem::Init()
 
     mAAnimateVecPtr = (std::vector<AAnimateComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_ANIMATE);
+        GetComponentContainer()->getCompVecPtr(COMP_TYPE::A_ANIMATE);
 
     if (!mAAnimateVecPtr) { return false; }
 

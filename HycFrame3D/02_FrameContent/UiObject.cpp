@@ -1,94 +1,98 @@
 #include "UiObject.h"
-#include "SceneNode.h"
+
 #include "ComponentContainer.h"
+#include "SceneNode.h"
 #include "UiComponent.h"
 
-UiObject::UiObject(std::string&& _uiName, SceneNode& _sceneNode) :
-    Object(_uiName, _sceneNode), mUiCompMap({})
-{
+UiObject::UiObject(const std::string &UiName, SceneNode &SceneNode)
+    : Object(UiName, SceneNode), UiCompMap({}) {}
 
+UiObject::~UiObject() {}
+
+void
+UiObject::addUComponent(COMP_TYPE CompType) {
+  std::string CompName = getObjectName();
+
+  switch (CompType) {
+  case COMP_TYPE::U_TRANSFORM:
+    CompName += "-transform";
+    break;
+  case COMP_TYPE::U_SPRITE:
+    CompName += "-sprite";
+    break;
+  case COMP_TYPE::U_ANIMATE:
+    CompName += "-animate";
+    break;
+  case COMP_TYPE::U_TIMER:
+    CompName += "-timer";
+    break;
+  case COMP_TYPE::U_INPUT:
+    CompName += "-input";
+    break;
+  case COMP_TYPE::U_INTERACT:
+    CompName += "-interact";
+    break;
+  case COMP_TYPE::U_BUTTON:
+    CompName += "-button";
+    break;
+  case COMP_TYPE::U_AUDIO:
+    CompName += "-audio";
+    break;
+  default:
+    break;
+  }
+
+  UiCompMap.insert({CompType, CompName});
 }
 
-UiObject::UiObject(std::string& _uiName, SceneNode& _sceneNode) :
-    Object(_uiName, _sceneNode), mUiCompMap({})
-{
+bool
+UiObject::init() {
+  auto CompContainer = getSceneNode().GetComponentContainer();
 
-}
-
-UiObject::~UiObject()
-{
-
-}
-
-void UiObject::AddUComponent(COMP_TYPE _compType)
-{
-    std::string compName = GetObjectName();
-
-    switch (_compType)
-    {
-    case COMP_TYPE::U_TRANSFORM: compName += "-transform"; break;
-    case COMP_TYPE::U_SPRITE: compName += "-sprite"; break;
-    case COMP_TYPE::U_ANIMATE: compName += "-animate"; break;
-    case COMP_TYPE::U_TIMER: compName += "-timer"; break;
-    case COMP_TYPE::U_INPUT: compName += "-input"; break;
-    case COMP_TYPE::U_INTERACT: compName += "-interact"; break;
-    case COMP_TYPE::U_BUTTON: compName += "-button"; break;
-    case COMP_TYPE::U_AUDIO: compName += "-audio"; break;
-    default: break;
-    }
-
-    mUiCompMap.insert({ _compType,compName });
-}
-
-bool UiObject::Init()
-{
-    auto compContainer = GetSceneNode().GetComponentContainer();
-
-    for (auto& compInfo : mUiCompMap)
-    {
-        auto comp = compContainer->GetComponent(compInfo.second);
+  for (auto &CompInfo : UiCompMap) {
+    auto Comp = CompContainer->getComponent(CompInfo.second);
 #ifdef _DEBUG
-        assert(comp);
+    assert(Comp);
 #endif // _DEBUG
-        ((UiComponent*)comp)->resetUiOwner(this);
-        if (!comp->init()) { return false; }
-        comp->setCompStatus(STATUS::ACTIVE);
+    static_cast<UiComponent *>(Comp)->resetUiOwner(this);
+    if (!Comp->init()) {
+      return false;
     }
+    Comp->setCompStatus(STATUS::ACTIVE);
+  }
 
-    SetObjectStatus(STATUS::ACTIVE);
+  setObjectStatus(STATUS::ACTIVE);
 
-    return true;
+  return true;
 }
 
-void UiObject::Destory()
-{
-    auto compContainer = GetSceneNode().GetComponentContainer();
+void
+UiObject::destory() {
+  auto CompContainer = getSceneNode().GetComponentContainer();
 
-    for (auto& compInfo : mUiCompMap)
-    {
-        auto comp = compContainer->GetComponent(compInfo.second);
+  for (auto &CompInfo : UiCompMap) {
+    auto Comp = CompContainer->getComponent(CompInfo.second);
 #ifdef _DEBUG
-        assert(comp);
+    assert(Comp);
 #endif // _DEBUG
-        ((UiComponent*)comp)->resetUiOwner(this);
-        comp->destory();
-        comp->setCompStatus(STATUS::NEED_DESTORY);
-        compContainer->DeleteComponent(compInfo.first, compInfo.second);
-    }
+    static_cast<UiComponent *>(Comp)->resetUiOwner(this);
+    Comp->destory();
+    Comp->setCompStatus(STATUS::NEED_DESTORY);
+    CompContainer->deleteComponent(CompInfo.first, CompInfo.second);
+  }
 
-    mUiCompMap.clear();
+  UiCompMap.clear();
 }
 
-void UiObject::SyncStatusToAllComps()
-{
-    auto compContainer = GetSceneNode().GetComponentContainer();
+void
+UiObject::syncStatusToAllComps() {
+  auto CompContainer = getSceneNode().GetComponentContainer();
 
-    for (auto& compInfo : mUiCompMap)
-    {
-        auto comp = compContainer->GetComponent(compInfo.second);
+  for (auto &CompInfo : UiCompMap) {
+    auto Comp = CompContainer->getComponent(CompInfo.second);
 #ifdef _DEBUG
-        assert(comp);
+    assert(Comp);
 #endif // _DEBUG
-        comp->setCompStatus(GetObjectStatus());
-    }
+    Comp->setCompStatus(getObjectStatus());
+  }
 }

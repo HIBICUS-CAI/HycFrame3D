@@ -1,37 +1,41 @@
 #pragma once
 
 #include "Object.h"
-#include <unordered_map>
-#include "SceneNode.h"
+
 #include "ComponentContainer.h"
 #include "ComponentGetter.h"
+#include "SceneNode.h"
 
-class UiObject :public Object
-{
-public:
-    UiObject(std::string&& _uiName, class SceneNode& _sceneNode);
-    UiObject(std::string& _uiName, class SceneNode& _sceneNode);
-    virtual ~UiObject();
+#include <unordered_map>
 
-    void AddUComponent(COMP_TYPE _compType);
-
-    template <typename T>
-    inline T* GetComponent()
-    {
-        auto container = GetSceneNode().GetComponentContainer();
-        std::string name = GetObjectName();
-        ComponentGetter::GenerateCompName<T>(name);
-
-        return (T*)(container->GetComponent(name));
-    }
+class UiObject : public Object {
+private:
+  std::unordered_map<COMP_TYPE, std::string> UiCompMap;
 
 public:
-    virtual bool Init();
-    virtual void Destory();
+  UiObject(const std::string &UiName, class SceneNode &SceneNode);
+  virtual ~UiObject();
+
+  void
+  addUComponent(COMP_TYPE CompType);
+
+  template <typename T>
+  inline T *
+  getComponent() {
+    auto Container = getSceneNode().GetComponentContainer();
+    std::string Name = getObjectName();
+    component_name::generateCompName<T>(Name);
+
+    return static_cast<T *>(Container->getComponent(Name));
+  }
+
+public:
+  virtual bool
+  init();
+  virtual void
+  destory();
 
 protected:
-    virtual void SyncStatusToAllComps();
-
-private:
-    std::unordered_map<COMP_TYPE, std::string> mUiCompMap;
+  virtual void
+  syncStatusToAllComps();
 };

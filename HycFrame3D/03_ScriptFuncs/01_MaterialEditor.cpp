@@ -8,13 +8,13 @@ void RegisterMaterialEditor(ObjectFactory* _factory)
 #ifdef _DEBUG
     assert(_factory);
 #endif // _DEBUG
-    _factory->GetAInputMapPtr()->insert(
+    _factory->getAInputMapPtr().insert(
         { FUNC_NAME(MatEditorInput),MatEditorInput });
-    _factory->GetAInitMapPtr()->insert(
+    _factory->getAInitMapPtr().insert(
         { FUNC_NAME(MatEditorInit),MatEditorInit });
-    _factory->GetAUpdateMapPtr()->insert(
+    _factory->getAUpdateMapPtr().insert(
         { FUNC_NAME(MatEditorUpdate),MatEditorUpdate });
-    _factory->GetADestoryMapPtr()->insert(
+    _factory->getADestoryMapPtr().insert(
         { FUNC_NAME(MatEditorDestory),MatEditorDestory });
 }
 
@@ -283,11 +283,11 @@ bool MatEditorInit(AInteractComponent* _aitc)
     getRSDX11RootInstance()->getPipelinesManager()->setPipeline(basic);
 
     g_PointLightAtc = _aitc->getActorObject("point-light-actor")->
-        GetComponent<ATransformComponent>();
+        getComponent<ATransformComponent>();
     if (!g_PointLightAtc) { return false; }
 
     g_MaterialBallAtc = _aitc->getActorObject("mat-ball-actor")->
-        GetComponent<ATransformComponent>();
+        getComponent<ATransformComponent>();
     if (!g_MaterialBallAtc) { return false; }
 
     g_MatBallMesh = &(*_aitc->getSceneNode().GetAssetsPool()->

@@ -122,7 +122,7 @@ SceneNode* SceneManager::GetCurrentSceneNode() const
 
 bool SceneManager::LoadLoadingScene()
 {
-    mLoadingScenePtr = mObjectFactoryPtr->CreateSceneNode(
+    mLoadingScenePtr = mObjectFactoryPtr->createSceneNode(
         "loading-scene",
         ".\\Assets\\Scenes\\loading-scene.json");
     mCurrentScenePtr = mLoadingScenePtr;
@@ -144,7 +144,7 @@ void SceneManager::LoadNextScene(SceneNode* _relScene)
         delete _relScene;
     }
 
-    mNextScenePtr = mObjectFactoryPtr->CreateSceneNode(
+    mNextScenePtr = mObjectFactoryPtr->createSceneNode(
         mLoadSceneInfo[0], mLoadSceneInfo[1]);
 }
 

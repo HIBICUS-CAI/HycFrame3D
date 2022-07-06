@@ -39,7 +39,7 @@ bool ButtonSystem::Init()
 
     mUBtnVecPtr = (std::vector<UButtonComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::U_BUTTON);
+        GetComponentContainer()->getCompVecPtr(COMP_TYPE::U_BUTTON);
 
     if (!(mUBtnVecPtr)) { return false; }
 

@@ -26,10 +26,10 @@ bool InteractSystem::Init()
 
     mAInterVecPtr = (std::vector<AInteractComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_INTERACT);
+        GetComponentContainer()->getCompVecPtr(COMP_TYPE::A_INTERACT);
     mUInterVecPtr = (std::vector<UInteractComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::U_INTERACT);
+        GetComponentContainer()->getCompVecPtr(COMP_TYPE::U_INTERACT);
 
     if (!(mAInterVecPtr && mUInterVecPtr)) { return false; }
 

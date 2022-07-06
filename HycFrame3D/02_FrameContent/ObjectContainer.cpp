@@ -1,187 +1,124 @@
 #include "ObjectContainer.h"
+
 #include "SceneNode.h"
-#include "ActorObject.h"
-#include "UiObject.h"
 
-ObjectContainer::ObjectContainer(SceneNode& _sceneNode) :
-    mSceneNodeOwner(_sceneNode),
-    mActorObjMap({}), mUiObjMap({}),
-    mNewActorObjVector({}), mNewUiObjVector({}),
-    mDeadActorObjVector({}), mDeadUiObjVector({})
-{
-
+ObjectContainer::ObjectContainer(SceneNode &SceneNode)
+    : SceneNodeOwner(SceneNode), ActorObjectMap({}), UiObjectMap({}),
+      NewActorObjectArray({}), NewUiObjectArray({}), DeadActorObjectArray({}),
+      DeadUiObjectArray({}) {
+  (void)SceneNodeOwner;
 }
 
-ObjectContainer::~ObjectContainer()
-{
+ObjectContainer::~ObjectContainer() {}
 
+ActorObject *
+ObjectContainer::getActorObject(const std::string &ActorName) {
+  auto Found = ActorObjectMap.find(ActorName);
+  if (Found != ActorObjectMap.end()) {
+    return &(Found->second);
+  } else {
+    P_LOG(LOG_WARNING, "cannot find actor object name : %s\n",
+          ActorName.c_str());
+    return nullptr;
+  }
 }
 
-ActorObject* ObjectContainer::GetActorObject(const std::string& _actorName)
-{
-    auto found = mActorObjMap.find(_actorName);
-    if (found != mActorObjMap.end())
-    {
-        return &(found->second);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find actor object name : %s\n",
-            _actorName.c_str());
-        return nullptr;
-    }
+void
+ObjectContainer::addActorObject(const ActorObject &NewActor) {
+  NewActorObjectArray.emplace_back(NewActor);
 }
 
-void ObjectContainer::AddActorObject(ActorObject& _newActor)
-{
-    mNewActorObjVector.emplace_back(_newActor);
+void
+ObjectContainer::deleteActorObject(const std::string &ActorName) {
+  auto Found = ActorObjectMap.find(ActorName);
+  if (Found != ActorObjectMap.end()) {
+    DeadActorObjectArray.emplace_back(Found->second);
+    ActorObjectMap.erase(ActorName);
+  } else {
+    P_LOG(LOG_WARNING, "cannot find actor object name : %s\n",
+          ActorName.c_str());
+  }
 }
 
-void ObjectContainer::DeleteActorObject(std::string&& _actorName)
-{
-    auto found = mActorObjMap.find(_actorName);
-    if (found != mActorObjMap.end())
-    {
-        mDeadActorObjVector.emplace_back(found->second);
-        mActorObjMap.erase(_actorName);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find actor object name : %s\n",
-            _actorName.c_str());
-    }
+UiObject *
+ObjectContainer::getUiObject(const std::string &UiName) {
+  auto Found = UiObjectMap.find(UiName);
+  if (Found != UiObjectMap.end()) {
+    return &(Found->second);
+  } else {
+    P_LOG(LOG_WARNING, "cannot find ui object name : %s\n", UiName.c_str());
+    return nullptr;
+  }
 }
 
-void ObjectContainer::DeleteActorObject(std::string& _actorName)
-{
-    auto found = mActorObjMap.find(_actorName);
-    if (found != mActorObjMap.end())
-    {
-        mDeadActorObjVector.emplace_back(found->second);
-        mActorObjMap.erase(_actorName);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find actor object name : %s\n",
-            _actorName.c_str());
-    }
+void
+ObjectContainer::addUiObject(const UiObject &NewUi) {
+  NewUiObjectArray.emplace_back(NewUi);
 }
 
-UiObject* ObjectContainer::GetUiObject(const std::string& _uiName)
-{
-    auto found = mUiObjMap.find(_uiName);
-    if (found != mUiObjMap.end())
-    {
-        return &(found->second);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find ui object name : %s\n",
-            _uiName.c_str());
-        return nullptr;
-    }
+void
+ObjectContainer::deleteUiObject(const std::string &UiName) {
+  auto Found = UiObjectMap.find(UiName);
+  if (Found != UiObjectMap.end()) {
+    DeadUiObjectArray.emplace_back(Found->second);
+    UiObjectMap.erase(UiName);
+  } else {
+    P_LOG(LOG_WARNING, "cannot find ui object name : %s\n", UiName.c_str());
+  }
 }
 
-void ObjectContainer::AddUiObject(UiObject& _newUi)
-{
-    mNewUiObjVector.emplace_back(_newUi);
+void
+ObjectContainer::deleteAllActor() {
+  for (auto &Actor : ActorObjectMap) {
+    DeadActorObjectArray.emplace_back(Actor.second);
+  }
+  ActorObjectMap.clear();
 }
 
-void ObjectContainer::DeleteUiObject(std::string&& _uiName)
-{
-    auto found = mUiObjMap.find(_uiName);
-    if (found != mUiObjMap.end())
-    {
-        mDeadUiObjVector.emplace_back(found->second);
-        mUiObjMap.erase(_uiName);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find ui object name : %s\n",
-            _uiName.c_str());
-    }
+void
+ObjectContainer::deleteAllUi() {
+  for (auto &Ui : UiObjectMap) {
+    DeadUiObjectArray.emplace_back(Ui.second);
+  }
+  UiObjectMap.clear();
 }
 
-void ObjectContainer::DeleteUiObject(std::string& _uiName)
-{
-    auto found = mUiObjMap.find(_uiName);
-    if (found != mUiObjMap.end())
-    {
-        mDeadUiObjVector.emplace_back(found->second);
-        mUiObjMap.erase(_uiName);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find ui object name : %s\n",
-            _uiName.c_str());
-    }
-}
-
-void ObjectContainer::DeleteAllActor()
-{
-    for (auto& actor : mActorObjMap)
-    {
-        mDeadActorObjVector.emplace_back(actor.second);
-    }
-    mActorObjMap.clear();
-}
-
-void ObjectContainer::DeleteAllUi()
-{
-    for (auto& ui : mUiObjMap)
-    {
-        mDeadUiObjVector.emplace_back(ui.second);
-    }
-    mUiObjMap.clear();
-}
-
-
-void ObjectContainer::InitAllNewObjects()
-{
-    for (auto& newActor : mNewActorObjVector)
-    {
-        std::string name = newActor.GetObjectName();
-        mActorObjMap.insert({ name,newActor });
-        auto& actor = mActorObjMap.find(name)->second;
-        bool result = actor.Init();
+void
+ObjectContainer::initAllNewObjects() {
+  for (auto &NewActor : NewActorObjectArray) {
+    const std::string &Name = NewActor.getObjectName();
+    ActorObjectMap.insert({Name, NewActor});
+    auto &Actor = ActorObjectMap.find(Name)->second;
+    bool Result = Actor.init();
 #ifdef _DEBUG
-        assert(result);
+    assert(Result);
 #endif // _DEBUG
-        (void)result;
-    }
-    mNewActorObjVector.clear();
+    (void)Result;
+  }
+  NewActorObjectArray.clear();
 
-    for (auto& newUi : mNewUiObjVector)
-    {
-        std::string name = newUi.GetObjectName();
-        mUiObjMap.insert({ name,newUi });
-        auto& ui = mUiObjMap.find(name)->second;
-        bool result = ui.Init();
+  for (auto &NewUi : NewUiObjectArray) {
+    const std::string &Name = NewUi.getObjectName();
+    UiObjectMap.insert({Name, NewUi});
+    auto &Ui = UiObjectMap.find(Name)->second;
+    bool Result = Ui.init();
 #ifdef _DEBUG
-        assert(result);
+    assert(Result);
 #endif // _DEBUG
-        (void)result;
-    }
-    mNewUiObjVector.clear();
+    (void)Result;
+  }
+  NewUiObjectArray.clear();
 }
 
-void ObjectContainer::DeleteAllDeadObjects()
-{
-    for (auto& deadActor : mDeadActorObjVector)
-    {
-        deadActor.Destory();
-    }
-    mDeadActorObjVector.clear();
+void
+ObjectContainer::deleteAllDeadObjects() {
+  for (auto &DeadActor : DeadActorObjectArray) {
+    DeadActor.destory();
+  }
+  DeadActorObjectArray.clear();
 
-    for (auto& deadUi : mDeadUiObjVector)
-    {
-        deadUi.Destory();
-    }
-    mDeadUiObjVector.clear();
+  for (auto &DeadUi : DeadUiObjectArray) {
+    DeadUi.destory();
+  }
+  DeadUiObjectArray.clear();
 }

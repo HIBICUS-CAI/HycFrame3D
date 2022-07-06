@@ -1,97 +1,107 @@
 #include "ActorObject.h"
-#include "SceneNode.h"
-#include "ComponentContainer.h"
+
 #include "ActorComponent.h"
+#include "ComponentContainer.h"
+#include "SceneNode.h"
 
-ActorObject::ActorObject(std::string&& _actorName, SceneNode& _sceneNode) :
-    Object(_actorName, _sceneNode), mActorCompMap({})
-{
+ActorObject::ActorObject(const std::string &ActorName, SceneNode &SceneNode)
+    : Object(ActorName, SceneNode), ActorCompMap({}) {}
 
+ActorObject::~ActorObject() {}
+
+void
+ActorObject::addAComponent(COMP_TYPE CompType) {
+  std::string CompName = getObjectName();
+
+  switch (CompType) {
+  case COMP_TYPE::A_TRANSFORM:
+    CompName += "-transform";
+    break;
+  case COMP_TYPE::A_INPUT:
+    CompName += "-input";
+    break;
+  case COMP_TYPE::A_INTERACT:
+    CompName += "-interact";
+    break;
+  case COMP_TYPE::A_TIMER:
+    CompName += "-timer";
+    break;
+  case COMP_TYPE::A_COLLISION:
+    CompName += "-collision";
+    break;
+  case COMP_TYPE::A_MESH:
+    CompName += "-mesh";
+    break;
+  case COMP_TYPE::A_LIGHT:
+    CompName += "-light";
+    break;
+  case COMP_TYPE::A_AUDIO:
+    CompName += "-audio";
+    break;
+  case COMP_TYPE::A_PARTICLE:
+    CompName += "-particle";
+    break;
+  case COMP_TYPE::A_ANIMATE:
+    CompName += "-animate";
+    break;
+  case COMP_TYPE::A_SPRITE:
+    CompName += "-sprite";
+    break;
+  default:
+    break;
+  }
+
+  ActorCompMap.insert({CompType, CompName});
 }
 
-ActorObject::ActorObject(std::string& _actorName, SceneNode& _sceneNode) :
-    Object(_actorName, _sceneNode), mActorCompMap({})
-{
+bool
+ActorObject::init() {
+  auto CompContainer = getSceneNode().GetComponentContainer();
 
-}
-
-ActorObject::~ActorObject()
-{
-
-}
-
-void ActorObject::AddAComponent(COMP_TYPE _compType)
-{
-    std::string compName = GetObjectName();
-
-    switch (_compType)
-    {
-    case COMP_TYPE::A_TRANSFORM: compName += "-transform"; break;
-    case COMP_TYPE::A_INPUT: compName += "-input"; break;
-    case COMP_TYPE::A_INTERACT: compName += "-interact"; break;
-    case COMP_TYPE::A_TIMER: compName += "-timer"; break;
-    case COMP_TYPE::A_COLLISION: compName += "-collision"; break;
-    case COMP_TYPE::A_MESH: compName += "-mesh"; break;
-    case COMP_TYPE::A_LIGHT: compName += "-light"; break;
-    case COMP_TYPE::A_AUDIO: compName += "-audio"; break;
-    case COMP_TYPE::A_PARTICLE: compName += "-particle"; break;
-    case COMP_TYPE::A_ANIMATE: compName += "-animate"; break;
-    case COMP_TYPE::A_SPRITE: compName += "-sprite"; break;
-    default: break;
-    }
-
-    mActorCompMap.insert({ _compType,compName });
-}
-
-bool ActorObject::Init()
-{
-    auto compContainer = GetSceneNode().GetComponentContainer();
-
-    for (auto& compInfo : mActorCompMap)
-    {
-        auto comp = compContainer->GetComponent(compInfo.second);
+  for (auto &CompInfo : ActorCompMap) {
+    auto Comp = CompContainer->getComponent(CompInfo.second);
 #ifdef _DEBUG
-        assert(comp);
+    assert(Comp);
 #endif // _DEBUG
-        ((ActorComponent*)comp)->resetActorOwner(this);
-        if (!comp->init()) { return false; }
-        comp->setCompStatus(STATUS::ACTIVE);
+    static_cast<ActorComponent *>(Comp)->resetActorOwner(this);
+    if (!Comp->init()) {
+      return false;
     }
+    Comp->setCompStatus(STATUS::ACTIVE);
+  }
 
-    SetObjectStatus(STATUS::ACTIVE);
+  setObjectStatus(STATUS::ACTIVE);
 
-    return true;
+  return true;
 }
 
-void ActorObject::Destory()
-{
-    auto compContainer = GetSceneNode().GetComponentContainer();
+void
+ActorObject::destory() {
+  auto CompContainer = getSceneNode().GetComponentContainer();
 
-    for (auto& compInfo : mActorCompMap)
-    {
-        auto comp = compContainer->GetComponent(compInfo.second);
+  for (auto &CompInfo : ActorCompMap) {
+    auto Comp = CompContainer->getComponent(CompInfo.second);
 #ifdef _DEBUG
-        assert(comp);
+    assert(Comp);
 #endif // _DEBUG
-        ((ActorComponent*)comp)->resetActorOwner(this);
-        comp->destory();
-        comp->setCompStatus(STATUS::NEED_DESTORY);
-        compContainer->DeleteComponent(compInfo.first, compInfo.second);
-    }
+    static_cast<ActorComponent *>(Comp)->resetActorOwner(this);
+    Comp->destory();
+    Comp->setCompStatus(STATUS::NEED_DESTORY);
+    CompContainer->deleteComponent(CompInfo.first, CompInfo.second);
+  }
 
-    mActorCompMap.clear();
+  ActorCompMap.clear();
 }
 
-void ActorObject::SyncStatusToAllComps()
-{
-    auto compContainer = GetSceneNode().GetComponentContainer();
+void
+ActorObject::syncStatusToAllComps() {
+  auto CompContainer = getSceneNode().GetComponentContainer();
 
-    for (auto& compInfo : mActorCompMap)
-    {
-        auto comp = compContainer->GetComponent(compInfo.second);
+  for (auto &CompInfo : ActorCompMap) {
+    auto Comp = CompContainer->getComponent(CompInfo.second);
 #ifdef _DEBUG
-        assert(comp);
+    assert(Comp);
 #endif // _DEBUG
-        comp->setCompStatus(GetObjectStatus());
-    }
+    Comp->setCompStatus(getObjectStatus());
+  }
 }

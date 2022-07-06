@@ -153,8 +153,8 @@ UAnimateComponent::changeAnimateTo(const std::string &AniName) {
 void
 UAnimateComponent::syncAniInfoToSprite() {
   auto MeshPtr =
-      getUiOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
-          getUiOwner()->GetComponent<USpriteComponent>()->getCompName());
+      getUiOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+          getUiOwner()->getComponent<USpriteComponent>()->getCompName());
 
   MeshPtr->MeshData.Textures[0] = CurrentAnimate->TexName;
 

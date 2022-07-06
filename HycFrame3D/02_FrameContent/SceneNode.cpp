@@ -10,29 +10,7 @@
 #include "AssetsPool.h"
 #include "PhysicsWorld.h"
 
-SceneNode::SceneNode(std::string&& _sceneName, SceneManager* _sceneManager) :
-    mSceneName(_sceneName), mSceneManagerPtr(_sceneManager),
-    mObjContainerPtr(nullptr), mCompContainerPtr(nullptr),
-    mAssetsPoolPtr(nullptr), mPhysicsWorldPtr(nullptr),
-    mCameraAmbientInfo({})
-{
-    mObjContainerPtr = new ObjectContainer(*this);
-    mCompContainerPtr = new ComponentContainer(*this);
-    mAssetsPoolPtr = new AssetsPool(*this);
-    mPhysicsWorldPtr = new PhysicsWorld(*this);
-    if (_sceneName != "temp-loading-scene")
-    {
-        std::string cam = "temp-cam";
-        mCameraAmbientInfo.mRSCameraPtr = getRSDX11RootInstance()->
-            getCamerasContainer()->getRSCamera(cam);
-        bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
-            mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
-        assert(new_scene_fail);
-        (void)new_scene_fail;
-    }
-}
-
-SceneNode::SceneNode(std::string& _sceneName, SceneManager* _sceneManager) :
+SceneNode::SceneNode(const std::string& _sceneName, SceneManager* _sceneManager) :
     mSceneName(_sceneName), mSceneManagerPtr(_sceneManager),
     mObjContainerPtr(nullptr), mCompContainerPtr(nullptr),
     mAssetsPoolPtr(nullptr), mPhysicsWorldPtr(nullptr),
@@ -64,10 +42,10 @@ SceneNode::~SceneNode()
 
 void SceneNode::ReleaseScene()
 {
-    mObjContainerPtr->DeleteAllActor();
-    mObjContainerPtr->DeleteAllUi();
-    mObjContainerPtr->DeleteAllDeadObjects();
-    mCompContainerPtr->DeleteAllComponent();
+    mObjContainerPtr->deleteAllActor();
+    mObjContainerPtr->deleteAllUi();
+    mObjContainerPtr->deleteAllDeadObjects();
+    mCompContainerPtr->deleteAllComponent();
     mPhysicsWorldPtr->DeletePhysicsWorld();
     mAssetsPoolPtr->deleteAllAssets();
 
@@ -178,42 +156,42 @@ RSCamera* SceneNode::GetMainCamera()
 
 ActorObject* SceneNode::GetActorObject(const std::string& _actorName)
 {
-    return mObjContainerPtr->GetActorObject(_actorName);
+    return mObjContainerPtr->getActorObject(_actorName);
 }
 
 void SceneNode::AddActorObject(class ActorObject& _newActor)
 {
-    mObjContainerPtr->AddActorObject(_newActor);
+    mObjContainerPtr->addActorObject(_newActor);
 }
 
 void SceneNode::DeleteActorObject(std::string&& _actorName)
 {
-    mObjContainerPtr->DeleteActorObject(_actorName);
+    mObjContainerPtr->deleteActorObject(_actorName);
 }
 
 void SceneNode::DeleteActorObject(std::string& _actorName)
 {
-    mObjContainerPtr->DeleteActorObject(_actorName);
+    mObjContainerPtr->deleteActorObject(_actorName);
 }
 
 UiObject* SceneNode::GetUiObject(const std::string& _uiName)
 {
-    return mObjContainerPtr->GetUiObject(_uiName);
+    return mObjContainerPtr->getUiObject(_uiName);
 }
 
 void SceneNode::AddUiObject(class UiObject& _newUi)
 {
-    mObjContainerPtr->AddUiObject(_newUi);
+    mObjContainerPtr->addUiObject(_newUi);
 }
 
 void SceneNode::DeleteUiObject(std::string&& _uiName)
 {
-    mObjContainerPtr->DeleteUiObject(_uiName);
+    mObjContainerPtr->deleteUiObject(_uiName);
 }
 
 void SceneNode::DeleteUiObject(std::string& _uiName)
 {
-    mObjContainerPtr->DeleteUiObject(_uiName);
+    mObjContainerPtr->deleteUiObject(_uiName);
 }
 
 AssetsPool* SceneNode::GetAssetsPool() const

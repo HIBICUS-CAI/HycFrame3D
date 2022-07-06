@@ -10,7 +10,7 @@ ActorComponent::~ActorComponent() {}
 
 SceneNode &
 ActorComponent::getSceneNode() const {
-  return ActorOwner->GetSceneNode();
+  return ActorOwner->getSceneNode();
 }
 
 ActorObject *

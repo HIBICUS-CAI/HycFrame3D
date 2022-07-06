@@ -8,39 +8,39 @@ void RegisterSPInput(ObjectFactory* _factory)
 #ifdef _DEBUG
     assert(_factory);
 #endif // _DEBUG
-    _factory->GetAInputMapPtr()->insert(
+    _factory->getAInputMapPtr().insert(
         { FUNC_NAME(TestASpInput),TestASpInput });
-    _factory->GetAInputMapPtr()->insert(
+    _factory->getAInputMapPtr().insert(
         { FUNC_NAME(TempToTitle),TempToTitle });
-    _factory->GetAInputMapPtr()->insert(
+    _factory->getAInputMapPtr().insert(
         { FUNC_NAME(TempToSelect),TempToSelect });
-    _factory->GetAInputMapPtr()->insert(
+    _factory->getAInputMapPtr().insert(
         { FUNC_NAME(TempToRun),TempToRun });
-    _factory->GetAInputMapPtr()->insert(
+    _factory->getAInputMapPtr().insert(
         { FUNC_NAME(TempToResult),TempToResult });
-    _factory->GetAInitMapPtr()->insert(
+    _factory->getAInitMapPtr().insert(
         { FUNC_NAME(TestASpInit),TestASpInit });
-    _factory->GetAUpdateMapPtr()->insert(
+    _factory->getAUpdateMapPtr().insert(
         { FUNC_NAME(TestASpUpdate),TestASpUpdate });
-    _factory->GetADestoryMapPtr()->insert(
+    _factory->getADestoryMapPtr().insert(
         { FUNC_NAME(TestASpDestory),TestASpDestory });
-    _factory->GetUInputMapPtr()->insert(
+    _factory->getUInputMapPtr().insert(
         { FUNC_NAME(TestUSpInput),TestUSpInput });
-    _factory->GetUInputMapPtr()->insert(
+    _factory->getUInputMapPtr().insert(
         { FUNC_NAME(TestUSpBtnInput),TestUSpBtnInput });
-    _factory->GetUInitMapPtr()->insert(
+    _factory->getUInitMapPtr().insert(
         { FUNC_NAME(TestUSpInit),TestUSpInit });
-    _factory->GetUUpdateMapPtr()->insert(
+    _factory->getUUpdateMapPtr().insert(
         { FUNC_NAME(TestUSpUpdate),TestUSpUpdate });
-    _factory->GetUDestoryMapPtr()->insert(
+    _factory->getUDestoryMapPtr().insert(
         { FUNC_NAME(TestUSpDestory),TestUSpDestory });
 
-    _factory->GetAInitMapPtr()->insert({ FUNC_NAME(AniInit),AniInit });
-    _factory->GetAUpdateMapPtr()->insert({ FUNC_NAME(AniUpdate),AniUpdate });
-    _factory->GetADestoryMapPtr()->insert({ FUNC_NAME(AniDestory),AniDestory });
-    _factory->GetAInitMapPtr()->insert({ FUNC_NAME(BBInit),BBInit });
-    _factory->GetAUpdateMapPtr()->insert({ FUNC_NAME(BBUpdate),BBUpdate });
-    _factory->GetADestoryMapPtr()->insert({ FUNC_NAME(BBDestory),BBDestory });
+    _factory->getAInitMapPtr().insert({ FUNC_NAME(AniInit),AniInit });
+    _factory->getAUpdateMapPtr().insert({ FUNC_NAME(AniUpdate),AniUpdate });
+    _factory->getADestoryMapPtr().insert({ FUNC_NAME(AniDestory),AniDestory });
+    _factory->getAInitMapPtr().insert({ FUNC_NAME(BBInit),BBInit });
+    _factory->getAUpdateMapPtr().insert({ FUNC_NAME(BBUpdate),BBUpdate });
+    _factory->getADestoryMapPtr().insert({ FUNC_NAME(BBDestory),BBDestory });
 }
 
 void TestASpInput(AInputComponent* _aic, Timer& _timer)
@@ -62,25 +62,25 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     if (input::isKeyDownInSingle(KB_W))
     {
         _aic->getActorObject("sp-point-light-actor")->
-            GetComponent<ATransformComponent>()->
+            getComponent<ATransformComponent>()->
             translateZAsix(0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyDownInSingle(KB_A))
     {
         _aic->getActorObject("sp-point-light-actor")->
-            GetComponent<ATransformComponent>()->
+            getComponent<ATransformComponent>()->
             translateXAsix(-0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyDownInSingle(KB_S))
     {
         _aic->getActorObject("sp-point-light-actor")->
-            GetComponent<ATransformComponent>()->
+            getComponent<ATransformComponent>()->
             translateZAsix(-0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyDownInSingle(KB_D))
     {
         _aic->getActorObject("sp-point-light-actor")->
-            GetComponent<ATransformComponent>()->
+            getComponent<ATransformComponent>()->
             translateXAsix(0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyPushedInSingle(KB_P))
@@ -105,7 +105,7 @@ bool TestASpInit(AInteractComponent* _aitc)
     P_LOG(LOG_DEBUG, "a sp init\n");
 
     _aitc->getActorOwner()->
-        GetComponent<ATimerComponent>()->
+        getComponent<ATimerComponent>()->
         startTimer("timer1");
 
     return true;
@@ -123,11 +123,11 @@ void TestASpUpdate(AInteractComponent* _aitc, Timer&)
 
     CONTACT_PONT_PAIR contact = {};
     if (_aitc->getActorObject("sp-point-light-actor")->
-        GetComponent<ACollisionComponent>()->
+        getComponent<ACollisionComponent>()->
         checkCollisionWith("sp-actor", &contact))
     {
         _aitc->getActorObject("sp-point-light-actor")->
-            GetComponent<ATransformComponent>()->
+            getComponent<ATransformComponent>()->
             rollBackPosition();
         P_LOG(LOG_DEBUG, "a : %f, %f, %f ; b : %f, %f, %f\n",
             contact.first.x, contact.first.y, contact.first.z,
@@ -138,12 +138,12 @@ void TestASpUpdate(AInteractComponent* _aitc, Timer&)
     }
 
     _aitc->getActorObject("sp-particle-actor")->
-        GetComponent<ATransformComponent>()->
+        getComponent<ATransformComponent>()->
         setPosition(_aitc->getActorObject("sp-point-light-actor")->
-            GetComponent<ATransformComponent>()->
+            getComponent<ATransformComponent>()->
             getProcessingPosition());
     _aitc->getActorObject("sp-particle-actor")->
-        GetComponent<ATransformComponent>()->
+        getComponent<ATransformComponent>()->
         translateYAsix(5.f);
 }
 
@@ -156,7 +156,7 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
 {
     float delta = _timer.floatDeltaTime();
     auto utc = _uic->getUiOwner()->
-        GetComponent<UTransformComponent>();
+        getComponent<UTransformComponent>();
 
     if (input::isKeyDownInSingle(KB_W))
     {
@@ -178,32 +178,32 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
     if (input::isKeyPushedInSingle(KB_Z))
     {
         _uic->getUiOwner()->
-            GetComponent<USpriteComponent>()->
+            getComponent<USpriteComponent>()->
             resetTexture();
     }
     if (input::isKeyPushedInSingle(KB_X))
     {
         _uic->getUiOwner()->
-            GetComponent<UAnimateComponent>()->
+            getComponent<UAnimateComponent>()->
             changeAnimateTo("number");
     }
     if (input::isKeyPushedInSingle(KB_C))
     {
         _uic->getUiOwner()->
-            GetComponent<UAnimateComponent>()->
+            getComponent<UAnimateComponent>()->
             changeAnimateTo("runman");
     }
 
     if (input::isKeyPushedInSingle(KB_N))
     {
         _uic->getUiOwner()->
-            GetComponent<UAudioComponent>()->
+            getComponent<UAudioComponent>()->
             playBgm("test", 0.8f);
     }
     if (input::isKeyPushedInSingle(KB_M))
     {
         _uic->getUiOwner()->
-            GetComponent<UAudioComponent>()->
+            getComponent<UAudioComponent>()->
             playBgm("test", 0.4f);
     }
 
@@ -218,7 +218,7 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
 void TestUSpBtnInput(UInputComponent* _uic, Timer& _timer)
 {
     auto ubc = _uic->getUiOwner()->
-        GetComponent<UButtonComponent>();
+        getComponent<UButtonComponent>();
     if (!ubc) { return; }
 
     if (input::isKeyPushedInSingle(KB_UP))
@@ -308,7 +308,7 @@ bool AniInit(AInteractComponent* _aitc)
     P_LOG(LOG_DEBUG, "animate init\n");
 
     g_Aanc = _aitc->getActorOwner()->
-        GetComponent<AAnimateComponent>();
+        getComponent<AAnimateComponent>();
     if (!g_Aanc) { return false; }
 
     return true;
@@ -317,7 +317,7 @@ bool AniInit(AInteractComponent* _aitc)
 void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
     _aitc->getActorOwner()->
-        GetComponent<ATransformComponent>()->
+        getComponent<ATransformComponent>()->
         rotateYAsix(_timer.floatDeltaTime() / 1000.f);
 
     if (input::isKeyPushedInSingle(KB_1))
@@ -365,7 +365,7 @@ bool BBInit(AInteractComponent* _aitc)
 {
     g_XFactor = -1.f;
     g_BBAtc = _aitc->getActorOwner()->
-        GetComponent<ATransformComponent>();
+        getComponent<ATransformComponent>();
     if (!g_BBAtc) { return false; }
 
     return true;

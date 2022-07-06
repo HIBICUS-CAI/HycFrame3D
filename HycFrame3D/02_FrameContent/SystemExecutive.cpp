@@ -69,8 +69,8 @@ void SystemExecutive::RunAllSystems(Timer& _timer)
 {
     CheckCurrentScene();
 
-    mCurrentSceneNode->GetObjectContainer()->DeleteAllDeadObjects();
-    mCurrentSceneNode->GetObjectContainer()->InitAllNewObjects();
+    mCurrentSceneNode->GetObjectContainer()->deleteAllDeadObjects();
+    mCurrentSceneNode->GetObjectContainer()->initAllNewObjects();
 
     for (auto& sys : mSystemsVec)
     {

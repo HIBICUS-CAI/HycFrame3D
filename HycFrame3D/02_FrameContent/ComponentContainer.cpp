@@ -1,751 +1,500 @@
 #include "ComponentContainer.h"
-#include "SceneNode.h"
-#include "ATransformComponent.h"
+
+#include "AAnimateComponent.h"
+#include "AAudioComponent.h"
+#include "ACollisionComponent.h"
 #include "AInputComponent.h"
 #include "AInteractComponent.h"
-#include "ATimerComponent.h"
-#include "ACollisionComponent.h"
-#include "AMeshComponent.h"
 #include "ALightComponent.h"
-#include "AAudioComponent.h"
+#include "AMeshComponent.h"
 #include "AParticleComponent.h"
-#include "AAnimateComponent.h"
 #include "ASpriteComponent.h"
-#include "UTransformComponent.h"
-#include "USpriteComponent.h"
+#include "ATimerComponent.h"
+#include "ATransformComponent.h"
+#include "SceneNode.h"
 #include "UAnimateComponent.h"
-#include "UTimerComponent.h"
+#include "UAudioComponent.h"
+#include "UButtonComponent.h"
 #include "UInputComponent.h"
 #include "UInteractComponent.h"
-#include "UButtonComponent.h"
-#include "UAudioComponent.h"
+#include "USpriteComponent.h"
+#include "UTimerComponent.h"
+#include "UTransformComponent.h"
 
-ComponentContainer::ComponentContainer(SceneNode& _sceneNode) :
-    mSceneNodeOwner(_sceneNode),
-    mATransformCompVector({}),
-    mAInputCompVector({}),
-    mAInteractCompVector({}),
-    mATimerCompVector({}),
-    mACollisionCompVector({}),
-    mAMeshCompVector({}),
-    mALightCompVector({}),
-    mAAudioCompVector({}),
-    mAParticleCompVector({}),
-    mAAnimateCompVector({}),
-    mASpriteCompVector({}),
-    mUTransformCompVector({}),
-    mUSpriteCompVector({}),
-    mUAnimateCompVector({}),
-    mUTimerCompVector({}),
-    mUInputCompVector({}),
-    mUInteractCompVector({}),
-    mUButtonCompVector({}),
-    mUAudioCompVector({}),
-    mInsertFlag({}),
-    mCompMap({})
-{
-    mATransformCompVector.reserve(1024);
-    mAInputCompVector.reserve(1024);
-    mAInteractCompVector.reserve(1024);
-    mATimerCompVector.reserve(1024);
-    mACollisionCompVector.reserve(1024);
-    mAMeshCompVector.reserve(1024);
-    mALightCompVector.reserve(1024);
-    mAAudioCompVector.reserve(1024);
-    mAParticleCompVector.reserve(1024);
-    mAAnimateCompVector.reserve(1024);
-    mASpriteCompVector.reserve(1024);
-    mUTransformCompVector.reserve(1024);
-    mUSpriteCompVector.reserve(1024);
-    mUAnimateCompVector.reserve(1024);
-    mUTimerCompVector.reserve(1024);
-    mUInputCompVector.reserve(1024);
-    mUInteractCompVector.reserve(1024);
-    mUButtonCompVector.reserve(1024);
-    mUAudioCompVector.reserve(1024);
+ComponentContainer::ComponentContainer(SceneNode &SceneNode)
+    : SceneNodeOwner(SceneNode), ATransformCompVector({}), AInputCompVector({}),
+      AInteractCompVector({}), ATimerCompVector({}), ACollisionCompVector({}),
+      AMeshCompVector({}), ALightCompVector({}), AAudioCompVector({}),
+      AParticleCompVector({}), AAnimateCompVector({}), ASpriteCompVector({}),
+      UTransformCompVector({}), USpriteCompVector({}), UAnimateCompVector({}),
+      UTimerCompVector({}), UInputCompVector({}), UInteractCompVector({}),
+      UButtonCompVector({}), UAudioCompVector({}), InsertFlag({}), CompMap({}) {
+  ATransformCompVector.reserve(1024);
+  AInputCompVector.reserve(1024);
+  AInteractCompVector.reserve(1024);
+  ATimerCompVector.reserve(1024);
+  ACollisionCompVector.reserve(1024);
+  AMeshCompVector.reserve(1024);
+  ALightCompVector.reserve(1024);
+  AAudioCompVector.reserve(1024);
+  AParticleCompVector.reserve(1024);
+  AAnimateCompVector.reserve(1024);
+  ASpriteCompVector.reserve(1024);
+  UTransformCompVector.reserve(1024);
+  USpriteCompVector.reserve(1024);
+  UAnimateCompVector.reserve(1024);
+  UTimerCompVector.reserve(1024);
+  UInputCompVector.reserve(1024);
+  UInteractCompVector.reserve(1024);
+  UButtonCompVector.reserve(1024);
+  UAudioCompVector.reserve(1024);
 }
 
-ComponentContainer::~ComponentContainer()
-{
+ComponentContainer::~ComponentContainer() {}
 
+Component *
+ComponentContainer::getComponent(const std::string &CompName) {
+  if (CompMap.find(CompName) != CompMap.end()) {
+    return CompMap[CompName];
+  } else {
+    P_LOG(LOG_WARNING, "cannot find component name : %s\n", CompName.c_str());
+    return nullptr;
+  }
 }
 
-Component* ComponentContainer::GetComponent(std::string&& _compName)
-{
-    if (mCompMap.find(_compName) != mCompMap.end())
-    {
-        return mCompMap[_compName];
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find component name : %s\n",
-            _compName.c_str());
-        return nullptr;
-    }
-}
-
-Component* ComponentContainer::GetComponent(std::string& _compName)
-{
-    if (mCompMap.find(_compName) != mCompMap.end())
-    {
-        return mCompMap[_compName];
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find component name : %s\n",
-            _compName.c_str());
-        return nullptr;
-    }
-}
-
-void ComponentContainer::AddComponent(COMP_TYPE _type, Component& _comp)
-{
-    if (mInsertFlag[(size_t)_type].empty())
-    {
-        switch (_type)
-        {
-        case COMP_TYPE::A_TRANSFORM:
-            mATransformCompVector.emplace_back((ATransformComponent&)_comp);
-            mCompMap.insert(
-                { mATransformCompVector.back().getCompName(),
-                &(mATransformCompVector.back()) });
-            break;
-        case COMP_TYPE::A_INPUT:
-            mAInputCompVector.emplace_back((AInputComponent&)_comp);
-            mCompMap.insert(
-                { mAInputCompVector.back().getCompName(),
-                &(mAInputCompVector.back()) });
-            break;
-        case COMP_TYPE::A_INTERACT:
-            mAInteractCompVector.emplace_back((AInteractComponent&)_comp);
-            mCompMap.insert(
-                { mAInteractCompVector.back().getCompName(),
-                &(mAInteractCompVector.back()) });
-            break;
-        case COMP_TYPE::A_TIMER:
-            mATimerCompVector.emplace_back((ATimerComponent&)_comp);
-            mCompMap.insert(
-                { mATimerCompVector.back().getCompName(),
-                &(mATimerCompVector.back()) });
-            break;
-        case COMP_TYPE::A_COLLISION:
-            mACollisionCompVector.emplace_back((ACollisionComponent&)_comp);
-            mCompMap.insert(
-                { mACollisionCompVector.back().getCompName(),
-                &(mACollisionCompVector.back()) });
-            break;
-        case COMP_TYPE::A_MESH:
-            mAMeshCompVector.emplace_back((AMeshComponent&)_comp);
-            mCompMap.insert(
-                { mAMeshCompVector.back().getCompName(),
-                &(mAMeshCompVector.back()) });
-            break;
-        case COMP_TYPE::A_LIGHT:
-            mALightCompVector.emplace_back((ALightComponent&)_comp);
-            mCompMap.insert(
-                { mALightCompVector.back().getCompName(),
-                &(mALightCompVector.back()) });
-            break;
-        case COMP_TYPE::A_AUDIO:
-            mAAudioCompVector.emplace_back((AAudioComponent&)_comp);
-            mCompMap.insert(
-                { mAAudioCompVector.back().getCompName(),
-                &(mAAudioCompVector.back()) });
-            break;
-        case COMP_TYPE::A_PARTICLE:
-            mAParticleCompVector.emplace_back((AParticleComponent&)_comp);
-            mCompMap.insert(
-                { mAParticleCompVector.back().getCompName(),
-                &(mAParticleCompVector.back()) });
-            break;
-        case COMP_TYPE::A_ANIMATE:
-            mAAnimateCompVector.emplace_back((AAnimateComponent&)_comp);
-            mCompMap.insert(
-                { mAAnimateCompVector.back().getCompName(),
-                &(mAAnimateCompVector.back()) });
-            break;
-        case COMP_TYPE::A_SPRITE:
-            mASpriteCompVector.emplace_back((ASpriteComponent&)_comp);
-            mCompMap.insert(
-                { mASpriteCompVector.back().getCompName(),
-                &(mASpriteCompVector.back()) });
-            break;
-        case COMP_TYPE::U_TRANSFORM:
-            mUTransformCompVector.emplace_back((UTransformComponent&)_comp);
-            mCompMap.insert(
-                { mUTransformCompVector.back().getCompName(),
-                &(mUTransformCompVector.back()) });
-            break;
-        case COMP_TYPE::U_SPRITE:
-            mUSpriteCompVector.emplace_back((USpriteComponent&)_comp);
-            mCompMap.insert(
-                { mUSpriteCompVector.back().getCompName(),
-                &(mUSpriteCompVector.back()) });
-            break;
-        case COMP_TYPE::U_ANIMATE:
-            mUAnimateCompVector.emplace_back((UAnimateComponent&)_comp);
-            mCompMap.insert(
-                { mUAnimateCompVector.back().getCompName(),
-                &(mUAnimateCompVector.back()) });
-            break;
-        case COMP_TYPE::U_TIMER:
-            mUTimerCompVector.emplace_back((UTimerComponent&)_comp);
-            mCompMap.insert(
-                { mUTimerCompVector.back().getCompName(),
-                &(mUTimerCompVector.back()) });
-            break;
-        case COMP_TYPE::U_INPUT:
-            mUInputCompVector.emplace_back((UInputComponent&)_comp);
-            mCompMap.insert(
-                { mUInputCompVector.back().getCompName(),
-                &(mUInputCompVector.back()) });
-            break;
-        case COMP_TYPE::U_INTERACT:
-            mUInteractCompVector.emplace_back((UInteractComponent&)_comp);
-            mCompMap.insert(
-                { mUInteractCompVector.back().getCompName(),
-                &(mUInteractCompVector.back()) });
-            break;
-        case COMP_TYPE::U_BUTTON:
-            mUButtonCompVector.emplace_back((UButtonComponent&)_comp);
-            mCompMap.insert(
-                { mUButtonCompVector.back().getCompName(),
-                &(mUButtonCompVector.back()) });
-            break;
-        case COMP_TYPE::U_AUDIO:
-            mUAudioCompVector.emplace_back((UAudioComponent&)_comp);
-            mCompMap.insert(
-                { mUAudioCompVector.back().getCompName(),
-                &(mUAudioCompVector.back()) });
-            break;
-        default:
-            break;
-        }
-    }
-    else
-    {
-        UINT index = mInsertFlag[(size_t)_type].front();
-        mInsertFlag[(size_t)_type].pop();
-
-        switch (_type)
-        {
-        case COMP_TYPE::A_TRANSFORM:
-            mATransformCompVector[index] = (ATransformComponent&)_comp;
-            mCompMap.insert(
-                { mATransformCompVector[index].getCompName(),
-                &(mATransformCompVector[index]) });
-            break;
-        case COMP_TYPE::A_INPUT:
-            mAInputCompVector[index] = (AInputComponent&)_comp;
-            mCompMap.insert(
-                { mAInputCompVector[index].getCompName(),
-                &(mAInputCompVector[index]) });
-            break;
-        case COMP_TYPE::A_INTERACT:
-            mAInteractCompVector[index] = (AInteractComponent&)_comp;
-            mCompMap.insert(
-                { mAInteractCompVector[index].getCompName(),
-                &(mAInteractCompVector[index]) });
-            break;
-        case COMP_TYPE::A_TIMER:
-            mATimerCompVector[index] = (ATimerComponent&)_comp;
-            mCompMap.insert(
-                { mATimerCompVector[index].getCompName(),
-                &(mATimerCompVector[index]) });
-            break;
-        case COMP_TYPE::A_COLLISION:
-            mACollisionCompVector[index] = (ACollisionComponent&)_comp;
-            mCompMap.insert(
-                { mACollisionCompVector[index].getCompName(),
-                &(mACollisionCompVector[index]) });
-            break;
-        case COMP_TYPE::A_MESH:
-            mAMeshCompVector[index] = (AMeshComponent&)_comp;
-            mCompMap.insert(
-                { mAMeshCompVector[index].getCompName(),
-                &(mAMeshCompVector[index]) });
-            break;
-        case COMP_TYPE::A_LIGHT:
-            mALightCompVector[index] = (ALightComponent&)_comp;
-            mCompMap.insert(
-                { mALightCompVector[index].getCompName(),
-                &(mALightCompVector[index]) });
-            break;
-        case COMP_TYPE::A_AUDIO:
-            mAAudioCompVector[index] = (AAudioComponent&)_comp;
-            mCompMap.insert(
-                { mAAudioCompVector[index].getCompName(),
-                &(mAAudioCompVector[index]) });
-            break;
-        case COMP_TYPE::A_PARTICLE:
-            mAParticleCompVector[index] = (AParticleComponent&)_comp;
-            mCompMap.insert(
-                { mAParticleCompVector[index].getCompName(),
-                &(mAParticleCompVector[index]) });
-            break;
-        case COMP_TYPE::A_ANIMATE:
-            mAAnimateCompVector[index] = (AAnimateComponent&)_comp;
-            mCompMap.insert(
-                { mAAnimateCompVector[index].getCompName(),
-                &(mAAnimateCompVector[index]) });
-            break;
-        case COMP_TYPE::A_SPRITE:
-            mASpriteCompVector[index] = (ASpriteComponent&)_comp;
-            mCompMap.insert(
-                { mASpriteCompVector[index].getCompName(),
-                &(mASpriteCompVector[index]) });
-            break;
-        case COMP_TYPE::U_TRANSFORM:
-            mUTransformCompVector[index] = (UTransformComponent&)_comp;
-            mCompMap.insert(
-                { mUTransformCompVector[index].getCompName(),
-                &(mUTransformCompVector[index]) });
-            break;
-        case COMP_TYPE::U_SPRITE:
-            mUSpriteCompVector[index] = (USpriteComponent&)_comp;
-            mCompMap.insert(
-                { mUSpriteCompVector[index].getCompName(),
-                &(mUSpriteCompVector[index]) });
-            break;
-        case COMP_TYPE::U_ANIMATE:
-            mUAnimateCompVector[index] = (UAnimateComponent&)_comp;
-            mCompMap.insert(
-                { mUAnimateCompVector[index].getCompName(),
-                &(mUAnimateCompVector[index]) });
-            break;
-        case COMP_TYPE::U_TIMER:
-            mUTimerCompVector[index] = (UTimerComponent&)_comp;
-            mCompMap.insert(
-                { mUTimerCompVector[index].getCompName(),
-                &(mUTimerCompVector[index]) });
-            break;
-        case COMP_TYPE::U_INPUT:
-            mUInputCompVector[index] = (UInputComponent&)_comp;
-            mCompMap.insert(
-                { mUInputCompVector[index].getCompName(),
-                &(mUInputCompVector[index]) });
-            break;
-        case COMP_TYPE::U_INTERACT:
-            mUInteractCompVector[index] = (UInteractComponent&)_comp;
-            mCompMap.insert(
-                { mUInteractCompVector[index].getCompName(),
-                &(mUInteractCompVector[index]) });
-            break;
-        case COMP_TYPE::U_BUTTON:
-            mUButtonCompVector[index] = (UButtonComponent&)_comp;
-            mCompMap.insert(
-                { mUButtonCompVector[index].getCompName(),
-                &(mUButtonCompVector[index]) });
-            break;
-        case COMP_TYPE::U_AUDIO:
-            mUAudioCompVector[index] = (UAudioComponent&)_comp;
-            mCompMap.insert(
-                { mUAudioCompVector[index].getCompName(),
-                &(mUAudioCompVector[index]) });
-            break;
-        default:
-            break;
-        }
-    }
-}
-
-void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string&& _compName)
-{
-    auto found = mCompMap.find(_compName);
-    if (found == mCompMap.end())
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find component name : %s\n",
-            _compName.c_str());
-        return;
-    }
-
-    Component* dele = found->second;
-    UINT offset = 0;
-
-    switch (_type)
-    {
+void
+ComponentContainer::addComponent(COMP_TYPE Type, const Component &Comp) {
+  if (InsertFlag[static_cast<size_t>(Type)].empty()) {
+    switch (Type) {
     case COMP_TYPE::A_TRANSFORM:
-    {
-        std::vector<ATransformComponent>::size_type voffset =
-            (ATransformComponent*)dele - &mATransformCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ATransformCompVector.emplace_back(
+          static_cast<const ATransformComponent &>(Comp));
+      CompMap.insert({ATransformCompVector.back().getCompName(),
+                      &(ATransformCompVector.back())});
+      break;
     case COMP_TYPE::A_INPUT:
-    {
-        std::vector<AInputComponent>::size_type voffset =
-            (AInputComponent*)dele - &mAInputCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AInputCompVector.emplace_back(static_cast<const AInputComponent &>(Comp));
+      CompMap.insert(
+          {AInputCompVector.back().getCompName(), &(AInputCompVector.back())});
+      break;
     case COMP_TYPE::A_INTERACT:
-    {
-        std::vector<AInteractComponent>::size_type voffset =
-            (AInteractComponent*)dele - &mAInteractCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AInteractCompVector.emplace_back(
+          static_cast<const AInteractComponent &>(Comp));
+      CompMap.insert({AInteractCompVector.back().getCompName(),
+                      &(AInteractCompVector.back())});
+      break;
     case COMP_TYPE::A_TIMER:
-    {
-        std::vector<ATimerComponent>::size_type voffset =
-            (ATimerComponent*)dele - &mATimerCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ATimerCompVector.emplace_back(static_cast<const ATimerComponent &>(Comp));
+      CompMap.insert(
+          {ATimerCompVector.back().getCompName(), &(ATimerCompVector.back())});
+      break;
     case COMP_TYPE::A_COLLISION:
-    {
-        std::vector<ACollisionComponent>::size_type voffset =
-            (ACollisionComponent*)dele - &mACollisionCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ACollisionCompVector.emplace_back(
+          static_cast<const ACollisionComponent &>(Comp));
+      CompMap.insert({ACollisionCompVector.back().getCompName(),
+                      &(ACollisionCompVector.back())});
+      break;
     case COMP_TYPE::A_MESH:
-    {
-        std::vector<AMeshComponent>::size_type voffset =
-            (AMeshComponent*)dele - &mAMeshCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AMeshCompVector.emplace_back(static_cast<const AMeshComponent &>(Comp));
+      CompMap.insert(
+          {AMeshCompVector.back().getCompName(), &(AMeshCompVector.back())});
+      break;
     case COMP_TYPE::A_LIGHT:
-    {
-        std::vector<ALightComponent>::size_type voffset =
-            (ALightComponent*)dele - &mALightCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ALightCompVector.emplace_back(static_cast<const ALightComponent &>(Comp));
+      CompMap.insert(
+          {ALightCompVector.back().getCompName(), &(ALightCompVector.back())});
+      break;
     case COMP_TYPE::A_AUDIO:
-    {
-        std::vector<AAudioComponent>::size_type voffset =
-            (AAudioComponent*)dele - &mAAudioCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AAudioCompVector.emplace_back(static_cast<const AAudioComponent &>(Comp));
+      CompMap.insert(
+          {AAudioCompVector.back().getCompName(), &(AAudioCompVector.back())});
+      break;
     case COMP_TYPE::A_PARTICLE:
-    {
-        std::vector<AParticleComponent>::size_type voffset =
-            (AParticleComponent*)dele - &mAParticleCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AParticleCompVector.emplace_back(
+          static_cast<const AParticleComponent &>(Comp));
+      CompMap.insert({AParticleCompVector.back().getCompName(),
+                      &(AParticleCompVector.back())});
+      break;
     case COMP_TYPE::A_ANIMATE:
-    {
-        std::vector<AAnimateComponent>::size_type voffset =
-            (AAnimateComponent*)dele - &mAAnimateCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AAnimateCompVector.emplace_back(
+          static_cast<const AAnimateComponent &>(Comp));
+      CompMap.insert({AAnimateCompVector.back().getCompName(),
+                      &(AAnimateCompVector.back())});
+      break;
     case COMP_TYPE::A_SPRITE:
-    {
-        std::vector<ASpriteComponent>::size_type voffset =
-            (ASpriteComponent*)dele - &mASpriteCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ASpriteCompVector.emplace_back(
+          static_cast<const ASpriteComponent &>(Comp));
+      CompMap.insert({ASpriteCompVector.back().getCompName(),
+                      &(ASpriteCompVector.back())});
+      break;
     case COMP_TYPE::U_TRANSFORM:
-    {
-        std::vector<UTransformComponent>::size_type voffset =
-            (UTransformComponent*)dele - &mUTransformCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UTransformCompVector.emplace_back(
+          static_cast<const UTransformComponent &>(Comp));
+      CompMap.insert({UTransformCompVector.back().getCompName(),
+                      &(UTransformCompVector.back())});
+      break;
     case COMP_TYPE::U_SPRITE:
-    {
-        std::vector<USpriteComponent>::size_type voffset =
-            (USpriteComponent*)dele - &mUSpriteCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      USpriteCompVector.emplace_back(
+          static_cast<const USpriteComponent &>(Comp));
+      CompMap.insert({USpriteCompVector.back().getCompName(),
+                      &(USpriteCompVector.back())});
+      break;
     case COMP_TYPE::U_ANIMATE:
-    {
-        std::vector<UAnimateComponent>::size_type voffset =
-            (UAnimateComponent*)dele - &mUAnimateCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UAnimateCompVector.emplace_back(
+          static_cast<const UAnimateComponent &>(Comp));
+      CompMap.insert({UAnimateCompVector.back().getCompName(),
+                      &(UAnimateCompVector.back())});
+      break;
     case COMP_TYPE::U_TIMER:
-    {
-        std::vector<UTimerComponent>::size_type voffset =
-            (UTimerComponent*)dele - &mUTimerCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UTimerCompVector.emplace_back(static_cast<const UTimerComponent &>(Comp));
+      CompMap.insert(
+          {UTimerCompVector.back().getCompName(), &(UTimerCompVector.back())});
+      break;
     case COMP_TYPE::U_INPUT:
-    {
-        std::vector<UInputComponent>::size_type voffset =
-            (UInputComponent*)dele - &mUInputCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UInputCompVector.emplace_back(static_cast<const UInputComponent &>(Comp));
+      CompMap.insert(
+          {UInputCompVector.back().getCompName(), &(UInputCompVector.back())});
+      break;
     case COMP_TYPE::U_INTERACT:
-    {
-        std::vector<UInteractComponent>::size_type voffset =
-            (UInteractComponent*)dele - &mUInteractCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UInteractCompVector.emplace_back(
+          static_cast<const UInteractComponent &>(Comp));
+      CompMap.insert({UInteractCompVector.back().getCompName(),
+                      &(UInteractCompVector.back())});
+      break;
     case COMP_TYPE::U_BUTTON:
-    {
-        std::vector<UButtonComponent>::size_type voffset =
-            (UButtonComponent*)dele - &mUButtonCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UButtonCompVector.emplace_back(
+          static_cast<const UButtonComponent &>(Comp));
+      CompMap.insert({UButtonCompVector.back().getCompName(),
+                      &(UButtonCompVector.back())});
+      break;
     case COMP_TYPE::U_AUDIO:
-    {
-        std::vector<UAudioComponent>::size_type voffset =
-            (UAudioComponent*)dele - &mUAudioCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UAudioCompVector.emplace_back(static_cast<const UAudioComponent &>(Comp));
+      CompMap.insert(
+          {UAudioCompVector.back().getCompName(), &(UAudioCompVector.back())});
+      break;
     default:
-    {
-        bool invalid_comp_to_delete = false;
-        assert(invalid_comp_to_delete);
-        (void)invalid_comp_to_delete;
-        break;
+      break;
     }
-    }
+  } else {
+    UINT Index = InsertFlag[static_cast<size_t>(Type)].front();
+    InsertFlag[static_cast<size_t>(Type)].pop();
 
-    mCompMap.erase(found);
-    mInsertFlag[(size_t)_type].push(offset);
-}
-
-void ComponentContainer::DeleteComponent(COMP_TYPE _type, std::string& _compName)
-{
-    auto found = mCompMap.find(_compName);
-    if (found == mCompMap.end())
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find component name : %s\n",
-            _compName.c_str());
-        return;
-    }
-
-    Component* dele = found->second;
-    UINT offset = 0;
-
-    switch (_type)
-    {
+    switch (Type) {
     case COMP_TYPE::A_TRANSFORM:
-    {
-        std::vector<ATransformComponent>::size_type voffset =
-            (ATransformComponent*)dele - &mATransformCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ATransformCompVector[Index] =
+          static_cast<const ATransformComponent &>(Comp);
+      CompMap.insert({ATransformCompVector[Index].getCompName(),
+                      &(ATransformCompVector[Index])});
+      break;
     case COMP_TYPE::A_INPUT:
-    {
-        std::vector<AInputComponent>::size_type voffset =
-            (AInputComponent*)dele - &mAInputCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AInputCompVector[Index] = static_cast<const AInputComponent &>(Comp);
+      CompMap.insert(
+          {AInputCompVector[Index].getCompName(), &(AInputCompVector[Index])});
+      break;
     case COMP_TYPE::A_INTERACT:
-    {
-        std::vector<AInteractComponent>::size_type voffset =
-            (AInteractComponent*)dele - &mAInteractCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AInteractCompVector[Index] =
+          static_cast<const AInteractComponent &>(Comp);
+      CompMap.insert({AInteractCompVector[Index].getCompName(),
+                      &(AInteractCompVector[Index])});
+      break;
     case COMP_TYPE::A_TIMER:
-    {
-        std::vector<ATimerComponent>::size_type voffset =
-            (ATimerComponent*)dele - &mATimerCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ATimerCompVector[Index] = static_cast<const ATimerComponent &>(Comp);
+      CompMap.insert(
+          {ATimerCompVector[Index].getCompName(), &(ATimerCompVector[Index])});
+      break;
     case COMP_TYPE::A_COLLISION:
-    {
-        std::vector<ACollisionComponent>::size_type voffset =
-            (ACollisionComponent*)dele - &mACollisionCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ACollisionCompVector[Index] =
+          static_cast<const ACollisionComponent &>(Comp);
+      CompMap.insert({ACollisionCompVector[Index].getCompName(),
+                      &(ACollisionCompVector[Index])});
+      break;
     case COMP_TYPE::A_MESH:
-    {
-        std::vector<AMeshComponent>::size_type voffset =
-            (AMeshComponent*)dele - &mAMeshCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AMeshCompVector[Index] = static_cast<const AMeshComponent &>(Comp);
+      CompMap.insert(
+          {AMeshCompVector[Index].getCompName(), &(AMeshCompVector[Index])});
+      break;
     case COMP_TYPE::A_LIGHT:
-    {
-        std::vector<ALightComponent>::size_type voffset =
-            (ALightComponent*)dele - &mALightCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ALightCompVector[Index] = static_cast<const ALightComponent &>(Comp);
+      CompMap.insert(
+          {ALightCompVector[Index].getCompName(), &(ALightCompVector[Index])});
+      break;
     case COMP_TYPE::A_AUDIO:
-    {
-        std::vector<AAudioComponent>::size_type voffset =
-            (AAudioComponent*)dele - &mAAudioCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AAudioCompVector[Index] = static_cast<const AAudioComponent &>(Comp);
+      CompMap.insert(
+          {AAudioCompVector[Index].getCompName(), &(AAudioCompVector[Index])});
+      break;
     case COMP_TYPE::A_PARTICLE:
-    {
-        std::vector<AParticleComponent>::size_type voffset =
-            (AParticleComponent*)dele - &mAParticleCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AParticleCompVector[Index] =
+          static_cast<const AParticleComponent &>(Comp);
+      CompMap.insert({AParticleCompVector[Index].getCompName(),
+                      &(AParticleCompVector[Index])});
+      break;
     case COMP_TYPE::A_ANIMATE:
-    {
-        std::vector<AAnimateComponent>::size_type voffset =
-            (AAnimateComponent*)dele - &mAAnimateCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      AAnimateCompVector[Index] = static_cast<const AAnimateComponent &>(Comp);
+      CompMap.insert({AAnimateCompVector[Index].getCompName(),
+                      &(AAnimateCompVector[Index])});
+      break;
     case COMP_TYPE::A_SPRITE:
-    {
-        std::vector<ASpriteComponent>::size_type voffset =
-            (ASpriteComponent*)dele - &mASpriteCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      ASpriteCompVector[Index] = static_cast<const ASpriteComponent &>(Comp);
+      CompMap.insert({ASpriteCompVector[Index].getCompName(),
+                      &(ASpriteCompVector[Index])});
+      break;
     case COMP_TYPE::U_TRANSFORM:
-    {
-        std::vector<UTransformComponent>::size_type voffset =
-            (UTransformComponent*)dele - &mUTransformCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UTransformCompVector[Index] =
+          static_cast<const UTransformComponent &>(Comp);
+      CompMap.insert({UTransformCompVector[Index].getCompName(),
+                      &(UTransformCompVector[Index])});
+      break;
     case COMP_TYPE::U_SPRITE:
-    {
-        std::vector<USpriteComponent>::size_type voffset =
-            (USpriteComponent*)dele - &mUSpriteCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      USpriteCompVector[Index] = static_cast<const USpriteComponent &>(Comp);
+      CompMap.insert({USpriteCompVector[Index].getCompName(),
+                      &(USpriteCompVector[Index])});
+      break;
     case COMP_TYPE::U_ANIMATE:
-    {
-        std::vector<UAnimateComponent>::size_type voffset =
-            (UAnimateComponent*)dele - &mUAnimateCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UAnimateCompVector[Index] = static_cast<const UAnimateComponent &>(Comp);
+      CompMap.insert({UAnimateCompVector[Index].getCompName(),
+                      &(UAnimateCompVector[Index])});
+      break;
     case COMP_TYPE::U_TIMER:
-    {
-        std::vector<UTimerComponent>::size_type voffset =
-            (UTimerComponent*)dele - &mUTimerCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UTimerCompVector[Index] = static_cast<const UTimerComponent &>(Comp);
+      CompMap.insert(
+          {UTimerCompVector[Index].getCompName(), &(UTimerCompVector[Index])});
+      break;
     case COMP_TYPE::U_INPUT:
-    {
-        std::vector<UInputComponent>::size_type voffset =
-            (UInputComponent*)dele - &mUInputCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UInputCompVector[Index] = static_cast<const UInputComponent &>(Comp);
+      CompMap.insert(
+          {UInputCompVector[Index].getCompName(), &(UInputCompVector[Index])});
+      break;
     case COMP_TYPE::U_INTERACT:
-    {
-        std::vector<UInteractComponent>::size_type voffset =
-            (UInteractComponent*)dele - &mUInteractCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UInteractCompVector[Index] =
+          static_cast<const UInteractComponent &>(Comp);
+      CompMap.insert({UInteractCompVector[Index].getCompName(),
+                      &(UInteractCompVector[Index])});
+      break;
     case COMP_TYPE::U_BUTTON:
-    {
-        std::vector<UButtonComponent>::size_type voffset =
-            (UButtonComponent*)dele - &mUButtonCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UButtonCompVector[Index] = static_cast<const UButtonComponent &>(Comp);
+      CompMap.insert({UButtonCompVector[Index].getCompName(),
+                      &(UButtonCompVector[Index])});
+      break;
     case COMP_TYPE::U_AUDIO:
-    {
-        std::vector<UAudioComponent>::size_type voffset =
-            (UAudioComponent*)dele - &mUAudioCompVector[0];
-        offset = (UINT)voffset;
-        break;
-    }
+      UAudioCompVector[Index] = static_cast<const UAudioComponent &>(Comp);
+      CompMap.insert(
+          {UAudioCompVector[Index].getCompName(), &(UAudioCompVector[Index])});
+      break;
     default:
-    {
-        bool invalid_comp_to_delete = false;
-        assert(invalid_comp_to_delete);
-        (void)invalid_comp_to_delete;
-        break;
+      break;
     }
-    }
-
-    mCompMap.erase(found);
-    mInsertFlag[(size_t)_type].push(offset);
+  }
 }
 
-void ComponentContainer::DeleteAllComponent()
-{
-    mATransformCompVector.clear();
-    mAInputCompVector.clear();
-    mAInteractCompVector.clear();
-    mATimerCompVector.clear();
-    mACollisionCompVector.clear();
-    mAMeshCompVector.clear();
-    mALightCompVector.clear();
-    mAAudioCompVector.clear();
-    mAParticleCompVector.clear();
-    mAAnimateCompVector.clear();
-    mASpriteCompVector.clear();
-    mUTransformCompVector.clear();
-    mUSpriteCompVector.clear();
-    mUAnimateCompVector.clear();
-    mUTimerCompVector.clear();
-    mUInputCompVector.clear();
-    mUInteractCompVector.clear();
-    mUButtonCompVector.clear();
-    mUAudioCompVector.clear();
-    mCompMap.clear();
-    for (auto& flgArray : mInsertFlag)
-    {
-        while (!flgArray.empty()) { flgArray.pop(); }
-    }
+void
+ComponentContainer::deleteComponent(COMP_TYPE Type,
+                                    const std::string &CompName) {
+  auto Found = CompMap.find(CompName);
+  if (Found == CompMap.end()) {
+    P_LOG(LOG_WARNING, "cannot find component name : %s\n", CompName.c_str());
+    return;
+  }
+
+  Component *Dele = Found->second;
+  UINT Offset = 0;
+
+  switch (Type) {
+  case COMP_TYPE::A_TRANSFORM: {
+    std::vector<ATransformComponent>::size_type VOffset =
+        static_cast<ATransformComponent *>(Dele) - &ATransformCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_INPUT: {
+    std::vector<AInputComponent>::size_type VOffset =
+        static_cast<AInputComponent *>(Dele) - &AInputCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_INTERACT: {
+    std::vector<AInteractComponent>::size_type VOffset =
+        static_cast<AInteractComponent *>(Dele) - &AInteractCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_TIMER: {
+    std::vector<ATimerComponent>::size_type VOffset =
+        static_cast<ATimerComponent *>(Dele) - &ATimerCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_COLLISION: {
+    std::vector<ACollisionComponent>::size_type VOffset =
+        static_cast<ACollisionComponent *>(Dele) - &ACollisionCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_MESH: {
+    std::vector<AMeshComponent>::size_type VOffset =
+        static_cast<AMeshComponent *>(Dele) - &AMeshCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_LIGHT: {
+    std::vector<ALightComponent>::size_type VOffset =
+        static_cast<ALightComponent *>(Dele) - &ALightCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_AUDIO: {
+    std::vector<AAudioComponent>::size_type VOffset =
+        static_cast<AAudioComponent *>(Dele) - &AAudioCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_PARTICLE: {
+    std::vector<AParticleComponent>::size_type VOffset =
+        static_cast<AParticleComponent *>(Dele) - &AParticleCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_ANIMATE: {
+    std::vector<AAnimateComponent>::size_type VOffset =
+        static_cast<AAnimateComponent *>(Dele) - &AAnimateCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::A_SPRITE: {
+    std::vector<ASpriteComponent>::size_type VOffset =
+        static_cast<ASpriteComponent *>(Dele) - &ASpriteCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::U_TRANSFORM: {
+    std::vector<UTransformComponent>::size_type VOffset =
+        static_cast<UTransformComponent *>(Dele) - &UTransformCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::U_SPRITE: {
+    std::vector<USpriteComponent>::size_type VOffset =
+        static_cast<USpriteComponent *>(Dele) - &USpriteCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::U_ANIMATE: {
+    std::vector<UAnimateComponent>::size_type VOffset =
+        static_cast<UAnimateComponent *>(Dele) - &UAnimateCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::U_TIMER: {
+    std::vector<UTimerComponent>::size_type VOffset =
+        static_cast<UTimerComponent *>(Dele) - &UTimerCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::U_INPUT: {
+    std::vector<UInputComponent>::size_type VOffset =
+        static_cast<UInputComponent *>(Dele) - &UInputCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::U_INTERACT: {
+    std::vector<UInteractComponent>::size_type VOffset =
+        static_cast<UInteractComponent *>(Dele) - &UInteractCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::U_BUTTON: {
+    std::vector<UButtonComponent>::size_type VOffset =
+        static_cast<UButtonComponent *>(Dele) - &UButtonCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  case COMP_TYPE::U_AUDIO: {
+    std::vector<UAudioComponent>::size_type VOffset =
+        static_cast<UAudioComponent *>(Dele) - &UAudioCompVector[0];
+    Offset = static_cast<UINT>(VOffset);
+    break;
+  }
+  default: {
+    assert(false && "invalid comp to delete");
+    break;
+  }
+  }
+
+  CompMap.erase(Found);
+  InsertFlag[static_cast<size_t>(Type)].push(Offset);
 }
 
-void* ComponentContainer::GetCompVecPtr(COMP_TYPE _type) const
-{
-    switch (_type)
-    {
-    case COMP_TYPE::A_TRANSFORM:
-        return (void*)&mATransformCompVector;
-    case COMP_TYPE::A_INPUT:
-        return (void*)&mAInputCompVector;
-    case COMP_TYPE::A_INTERACT:
-        return (void*)&mAInteractCompVector;
-    case COMP_TYPE::A_TIMER:
-        return (void*)&mATimerCompVector;
-    case COMP_TYPE::A_COLLISION:
-        return (void*)&mACollisionCompVector;
-    case COMP_TYPE::A_MESH:
-        return (void*)&mAMeshCompVector;
-    case COMP_TYPE::A_LIGHT:
-        return (void*)&mALightCompVector;
-    case COMP_TYPE::A_AUDIO:
-        return (void*)&mAAudioCompVector;
-    case COMP_TYPE::A_PARTICLE:
-        return (void*)&mAParticleCompVector;
-    case COMP_TYPE::A_ANIMATE:
-        return (void*)&mAAnimateCompVector;
-    case COMP_TYPE::A_SPRITE:
-        return (void*)&mASpriteCompVector;
-    case COMP_TYPE::U_TRANSFORM:
-        return (void*)&mUTransformCompVector;
-    case COMP_TYPE::U_SPRITE:
-        return (void*)&mUSpriteCompVector;
-    case COMP_TYPE::U_ANIMATE:
-        return (void*)&mUAnimateCompVector;
-    case COMP_TYPE::U_TIMER:
-        return (void*)&mUTimerCompVector;
-    case COMP_TYPE::U_INPUT:
-        return (void*)&mUInputCompVector;
-    case COMP_TYPE::U_INTERACT:
-        return (void*)&mUInteractCompVector;
-    case COMP_TYPE::U_BUTTON:
-        return (void*)&mUButtonCompVector;
-    case COMP_TYPE::U_AUDIO:
-        return (void*)&mUAudioCompVector;
-    default:
-        return nullptr;
+void
+ComponentContainer::deleteAllComponent() {
+  ATransformCompVector.clear();
+  AInputCompVector.clear();
+  AInteractCompVector.clear();
+  ATimerCompVector.clear();
+  ACollisionCompVector.clear();
+  AMeshCompVector.clear();
+  ALightCompVector.clear();
+  AAudioCompVector.clear();
+  AParticleCompVector.clear();
+  AAnimateCompVector.clear();
+  ASpriteCompVector.clear();
+  UTransformCompVector.clear();
+  USpriteCompVector.clear();
+  UAnimateCompVector.clear();
+  UTimerCompVector.clear();
+  UInputCompVector.clear();
+  UInteractCompVector.clear();
+  UButtonCompVector.clear();
+  UAudioCompVector.clear();
+  CompMap.clear();
+  for (auto &FlgArray : InsertFlag) {
+    while (!FlgArray.empty()) {
+      FlgArray.pop();
     }
+  }
+}
+
+void *
+ComponentContainer::getCompVecPtr(COMP_TYPE Type) {
+  switch (Type) {
+  case COMP_TYPE::A_TRANSFORM:
+    return static_cast<void *>(&ATransformCompVector);
+  case COMP_TYPE::A_INPUT:
+    return static_cast<void *>(&AInputCompVector);
+  case COMP_TYPE::A_INTERACT:
+    return static_cast<void *>(&AInteractCompVector);
+  case COMP_TYPE::A_TIMER:
+    return static_cast<void *>(&ATimerCompVector);
+  case COMP_TYPE::A_COLLISION:
+    return static_cast<void *>(&ACollisionCompVector);
+  case COMP_TYPE::A_MESH:
+    return static_cast<void *>(&AMeshCompVector);
+  case COMP_TYPE::A_LIGHT:
+    return static_cast<void *>(&ALightCompVector);
+  case COMP_TYPE::A_AUDIO:
+    return static_cast<void *>(&AAudioCompVector);
+  case COMP_TYPE::A_PARTICLE:
+    return static_cast<void *>(&AParticleCompVector);
+  case COMP_TYPE::A_ANIMATE:
+    return static_cast<void *>(&AAnimateCompVector);
+  case COMP_TYPE::A_SPRITE:
+    return static_cast<void *>(&ASpriteCompVector);
+  case COMP_TYPE::U_TRANSFORM:
+    return static_cast<void *>(&UTransformCompVector);
+  case COMP_TYPE::U_SPRITE:
+    return static_cast<void *>(&USpriteCompVector);
+  case COMP_TYPE::U_ANIMATE:
+    return static_cast<void *>(&UAnimateCompVector);
+  case COMP_TYPE::U_TIMER:
+    return static_cast<void *>(&UTimerCompVector);
+  case COMP_TYPE::U_INPUT:
+    return static_cast<void *>(&UInputCompVector);
+  case COMP_TYPE::U_INTERACT:
+    return static_cast<void *>(&UInteractCompVector);
+  case COMP_TYPE::U_BUTTON:
+    return static_cast<void *>(&UButtonCompVector);
+  case COMP_TYPE::U_AUDIO:
+    return static_cast<void *>(&UAudioCompVector);
+  default:
+    return nullptr;
+  }
 }

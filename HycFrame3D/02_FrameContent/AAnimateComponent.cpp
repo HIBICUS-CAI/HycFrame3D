@@ -17,28 +17,28 @@ AAnimateComponent::~AAnimateComponent() {}
 
 bool
 AAnimateComponent::init() {
-  auto Amc = getActorOwner()->GetComponent<AMeshComponent>();
+  auto Amc = getActorOwner()->getComponent<AMeshComponent>();
   if (!Amc) {
     return false;
   }
 
   const std::string &MeshName = Amc->MeshesNameArray[0];
   MeshAnimationDataPtr =
-      getActorOwner()->GetSceneNode().GetAssetsPool()->getAnimationIfExisted(
+      getActorOwner()->getSceneNode().GetAssetsPool()->getAnimationIfExisted(
           MeshName);
   if (!MeshAnimationDataPtr) {
     return false;
   }
 
   auto SubArray =
-      getActorOwner()->GetSceneNode().GetAssetsPool()->getMeshIfExisted(
+      getActorOwner()->getSceneNode().GetAssetsPool()->getMeshIfExisted(
           MeshName);
 #ifdef _DEBUG
   assert(SubArray);
 #endif // _DEBUG
   for (const auto &SubMeshName : *SubArray) {
     auto SubMesh =
-        getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+        getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
             SubMeshName);
 #ifdef _DEBUG
     assert(SubMesh);
@@ -174,7 +174,7 @@ void
 AAnimateComponent::destory() {
   for (auto &SubMeshName : SubMeshNameVec) {
     SUBMESH_DATA *MeshPtr =
-        getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+        getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
             SubMeshName);
     if (MeshPtr) {
       MeshPtr->BonesMap.erase(getCompName());

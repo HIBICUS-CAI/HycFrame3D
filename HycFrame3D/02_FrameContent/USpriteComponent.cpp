@@ -35,7 +35,7 @@ USpriteComponent::update(Timer &Timer) {
 void
 USpriteComponent::destory() {
   SUBMESH_DATA *MeshPtr =
-      getUiOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+      getUiOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
           MeshesName);
   if (MeshPtr) {
     MeshPtr->InstanceMap.erase(getCompName());
@@ -88,7 +88,7 @@ USpriteComponent::setOffsetColor(const DirectX::XMFLOAT4 &OffsetColorSpr) {
 
 void
 USpriteComponent::syncTransformDataToInstance() {
-  UTransformComponent *Utc = getUiOwner()->GetComponent<UTransformComponent>();
+  UTransformComponent *Utc = getUiOwner()->getComponent<UTransformComponent>();
 #ifdef _DEBUG
   assert(Utc);
 #endif // _DEBUG
@@ -98,7 +98,7 @@ USpriteComponent::syncTransformDataToInstance() {
   DirectX::XMFLOAT3 Scale = Utc->getScaling();
 
   auto &Map = getUiOwner()
-                  ->GetSceneNode()
+                  ->getSceneNode()
                   .GetAssetsPool()
                   ->getSubMeshIfExisted(getCompName())
                   ->InstanceMap;
@@ -122,7 +122,7 @@ USpriteComponent::syncTransformDataToInstance() {
 void
 USpriteComponent::resetTexture() {
   auto MeshPtr =
-      getUiOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+      getUiOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
           getCompName());
 
   MeshPtr->MeshData.Textures[0] = OriginTextureName;
@@ -132,7 +132,7 @@ USpriteComponent::resetTexture() {
     break;
   }
 
-  auto Uamc = getUiOwner()->GetComponent<UAnimateComponent>();
+  auto Uamc = getUiOwner()->getComponent<UAnimateComponent>();
   if (Uamc) {
     Uamc->clearCurrentAnimate();
   }

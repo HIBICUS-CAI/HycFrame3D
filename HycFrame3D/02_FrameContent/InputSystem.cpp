@@ -28,10 +28,10 @@ bool InputSystem::Init()
 
     mAInputVecPtr = (std::vector<AInputComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_INPUT);
+        GetComponentContainer()->getCompVecPtr(COMP_TYPE::A_INPUT);
     mUInputVecPtr = (std::vector<UInputComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::U_INPUT);
+        GetComponentContainer()->getCompVecPtr(COMP_TYPE::U_INPUT);
 
     if (!(mAInputVecPtr && mUInputVecPtr)) { return false; }
 

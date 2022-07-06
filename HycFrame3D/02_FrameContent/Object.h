@@ -1,31 +1,37 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
+
 #include <string>
 
-class Object
-{
-public:
-    Object(std::string&& _objName, class SceneNode& _sceneNode);
-    Object(std::string& _objName, class SceneNode& _sceneNode);
-    virtual ~Object();
-
-    const std::string& GetObjectName() const;
-
-    STATUS GetObjectStatus() const;
-    void SetObjectStatus(STATUS _objStatus);
-
-    class SceneNode& GetSceneNode() const;
+class Object {
+private:
+  const std::string ObjectName;
+  STATUS ObjectStatus;
+  class SceneNode &SceneNodeOwner;
 
 public:
-    virtual bool Init() = 0;
-    virtual void Destory() = 0;
+  Object(const std::string &ObjName, class SceneNode &SceneNode);
+  virtual ~Object();
+
+  const std::string &
+  getObjectName() const;
+
+  STATUS
+  getObjectStatus() const;
+  void
+  setObjectStatus(STATUS ObjStatus);
+
+  class SceneNode &
+  getSceneNode() const;
+
+public:
+  virtual bool
+  init() = 0;
+  virtual void
+  destory() = 0;
 
 protected:
-    virtual void SyncStatusToAllComps() = 0;
-
-private:
-    const std::string mObjectName;
-    STATUS mObjectStatus;
-    class SceneNode& mSceneNodeOwner;
+  virtual void
+  syncStatusToAllComps() = 0;
 };

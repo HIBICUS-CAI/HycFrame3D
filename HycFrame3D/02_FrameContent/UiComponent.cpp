@@ -9,7 +9,7 @@ UiComponent::~UiComponent() {}
 
 SceneNode &
 UiComponent::getSceneNode() const {
-  return UiOwner->GetSceneNode();
+  return UiOwner->getSceneNode();
 }
 
 UiObject *

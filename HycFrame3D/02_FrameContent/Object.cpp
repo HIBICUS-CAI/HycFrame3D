@@ -1,44 +1,28 @@
 #include "Object.h"
+
 #include "SceneNode.h"
 
-Object::Object(std::string&& _objName, SceneNode& _sceneNode) :
-    mObjectName(_objName),
-    mObjectStatus(STATUS::NEED_INIT),
-    mSceneNodeOwner(_sceneNode)
-{
+Object::Object(const std::string &ObjName, SceneNode &SceneNode)
+    : ObjectName(ObjName), ObjectStatus(STATUS::NEED_INIT),
+      SceneNodeOwner(SceneNode) {}
 
+Object::~Object() {}
+
+const std::string &
+Object::getObjectName() const {
+  return ObjectName;
 }
 
-Object::Object(std::string& _objName, SceneNode& _sceneNode) :
-    mObjectName(_objName),
-    mObjectStatus(STATUS::NEED_INIT),
-    mSceneNodeOwner(_sceneNode)
-{
+STATUS
+Object::getObjectStatus() const { return ObjectStatus; }
 
+void
+Object::setObjectStatus(STATUS ObjStatus) {
+  ObjectStatus = ObjStatus;
+  syncStatusToAllComps();
 }
 
-Object::~Object()
-{
-
-}
-
-const std::string& Object::GetObjectName() const
-{
-    return mObjectName;
-}
-
-STATUS Object::GetObjectStatus() const
-{
-    return mObjectStatus;
-}
-
-void Object::SetObjectStatus(STATUS _objStatus)
-{
-    mObjectStatus = _objStatus;
-    SyncStatusToAllComps();
-}
-
-SceneNode& Object::GetSceneNode() const
-{
-    return mSceneNodeOwner;
+SceneNode &
+Object::getSceneNode() const {
+  return SceneNodeOwner;
 }

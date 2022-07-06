@@ -30,10 +30,10 @@ bool AudioSystem::Init()
 
     mAAudioVecPtr = (std::vector<AAudioComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::A_AUDIO);
+        GetComponentContainer()->getCompVecPtr(COMP_TYPE::A_AUDIO);
     mUAudioVecPtr = (std::vector<UAudioComponent>*)GetSystemExecutive()->
         GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->GetCompVecPtr(COMP_TYPE::U_AUDIO);
+        GetComponentContainer()->getCompVecPtr(COMP_TYPE::U_AUDIO);
 
     if (!(mAAudioVecPtr && mUAudioVecPtr)) { return false; }
 
