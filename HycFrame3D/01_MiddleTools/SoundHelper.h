@@ -22,25 +22,22 @@ void
 clearSoundPool();
 
 void
-loadSound(std::string name, LOAD_HANDLE path);
+loadSound(const std::string &Name, LOAD_HANDLE Path);
 
 void
-playBGM(std::string soundName);
+playBGM(const std::string &SoundName);
 
 void
-stopBGM(std::string soundName);
+stopBGM(const std::string &SoundName);
 
 void
 stopBGM();
 
 void
-setVolume(std::string soundName, float volume);
+setVolume(const std::string &SoundName, float Volume);
 
 void
-playSE(std::string soundName);
+playSE(const std::string &SoundName);
 
 SOUND_HANDLE
-getSoundHandle(std::string &&soundName);
-
-SOUND_HANDLE
-getSoundHandle(std::string &soundName);
+getSoundHandle(const std::string &SoundName);

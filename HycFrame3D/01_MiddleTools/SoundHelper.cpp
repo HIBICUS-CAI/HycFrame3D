@@ -200,7 +200,7 @@ clearSoundPool() {
 }
 
 void
-loadSound(std::string Name, LOAD_HANDLE Path) {
+loadSound(const std::string &Name, LOAD_HANDLE Path) {
   HANDLE FileHandle;
   DWORD DWChunkSize = 0;
   DWORD DWChunkPosition = 0;
@@ -301,7 +301,7 @@ loadSound(std::string Name, LOAD_HANDLE Path) {
 }
 
 void
-playBGM(std::string SoundName) {
+playBGM(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
@@ -334,7 +334,7 @@ playBGM(std::string SoundName) {
 }
 
 void
-stopBGM(std::string SoundName) {
+stopBGM(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
@@ -369,7 +369,7 @@ stopBGM() {
 }
 
 void
-setVolume(std::string SoundName, float Volume) {
+setVolume(const std::string &SoundName, float Volume) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
@@ -383,7 +383,7 @@ setVolume(std::string SoundName, float Volume) {
 }
 
 void
-playSE(std::string SoundName) {
+playSE(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
@@ -416,21 +416,7 @@ playSE(std::string SoundName) {
 }
 
 SOUND_HANDLE
-getSoundHandle(std::string &&SoundName) {
-  LOCK;
-  if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
-    UNLOCK;
-    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ %s ]\n",
-          SoundName.c_str());
-    return nullptr;
-  }
-  SOUND_HANDLE Handle = G_SoundPool[SoundName];
-  UNLOCK;
-  return Handle;
-}
-
-SOUND_HANDLE
-getSoundHandle(std::string &SoundName) {
+getSoundHandle(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
