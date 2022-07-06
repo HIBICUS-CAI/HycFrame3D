@@ -176,12 +176,7 @@ RSCamera* SceneNode::GetMainCamera()
     return mCameraAmbientInfo.mRSCameraPtr;
 }
 
-ActorObject* SceneNode::GetActorObject(std::string&& _actorName)
-{
-    return mObjContainerPtr->GetActorObject(_actorName);
-}
-
-ActorObject* SceneNode::GetActorObject(std::string& _actorName)
+ActorObject* SceneNode::GetActorObject(const std::string& _actorName)
 {
     return mObjContainerPtr->GetActorObject(_actorName);
 }
@@ -201,12 +196,7 @@ void SceneNode::DeleteActorObject(std::string& _actorName)
     mObjContainerPtr->DeleteActorObject(_actorName);
 }
 
-UiObject* SceneNode::GetUiObject(std::string&& _uiName)
-{
-    return mObjContainerPtr->GetUiObject(_uiName);
-}
-
-UiObject* SceneNode::GetUiObject(std::string& _uiName)
+UiObject* SceneNode::GetUiObject(const std::string& _uiName)
 {
     return mObjContainerPtr->GetUiObject(_uiName);
 }

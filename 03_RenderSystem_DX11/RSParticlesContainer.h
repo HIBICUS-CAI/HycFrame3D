@@ -46,22 +46,23 @@ public:
   finishResetRSParticleSystem();
 
   RSParticleEmitter *
-  createRSParticleEmitter(std::string &Name, PARTICLE_EMITTER_INFO *Info);
+  createRSParticleEmitter(const std::string &Name,
+                          const PARTICLE_EMITTER_INFO *Info);
 
   void
-  deleteRSParticleEmitter(std::string &Name);
+  deleteRSParticleEmitter(const std::string &Name);
 
   RSParticleEmitter *
-  getRSParticleEmitter(std::string &Name);
+  getRSParticleEmitter(const std::string &Name);
 
   std::vector<RSParticleEmitter *> *
   getAllParticleEmitters();
 
   void
-  startRSParticleEmitter(std::string &Name);
+  startRSParticleEmitter(const std::string &Name);
 
   void
-  pauseRSParticleEmitter(std::string &Name);
+  pauseRSParticleEmitter(const std::string &Name);
 
   inline void
   lockContainer() {

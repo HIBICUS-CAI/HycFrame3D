@@ -1,196 +1,152 @@
 #include "ASpriteComponent.h"
-#include "ActorObject.h"
-#include "SceneNode.h"
-#include "AssetsPool.h"
-#include "RSRoot_DX11.h"
-#include "RSMeshHelper.h"
+
 #include "ATransformComponent.h"
+#include "ActorObject.h"
+#include "AssetsPool.h"
+#include "SceneNode.h"
 
-ASpriteComponent::ASpriteComponent(std::string&& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner),
-    mGeoPointName(""),
-    mTextureName(""),
-    mIsBillboard(false),
-    mSize({ 10.f,10.f }),
-    mTexCoord({ 0.f,0.f,1.f,1.f }),
-    mWithAnimation(false),
-    mStride({ 0.f,0.f }),
-    mMaxCut(0),
-    mCurrentAnimateCut(0),
-    mRepeatFlg(false),
-    mSwitchTime(0.f),
-    mTimeCounter(0.f)
-{
+#include <RSMeshHelper.h>
+#include <RSRoot_DX11.h>
 
+ASpriteComponent::ASpriteComponent(const std::string &CompName,
+                                   ActorObject *ActorOwner)
+    : ActorComponent(CompName, ActorOwner), GeoPointName(""), TextureName(""),
+      EnabledBillboardFlag(false), Size({10.f, 10.f}),
+      TexCoord({0.f, 0.f, 1.f, 1.f}), EnabledAnimationFlag(false),
+      Stride({0.f, 0.f}), MaxCut(0), CurrentAnimateCut(0), RepeatFlag(false),
+      SwitchTime(0.f), TimeCounter(0.f) {}
+
+ASpriteComponent::~ASpriteComponent() {}
+
+bool
+ASpriteComponent::init() {
+  return true;
 }
 
-ASpriteComponent::ASpriteComponent(std::string& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner),
-    mGeoPointName(""),
-    mTextureName(""),
-    mIsBillboard(false),
-    mSize({ 10.f,10.f }),
-    mTexCoord({ 0.f,0.f,1.f,1.f }),
-    mWithAnimation(false),
-    mStride({ 0.f,0.f }),
-    mMaxCut(0),
-    mCurrentAnimateCut(0),
-    mRepeatFlg(false),
-    mSwitchTime(0.f),
-    mTimeCounter(0.f)
-{
-
-}
-
-ASpriteComponent::~ASpriteComponent()
-{
-
-}
-
-bool ASpriteComponent::Init()
-{
-    return true;
-}
-
-void ASpriteComponent::Update(Timer& _timer)
-{
-    if (mWithAnimation && mTimeCounter > mSwitchTime)
-    {
-        mTimeCounter = 0.f;
-        ++mCurrentAnimateCut;
-        if (mCurrentAnimateCut >= mMaxCut)
-        {
-            if (mRepeatFlg) { mCurrentAnimateCut = 0; }
-            else { --mCurrentAnimateCut; }
-        }
-        float startX = 0.f;
-        float startY = 0.f;
-        unsigned int maxX = (int)(1.f / mStride.x);
-        maxX = (((1.f / mStride.x) - maxX) > 0.5f) ? (maxX + 1) : maxX;
-        startX = (float)(mCurrentAnimateCut % maxX) * mStride.x;
-        startY = (float)(mCurrentAnimateCut / maxX) * mStride.y;
-        mTexCoord = { startX, startY, mStride.x, mStride.y };
+void
+ASpriteComponent::update(Timer &Timer) {
+  if (EnabledAnimationFlag && TimeCounter > SwitchTime) {
+    TimeCounter = 0.f;
+    ++CurrentAnimateCut;
+    if (CurrentAnimateCut >= MaxCut) {
+      if (RepeatFlag) {
+        CurrentAnimateCut = 0;
+      } else {
+        --CurrentAnimateCut;
+      }
     }
-    mTimeCounter += _timer.floatDeltaTime() / 1000.f;
+    float StartX = 0.f;
+    float StartY = 0.f;
+    unsigned int MaxX = (int)(1.f / Stride.x);
+    MaxX = (((1.f / Stride.x) - MaxX) > 0.5f) ? (MaxX + 1) : MaxX;
+    StartX = (float)(CurrentAnimateCut % MaxX) * Stride.x;
+    StartY = (float)(CurrentAnimateCut / MaxX) * Stride.y;
+    TexCoord = {StartX, StartY, Stride.x, Stride.y};
+  }
+  TimeCounter += Timer.floatDeltaTime() / 1000.f;
 
-    SyncTransformDataToInstance();
+  syncTransformDataToInstance();
 }
 
-void ASpriteComponent::Destory()
-{
-    SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-        getSubMeshIfExisted(mGeoPointName);
-    if (mesh) { mesh->InstanceMap.erase(GetCompName()); }
+void
+ASpriteComponent::destory() {
+  SUBMESH_DATA *MeshPtr =
+      getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+          GeoPointName);
+  if (MeshPtr) {
+    MeshPtr->InstanceMap.erase(getCompName());
+  }
 }
 
-bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
-    std::string& _texName)
-{
-    if (!_scene) { return false; }
+bool
+ASpriteComponent::createGeoPointWithTexture(SceneNode *Scene,
+                                            const std::string &TexName) {
+  if (!Scene) {
+    return false;
+  }
 
-    RS_SUBMESH_DATA point = getRSDX11RootInstance()->
-        getMeshHelper()->getGeoGenerator()->
-        createPointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
-            _texName.c_str());
-    mGeoPointName = GetCompName();
-    mTextureName = _texName;
-    _scene->GetAssetsPool()->insertNewSubMesh(mGeoPointName,
-        point,
-        MESH_TYPE::TRANSPARENCY);
+  RS_SUBMESH_DATA Point =
+      getRSDX11RootInstance()
+          ->getMeshHelper()
+          ->getGeoGenerator()
+          ->createPointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
+                                   TexName.c_str());
+  GeoPointName = getCompName();
+  TextureName = TexName;
+  Scene->GetAssetsPool()->insertNewSubMesh(GeoPointName, Point,
+                                           MESH_TYPE::TRANSPARENCY);
 
-    SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        getSubMeshIfExisted(mGeoPointName);
-    if (!spriteRect) { return false; }
+  SUBMESH_DATA *SpriteRect =
+      Scene->GetAssetsPool()->getSubMeshIfExisted(GeoPointName);
+  if (!SpriteRect) {
+    return false;
+  }
 
-    RS_INSTANCE_DATA id = {};
-    id.CustomizedData1 = { mSize.x, mSize.y, (mIsBillboard ? 1.f : 0.f), 0.f };
-    id.CustomizedData2 = mTexCoord;
-    spriteRect->InstanceMap.insert({ mGeoPointName,id });
+  RS_INSTANCE_DATA InsData = {};
+  InsData.CustomizedData1 = {Size.x, Size.y, (EnabledBillboardFlag ? 1.f : 0.f),
+                             0.f};
+  InsData.CustomizedData2 = TexCoord;
+  SpriteRect->InstanceMap.insert({GeoPointName, InsData});
 
-    return true;
+  return true;
 }
 
-bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
-    std::string&& _texName)
-{
-    if (!_scene) { return false; }
-
-    RS_SUBMESH_DATA point = getRSDX11RootInstance()->
-        getMeshHelper()->getGeoGenerator()->
-        createPointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
-            _texName.c_str());
-    mGeoPointName = GetCompName();
-    mTextureName = _texName;
-    _scene->GetAssetsPool()->insertNewSubMesh(mGeoPointName,
-        point,
-        MESH_TYPE::TRANSPARENCY);
-
-    SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        getSubMeshIfExisted(mGeoPointName);
-    if (!spriteRect) { return false; }
-
-    RS_INSTANCE_DATA id = {};
-    id.CustomizedData1 = { mSize.x, mSize.y, (mIsBillboard ? 1.f : 0.f), 0.f };
-    id.CustomizedData2 = mTexCoord;
-    spriteRect->InstanceMap.insert({ mGeoPointName,id });
-
-    return true;
+void
+ASpriteComponent::setSpriteProperty(const DirectX::XMFLOAT2 &SpriteSize,
+                                    const DirectX::XMFLOAT4 &SpriteTexCoord,
+                                    bool IsBillboard) {
+  EnabledBillboardFlag = IsBillboard;
+  Size = SpriteSize;
+  TexCoord = SpriteTexCoord;
 }
 
-void ASpriteComponent::SetSpriteProperty(DirectX::XMFLOAT2 _size,
-    DirectX::XMFLOAT4 _texCoord, bool _isBillboard)
-{
-    mIsBillboard = _isBillboard;
-    mSize = _size;
-    mTexCoord = _texCoord;
+void
+ASpriteComponent::setAnimationProperty(const DirectX::XMFLOAT2 &AniStride,
+                                       UINT AniMaxCut,
+                                       bool AniRepeatFlg,
+                                       float AniSwitchTime) {
+  EnabledAnimationFlag = true;
+  Stride = AniStride;
+  MaxCut = AniMaxCut;
+  SwitchTime = AniSwitchTime;
+  RepeatFlag = AniRepeatFlg;
+  CurrentAnimateCut = 0;
+  TimeCounter = 0.f;
+  TexCoord.z = Stride.x;
+  TexCoord.w = Stride.y;
 }
 
-void ASpriteComponent::SetAnimationProperty(DirectX::XMFLOAT2 _stride,
-    UINT _maxCut, bool _repeatFlg, float _switchTime)
-{
-    mWithAnimation = true;
-    mStride = _stride;
-    mMaxCut = _maxCut;
-    mSwitchTime = _switchTime;
-    mRepeatFlg = _repeatFlg;
-    mCurrentAnimateCut = 0;
-    mTimeCounter = 0.f;
-    mTexCoord.z = mStride.x;
-    mTexCoord.w = mStride.y;
-}
-
-void ASpriteComponent::SyncTransformDataToInstance()
-{
-    ATransformComponent* atc = GetActorOwner()->
-        GetComponent<ATransformComponent>();
+void
+ASpriteComponent::syncTransformDataToInstance() {
+  ATransformComponent *Atc =
+      getActorOwner()->GetComponent<ATransformComponent>();
 #ifdef _DEBUG
-    assert(atc);
+  assert(Atc);
 #endif // _DEBUG
 
-    DirectX::XMFLOAT3 world = atc->GetPosition();
-    DirectX::XMFLOAT3 angle = atc->GetRotation();
-    DirectX::XMFLOAT3 scale = atc->GetScaling();
+  DirectX::XMFLOAT3 World = Atc->getPosition();
+  DirectX::XMFLOAT3 Angle = Atc->getRotation();
+  DirectX::XMFLOAT3 Scale = Atc->getScaling();
 
-    std::string compName = GetCompName();
-    auto& map = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-        getSubMeshIfExisted(compName)->InstanceMap;
+  auto &InsMap = getActorOwner()
+                     ->GetSceneNode()
+                     .GetAssetsPool()
+                     ->getSubMeshIfExisted(getCompName())
+                     ->InstanceMap;
 
-    for (auto& ins : map)
-    {
-        auto& ins_data = ins.second;
+  for (auto &Ins : InsMap) {
+    auto &InsData = Ins.second;
 
-        DirectX::XMMATRIX mat = {};
-        mat = DirectX::XMMatrixMultiply(
-            DirectX::XMMatrixScaling(scale.x, scale.y, scale.z),
-            DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
-        mat = DirectX::XMMatrixMultiply(mat,
-            DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-        DirectX::XMStoreFloat4x4(&(ins_data.WorldMatrix), mat);
+    DirectX::XMMATRIX Matrix = {};
+    Matrix = DirectX::XMMatrixMultiply(
+        DirectX::XMMatrixScaling(Scale.x, Scale.y, Scale.z),
+        DirectX::XMMatrixRotationRollPitchYaw(Angle.x, Angle.y, Angle.z));
+    Matrix = DirectX::XMMatrixMultiply(
+        Matrix, DirectX::XMMatrixTranslation(World.x, World.y, World.z));
+    DirectX::XMStoreFloat4x4(&(InsData.WorldMatrix), Matrix);
 
-        ins_data.CustomizedData2 = mTexCoord;
+    InsData.CustomizedData2 = TexCoord;
 
-        break;
-    }
+    break;
+  }
 }

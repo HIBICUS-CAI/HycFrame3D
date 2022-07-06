@@ -1,77 +1,69 @@
 #include "AParticleComponent.h"
-#include "ActorObject.h"
+
 #include "ATransformComponent.h"
+#include "ActorObject.h"
+
+#include <RSParticleEmitter.h>
+#include <RSParticlesContainer.h>
+#include <RSRoot_DX11.h>
+
 #include <vector>
-#include "RSParticleEmitter.h"
-#include "RSRoot_DX11.h"
-#include "RSParticlesContainer.h"
 
-AParticleComponent::AParticleComponent(std::string&& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mRSParticleEmitterPtr(nullptr)
-{
+AParticleComponent::AParticleComponent(const std::string &CompName,
+                                       ActorObject *ActorOwner)
+    : ActorComponent(CompName, ActorOwner), RSParticleEmitterPtr(nullptr) {}
 
+AParticleComponent::~AParticleComponent() {}
+
+bool
+AParticleComponent::init() {
+  if (RSParticleEmitterPtr) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-AParticleComponent::AParticleComponent(std::string& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mRSParticleEmitterPtr(nullptr)
-{
-
+void
+AParticleComponent::update(Timer &Timer) {
+  syncDataFromTransform();
 }
 
-AParticleComponent::~AParticleComponent()
-{
-
+void
+AParticleComponent::destory() {
+  getRSDX11RootInstance()->getParticlesContainer()->deleteRSParticleEmitter(
+      getCompName());
 }
 
-bool AParticleComponent::Init()
-{
-    if (mRSParticleEmitterPtr) { return true; }
-    else { return false; }
+void
+AParticleComponent::createEmitter(const PARTICLE_EMITTER_INFO *EmitterInfo) {
+  RSParticleEmitterPtr =
+      getRSDX11RootInstance()->getParticlesContainer()->createRSParticleEmitter(
+          getCompName(), EmitterInfo);
 }
 
-void AParticleComponent::Update(Timer& _timer)
-{
-    SyncDataFromTransform();
+void
+AParticleComponent::resetEmitter(const PARTICLE_EMITTER_INFO *EmitterInfo) {
+  RSParticleEmitterPtr->resetParticleEmitterInfo(EmitterInfo);
 }
 
-void AParticleComponent::Destory()
-{
-    std::string name = GetCompName();
-    getRSDX11RootInstance()->getParticlesContainer()->
-        deleteRSParticleEmitter(name);
-}
-
-void AParticleComponent::CreateEmitter(PARTICLE_EMITTER_INFO* _emitterInfo)
-{
-    std::string name = GetCompName();
-    mRSParticleEmitterPtr = getRSDX11RootInstance()->getParticlesContainer()->
-        createRSParticleEmitter(name, _emitterInfo);
-}
-
-void AParticleComponent::ResetEmitter(PARTICLE_EMITTER_INFO* _emitterInfo)
-{
-    mRSParticleEmitterPtr->resetParticleEmitterInfo(_emitterInfo);
-}
-
-RS_PARTICLE_EMITTER_INFO& AParticleComponent::GetEmitterInfo()
-{
+RS_PARTICLE_EMITTER_INFO &
+AParticleComponent::getEmitterInfo() {
 #ifdef _DEBUG
-    assert(mRSParticleEmitterPtr);
+  assert(RSParticleEmitterPtr);
 #endif // _DEBUG
-    return mRSParticleEmitterPtr->getRSParticleEmitterInfo();
+  return RSParticleEmitterPtr->getRSParticleEmitterInfo();
 }
 
-void AParticleComponent::SyncDataFromTransform()
-{
-    ATransformComponent* atc = GetActorOwner()->
-        GetComponent<ATransformComponent>();
+void
+AParticleComponent::syncDataFromTransform() {
+  ATransformComponent *Atc =
+      getActorOwner()->GetComponent<ATransformComponent>();
 #ifdef _DEBUG
-    assert(atc);
-    assert(mRSParticleEmitterPtr);
+  assert(Atc);
+  assert(RSParticleEmitterPtr);
 #endif // _DEBUG
 
-    DirectX::XMFLOAT3 world = atc->GetPosition();
-    mRSParticleEmitterPtr->setEmitterPosition(world);
+  DirectX::XMFLOAT3 World = Atc->getPosition();
+  RSParticleEmitterPtr->setEmitterPosition(World);
 }

@@ -2,47 +2,56 @@
 
 #include "UiComponent.h"
 
-using UiInteractInitFuncType = bool(*)(class UInteractComponent*);
-using UiInteractUpdateFuncType = void(*)(class UInteractComponent*, Timer&);
-using UiInteractDestoryFuncType = void(*)(class UInteractComponent*);
+using UiInteractInitFuncType = bool (*)(class UInteractComponent *);
+using UiInteractUpdateFuncType = void (*)(class UInteractComponent *, Timer &);
+using UiInteractDestoryFuncType = void (*)(class UInteractComponent *);
 
-class UInteractComponent :public UiComponent
-{
-public:
-    UInteractComponent(std::string&& _compName, class UiObject* _uiOwner);
-    UInteractComponent(std::string& _compName, class UiObject* _uiOwner);
-    virtual ~UInteractComponent();
-
-    UInteractComponent& operator=(const UInteractComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mInitProcessFunctionPtr = _source.mInitProcessFunctionPtr;
-        mUpdateProcessFunctionPtr = _source.mUpdateProcessFunctionPtr;
-        mDestoryProcessFunctionPtr = _source.mDestoryProcessFunctionPtr;
-        UiComponent::operator=(_source);
-        return *this;
-    }
-
-public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
-
-public:
-    void SetInitFunction(UiInteractInitFuncType _initFunc);
-    void SetUpdateFunction(UiInteractUpdateFuncType _updateFunc);
-    void SetDestoryFunction(UiInteractDestoryFuncType _destoryFunc);
-    void ClearInitFunction();
-    void ClearUpdateFunction();
-    void ClearDestoryFunction();
-
-    class ActorObject* GetActorObject(std::string&& _actorName);
-    class ActorObject* GetActorObject(std::string& _actorName);
-    class UiObject* GetUiObject(std::string&& _uiName);
-    class UiObject* GetUiObject(std::string& _uiName);
-
+class UInteractComponent : public UiComponent {
 private:
-    UiInteractInitFuncType mInitProcessFunctionPtr;
-    UiInteractUpdateFuncType mUpdateProcessFunctionPtr;
-    UiInteractDestoryFuncType mDestoryProcessFunctionPtr;
+  UiInteractInitFuncType InitProcessFunctionPtr;
+  UiInteractUpdateFuncType UpdateProcessFunctionPtr;
+  UiInteractDestoryFuncType DestoryProcessFunctionPtr;
+
+public:
+  UInteractComponent(const std::string &CompName, class UiObject *UiOwner);
+  virtual ~UInteractComponent();
+
+  UInteractComponent &
+  operator=(const UInteractComponent &Source) {
+    if (this == &Source) {
+      return *this;
+    }
+    InitProcessFunctionPtr = Source.InitProcessFunctionPtr;
+    UpdateProcessFunctionPtr = Source.UpdateProcessFunctionPtr;
+    DestoryProcessFunctionPtr = Source.DestoryProcessFunctionPtr;
+    UiComponent::operator=(Source);
+    return *this;
+  }
+
+public:
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
+
+public:
+  void
+  setInitFunction(UiInteractInitFuncType InitFuncPtr);
+  void
+  setUpdateFunction(UiInteractUpdateFuncType UpdateFuncPtr);
+  void
+  setDestoryFunction(UiInteractDestoryFuncType DestoryFuncPtr);
+  void
+  clearInitFunction();
+  void
+  clearUpdateFunction();
+  void
+  clearDestoryFunction();
+
+  class ActorObject *
+  getActorObject(const std::string &ActorName);
+  class UiObject *
+  getUiObject(const std::string &UiName);
 };

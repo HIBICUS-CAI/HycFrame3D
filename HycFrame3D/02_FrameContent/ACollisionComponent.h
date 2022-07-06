@@ -1,54 +1,65 @@
 #pragma once
 
 #include "ActorComponent.h"
+
 #include "PhysicsWorld.h"
+
 #include <DirectXMath.h>
 
-enum class COLLISION_SHAPE
-{
-    BOX,
-    SPHERE,
+namespace dx = DirectX;
 
-    SIZE
+enum class COLLISION_SHAPE {
+  BOX,
+  SPHERE,
+
+  SIZE
 };
 
-class ACollisionComponent :public ActorComponent
-{
-public:
-    ACollisionComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    ACollisionComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~ACollisionComponent();
+class ACollisionComponent : public ActorComponent {
+private:
+  class btCollisionObject *CollisionObject;
+  class btCollisionShape *CollisionShape;
 
-    ACollisionComponent& operator=(const ACollisionComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mCollisionObject = _source.mCollisionObject;
-        mCollisionShape = _source.mCollisionShape;
-        ActorComponent::operator=(_source);
-        return *this;
+public:
+  ACollisionComponent(const std::string &CompName,
+                      class ActorObject *ActorOwner);
+  virtual ~ACollisionComponent();
+
+  ACollisionComponent &
+  operator=(const ACollisionComponent &Source) {
+    if (this == &Source) {
+      return *this;
     }
+    CollisionObject = Source.CollisionObject;
+    CollisionShape = Source.CollisionShape;
+    ActorComponent::operator=(Source);
+    return *this;
+  }
 
 public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
 
 public:
-    void CreateCollisionShape(COLLISION_SHAPE _type, DirectX::XMFLOAT3 _size);
+  void
+  createCollisionShape(COLLISION_SHAPE Type, dx::XMFLOAT3 Size);
 
-    bool CheckCollisionWith(std::string&& _actorName,
-        CONTACT_PONT_PAIR* _contactPair = nullptr);
-    bool CheckCollisionWith(std::string& _actorName,
-        CONTACT_PONT_PAIR* _contactPair = nullptr);
+  bool
+  checkCollisionWith(const std::string &ActorName,
+                     CONTACT_PONT_PAIR *ContactPair = nullptr);
 
-    static DirectX::XMFLOAT3 CalcCenterOfContact(CONTACT_PONT_PAIR& _pair);
-
-private:
-    void AddCollisionObjectToWorld();
-    void SyncDataFromTransform();
-    class btCollisionObject* GetCollisionObject() const;
+  static dx::XMFLOAT3
+  calcCenterOfContact(const CONTACT_PONT_PAIR &Pair);
 
 private:
-    class btCollisionObject* mCollisionObject;
-    class btCollisionShape* mCollisionShape;
+  void
+  addCollisionObjectToWorld();
+  void
+  syncDataFromTransform();
+  class btCollisionObject *
+  getCollisionObject() const;
 };

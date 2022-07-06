@@ -63,17 +63,17 @@ void ButtonSystem::Run(Timer& _timer)
     cursorY = (cursorY > g_ScreenHeight / 2.f) ?
         g_ScreenHeight / 2.f : cursorY;
 #endif // _DEBUG
-    UButtonComponent::SetScreenSpaceCursorPos(cursorX, cursorY);
+    UButtonComponent::setScreenSpaceCursorPos(cursorX, cursorY);
 
     auto mouseOffset = input::getMouseOffset();
     if (mouseOffset.x || mouseOffset.y)
     {
-        UButtonComponent::SetShouldUseMouse(true);
+        UButtonComponent::setShouldUseMouse(true);
     }
 
     for (auto& ubc : *mUBtnVecPtr)
     {
-        if (ubc.GetCompStatus() == STATUS::ACTIVE) { ubc.Update(_timer); }
+        if (ubc.getCompStatus() == STATUS::ACTIVE) { ubc.update(_timer); }
     }
 }
 

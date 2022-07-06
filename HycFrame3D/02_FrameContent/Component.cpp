@@ -1,33 +1,19 @@
 #include "Component.h"
 
-Component::Component(std::string&& _compName) :
-    mComponentName(_compName), mComponentStatus(STATUS::NEED_INIT)
-{
+Component::Component(const std::string &_compName)
+    : ComponentName(_compName), ComponentStatus(STATUS::NEED_INIT) {}
 
+Component::~Component() {}
+
+const std::string &
+Component::getCompName() const {
+  return ComponentName;
 }
 
-Component::Component(std::string& _compName) :
-    mComponentName(_compName), mComponentStatus(STATUS::NEED_INIT)
-{
+STATUS
+Component::getCompStatus() const { return ComponentStatus; }
 
-}
-
-Component::~Component()
-{
-
-}
-
-const std::string& Component::GetCompName() const
-{
-    return mComponentName;
-}
-
-STATUS Component::GetCompStatus() const
-{
-    return mComponentStatus;
-}
-
-void Component::SetCompStatus(STATUS _compStatus)
-{
-    mComponentStatus = _compStatus;
+void
+Component::setCompStatus(STATUS _compStatus) {
+  ComponentStatus = _compStatus;
 }

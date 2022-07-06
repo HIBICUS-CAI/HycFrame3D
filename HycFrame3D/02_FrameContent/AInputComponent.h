@@ -2,37 +2,42 @@
 
 #include "ActorComponent.h"
 
-using ActorInputProcessFuncType = void(*)(class AInputComponent*, Timer&);
+using ActorInputProcessFuncType = void (*)(class AInputComponent *, Timer &);
 
-class AInputComponent :public ActorComponent
-{
-public:
-    AInputComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    AInputComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~AInputComponent();
-
-    AInputComponent& operator=(const AInputComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mInputPrecessFunctionPtr = _source.mInputPrecessFunctionPtr;
-        ActorComponent::operator=(_source);
-        return *this;
-    }
-
-public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
-
-public:
-    void SetInputFunction(ActorInputProcessFuncType _func);
-    void ClearInputFunction();
-
-    class ActorObject* GetActorObject(std::string&& _actorName);
-    class ActorObject* GetActorObject(std::string& _actorName);
-    class UiObject* GetUiObject(std::string&& _uiName);
-    class UiObject* GetUiObject(std::string& _uiName);
-
+class AInputComponent : public ActorComponent {
 private:
-    ActorInputProcessFuncType mInputPrecessFunctionPtr;
+  ActorInputProcessFuncType InputPrecessFunctionPtr;
+
+public:
+  AInputComponent(const std::string &CompName, class ActorObject *ActorOwner);
+  virtual ~AInputComponent();
+
+  AInputComponent &
+  operator=(const AInputComponent &Source) {
+    if (this == &Source) {
+      return *this;
+    }
+    InputPrecessFunctionPtr = Source.InputPrecessFunctionPtr;
+    ActorComponent::operator=(Source);
+    return *this;
+  }
+
+public:
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
+
+public:
+  void
+  setInputFunction(ActorInputProcessFuncType FuncPtr);
+  void
+  clearInputFunction();
+
+  class ActorObject *
+  getActorObject(const std::string &ActorName);
+  class UiObject *
+  getUiObject(const std::string &UiName);
 };

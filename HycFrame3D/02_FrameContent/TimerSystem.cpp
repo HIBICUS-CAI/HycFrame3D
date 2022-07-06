@@ -40,12 +40,12 @@ void TimerSystem::Run(Timer& _timer)
 {
     for (auto& atmc : *mATimerVecPtr)
     {
-        if (atmc.GetCompStatus() == STATUS::ACTIVE) { atmc.Update(_timer); }
+        if (atmc.getCompStatus() == STATUS::ACTIVE) { atmc.update(_timer); }
     }
 
     for (auto& utmc : *mUTimerVecPtr)
     {
-        if (utmc.GetCompStatus() == STATUS::ACTIVE) { utmc.Update(_timer); }
+        if (utmc.getCompStatus() == STATUS::ACTIVE) { utmc.update(_timer); }
     }
 }
 

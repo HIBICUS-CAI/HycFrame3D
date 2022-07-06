@@ -1,49 +1,55 @@
 #pragma once
 
 #include "ActorComponent.h"
+
 #include <unordered_map>
 
-struct ACTOR_TIMER
-{
-    std::string mName = "";
-    bool mActive = false;
-    float mTime = 0.f;
+struct ACTOR_TIMER {
+  std::string Name = "";
+  bool ActiveFlag = false;
+  float Time = 0.f;
 
-    bool IsGreaterThan(float _value) { return (mTime > _value); }
+  bool
+  isGreaterThan(float Value) {
+    return (Time > Value);
+  }
 };
 
-class ATimerComponent :public ActorComponent
-{
-public:
-    ATimerComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    ATimerComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~ATimerComponent();
-
-    ATimerComponent& operator=(const ATimerComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mTimerMap = _source.mTimerMap;
-        ActorComponent::operator=(_source);
-        return *this;
-    }
-
-public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
-
-public:
-    void AddTimer(std::string&& _timerName);
-    void AddTimer(std::string& _timerName);
-    void StartTimer(std::string&& _timerName);
-    void StartTimer(std::string& _timerName);
-    void PauseTimer(std::string&& _timerName);
-    void PauseTimer(std::string& _timerName);
-    void ResetTimer(std::string&& _timerName);
-    void ResetTimer(std::string& _timerName);
-    ACTOR_TIMER* GetTimer(std::string&& _timerName);
-    ACTOR_TIMER* GetTimer(std::string& _timerName);
-
+class ATimerComponent : public ActorComponent {
 private:
-    std::unordered_map<std::string, ACTOR_TIMER> mTimerMap;
+  std::unordered_map<std::string, ACTOR_TIMER> TimerMap;
+
+public:
+  ATimerComponent(const std::string &CompName, class ActorObject *ActorOwner);
+  virtual ~ATimerComponent();
+
+  ATimerComponent &
+  operator=(const ATimerComponent &Source) {
+    if (this == &Source) {
+      return *this;
+    }
+    TimerMap = Source.TimerMap;
+    ActorComponent::operator=(Source);
+    return *this;
+  }
+
+public:
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
+
+public:
+  void
+  addTimer(const std::string &TimerName);
+  void
+  startTimer(const std::string &TimerName);
+  void
+  pauseTimer(const std::string &TimerName);
+  void
+  resetTimer(const std::string &TimerName);
+  ACTOR_TIMER *
+  getTimer(const std::string &TimerName);
 };

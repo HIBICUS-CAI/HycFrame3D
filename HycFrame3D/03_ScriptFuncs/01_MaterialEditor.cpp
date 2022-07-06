@@ -64,7 +64,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 {
     if (input::isKeyPushedInSingle(KB_F5))
     {
-        _aic->GetSceneNode().GetSceneManager()->
+        _aic->getSceneNode().GetSceneManager()->
             LoadSceneNode("material-scene", "material-scene.json");
     }
 
@@ -93,32 +93,32 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         auto mouseOffset = input::getMouseOffset();
         float horiR = -mouseOffset.x * deltatime / 500.f;
         float vertR = -mouseOffset.y * deltatime / 500.f;
-        g_MaterialBallAtc->Rotate({ vertR,horiR,0.f });
+        g_MaterialBallAtc->rotate({ vertR,horiR,0.f });
     }
 
     if (input::isKeyDownInSingle(KB_W))
     {
-        g_PointLightAtc->TranslateZAsix(0.1f * deltatime);
+        g_PointLightAtc->translateZAsix(0.1f * deltatime);
     }
     if (input::isKeyDownInSingle(KB_S))
     {
-        g_PointLightAtc->TranslateZAsix(-0.1f * deltatime);
+        g_PointLightAtc->translateZAsix(-0.1f * deltatime);
     }
     if (input::isKeyDownInSingle(KB_D))
     {
-        g_PointLightAtc->TranslateXAsix(0.1f * deltatime);
+        g_PointLightAtc->translateXAsix(0.1f * deltatime);
     }
     if (input::isKeyDownInSingle(KB_A))
     {
-        g_PointLightAtc->TranslateXAsix(-0.1f * deltatime);
+        g_PointLightAtc->translateXAsix(-0.1f * deltatime);
     }
     if (input::isKeyDownInSingle(KB_E))
     {
-        g_PointLightAtc->TranslateYAsix(0.1f * deltatime);
+        g_PointLightAtc->translateYAsix(0.1f * deltatime);
     }
     if (input::isKeyDownInSingle(KB_Q))
     {
-        g_PointLightAtc->TranslateYAsix(-0.1f * deltatime);
+        g_PointLightAtc->translateYAsix(-0.1f * deltatime);
     }
 
     UINT check = 0;
@@ -282,15 +282,15 @@ bool MatEditorInit(AInteractComponent* _aitc)
     std::string basic = "light-pipeline";
     getRSDX11RootInstance()->getPipelinesManager()->setPipeline(basic);
 
-    g_PointLightAtc = _aitc->GetActorObject("point-light-actor")->
+    g_PointLightAtc = _aitc->getActorObject("point-light-actor")->
         GetComponent<ATransformComponent>();
     if (!g_PointLightAtc) { return false; }
 
-    g_MaterialBallAtc = _aitc->GetActorObject("mat-ball-actor")->
+    g_MaterialBallAtc = _aitc->getActorObject("mat-ball-actor")->
         GetComponent<ATransformComponent>();
     if (!g_MaterialBallAtc) { return false; }
 
-    g_MatBallMesh = &(*_aitc->GetSceneNode().GetAssetsPool()->
+    g_MatBallMesh = &(*_aitc->getSceneNode().GetAssetsPool()->
         getSubMeshIfExisted("mat-ball0"));
     if (!g_MatBallMesh) { return false; }
 

@@ -1,136 +1,71 @@
 #include "UTimerComponent.h"
+
 #include "UiObject.h"
 
-UTimerComponent::UTimerComponent(std::string&& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner), mTimerMap({})
-{
+UTimerComponent::UTimerComponent(const std::string &CompName, UiObject *UiOwner)
+    : UiComponent(CompName, UiOwner), TimerMap({}) {}
 
+UTimerComponent::~UTimerComponent() {}
+
+bool
+UTimerComponent::init() {
+  for (auto &T : TimerMap) {
+    T.second.Time = 0.f;
+  }
+
+  return true;
 }
 
-UTimerComponent::UTimerComponent(std::string& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner), mTimerMap({})
-{
-
-}
-
-UTimerComponent::~UTimerComponent()
-{
-
-}
-
-bool UTimerComponent::Init()
-{
-    for (auto& t : mTimerMap) { t.second.mTime = 0.f; }
-
-    return true;
-}
-
-void UTimerComponent::Update(Timer& _timer)
-{
-    for (auto& t : mTimerMap)
-    {
-        if (t.second.mActive)
-        {
-            t.second.mTime += _timer.floatDeltaTime() / 1000.f;
-        }
+void
+UTimerComponent::update(Timer &Timer) {
+  float Deltatime = Timer.floatDeltaTime() / 1000.f;
+  for (auto &T : TimerMap) {
+    if (T.second.ActiveFlag) {
+      T.second.Time += Deltatime;
     }
+  }
 }
 
-void UTimerComponent::Destory()
-{
-    mTimerMap.clear();
+void
+UTimerComponent::destory() {
+  TimerMap.clear();
 }
 
-void UTimerComponent::AddTimer(std::string&& _timerName)
-{
-    UI_TIMER t = {};
-    t.mName = _timerName;
-    mTimerMap.insert({ _timerName,t });
+void
+UTimerComponent::addTimer(const std::string &TimerName) {
+  UI_TIMER T = {};
+  T.Name = TimerName;
+  TimerMap.insert({TimerName, T});
 }
 
-void UTimerComponent::AddTimer(std::string& _timerName)
-{
-    UI_TIMER t = {};
-    t.mName = _timerName;
-    mTimerMap.insert({ _timerName,t });
+void
+UTimerComponent::startTimer(const std::string &TimerName) {
+  if (TimerMap.find(TimerName) != TimerMap.end()) {
+    TimerMap[TimerName].ActiveFlag = true;
+  }
 }
 
-void UTimerComponent::StartTimer(std::string&& _timerName)
-{
-    if (mTimerMap.find(_timerName) != mTimerMap.end())
-    {
-        mTimerMap[_timerName].mActive = true;
-    }
+void
+UTimerComponent::pauseTimer(const std::string &TimerName) {
+  if (TimerMap.find(TimerName) != TimerMap.end()) {
+    TimerMap[TimerName].ActiveFlag = false;
+  }
 }
 
-void UTimerComponent::StartTimer(std::string& _timerName)
-{
-    if (mTimerMap.find(_timerName) != mTimerMap.end())
-    {
-        mTimerMap[_timerName].mActive = true;
-    }
+void
+UTimerComponent::resetTimer(const std::string &TimerName) {
+  if (TimerMap.find(TimerName) != TimerMap.end()) {
+    TimerMap[TimerName].ActiveFlag = false;
+    TimerMap[TimerName].Time = 0.f;
+  }
 }
 
-void UTimerComponent::PauseTimer(std::string&& _timerName)
-{
-    if (mTimerMap.find(_timerName) != mTimerMap.end())
-    {
-        mTimerMap[_timerName].mActive = false;
-    }
-}
-
-void UTimerComponent::PauseTimer(std::string& _timerName)
-{
-    if (mTimerMap.find(_timerName) != mTimerMap.end())
-    {
-        mTimerMap[_timerName].mActive = false;
-    }
-}
-
-void UTimerComponent::ResetTimer(std::string&& _timerName)
-{
-    if (mTimerMap.find(_timerName) != mTimerMap.end())
-    {
-        mTimerMap[_timerName].mActive = false;
-        mTimerMap[_timerName].mTime = 0.f;
-    }
-}
-
-void UTimerComponent::ResetTimer(std::string& _timerName)
-{
-    if (mTimerMap.find(_timerName) != mTimerMap.end())
-    {
-        mTimerMap[_timerName].mActive = false;
-        mTimerMap[_timerName].mTime = 0.f;
-    }
-}
-
-UI_TIMER* UTimerComponent::GetTimer(std::string&& _timerName)
-{
-    if (mTimerMap.find(_timerName) != mTimerMap.end())
-    {
-        return &(mTimerMap[_timerName]);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "this timer doesnt exist : %s\n",
-            _timerName.c_str());
-        return nullptr;
-    }
-}
-
-UI_TIMER* UTimerComponent::GetTimer(std::string& _timerName)
-{
-    if (mTimerMap.find(_timerName) != mTimerMap.end())
-    {
-        return &(mTimerMap[_timerName]);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "this timer doesnt exist : %s\n",
-            _timerName.c_str());
-        return nullptr;
-    }
+UI_TIMER *
+UTimerComponent::getTimer(const std::string &TimerName) {
+  if (TimerMap.find(TimerName) != TimerMap.end()) {
+    return &(TimerMap[TimerName]);
+  } else {
+    P_LOG(LOG_WARNING, "this timer doesnt exist : %s\n", TimerName.c_str());
+    return nullptr;
+  }
 }

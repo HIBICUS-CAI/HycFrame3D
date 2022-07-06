@@ -1,177 +1,139 @@
 #include "USpriteComponent.h"
-#include "UiObject.h"
+
 #include "AssetsPool.h"
 #include "SceneNode.h"
-#include "UTransformComponent.h"
 #include "UAnimateComponent.h"
-#include "RSMeshHelper.h"
-#include "RSRoot_DX11.h"
+#include "UTransformComponent.h"
+#include "UiObject.h"
 
-USpriteComponent::USpriteComponent(std::string&& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner),
-    mMeshesName(""),
-    mOriginTextureName(""),
-    mOffsetColor({ 1.f,1.f,1.f,1.f })
-{
+#include <RSMeshHelper.h>
+#include <RSRoot_DX11.h>
 
+USpriteComponent::USpriteComponent(const std::string &CompName,
+                                   UiObject *UiOwner)
+    : UiComponent(CompName, UiOwner), MeshesName(""), OriginTextureName(""),
+      OffsetColor({1.f, 1.f, 1.f, 1.f}) {}
+
+USpriteComponent::~USpriteComponent() {}
+
+bool
+USpriteComponent::init() {
+  if (MeshesName == "") {
+    P_LOG(LOG_WARNING, "this sprite hasnt been built : %s\n",
+          getCompName().c_str());
+    return false;
+  }
+
+  return true;
 }
 
-USpriteComponent::USpriteComponent(std::string& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner),
-    mMeshesName(""),
-    mOriginTextureName(""),
-    mOffsetColor({ 1.f,1.f,1.f,1.f })
-{
-
+void
+USpriteComponent::update(Timer &Timer) {
+  syncTransformDataToInstance();
 }
 
-USpriteComponent::~USpriteComponent()
-{
-
+void
+USpriteComponent::destory() {
+  SUBMESH_DATA *MeshPtr =
+      getUiOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+          MeshesName);
+  if (MeshPtr) {
+    MeshPtr->InstanceMap.erase(getCompName());
+  }
 }
 
-bool USpriteComponent::Init()
-{
-    if (mMeshesName == "")
-    {
-        P_LOG(LOG_WARNING, "this sprite hasnt been built : %s\n",
-            GetCompName().c_str());
-        return false;
-    }
+bool
+USpriteComponent::createSpriteMesh(SceneNode *Scene,
+                                   const DirectX::XMFLOAT4 &OffsetColorSpr,
+                                   const std::string &TexName) {
+  if (!Scene) {
+    return false;
+  }
 
-    return true;
+  RS_SUBMESH_DATA Sprite =
+      getRSDX11RootInstance()
+          ->getMeshHelper()
+          ->getGeoGenerator()
+          ->createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, TexName);
+
+  MeshesName = getCompName();
+  Scene->GetAssetsPool()->insertNewSubMesh(MeshesName, Sprite,
+                                           MESH_TYPE::UI_SPRITE);
+
+  SUBMESH_DATA *SpriteRect =
+      Scene->GetAssetsPool()->getSubMeshIfExisted(MeshesName);
+  if (!SpriteRect) {
+    return false;
+  }
+
+  RS_INSTANCE_DATA InsData = {};
+  InsData.CustomizedData2 = {0.f, 0.f, 1.f, 1.f};
+  SpriteRect->InstanceMap.insert({MeshesName, InsData});
+
+  OffsetColor = OffsetColorSpr;
+  OriginTextureName = TexName;
+
+  return true;
 }
 
-void USpriteComponent::Update(Timer& _timer)
-{
-    SyncTransformDataToInstance();
+const DirectX::XMFLOAT4 &
+USpriteComponent::getOffsetColor() const {
+  return OffsetColor;
 }
 
-void USpriteComponent::Destory()
-{
-    SUBMESH_DATA* mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        getSubMeshIfExisted(mMeshesName);
-    if (mesh) { mesh->InstanceMap.erase(GetCompName()); }
+void
+USpriteComponent::setOffsetColor(const DirectX::XMFLOAT4 &OffsetColorSpr) {
+  OffsetColor = OffsetColorSpr;
 }
 
-bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
-    DirectX::XMFLOAT4 _offsetColor, std::string& _texName)
-{
-    if (!_scene) { return false; }
-
-    RS_SUBMESH_DATA sprite = getRSDX11RootInstance()->
-        getMeshHelper()->getGeoGenerator()->
-        createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
-
-    mMeshesName = GetCompName();
-    _scene->GetAssetsPool()->insertNewSubMesh(mMeshesName, sprite,
-        MESH_TYPE::UI_SPRITE);
-
-    SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        getSubMeshIfExisted(mMeshesName);
-    if (!spriteRect) { return false; }
-
-    RS_INSTANCE_DATA id = {};
-    id.CustomizedData2 = { 0.f,0.f,1.f,1.f };
-    spriteRect->InstanceMap.insert({ mMeshesName,id });
-
-    mOffsetColor = _offsetColor;
-    mOriginTextureName = _texName;
-
-    return true;
-}
-
-bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
-    DirectX::XMFLOAT4 _offsetColor, std::string&& _texName)
-{
-    if (!_scene) { return false; }
-
-    RS_SUBMESH_DATA sprite = getRSDX11RootInstance()->
-        getMeshHelper()->getGeoGenerator()->
-        createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
-
-    mMeshesName = GetCompName();
-    _scene->GetAssetsPool()->insertNewSubMesh(mMeshesName, sprite,
-        MESH_TYPE::UI_SPRITE);
-
-    SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        getSubMeshIfExisted(mMeshesName);
-    if (!spriteRect) { return false; }
-
-    RS_INSTANCE_DATA id = {};
-    id.CustomizedData2 = { 0.f,0.f,1.f,1.f };
-    spriteRect->InstanceMap.insert({ mMeshesName,id });
-
-    mOffsetColor = _offsetColor;
-    mOriginTextureName = _texName;
-
-    return true;
-}
-
-const DirectX::XMFLOAT4& USpriteComponent::GetOffsetColor() const
-{
-    return mOffsetColor;
-}
-
-void USpriteComponent::SetOffsetColor(DirectX::XMFLOAT4& _offsetColor)
-{
-    mOffsetColor = _offsetColor;
-}
-
-void USpriteComponent::SetOffsetColor(DirectX::XMFLOAT4&& _offsetColor)
-{
-    mOffsetColor = _offsetColor;
-}
-
-void USpriteComponent::SyncTransformDataToInstance()
-{
-    UTransformComponent* utc = GetUiOwner()->
-        GetComponent<UTransformComponent>();
+void
+USpriteComponent::syncTransformDataToInstance() {
+  UTransformComponent *Utc = getUiOwner()->GetComponent<UTransformComponent>();
 #ifdef _DEBUG
-    assert(utc);
+  assert(Utc);
 #endif // _DEBUG
 
-    DirectX::XMFLOAT3 world = utc->GetPosition();
-    DirectX::XMFLOAT3 angle = utc->GetRotation();
-    DirectX::XMFLOAT3 scale = utc->GetScaling();
+  DirectX::XMFLOAT3 World = Utc->getPosition();
+  DirectX::XMFLOAT3 Angle = Utc->getRotation();
+  DirectX::XMFLOAT3 Scale = Utc->getScaling();
 
-    std::string compName = GetCompName();
-    auto& map = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        getSubMeshIfExisted(compName)->InstanceMap;
+  auto &Map = getUiOwner()
+                  ->GetSceneNode()
+                  .GetAssetsPool()
+                  ->getSubMeshIfExisted(getCompName())
+                  ->InstanceMap;
 
-    for (auto& ins : map)
-    {
-        auto& ins_data = ins.second;
+  for (auto &Ins : Map) {
+    auto &InsData = Ins.second;
 
-        DirectX::XMMATRIX mat = {};
-        mat = DirectX::XMMatrixMultiply(
-            DirectX::XMMatrixScaling(scale.x, scale.y, scale.z),
-            DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
-        mat = DirectX::XMMatrixMultiply(mat,
-            DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-        DirectX::XMStoreFloat4x4(&(ins_data.WorldMatrix), mat);
-        ins_data.CustomizedData1 = mOffsetColor;
+    DirectX::XMMATRIX Mat = {};
+    Mat = DirectX::XMMatrixMultiply(
+        DirectX::XMMatrixScaling(Scale.x, Scale.y, Scale.z),
+        DirectX::XMMatrixRotationRollPitchYaw(Angle.x, Angle.y, Angle.z));
+    Mat = DirectX::XMMatrixMultiply(
+        Mat, DirectX::XMMatrixTranslation(World.x, World.y, World.z));
+    DirectX::XMStoreFloat4x4(&(InsData.WorldMatrix), Mat);
+    InsData.CustomizedData1 = OffsetColor;
 
-        break;
-    }
+    break;
+  }
 }
 
-void USpriteComponent::ResetTexture()
-{
-    std::string compName = GetCompName();
-    auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        getSubMeshIfExisted(compName);
+void
+USpriteComponent::resetTexture() {
+  auto MeshPtr =
+      getUiOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+          getCompName());
 
-    mesh->MeshData.Textures[0] = mOriginTextureName;
+  MeshPtr->MeshData.Textures[0] = OriginTextureName;
 
-    for (auto& ins : mesh->InstanceMap)
-    {
-        ins.second.CustomizedData2 = { 0.f,0.f,1.f,1.f };
-        break;
-    }
+  for (auto &Ins : MeshPtr->InstanceMap) {
+    Ins.second.CustomizedData2 = {0.f, 0.f, 1.f, 1.f};
+    break;
+  }
 
-    auto uamc = GetUiOwner()->GetComponent<UAnimateComponent>();
-    if (uamc) { uamc->ClearCurrentAnimate(); }
+  auto Uamc = getUiOwner()->GetComponent<UAnimateComponent>();
+  if (Uamc) {
+    Uamc->clearCurrentAnimate();
+  }
 }

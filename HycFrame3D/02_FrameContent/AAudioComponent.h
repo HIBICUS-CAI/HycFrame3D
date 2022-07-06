@@ -1,42 +1,48 @@
 #pragma once
 
 #include "ActorComponent.h"
+
 #include "SoundHelper.h"
+
 #include <unordered_map>
 
-class AAudioComponent :public ActorComponent
-{
-public:
-    AAudioComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    AAudioComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~AAudioComponent();
-
-    AAudioComponent& operator=(const AAudioComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mAudioMap = _source.mAudioMap;
-        ActorComponent::operator=(_source);
-        return *this;
-    }
-
-public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
-
-public:
-    void AddAudio(std::string&& _audioName, class SceneNode& _scene);
-    void AddAudio(std::string& _audioName, class SceneNode& _scene);
-
-    void PlayBgm(std::string&& _bgmName, float _volume);
-    void PlayBgm(std::string& _bgmName, float _volume);
-    void PlaySe(std::string&& _seName, float _volume);
-    void PlaySe(std::string& _seName, float _volume);
-
-    void StopBgm();
-    void StopBgm(std::string&& _bgmName);
-    void StopBgm(std::string& _bgmName);
-
+class AAudioComponent : public ActorComponent {
 private:
-    std::unordered_map<std::string, SOUND_HANDLE> mAudioMap;
+  std::unordered_map<std::string, SOUND_HANDLE> AudioMap;
+
+public:
+  AAudioComponent(const std::string &CompName, class ActorObject *ActorOwner);
+  virtual ~AAudioComponent();
+
+  AAudioComponent &
+  operator=(const AAudioComponent &Source) {
+    if (this == &Source) {
+      return *this;
+    }
+    AudioMap = Source.AudioMap;
+    ActorComponent::operator=(Source);
+    return *this;
+  }
+
+public:
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
+
+public:
+  void
+  addAudio(const std::string &AudioName, class SceneNode &Scene);
+
+  void
+  playBgm(const std::string &BgmName, float Volume);
+  void
+  playSe(const std::string &SeName, float Volume);
+
+  void
+  stopBgm();
+  void
+  stopBgm(const std::string &BgmName);
 };

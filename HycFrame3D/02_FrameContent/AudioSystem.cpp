@@ -44,12 +44,12 @@ void AudioSystem::Run(Timer& _timer)
 {
     for (auto& aac : *mAAudioVecPtr)
     {
-        if (aac.GetCompStatus() == STATUS::ACTIVE) { aac.Update(_timer); }
+        if (aac.getCompStatus() == STATUS::ACTIVE) { aac.update(_timer); }
     }
 
     for (auto& uac : *mUAudioVecPtr)
     {
-        if (uac.GetCompStatus() == STATUS::ACTIVE) { uac.Update(_timer); }
+        if (uac.getCompStatus() == STATUS::ACTIVE) { uac.update(_timer); }
     }
 }
 

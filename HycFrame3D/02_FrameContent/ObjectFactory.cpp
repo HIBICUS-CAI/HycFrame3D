@@ -512,9 +512,9 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             sca[i] = getJsonNode(_json,
                 _jsonPath + "/atc-init-scale/" + std::to_string(i))->GetFloat();
         }
-        atc.ForcePosition({ pos[0],pos[1],pos[2] });
-        atc.ForceRotation({ ang[0],ang[1],ang[2] });
-        atc.ForceScaling({ sca[0],sca[1],sca[2] });
+        atc.forcePosition({ pos[0],pos[1],pos[2] });
+        atc.forceRotation({ ang[0],ang[1],ang[2] });
+        atc.forceScaling({ sca[0],sca[1],sca[2] });
 
         COMP_TYPE type = COMP_TYPE::A_TRANSFORM;
         _actor->AddAComponent(type);
@@ -533,7 +533,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
                 inputFuncName.c_str());
             return;
         }
-        aic.SetInputFunction(found->second);
+        aic.setInputFunction(found->second);
 
         COMP_TYPE type = COMP_TYPE::A_INPUT;
         _actor->AddAComponent(type);
@@ -556,7 +556,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
                 initFuncName.c_str());
             return;
         }
-        aitc.SetInitFunction(foundInit->second);
+        aitc.setInitFunction(foundInit->second);
         auto foundUpdate = mActorInteractUpdateFuncPtrMap.find(updateFuncName);
         if (foundUpdate == mActorInteractUpdateFuncPtrMap.end())
         {
@@ -564,7 +564,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
                 updateFuncName.c_str());
             return;
         }
-        aitc.SetUpdateFunction(foundUpdate->second);
+        aitc.setUpdateFunction(foundUpdate->second);
         auto foundDestory = mActorInteractDestoryFuncPtrMap.find(destoryFuncName);
         if (foundDestory == mActorInteractDestoryFuncPtrMap.end())
         {
@@ -572,7 +572,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
                 destoryFuncName.c_str());
             return;
         }
-        aitc.SetDestoryFunction(foundDestory->second);
+        aitc.setDestoryFunction(foundDestory->second);
 
         COMP_TYPE type = COMP_TYPE::A_INTERACT;
         _actor->AddAComponent(type);
@@ -587,7 +587,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         {
             std::string timerName = getJsonNode(_json,
                 _jsonPath + "/atmc-timers/" + std::to_string(i))->GetString();
-            atmc.AddTimer(timerName);
+            atmc.addTimer(timerName);
         }
 
         COMP_TYPE type = COMP_TYPE::A_TIMER;
@@ -617,7 +617,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
                 shapeType.c_str());
             return;
         }
-        acc.CreateCollisionShape(shape, { value[0],value[1],value[2] });
+        acc.createCollisionShape(shape, { value[0],value[1],value[2] });
 
         COMP_TYPE type = COMP_TYPE::A_COLLISION;
         _actor->AddAComponent(type);
@@ -652,14 +652,14 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
                 "/mesh-offset/2")->GetFloat()
                 };
             }
-            amc.AddMeshInfo(meshName, offset);
+            amc.addMeshInfo(meshName, offset);
         }
 
         JsonNode intensityNode = getJsonNode(_json,
             _jsonPath + "/amc-emissive-intensity");
         if (intensityNode && intensityNode->IsFloat())
         {
-            amc.SetEmissiveIntensity(GetAs<float>(intensityNode));
+            amc.setEmissiveIntensity(GetAs<float>(intensityNode));
         }
 
         COMP_TYPE type = COMP_TYPE::A_MESH;
@@ -741,7 +741,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
                 _jsonPath + "/alc-cam-up-vec/2")->GetFloat();
         }
 
-        alc.AddLight(li, bloomFlag, shadowFlag, ci);
+        alc.addLight(li, bloomFlag, shadowFlag, ci);
 
         COMP_TYPE type = COMP_TYPE::A_LIGHT;
         _actor->AddAComponent(type);
@@ -756,7 +756,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         {
             std::string soundName = getJsonNode(_json,
                 _jsonPath + "/aauc-sounds/" + std::to_string(i))->GetString();
-            aauc.AddAudio(soundName, *_node);
+            aauc.addAudio(soundName, *_node);
         }
 
         COMP_TYPE type = COMP_TYPE::A_AUDIO;
@@ -864,7 +864,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         pei.StreakFlag = streakFlg;
         pei.TextureID = ptcTex;
 
-        apc.CreateEmitter(&pei);
+        apc.createEmitter(&pei);
 
         COMP_TYPE type = COMP_TYPE::A_PARTICLE;
         _actor->AddAComponent(type);
@@ -881,7 +881,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         {
             spdFactor = getJsonNode(_json, _jsonPath + "/aac-speed-factor")->GetFloat();
         }
-        aac.ChangeAnimationTo(initAni);
+        aac.changeAnimationTo(initAni);
         aac.SetSpeedFactor(spdFactor);
 
         COMP_TYPE type = COMP_TYPE::A_ANIMATE;
@@ -904,7 +904,7 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
         assert(texNameNode && billFlgNode && sizeXNode && sizeYNode &&
             texCUNode && texCVNode && texCULenNode && texCVLenNode);
 
-        asc.SetSpriteProperty(
+        asc.setSpriteProperty(
             { sizeXNode->GetFloat(),sizeYNode->GetFloat() },
             { texCUNode->GetFloat(),texCVNode->GetFloat(),
             texCULenNode->GetFloat(),texCVLenNode->GetFloat() },
@@ -922,14 +922,14 @@ void ObjectFactory::CreateActorComp(SceneNode* _node, ActorObject* _actor,
             assert(strideUNode && strideVNode && maxCutNode &&
                 switchTimeNode && repeatFlgNode);
 
-            asc.SetAnimationProperty(
+            asc.setAnimationProperty(
                 { strideUNode->GetFloat(),strideVNode->GetFloat() },
                 maxCutNode->GetUint(),
                 repeatFlgNode->GetBool(),
                 switchTimeNode->GetFloat());
         }
 
-        asc.CreateGeoPointWithTexture(_node, texNameNode->GetString());
+        asc.createGeoPointWithTexture(_node, texNameNode->GetString());
 
         COMP_TYPE type = COMP_TYPE::A_SPRITE;
         _actor->AddAComponent(type);
@@ -964,9 +964,9 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
             sca[i] = getJsonNode(_json,
                 _jsonPath + "/utc-init-scale/" + std::to_string(i))->GetFloat();
         }
-        utc.ForcePosition({ pos[0],pos[1],pos[2] });
-        utc.ForceRotation({ ang[0],ang[1],ang[2] });
-        utc.ForceScaling({ sca[0],sca[1],sca[2] });
+        utc.forcePosition({ pos[0],pos[1],pos[2] });
+        utc.forceRotation({ ang[0],ang[1],ang[2] });
+        utc.forceScaling({ sca[0],sca[1],sca[2] });
 
         COMP_TYPE type = COMP_TYPE::U_TRANSFORM;
         _ui->AddUComponent(type);
@@ -985,7 +985,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
                 inputFuncName.c_str());
             return;
         }
-        uic.SetInputFunction(found->second);
+        uic.setInputFunction(found->second);
 
         COMP_TYPE type = COMP_TYPE::U_INPUT;
         _ui->AddUComponent(type);
@@ -1008,7 +1008,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
                 initFuncName.c_str());
             return;
         }
-        uitc.SetInitFunction(foundInit->second);
+        uitc.setInitFunction(foundInit->second);
         auto foundUpdate = mUiInteractUpdateFuncPtrMap.find(updateFuncName);
         if (foundUpdate == mUiInteractUpdateFuncPtrMap.end())
         {
@@ -1016,7 +1016,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
                 updateFuncName.c_str());
             return;
         }
-        uitc.SetUpdateFunction(foundUpdate->second);
+        uitc.setUpdateFunction(foundUpdate->second);
         auto foundDestory = mUiInteractDestoryFuncPtrMap.find(destoryFuncName);
         if (foundDestory == mUiInteractDestoryFuncPtrMap.end())
         {
@@ -1024,7 +1024,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
                 destoryFuncName.c_str());
             return;
         }
-        uitc.SetDestoryFunction(foundDestory->second);
+        uitc.setDestoryFunction(foundDestory->second);
 
         COMP_TYPE type = COMP_TYPE::U_INTERACT;
         _ui->AddUComponent(type);
@@ -1039,7 +1039,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
         {
             std::string timerName = getJsonNode(_json,
                 _jsonPath + "/utmc-timers/" + std::to_string(i))->GetString();
-            utmc.AddTimer(timerName);
+            utmc.addTimer(timerName);
         }
 
         COMP_TYPE type = COMP_TYPE::U_TIMER;
@@ -1055,7 +1055,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
         {
             std::string soundName = getJsonNode(_json,
                 _jsonPath + "/uauc-sounds/" + std::to_string(i))->GetString();
-            uauc.AddAudio(soundName, *_node);
+            uauc.addAudio(soundName, *_node);
         }
 
         COMP_TYPE type = COMP_TYPE::U_AUDIO;
@@ -1076,7 +1076,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
         std::string texFile = getJsonNode(_json,
             _jsonPath + "/usc-tex-file")->GetString();
 
-        usc.CreateSpriteMesh(_node, offsetColor, texFile);
+        usc.createSpriteMesh(_node, offsetColor, texFile);
 
         COMP_TYPE type = COMP_TYPE::U_SPRITE;
         _ui->AddUComponent(type);
@@ -1108,7 +1108,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
             bool repeatFlg = getJsonNode(_json,
                 aniArrayPath + "/repeat-flag")->GetBool();
 
-            uac.LoadAnimate(aniName, aniFile, stride, maxCount,
+            uac.loadAnimate(aniName, aniFile, stride, maxCount,
                 repeatFlg, switchTime);
         }
 
@@ -1116,7 +1116,7 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
             _jsonPath + "/uac-init-ani");
         if (initNode && !initNode->IsNull())
         {
-            uac.ChangeAnimateTo(initNode->GetString());
+            uac.changeAnimateTo(initNode->GetString());
         }
 
         COMP_TYPE type = COMP_TYPE::U_ANIMATE;
@@ -1129,26 +1129,26 @@ void ObjectFactory::CreateUiComp(SceneNode* _node, UiObject* _ui,
 
         bool selected = getJsonNode(_json,
             _jsonPath + "/ubc-init-selected")->GetBool();
-        ubc.SetIsBeingSelected(selected);
+        ubc.setIsBeingSelected(selected);
         JsonNode surdBtn = getJsonNode(_json, _jsonPath + "/ubc-up-btn");
         if (surdBtn && !surdBtn->IsNull())
         {
-            ubc.SetUpBtnObjName(surdBtn->GetString());
+            ubc.setUpBtnObjName(surdBtn->GetString());
         }
         surdBtn = getJsonNode(_json, _jsonPath + "/ubc-down-btn");
         if (surdBtn && !surdBtn->IsNull())
         {
-            ubc.SetDownBtnObjName(surdBtn->GetString());
+            ubc.setDownBtnObjName(surdBtn->GetString());
         }
         surdBtn = getJsonNode(_json, _jsonPath + "/ubc-left-btn");
         if (surdBtn && !surdBtn->IsNull())
         {
-            ubc.SetLeftBtnObjName(surdBtn->GetString());
+            ubc.setLeftBtnObjName(surdBtn->GetString());
         }
         surdBtn = getJsonNode(_json, _jsonPath + "/ubc-right-btn");
         if (surdBtn && !surdBtn->IsNull())
         {
-            ubc.SetRightBtnObjName(surdBtn->GetString());
+            ubc.setRightBtnObjName(surdBtn->GetString());
         }
 
         COMP_TYPE type = COMP_TYPE::U_BUTTON;

@@ -1,92 +1,136 @@
 #pragma once
 
 #include "ActorComponent.h"
+
 #include <DirectXMath.h>
 
-class ATransformComponent :public ActorComponent
-{
-public:
-    ATransformComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    ATransformComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~ATransformComponent();
+namespace dx = DirectX;
 
-    ATransformComponent& operator=(const ATransformComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mPosition = _source.mPosition;
-        mProcessingPosition = _source.mProcessingPosition;
-        mPositionDirtyFlg = _source.mPositionDirtyFlg;
-        mRotation = _source.mRotation;
-        mProcessingRotation = _source.mProcessingRotation;
-        mRotationDirtyFlg = _source.mRotationDirtyFlg;
-        mScaling = _source.mScaling;
-        mProcessingScaling = _source.mProcessingScaling;
-        mScalingDirtyFlg = _source.mScalingDirtyFlg;
-        ActorComponent::operator=(_source);
-        return *this;
+class ATransformComponent : public ActorComponent {
+private:
+  dx::XMFLOAT3 Position;
+  dx::XMFLOAT3 Rotation;
+  dx::XMFLOAT3 Scaling;
+
+  dx::XMFLOAT3 ProcessingPosition;
+  dx::XMFLOAT3 ProcessingRotation;
+  dx::XMFLOAT3 ProcessingScaling;
+
+  bool PositionDirtyFlag;
+  bool RotationDirtyFlag;
+  bool ScalingDirtyFlag;
+
+public:
+  ATransformComponent(const std::string &CompName,
+                      class ActorObject *ActorOwner);
+  virtual ~ATransformComponent();
+
+  ATransformComponent &
+  operator=(const ATransformComponent &Source) {
+    if (this == &Source) {
+      return *this;
     }
+    Position = Source.Position;
+    ProcessingPosition = Source.ProcessingPosition;
+    PositionDirtyFlag = Source.PositionDirtyFlag;
+    Rotation = Source.Rotation;
+    ProcessingRotation = Source.ProcessingRotation;
+    RotationDirtyFlag = Source.RotationDirtyFlag;
+    Scaling = Source.Scaling;
+    ProcessingScaling = Source.ProcessingScaling;
+    ScalingDirtyFlag = Source.ScalingDirtyFlag;
+    ActorComponent::operator=(Source);
+    return *this;
+  }
 
 public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
 
 public:
-    void SetPosition(DirectX::XMFLOAT3 _pos);
-    void ForcePosition(DirectX::XMFLOAT3 _pos);
-    void SetRotation(DirectX::XMFLOAT3 _angle);
-    void ForceRotation(DirectX::XMFLOAT3 _angle);
-    void SetScaling(DirectX::XMFLOAT3 _factor);
-    void ForceScaling(DirectX::XMFLOAT3 _factor);
+  void
+  setPosition(const dx::XMFLOAT3 &Pos);
+  void
+  forcePosition(const dx::XMFLOAT3 &Pos);
+  void
+  setRotation(const dx::XMFLOAT3 &Angle);
+  void
+  forceRotation(const dx::XMFLOAT3 &Angle);
+  void
+  setScaling(const dx::XMFLOAT3 &Factor);
+  void
+  forceScaling(const dx::XMFLOAT3 &Factor);
 
-    void Translate(DirectX::XMFLOAT3 _deltaPos);
-    void TranslateXAsix(float _deltaPosX);
-    void TranslateYAsix(float _deltaPosY);
-    void TranslateZAsix(float _deltaPosZ);
+  void
+  translate(const dx::XMFLOAT3 &DeltaPos);
+  void
+  translateXAsix(float DeltaPosX);
+  void
+  translateYAsix(float DeltaPosY);
+  void
+  translateZAsix(float DeltaPosZ);
 
-    void Rotate(DirectX::XMFLOAT3 _deltaAngle);
-    void RotateXAsix(float _deltaAngleX);
-    void RotateYAsix(float _deltaAngleY);
-    void RotateZAsix(float _deltaAngleZ);
+  void
+  rotate(const dx::XMFLOAT3 &DeltaAngle);
+  void
+  rotateXAsix(float DeltaAngleX);
+  void
+  rotateYAsix(float DeltaAngleY);
+  void
+  rotateZAsix(float DeltaAngleZ);
 
-    void Scale(DirectX::XMFLOAT3 _factor);
-    void ScaleXAsix(float _factorX);
-    void ScaleYAsix(float _factorY);
-    void ScaleZAsix(float _factorZ);
+  void
+  scale(const dx::XMFLOAT3 &Factor);
+  void
+  scaleXAsix(float FactorX);
+  void
+  scaleYAsix(float FactorY);
+  void
+  scaleZAsix(float FactorZ);
 
-    void RollBackPosition();
-    void RollBackPositionX();
-    void RollBackPositionY();
-    void RollBackPositionZ();
-    void RollBackRotation();
-    void RollBackRotationX();
-    void RollBackRotationY();
-    void RollBackRotationZ();
-    void RollBackScaling();
-    void RollBackScalingX();
-    void RollBackScalingY();
-    void RollBackScalingZ();
+  void
+  rollBackPosition();
+  void
+  rollBackPositionX();
+  void
+  rollBackPositionY();
+  void
+  rollBackPositionZ();
+  void
+  rollBackRotation();
+  void
+  rollBackRotationX();
+  void
+  rollBackRotationY();
+  void
+  rollBackRotationZ();
+  void
+  rollBackScaling();
+  void
+  rollBackScalingX();
+  void
+  rollBackScalingY();
+  void
+  rollBackScalingZ();
 
-    const DirectX::XMFLOAT3& GetPosition() const;
-    const DirectX::XMFLOAT3& GetRotation() const;
-    const DirectX::XMFLOAT3& GetScaling() const;
-    const DirectX::XMFLOAT3& GetProcessingPosition() const;
-    const DirectX::XMFLOAT3& GetProcessingRotation() const;
-    const DirectX::XMFLOAT3& GetProcessingScaling() const;
+  const dx::XMFLOAT3 &
+  getPosition() const;
+  const dx::XMFLOAT3 &
+  getRotation() const;
+  const dx::XMFLOAT3 &
+  getScaling() const;
+  const dx::XMFLOAT3 &
+  getProcessingPosition() const;
+  const dx::XMFLOAT3 &
+  getProcessingRotation() const;
+  const dx::XMFLOAT3 &
+  getProcessingScaling() const;
 
 private:
-    void ApplyProcessingData();
-
-private:
-    DirectX::XMFLOAT3 mPosition;
-    DirectX::XMFLOAT3 mRotation;
-    DirectX::XMFLOAT3 mScaling;
-
-    DirectX::XMFLOAT3 mProcessingPosition;
-    DirectX::XMFLOAT3 mProcessingRotation;
-    DirectX::XMFLOAT3 mProcessingScaling;
-
-    bool mPositionDirtyFlg;
-    bool mRotationDirtyFlg;
-    bool mScalingDirtyFlg;
+  void
+  applyProcessingData();
 };

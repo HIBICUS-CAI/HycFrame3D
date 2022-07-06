@@ -54,21 +54,21 @@ void InputSystem::Run(Timer& _timer)
     if (up || down || left || right ||
         gp_up || gp_down || gp_left || gp_right)
     {
-        UButtonComponent::SetShouldUseMouse(false);
+        UButtonComponent::setShouldUseMouse(false);
     }
     else if (click)
     {
-        UButtonComponent::SetShouldUseMouse(true);
+        UButtonComponent::setShouldUseMouse(true);
     }
 
     for (auto& aic : *mAInputVecPtr)
     {
-        if (aic.GetCompStatus() == STATUS::ACTIVE) { aic.Update(_timer); }
+        if (aic.getCompStatus() == STATUS::ACTIVE) { aic.update(_timer); }
     }
 
     for (auto& uic : *mUInputVecPtr)
     {
-        if (uic.GetCompStatus() == STATUS::ACTIVE) { uic.Update(_timer); }
+        if (uic.getCompStatus() == STATUS::ACTIVE) { uic.update(_timer); }
     }
 
     // TEMP----------------------------------

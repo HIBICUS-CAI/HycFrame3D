@@ -1,7 +1,11 @@
 #pragma once
 
 #include "UiComponent.h"
+
 #include <array>
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
 
 constexpr auto SELECTED_BTN_SPRITE_NAME = "selected-button-falg";
 constexpr auto NULL_BTN = "null-btn";
@@ -11,55 +15,78 @@ constexpr UINT BTN_DOWN = 1;
 constexpr UINT BTN_LEFT = 2;
 constexpr UINT BTN_RIGHT = 3;
 
-class UButtonComponent :public UiComponent
-{
-public:
-    UButtonComponent(std::string&& _compName, class UiObject* _uiOwner);
-    UButtonComponent(std::string& _compName, class UiObject* _uiOwner);
-    virtual ~UButtonComponent();
+#pragma clang diagnostic pop
 
-    UButtonComponent& operator=(const UButtonComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mSurroundBtnObjectNames = _source.mSurroundBtnObjectNames;
-        mIsSelected = _source.mIsSelected;
-        UiComponent::operator=(_source);
-        return *this;
+class UButtonComponent : public UiComponent {
+private:
+  std::array<std::string, 4> SurroundBtnObjectNames;
+  bool SelectedFlag;
+
+public:
+  UButtonComponent(const std::string &CompName, class UiObject *UiOwner);
+  virtual ~UButtonComponent();
+
+  UButtonComponent &
+  operator=(const UButtonComponent &Source) {
+    if (this == &Source) {
+      return *this;
     }
+    SurroundBtnObjectNames = Source.SurroundBtnObjectNames;
+    SelectedFlag = Source.SelectedFlag;
+    UiComponent::operator=(Source);
+    return *this;
+  }
 
 public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
 
 public:
-    void SetUpBtnObjName(std::string _upBtn);
-    void SetDownBtnObjName(std::string _downBtn);
-    void SetLeftBtnObjName(std::string _leftBtn);
-    void SetRightBtnObjName(std::string _rightBtn);
+  void
+  setUpBtnObjName(const std::string &UpBtn);
+  void
+  setDownBtnObjName(const std::string &DownBtn);
+  void
+  setLeftBtnObjName(const std::string &LeftBtn);
+  void
+  setRightBtnObjName(const std::string &RightBtn);
 
-    void SetIsBeingSelected(bool _beingSelected);
-    bool IsBeingSelected() const;
+  void
+  setIsBeingSelected(bool BeingSelected);
+  bool
+  isBeingSelected() const;
 
-    bool IsCursorOnBtn();
+  bool
+  isCursorOnBtn();
 
-    void SelectUpBtn();
-    void SelectDownBtn();
-    void SelectLeftBtn();
-    void SelectRightBtn();
+  void
+  selectUpBtn();
+  void
+  selectDownBtn();
+  void
+  selectLeftBtn();
+  void
+  selectRightBtn();
 
-    UButtonComponent* GetUpBtn();
-    UButtonComponent* GetDownBtn();
-    UButtonComponent* GetLeftBtn();
-    UButtonComponent* GetRightBtn();
+  UButtonComponent *
+  getUpBtn();
+  UButtonComponent *
+  getDownBtn();
+  UButtonComponent *
+  getLeftBtn();
+  UButtonComponent *
+  getRightBtn();
 
-    static void SetScreenSpaceCursorPos(float _inputX, float _inputY);
-    static void SetShouldUseMouse(bool _shouldMouse);
+  static void
+  setScreenSpaceCursorPos(float InputX, float InputY);
+  static void
+  setShouldUseMouse(bool ShouldMouse);
 
 private:
-    void SyncDataFromTransform();
-
-private:
-    std::array<std::string, 4> mSurroundBtnObjectNames;
-    bool mIsSelected;
+  void
+  syncDataFromTransform();
 };

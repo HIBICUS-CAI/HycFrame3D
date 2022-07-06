@@ -53,9 +53,9 @@ bool ActorObject::Init()
 #ifdef _DEBUG
         assert(comp);
 #endif // _DEBUG
-        ((ActorComponent*)comp)->ResetActorOwner(this);
-        if (!comp->Init()) { return false; }
-        comp->SetCompStatus(STATUS::ACTIVE);
+        ((ActorComponent*)comp)->resetActorOwner(this);
+        if (!comp->init()) { return false; }
+        comp->setCompStatus(STATUS::ACTIVE);
     }
 
     SetObjectStatus(STATUS::ACTIVE);
@@ -73,9 +73,9 @@ void ActorObject::Destory()
 #ifdef _DEBUG
         assert(comp);
 #endif // _DEBUG
-        ((ActorComponent*)comp)->ResetActorOwner(this);
-        comp->Destory();
-        comp->SetCompStatus(STATUS::NEED_DESTORY);
+        ((ActorComponent*)comp)->resetActorOwner(this);
+        comp->destory();
+        comp->setCompStatus(STATUS::NEED_DESTORY);
         compContainer->DeleteComponent(compInfo.first, compInfo.second);
     }
 
@@ -92,6 +92,6 @@ void ActorObject::SyncStatusToAllComps()
 #ifdef _DEBUG
         assert(comp);
 #endif // _DEBUG
-        comp->SetCompStatus(GetObjectStatus());
+        comp->setCompStatus(GetObjectStatus());
     }
 }

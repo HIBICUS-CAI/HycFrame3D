@@ -49,39 +49,39 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     {
         auto mouseOffset = input::getMouseOffset();
         float horiR = -mouseOffset.x * _timer.floatDeltaTime() / 800.f;
-        _aic->GetSceneNode().GetMainCamera()->rotateRSCamera(0.f, horiR);
+        _aic->getSceneNode().GetMainCamera()->rotateRSCamera(0.f, horiR);
     }
 
     if (input::isKeyPushedInSingle(KB_RETURN))
     {
         P_LOG(LOG_DEBUG, "to test2\n");
-        _aic->GetSceneNode().GetSceneManager()->
+        _aic->getSceneNode().GetSceneManager()->
             LoadSceneNode("sample2-scene", "sample2-scene.json");
     }
 
     if (input::isKeyDownInSingle(KB_W))
     {
-        _aic->GetActorObject("sp-point-light-actor")->
+        _aic->getActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            TranslateZAsix(0.1f * _timer.floatDeltaTime());
+            translateZAsix(0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyDownInSingle(KB_A))
     {
-        _aic->GetActorObject("sp-point-light-actor")->
+        _aic->getActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            TranslateXAsix(-0.1f * _timer.floatDeltaTime());
+            translateXAsix(-0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyDownInSingle(KB_S))
     {
-        _aic->GetActorObject("sp-point-light-actor")->
+        _aic->getActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            TranslateZAsix(-0.1f * _timer.floatDeltaTime());
+            translateZAsix(-0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyDownInSingle(KB_D))
     {
-        _aic->GetActorObject("sp-point-light-actor")->
+        _aic->getActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            TranslateXAsix(0.1f * _timer.floatDeltaTime());
+            translateXAsix(0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyPushedInSingle(KB_P))
     {
@@ -104,9 +104,9 @@ bool TestASpInit(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "a sp init\n");
 
-    _aitc->GetActorOwner()->
+    _aitc->getActorOwner()->
         GetComponent<ATimerComponent>()->
-        StartTimer("timer1");
+        startTimer("timer1");
 
     return true;
 }
@@ -122,29 +122,29 @@ void TestASpUpdate(AInteractComponent* _aitc, Timer&)
     P_LOG(LOG_DEBUG, "timer0 : %f , timer1 : %f\n", time0, time1);*/
 
     CONTACT_PONT_PAIR contact = {};
-    if (_aitc->GetActorObject("sp-point-light-actor")->
+    if (_aitc->getActorObject("sp-point-light-actor")->
         GetComponent<ACollisionComponent>()->
-        CheckCollisionWith("sp-actor", &contact))
+        checkCollisionWith("sp-actor", &contact))
     {
-        _aitc->GetActorObject("sp-point-light-actor")->
+        _aitc->getActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            RollBackPosition();
+            rollBackPosition();
         P_LOG(LOG_DEBUG, "a : %f, %f, %f ; b : %f, %f, %f\n",
             contact.first.x, contact.first.y, contact.first.z,
             contact.second.x, contact.second.y, contact.second.z);
-        auto center = ACollisionComponent::CalcCenterOfContact(contact);
+        auto center = ACollisionComponent::calcCenterOfContact(contact);
         P_LOG(LOG_DEBUG, "center of contact : %f, %f, %f\n",
             center.x, center.y, center.z);
     }
 
-    _aitc->GetActorObject("sp-particle-actor")->
+    _aitc->getActorObject("sp-particle-actor")->
         GetComponent<ATransformComponent>()->
-        SetPosition(_aitc->GetActorObject("sp-point-light-actor")->
+        setPosition(_aitc->getActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            GetProcessingPosition());
-    _aitc->GetActorObject("sp-particle-actor")->
+            getProcessingPosition());
+    _aitc->getActorObject("sp-particle-actor")->
         GetComponent<ATransformComponent>()->
-        TranslateYAsix(5.f);
+        translateYAsix(5.f);
 }
 
 void TestASpDestory(AInteractComponent*)
@@ -155,92 +155,92 @@ void TestASpDestory(AInteractComponent*)
 void TestUSpInput(UInputComponent* _uic, Timer& _timer)
 {
     float delta = _timer.floatDeltaTime();
-    auto utc = _uic->GetUiOwner()->
+    auto utc = _uic->getUiOwner()->
         GetComponent<UTransformComponent>();
 
     if (input::isKeyDownInSingle(KB_W))
     {
-        utc->TranslateYAsix(0.1f * delta);
+        utc->translateYAsix(0.1f * delta);
     }
     if (input::isKeyDownInSingle(KB_A))
     {
-        utc->TranslateXAsix(-0.1f * delta);
+        utc->translateXAsix(-0.1f * delta);
     }
     if (input::isKeyDownInSingle(KB_S))
     {
-        utc->TranslateYAsix(-0.1f * delta);
+        utc->translateYAsix(-0.1f * delta);
     }
     if (input::isKeyDownInSingle(KB_D))
     {
-        utc->TranslateXAsix(0.1f * delta);
+        utc->translateXAsix(0.1f * delta);
     }
 
     if (input::isKeyPushedInSingle(KB_Z))
     {
-        _uic->GetUiOwner()->
+        _uic->getUiOwner()->
             GetComponent<USpriteComponent>()->
-            ResetTexture();
+            resetTexture();
     }
     if (input::isKeyPushedInSingle(KB_X))
     {
-        _uic->GetUiOwner()->
+        _uic->getUiOwner()->
             GetComponent<UAnimateComponent>()->
-            ChangeAnimateTo("number");
+            changeAnimateTo("number");
     }
     if (input::isKeyPushedInSingle(KB_C))
     {
-        _uic->GetUiOwner()->
+        _uic->getUiOwner()->
             GetComponent<UAnimateComponent>()->
-            ChangeAnimateTo("runman");
+            changeAnimateTo("runman");
     }
 
     if (input::isKeyPushedInSingle(KB_N))
     {
-        _uic->GetUiOwner()->
+        _uic->getUiOwner()->
             GetComponent<UAudioComponent>()->
-            PlayBgm("test", 0.8f);
+            playBgm("test", 0.8f);
     }
     if (input::isKeyPushedInSingle(KB_M))
     {
-        _uic->GetUiOwner()->
+        _uic->getUiOwner()->
             GetComponent<UAudioComponent>()->
-            PlayBgm("test", 0.4f);
+            playBgm("test", 0.4f);
     }
 
     if (input::isKeyPushedInSingle(KB_RETURN))
     {
         P_LOG(LOG_DEBUG, "to test1\n");
-        _uic->GetSceneNode().GetSceneManager()->
+        _uic->getSceneNode().GetSceneManager()->
             LoadSceneNode("sample1-scene", "sample1-scene.json");
     }
 }
 
 void TestUSpBtnInput(UInputComponent* _uic, Timer& _timer)
 {
-    auto ubc = _uic->GetUiOwner()->
+    auto ubc = _uic->getUiOwner()->
         GetComponent<UButtonComponent>();
     if (!ubc) { return; }
 
     if (input::isKeyPushedInSingle(KB_UP))
     {
-        ubc->SelectUpBtn();
+        ubc->selectUpBtn();
     }
     if (input::isKeyPushedInSingle(KB_LEFT))
     {
-        ubc->SelectLeftBtn();
+        ubc->selectLeftBtn();
     }
     if (input::isKeyPushedInSingle(KB_DOWN))
     {
-        ubc->SelectDownBtn();
+        ubc->selectDownBtn();
     }
     if (input::isKeyPushedInSingle(KB_RIGHT))
     {
-        ubc->SelectRightBtn();
+        ubc->selectRightBtn();
     }
 
-    if (ubc->IsCursorOnBtn() && input::isKeyPushedInSingle(M_LEFTBTN))
+    if (ubc->isCursorOnBtn() && input::isKeyPushedInSingle(M_LEFTBTN))
     {
-        P_LOG(LOG_DEBUG, "this btn has been click : %s\n", ubc->GetCompName().c_str());
+        P_LOG(LOG_DEBUG, "this btn has been click : %s\n", ubc->getCompName().c_str());
     }
 }
 
@@ -265,7 +265,7 @@ void TempToTitle(AInputComponent* _aic, Timer&)
     if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to title\n");
-        _aic->GetSceneNode().GetSceneManager()->
+        _aic->getSceneNode().GetSceneManager()->
             LoadSceneNode("title-scene", "title-scene.json");
     }
 }
@@ -275,7 +275,7 @@ void TempToSelect(AInputComponent* _aic, Timer&)
     if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to select\n");
-        _aic->GetSceneNode().GetSceneManager()->
+        _aic->getSceneNode().GetSceneManager()->
             LoadSceneNode("select-scene", "select-scene.json");
     }
 }
@@ -285,7 +285,7 @@ void TempToRun(AInputComponent* _aic, Timer&)
     if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to run\n");
-        _aic->GetSceneNode().GetSceneManager()->
+        _aic->getSceneNode().GetSceneManager()->
             LoadSceneNode("run-scene", "run-scene.json");
     }
 }
@@ -295,7 +295,7 @@ void TempToResult(AInputComponent* _aic, Timer&)
     if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to result\n");
-        _aic->GetSceneNode().GetSceneManager()->
+        _aic->getSceneNode().GetSceneManager()->
             LoadSceneNode("result-scene", "result-scene.json");
     }
 }
@@ -307,7 +307,7 @@ bool AniInit(AInteractComponent* _aitc)
 {
     P_LOG(LOG_DEBUG, "animate init\n");
 
-    g_Aanc = _aitc->GetActorOwner()->
+    g_Aanc = _aitc->getActorOwner()->
         GetComponent<AAnimateComponent>();
     if (!g_Aanc) { return false; }
 
@@ -316,29 +316,29 @@ bool AniInit(AInteractComponent* _aitc)
 
 void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
-    _aitc->GetActorOwner()->
+    _aitc->getActorOwner()->
         GetComponent<ATransformComponent>()->
-        RotateYAsix(_timer.floatDeltaTime() / 1000.f);
+        rotateYAsix(_timer.floatDeltaTime() / 1000.f);
 
     if (input::isKeyPushedInSingle(KB_1))
     {
-        g_Aanc->ChangeAnimationTo("run");
+        g_Aanc->changeAnimationTo("run");
     }
     else if (input::isKeyPushedInSingle(KB_2))
     {
-        g_Aanc->ChangeAnimationTo("bite");
+        g_Aanc->changeAnimationTo("bite");
     }
     else if (input::isKeyPushedInSingle(KB_3))
     {
-        g_Aanc->ChangeAnimationTo("roar");
+        g_Aanc->changeAnimationTo("roar");
     }
     else if (input::isKeyPushedInSingle(KB_4))
     {
-        g_Aanc->ChangeAnimationTo("attack_tail");
+        g_Aanc->changeAnimationTo("attack_tail");
     }
     else if (input::isKeyPushedInSingle(KB_5))
     {
-        g_Aanc->ChangeAnimationTo("idle");
+        g_Aanc->changeAnimationTo("idle");
     }
     else if (input::isKeyPushedInSingle(KB_UP))
     {
@@ -364,7 +364,7 @@ static float g_XFactor = 0.f;
 bool BBInit(AInteractComponent* _aitc)
 {
     g_XFactor = -1.f;
-    g_BBAtc = _aitc->GetActorOwner()->
+    g_BBAtc = _aitc->getActorOwner()->
         GetComponent<ATransformComponent>();
     if (!g_BBAtc) { return false; }
 
@@ -373,10 +373,10 @@ bool BBInit(AInteractComponent* _aitc)
 
 void BBUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
-    g_BBAtc->TranslateXAsix(_timer.floatDeltaTime() * g_XFactor * 0.01f);
-    if (fabsf(g_BBAtc->GetProcessingPosition().x) > 18.f)
+    g_BBAtc->translateXAsix(_timer.floatDeltaTime() * g_XFactor * 0.01f);
+    if (fabsf(g_BBAtc->getProcessingPosition().x) > 18.f)
     {
-        g_BBAtc->RollBackPositionX();
+        g_BBAtc->rollBackPositionX();
         g_XFactor *= -1.f;
     }
 }

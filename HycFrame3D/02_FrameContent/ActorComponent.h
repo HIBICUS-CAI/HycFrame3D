@@ -2,30 +2,40 @@
 
 #include "Component.h"
 
-class ActorComponent :public Component
-{
-public:
-    ActorComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    ActorComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~ActorComponent();
-
-    ActorComponent& operator=(const ActorComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mActorOwner = _source.mActorOwner;
-        Component::operator=(_source);
-        return *this;
-    }
-
-    class SceneNode& GetSceneNode() const;
-    class ActorObject* GetActorOwner() const;
-    void ResetActorOwner(class ActorObject* _owner);
-
-public:
-    virtual bool Init() = 0;
-    virtual void Update(Timer& _timer) = 0;
-    virtual void Destory() = 0;
-
+class ActorComponent : public Component {
 private:
-    class ActorObject* mActorOwner;
+  class ActorObject *ActorOwner;
+
+public:
+  ActorComponent(const std::string &CompName, class ActorObject *ActorOwner);
+  virtual ~ActorComponent();
+
+  ActorComponent &
+  operator=(const ActorComponent &Source) {
+    if (this == &Source) {
+      return *this;
+    }
+    ActorOwner = Source.ActorOwner;
+    Component::operator=(Source);
+    return *this;
+  }
+
+  class SceneNode &
+  getSceneNode() const;
+
+  class ActorObject *
+  getActorOwner() const;
+
+  void
+  resetActorOwner(class ActorObject *Owner);
+
+public:
+  virtual bool
+  init() = 0;
+
+  virtual void
+  update(Timer &Timer) = 0;
+
+  virtual void
+  destory() = 0;
 };

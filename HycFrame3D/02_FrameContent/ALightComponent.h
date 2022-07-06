@@ -1,8 +1,10 @@
 #pragma once
 
 #include "ActorComponent.h"
+
+#include <RSCommon.h>
+
 #include <DirectXMath.h>
-#include "RSCommon.h"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
@@ -11,51 +13,59 @@ constexpr auto BOX_BLOOM_MESH_NAME = "box-bloom-mesh";
 
 #pragma clang diagnostic pop
 
-class ALightComponent :public ActorComponent
-{
-public:
-    ALightComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    ALightComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~ALightComponent();
+class ALightComponent : public ActorComponent {
+private:
+  std::string LightName;
+  class RSLight *RSLightPtr;
 
-    ALightComponent& operator=(const ALightComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mCanCreateLight = _source.mCanCreateLight;
-        mLightInfoForInit = _source.mLightInfoForInit;
-        mLightCamInfoForInit = _source.mLightCamInfoForInit;
-        mIsBloom = _source.mIsBloom;
-        mIsCamera = _source.mIsCamera;
-        ActorComponent::operator=(_source);
-        return *this;
+  bool CanCreateLight;
+  LIGHT_INFO LightInfoForInit;
+  CAM_INFO LightCamInfoForInit;
+  bool IsBloom;
+  bool IsCamera;
+
+public:
+  ALightComponent(const std::string &CompName, class ActorObject *ActorOwner);
+  virtual ~ALightComponent();
+
+  ALightComponent &
+  operator=(const ALightComponent &Source) {
+    if (this == &Source) {
+      return *this;
     }
+    CanCreateLight = Source.CanCreateLight;
+    LightInfoForInit = Source.LightInfoForInit;
+    LightCamInfoForInit = Source.LightCamInfoForInit;
+    IsBloom = Source.IsBloom;
+    IsCamera = Source.IsCamera;
+    ActorComponent::operator=(Source);
+    return *this;
+  }
 
 public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
 
 public:
-    void AddLight(LIGHT_INFO& _lightInfo,
-        bool _setBloom, bool _setCamera, CAM_INFO& _camInfo);
-    void AddLight(LIGHT_INFO& _lightInfo,
-        bool _setBloom, bool _setCamera, CAM_INFO&& _camInfo);
+  void
+  addLight(const LIGHT_INFO &LightInfo,
+           bool SetBloom,
+           bool SetCamera,
+           const CAM_INFO &CamInfo);
 
-    void ResetLight(LIGHT_INFO* _lightInfo);
+  void
+  resetLight(const LIGHT_INFO *LightInfo);
 
-    class RSLight* GetLightInfo();
+  class RSLight *
+  getLightInfo();
 
 private:
-    void CreateLight();
-    void SyncDataFromTransform();
-
-private:
-    std::string mLightName;
-    class RSLight* mRSLightPtr;
-
-    bool mCanCreateLight;
-    LIGHT_INFO mLightInfoForInit;
-    CAM_INFO mLightCamInfoForInit;
-    bool mIsBloom;
-    bool mIsCamera;
+  void
+  createLight();
+  void
+  syncDataFromTransform();
 };

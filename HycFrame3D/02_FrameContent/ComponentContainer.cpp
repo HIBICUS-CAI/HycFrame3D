@@ -109,115 +109,115 @@ void ComponentContainer::AddComponent(COMP_TYPE _type, Component& _comp)
         case COMP_TYPE::A_TRANSFORM:
             mATransformCompVector.emplace_back((ATransformComponent&)_comp);
             mCompMap.insert(
-                { mATransformCompVector.back().GetCompName(),
+                { mATransformCompVector.back().getCompName(),
                 &(mATransformCompVector.back()) });
             break;
         case COMP_TYPE::A_INPUT:
             mAInputCompVector.emplace_back((AInputComponent&)_comp);
             mCompMap.insert(
-                { mAInputCompVector.back().GetCompName(),
+                { mAInputCompVector.back().getCompName(),
                 &(mAInputCompVector.back()) });
             break;
         case COMP_TYPE::A_INTERACT:
             mAInteractCompVector.emplace_back((AInteractComponent&)_comp);
             mCompMap.insert(
-                { mAInteractCompVector.back().GetCompName(),
+                { mAInteractCompVector.back().getCompName(),
                 &(mAInteractCompVector.back()) });
             break;
         case COMP_TYPE::A_TIMER:
             mATimerCompVector.emplace_back((ATimerComponent&)_comp);
             mCompMap.insert(
-                { mATimerCompVector.back().GetCompName(),
+                { mATimerCompVector.back().getCompName(),
                 &(mATimerCompVector.back()) });
             break;
         case COMP_TYPE::A_COLLISION:
             mACollisionCompVector.emplace_back((ACollisionComponent&)_comp);
             mCompMap.insert(
-                { mACollisionCompVector.back().GetCompName(),
+                { mACollisionCompVector.back().getCompName(),
                 &(mACollisionCompVector.back()) });
             break;
         case COMP_TYPE::A_MESH:
             mAMeshCompVector.emplace_back((AMeshComponent&)_comp);
             mCompMap.insert(
-                { mAMeshCompVector.back().GetCompName(),
+                { mAMeshCompVector.back().getCompName(),
                 &(mAMeshCompVector.back()) });
             break;
         case COMP_TYPE::A_LIGHT:
             mALightCompVector.emplace_back((ALightComponent&)_comp);
             mCompMap.insert(
-                { mALightCompVector.back().GetCompName(),
+                { mALightCompVector.back().getCompName(),
                 &(mALightCompVector.back()) });
             break;
         case COMP_TYPE::A_AUDIO:
             mAAudioCompVector.emplace_back((AAudioComponent&)_comp);
             mCompMap.insert(
-                { mAAudioCompVector.back().GetCompName(),
+                { mAAudioCompVector.back().getCompName(),
                 &(mAAudioCompVector.back()) });
             break;
         case COMP_TYPE::A_PARTICLE:
             mAParticleCompVector.emplace_back((AParticleComponent&)_comp);
             mCompMap.insert(
-                { mAParticleCompVector.back().GetCompName(),
+                { mAParticleCompVector.back().getCompName(),
                 &(mAParticleCompVector.back()) });
             break;
         case COMP_TYPE::A_ANIMATE:
             mAAnimateCompVector.emplace_back((AAnimateComponent&)_comp);
             mCompMap.insert(
-                { mAAnimateCompVector.back().GetCompName(),
+                { mAAnimateCompVector.back().getCompName(),
                 &(mAAnimateCompVector.back()) });
             break;
         case COMP_TYPE::A_SPRITE:
             mASpriteCompVector.emplace_back((ASpriteComponent&)_comp);
             mCompMap.insert(
-                { mASpriteCompVector.back().GetCompName(),
+                { mASpriteCompVector.back().getCompName(),
                 &(mASpriteCompVector.back()) });
             break;
         case COMP_TYPE::U_TRANSFORM:
             mUTransformCompVector.emplace_back((UTransformComponent&)_comp);
             mCompMap.insert(
-                { mUTransformCompVector.back().GetCompName(),
+                { mUTransformCompVector.back().getCompName(),
                 &(mUTransformCompVector.back()) });
             break;
         case COMP_TYPE::U_SPRITE:
             mUSpriteCompVector.emplace_back((USpriteComponent&)_comp);
             mCompMap.insert(
-                { mUSpriteCompVector.back().GetCompName(),
+                { mUSpriteCompVector.back().getCompName(),
                 &(mUSpriteCompVector.back()) });
             break;
         case COMP_TYPE::U_ANIMATE:
             mUAnimateCompVector.emplace_back((UAnimateComponent&)_comp);
             mCompMap.insert(
-                { mUAnimateCompVector.back().GetCompName(),
+                { mUAnimateCompVector.back().getCompName(),
                 &(mUAnimateCompVector.back()) });
             break;
         case COMP_TYPE::U_TIMER:
             mUTimerCompVector.emplace_back((UTimerComponent&)_comp);
             mCompMap.insert(
-                { mUTimerCompVector.back().GetCompName(),
+                { mUTimerCompVector.back().getCompName(),
                 &(mUTimerCompVector.back()) });
             break;
         case COMP_TYPE::U_INPUT:
             mUInputCompVector.emplace_back((UInputComponent&)_comp);
             mCompMap.insert(
-                { mUInputCompVector.back().GetCompName(),
+                { mUInputCompVector.back().getCompName(),
                 &(mUInputCompVector.back()) });
             break;
         case COMP_TYPE::U_INTERACT:
             mUInteractCompVector.emplace_back((UInteractComponent&)_comp);
             mCompMap.insert(
-                { mUInteractCompVector.back().GetCompName(),
+                { mUInteractCompVector.back().getCompName(),
                 &(mUInteractCompVector.back()) });
             break;
         case COMP_TYPE::U_BUTTON:
             mUButtonCompVector.emplace_back((UButtonComponent&)_comp);
             mCompMap.insert(
-                { mUButtonCompVector.back().GetCompName(),
+                { mUButtonCompVector.back().getCompName(),
                 &(mUButtonCompVector.back()) });
             break;
         case COMP_TYPE::U_AUDIO:
             mUAudioCompVector.emplace_back((UAudioComponent&)_comp);
             mCompMap.insert(
-                { mUAudioCompVector.back().GetCompName(),
+                { mUAudioCompVector.back().getCompName(),
                 &(mUAudioCompVector.back()) });
             break;
         default:
@@ -234,115 +234,115 @@ void ComponentContainer::AddComponent(COMP_TYPE _type, Component& _comp)
         case COMP_TYPE::A_TRANSFORM:
             mATransformCompVector[index] = (ATransformComponent&)_comp;
             mCompMap.insert(
-                { mATransformCompVector[index].GetCompName(),
+                { mATransformCompVector[index].getCompName(),
                 &(mATransformCompVector[index]) });
             break;
         case COMP_TYPE::A_INPUT:
             mAInputCompVector[index] = (AInputComponent&)_comp;
             mCompMap.insert(
-                { mAInputCompVector[index].GetCompName(),
+                { mAInputCompVector[index].getCompName(),
                 &(mAInputCompVector[index]) });
             break;
         case COMP_TYPE::A_INTERACT:
             mAInteractCompVector[index] = (AInteractComponent&)_comp;
             mCompMap.insert(
-                { mAInteractCompVector[index].GetCompName(),
+                { mAInteractCompVector[index].getCompName(),
                 &(mAInteractCompVector[index]) });
             break;
         case COMP_TYPE::A_TIMER:
             mATimerCompVector[index] = (ATimerComponent&)_comp;
             mCompMap.insert(
-                { mATimerCompVector[index].GetCompName(),
+                { mATimerCompVector[index].getCompName(),
                 &(mATimerCompVector[index]) });
             break;
         case COMP_TYPE::A_COLLISION:
             mACollisionCompVector[index] = (ACollisionComponent&)_comp;
             mCompMap.insert(
-                { mACollisionCompVector[index].GetCompName(),
+                { mACollisionCompVector[index].getCompName(),
                 &(mACollisionCompVector[index]) });
             break;
         case COMP_TYPE::A_MESH:
             mAMeshCompVector[index] = (AMeshComponent&)_comp;
             mCompMap.insert(
-                { mAMeshCompVector[index].GetCompName(),
+                { mAMeshCompVector[index].getCompName(),
                 &(mAMeshCompVector[index]) });
             break;
         case COMP_TYPE::A_LIGHT:
             mALightCompVector[index] = (ALightComponent&)_comp;
             mCompMap.insert(
-                { mALightCompVector[index].GetCompName(),
+                { mALightCompVector[index].getCompName(),
                 &(mALightCompVector[index]) });
             break;
         case COMP_TYPE::A_AUDIO:
             mAAudioCompVector[index] = (AAudioComponent&)_comp;
             mCompMap.insert(
-                { mAAudioCompVector[index].GetCompName(),
+                { mAAudioCompVector[index].getCompName(),
                 &(mAAudioCompVector[index]) });
             break;
         case COMP_TYPE::A_PARTICLE:
             mAParticleCompVector[index] = (AParticleComponent&)_comp;
             mCompMap.insert(
-                { mAParticleCompVector[index].GetCompName(),
+                { mAParticleCompVector[index].getCompName(),
                 &(mAParticleCompVector[index]) });
             break;
         case COMP_TYPE::A_ANIMATE:
             mAAnimateCompVector[index] = (AAnimateComponent&)_comp;
             mCompMap.insert(
-                { mAAnimateCompVector[index].GetCompName(),
+                { mAAnimateCompVector[index].getCompName(),
                 &(mAAnimateCompVector[index]) });
             break;
         case COMP_TYPE::A_SPRITE:
             mASpriteCompVector[index] = (ASpriteComponent&)_comp;
             mCompMap.insert(
-                { mASpriteCompVector[index].GetCompName(),
+                { mASpriteCompVector[index].getCompName(),
                 &(mASpriteCompVector[index]) });
             break;
         case COMP_TYPE::U_TRANSFORM:
             mUTransformCompVector[index] = (UTransformComponent&)_comp;
             mCompMap.insert(
-                { mUTransformCompVector[index].GetCompName(),
+                { mUTransformCompVector[index].getCompName(),
                 &(mUTransformCompVector[index]) });
             break;
         case COMP_TYPE::U_SPRITE:
             mUSpriteCompVector[index] = (USpriteComponent&)_comp;
             mCompMap.insert(
-                { mUSpriteCompVector[index].GetCompName(),
+                { mUSpriteCompVector[index].getCompName(),
                 &(mUSpriteCompVector[index]) });
             break;
         case COMP_TYPE::U_ANIMATE:
             mUAnimateCompVector[index] = (UAnimateComponent&)_comp;
             mCompMap.insert(
-                { mUAnimateCompVector[index].GetCompName(),
+                { mUAnimateCompVector[index].getCompName(),
                 &(mUAnimateCompVector[index]) });
             break;
         case COMP_TYPE::U_TIMER:
             mUTimerCompVector[index] = (UTimerComponent&)_comp;
             mCompMap.insert(
-                { mUTimerCompVector[index].GetCompName(),
+                { mUTimerCompVector[index].getCompName(),
                 &(mUTimerCompVector[index]) });
             break;
         case COMP_TYPE::U_INPUT:
             mUInputCompVector[index] = (UInputComponent&)_comp;
             mCompMap.insert(
-                { mUInputCompVector[index].GetCompName(),
+                { mUInputCompVector[index].getCompName(),
                 &(mUInputCompVector[index]) });
             break;
         case COMP_TYPE::U_INTERACT:
             mUInteractCompVector[index] = (UInteractComponent&)_comp;
             mCompMap.insert(
-                { mUInteractCompVector[index].GetCompName(),
+                { mUInteractCompVector[index].getCompName(),
                 &(mUInteractCompVector[index]) });
             break;
         case COMP_TYPE::U_BUTTON:
             mUButtonCompVector[index] = (UButtonComponent&)_comp;
             mCompMap.insert(
-                { mUButtonCompVector[index].GetCompName(),
+                { mUButtonCompVector[index].getCompName(),
                 &(mUButtonCompVector[index]) });
             break;
         case COMP_TYPE::U_AUDIO:
             mUAudioCompVector[index] = (UAudioComponent&)_comp;
             mCompMap.insert(
-                { mUAudioCompVector[index].GetCompName(),
+                { mUAudioCompVector[index].getCompName(),
                 &(mUAudioCompVector[index]) });
             break;
         default:

@@ -1,409 +1,391 @@
 #include "UButtonComponent.h"
-#include "UiObject.h"
-#include "SceneNode.h"
+
 #include "AssetsPool.h"
+#include "SceneNode.h"
 #include "UTransformComponent.h"
-#include "WM_Interface.h"
-#include "RSRoot_DX11.h"
-#include "RSMeshHelper.h"
+#include "UiObject.h"
+
+#include <RSMeshHelper.h>
+#include <RSRoot_DX11.h>
 #include <TextUtility.h>
+#include <WM_Interface.h>
 
-static UButtonComponent* g_SelectedBtnCompPtr = nullptr;
+static UButtonComponent *G_SelectedBtnCompPtr = nullptr;
 
-static bool g_CanThisFrameProcessSelect = true;
-static bool g_ShouleUseMouseSelect = false;
+static bool G_CanThisFrameProcessSelect = true;
+static bool G_ShouleUseMouseSelect = false;
 
-static SUBMESH_DATA* g_SelectTexMeshPtr = nullptr;
+static SUBMESH_DATA *G_SelectTexMeshPtr = nullptr;
 
-static DirectX::XMFLOAT2 g_ScreenSpaceCursorPosition = { 0.f,0.f };
+static dx::XMFLOAT2 G_ScreenSpaceCursorPosition = {0.f, 0.f};
 
-static std::string g_SelectFlagTexture = "";
+static std::string G_SelectFlagTexture = "";
 
-UButtonComponent::UButtonComponent(std::string&& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner),
-    mSurroundBtnObjectNames({ NULL_BTN,NULL_BTN,NULL_BTN,NULL_BTN }),
-    mIsSelected(false)
-{
+UButtonComponent::UButtonComponent(const std::string &CompName,
+                                   UiObject *UiOwner)
+    : UiComponent(CompName, UiOwner),
+      SurroundBtnObjectNames({NULL_BTN, NULL_BTN, NULL_BTN, NULL_BTN}),
+      SelectedFlag(false) {}
 
-}
+UButtonComponent::~UButtonComponent() {}
 
-UButtonComponent::UButtonComponent(std::string& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner),
-    mSurroundBtnObjectNames({ NULL_BTN,NULL_BTN,NULL_BTN,NULL_BTN }),
-    mIsSelected(false)
-{
+bool
+UButtonComponent::init() {
+  if (G_SelectedBtnCompPtr) {
+    G_SelectedBtnCompPtr = nullptr;
+  }
+  if (G_SelectTexMeshPtr) {
+    G_SelectTexMeshPtr = nullptr;
+  }
+  G_CanThisFrameProcessSelect = true;
+  G_ShouleUseMouseSelect = false;
 
-}
+  if (SelectedFlag) {
+    G_SelectedBtnCompPtr = this;
+  }
 
-UButtonComponent::~UButtonComponent()
-{
-
-}
-
-bool UButtonComponent::Init()
-{
-    if (g_SelectedBtnCompPtr) { g_SelectedBtnCompPtr = nullptr; }
-    if (g_SelectTexMeshPtr) { g_SelectTexMeshPtr = nullptr; }
-    g_CanThisFrameProcessSelect = true;
-    g_ShouleUseMouseSelect = false;
-
-    if (mIsSelected) { g_SelectedBtnCompPtr = this; }
-
-    SUBMESH_DATA* mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        getSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
-    if (!mesh)
-    {
-        if (g_SelectFlagTexture == "")
-        {
-            using namespace hyc::text;
-            TomlNode btnFlgConfig = {};
-            std::string errorMess = "";
-            if (!loadTomlAndParse(btnFlgConfig,
-                ".\\Assets\\Configs\\selected-flag-config.toml",
-                errorMess))
-            {
-                P_LOG(LOG_ERROR, "failed to parse btn flag config : %s\n",
-                    errorMess.c_str());
-                return false;
-            }
-            g_SelectFlagTexture =
-                getAs<std::string>(btnFlgConfig["flag-texture"]["file"]);
-        }
-
-        RS_SUBMESH_DATA btnSelect = getRSDX11RootInstance()->
-            getMeshHelper()->getGeoGenerator()->createSpriteRect(
-                LAYOUT_TYPE::NORMAL_TANGENT_TEX, g_SelectFlagTexture);
-        GetUiOwner()->GetSceneNode().GetAssetsPool()->insertNewSubMesh(
-            SELECTED_BTN_SPRITE_NAME, btnSelect, MESH_TYPE::UI_SPRITE);
-        mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-            getSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
-
-        RS_INSTANCE_DATA id = {};
-        id.CustomizedData1 = { 1.f,1.f,1.f,1.f };
-        id.CustomizedData2 = { 0.f,0.f,1.f,1.f };
-        mesh->InstanceMap.insert({ SELECTED_BTN_SPRITE_NAME,id });
-
-        g_SelectTexMeshPtr = mesh;
-    }
-
-    return true;
-}
-
-void UButtonComponent::Update(Timer& _timer)
-{
-    if (!g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect)
-    {
-        g_CanThisFrameProcessSelect = true;
-    }
-
-    if (g_ShouleUseMouseSelect)
-    {
-        auto utc = GetUiOwner()->
-            GetComponent<UTransformComponent>();
-#ifdef _DEBUG
-        assert(utc);
-#endif // _DEBUG
-        static DirectX::XMFLOAT2 cur = {};
-        static DirectX::XMFLOAT3 pos = {};
-        static DirectX::XMFLOAT3 size = {};
-        cur = g_ScreenSpaceCursorPosition;
-        pos = utc->GetPosition();
-        size = utc->GetScaling();
-        if (fabsf(cur.x - pos.x) < size.x / 2.f &&
-            fabsf(cur.y - pos.y) < size.y / 2.f)
-        {
-            if (g_SelectedBtnCompPtr)
-            {
-                g_SelectedBtnCompPtr->SetIsBeingSelected(false);
-            }
-            SetIsBeingSelected(true);
-            g_SelectedBtnCompPtr = this;
-        }
-    }
-
-    if (mIsSelected)
-    {
-        g_SelectedBtnCompPtr = this;
-        SyncDataFromTransform();
-    }
-}
-
-void UButtonComponent::Destory()
-{
-    if (g_SelectedBtnCompPtr) { g_SelectedBtnCompPtr = nullptr; }
-    if (g_SelectTexMeshPtr) { g_SelectTexMeshPtr = nullptr; }
-    g_CanThisFrameProcessSelect = true;
-    g_ShouleUseMouseSelect = false;
-}
-
-void UButtonComponent::SetIsBeingSelected(bool _beingSelected)
-{
-    mIsSelected = _beingSelected;
-}
-
-bool UButtonComponent::IsBeingSelected() const
-{
-    return mIsSelected;
-}
-
-bool UButtonComponent::IsCursorOnBtn()
-{
-    if (g_ShouleUseMouseSelect && mIsSelected)
-    {
-        auto utc = GetUiOwner()->GetComponent<UTransformComponent>();
-#ifdef _DEBUG
-        assert(utc);
-#endif // _DEBUG
-        static DirectX::XMFLOAT2 cur = {};
-        static DirectX::XMFLOAT3 pos = {};
-        static DirectX::XMFLOAT3 size = {};
-        cur = g_ScreenSpaceCursorPosition;
-        pos = utc->GetPosition();
-        size = utc->GetScaling();
-        if (fabsf(cur.x - pos.x) < size.x / 2.f &&
-            fabsf(cur.y - pos.y) < size.y / 2.f)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
-    {
+  SUBMESH_DATA *MeshPtr =
+      getUiOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+          SELECTED_BTN_SPRITE_NAME);
+  if (!MeshPtr) {
+    if (G_SelectFlagTexture == "") {
+      using namespace hyc::text;
+      TomlNode BtnFlgConfig = {};
+      std::string ErrorMess = "";
+      if (!loadTomlAndParse(BtnFlgConfig,
+                            ".\\Assets\\Configs\\selected-flag-config.toml",
+                            ErrorMess)) {
+        P_LOG(LOG_ERROR, "failed to parse btn flag config : %s\n",
+              ErrorMess.c_str());
         return false;
+      }
+      G_SelectFlagTexture =
+          getAs<std::string>(BtnFlgConfig["flag-texture"]["file"]);
     }
+
+    RS_SUBMESH_DATA BtnSelect =
+        getRSDX11RootInstance()
+            ->getMeshHelper()
+            ->getGeoGenerator()
+            ->createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
+                               G_SelectFlagTexture);
+    getUiOwner()->GetSceneNode().GetAssetsPool()->insertNewSubMesh(
+        SELECTED_BTN_SPRITE_NAME, BtnSelect, MESH_TYPE::UI_SPRITE);
+    MeshPtr = getUiOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+        SELECTED_BTN_SPRITE_NAME);
+
+    RS_INSTANCE_DATA InsData = {};
+    InsData.CustomizedData1 = {1.f, 1.f, 1.f, 1.f};
+    InsData.CustomizedData2 = {0.f, 0.f, 1.f, 1.f};
+    MeshPtr->InstanceMap.insert({SELECTED_BTN_SPRITE_NAME, InsData});
+
+    G_SelectTexMeshPtr = MeshPtr;
+  }
+
+  return true;
 }
 
-void UButtonComponent::SelectUpBtn()
-{
-    if (mIsSelected && g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect &&
-        mSurroundBtnObjectNames[BTN_UP] != NULL_BTN)
-    {
-        auto upUi = GetUiOwner()->GetSceneNode().
-            GetUiObject(mSurroundBtnObjectNames[BTN_UP]);
-        if (!upUi) { return; }
+void
+UButtonComponent::update(Timer &Timer) {
+  if (!G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect) {
+    G_CanThisFrameProcessSelect = true;
+  }
 
-        auto upUbc = upUi->GetComponent<UButtonComponent>();
-        if (!upUbc) { return; }
-
-        SetIsBeingSelected(false);
-        upUbc->SetIsBeingSelected(true);
-        g_CanThisFrameProcessSelect = false;
-    }
-}
-
-void UButtonComponent::SelectDownBtn()
-{
-    if (mIsSelected && g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect &&
-        mSurroundBtnObjectNames[BTN_DOWN] != NULL_BTN)
-    {
-        auto downUi = GetUiOwner()->GetSceneNode().
-            GetUiObject(mSurroundBtnObjectNames[BTN_DOWN]);
-        if (!downUi) { return; }
-
-        auto downUbc = downUi->GetComponent<UButtonComponent>();
-        if (!downUbc) { return; }
-
-        SetIsBeingSelected(false);
-        downUbc->SetIsBeingSelected(true);
-        g_CanThisFrameProcessSelect = false;
-    }
-}
-
-void UButtonComponent::SelectLeftBtn()
-{
-    if (mIsSelected && g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect &&
-        mSurroundBtnObjectNames[BTN_LEFT] != NULL_BTN)
-    {
-        auto leftUi = GetUiOwner()->GetSceneNode().
-            GetUiObject(mSurroundBtnObjectNames[BTN_LEFT]);
-        if (!leftUi) { return; }
-
-        auto leftUbc = leftUi->
-            GetComponent<UButtonComponent>();
-        if (!leftUbc) { return; }
-
-        SetIsBeingSelected(false);
-        leftUbc->SetIsBeingSelected(true);
-        g_CanThisFrameProcessSelect = false;
-    }
-}
-
-void UButtonComponent::SelectRightBtn()
-{
-    if (mIsSelected && g_CanThisFrameProcessSelect && !g_ShouleUseMouseSelect &&
-        mSurroundBtnObjectNames[BTN_RIGHT] != NULL_BTN)
-    {
-        auto rightUi = GetUiOwner()->GetSceneNode().
-            GetUiObject(mSurroundBtnObjectNames[BTN_RIGHT]);
-        if (!rightUi) { return; }
-
-        auto rightUbc = rightUi->GetComponent<UButtonComponent>();
-        if (!rightUbc) { return; }
-
-        SetIsBeingSelected(false);
-        rightUbc->SetIsBeingSelected(true);
-        g_CanThisFrameProcessSelect = false;
-    }
-}
-
-UButtonComponent* UButtonComponent::GetUpBtn()
-{
-    auto ui = GetUiOwner()->GetSceneNode().
-        GetUiObject(mSurroundBtnObjectNames[BTN_UP]);
-    if (!ui)
-    {
-        P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
-            mSurroundBtnObjectNames[BTN_UP].c_str());
-        return nullptr;
-    }
-
-    auto ubc = ui->GetComponent<UButtonComponent>();
-    if (!ubc)
-    {
-        P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
-            mSurroundBtnObjectNames[BTN_UP].c_str());
-        return nullptr;
-    }
-    else
-    {
-        return ubc;
-    }
-}
-
-UButtonComponent* UButtonComponent::GetDownBtn()
-{
-    auto ui = GetUiOwner()->GetSceneNode().
-        GetUiObject(mSurroundBtnObjectNames[BTN_DOWN]);
-    if (!ui)
-    {
-        P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
-            mSurroundBtnObjectNames[BTN_DOWN].c_str());
-        return nullptr;
-    }
-
-    auto ubc = ui->GetComponent<UButtonComponent>();
-    if (!ubc)
-    {
-        P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
-            mSurroundBtnObjectNames[BTN_DOWN].c_str());
-        return nullptr;
-    }
-    else
-    {
-        return ubc;
-    }
-}
-
-UButtonComponent* UButtonComponent::GetLeftBtn()
-{
-    auto ui = GetUiOwner()->GetSceneNode().
-        GetUiObject(mSurroundBtnObjectNames[BTN_LEFT]);
-    if (!ui)
-    {
-        P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
-            mSurroundBtnObjectNames[BTN_LEFT].c_str());
-        return nullptr;
-    }
-
-    auto ubc = ui->GetComponent<UButtonComponent>();
-    if (!ubc)
-    {
-        P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
-            mSurroundBtnObjectNames[BTN_LEFT].c_str());
-        return nullptr;
-    }
-    else
-    {
-        return ubc;
-    }
-}
-
-UButtonComponent* UButtonComponent::GetRightBtn()
-{
-    auto ui = GetUiOwner()->GetSceneNode().
-        GetUiObject(mSurroundBtnObjectNames[BTN_RIGHT]);
-    if (!ui)
-    {
-        P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
-            mSurroundBtnObjectNames[BTN_RIGHT].c_str());
-        return nullptr;
-    }
-
-    auto ubc = ui->GetComponent<UButtonComponent>();
-    if (!ubc)
-    {
-        P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
-            mSurroundBtnObjectNames[BTN_RIGHT].c_str());
-        return nullptr;
-    }
-    else
-    {
-        return ubc;
-    }
-}
-
-void UButtonComponent::SetUpBtnObjName(std::string _upBtn)
-{
-    mSurroundBtnObjectNames[BTN_UP] = _upBtn;
-}
-
-void UButtonComponent::SetDownBtnObjName(std::string _downBtn)
-{
-    mSurroundBtnObjectNames[BTN_DOWN] = _downBtn;
-}
-
-void UButtonComponent::SetLeftBtnObjName(std::string _leftBtn)
-{
-    mSurroundBtnObjectNames[BTN_LEFT] = _leftBtn;
-}
-
-void UButtonComponent::SetRightBtnObjName(std::string _rightBtn)
-{
-    mSurroundBtnObjectNames[BTN_RIGHT] = _rightBtn;
-}
-
-void UButtonComponent::SyncDataFromTransform()
-{
-    UTransformComponent* utc = GetUiOwner()->
-        GetComponent<UTransformComponent>();
+  if (G_ShouleUseMouseSelect) {
+    auto Utc = getUiOwner()->GetComponent<UTransformComponent>();
 #ifdef _DEBUG
-    assert(utc);
+    assert(Utc);
+#endif // _DEBUG
+    static dx::XMFLOAT2 Cur = {};
+    static dx::XMFLOAT3 Pos = {};
+    static dx::XMFLOAT3 Size = {};
+    Cur = G_ScreenSpaceCursorPosition;
+    Pos = Utc->getPosition();
+    Size = Utc->getScaling();
+    if (fabsf(Cur.x - Pos.x) < Size.x / 2.f &&
+        fabsf(Cur.y - Pos.y) < Size.y / 2.f) {
+      if (G_SelectedBtnCompPtr) {
+        G_SelectedBtnCompPtr->setIsBeingSelected(false);
+      }
+      setIsBeingSelected(true);
+      G_SelectedBtnCompPtr = this;
+    }
+  }
+
+  if (SelectedFlag) {
+    G_SelectedBtnCompPtr = this;
+    syncDataFromTransform();
+  }
+}
+
+void
+UButtonComponent::destory() {
+  if (G_SelectedBtnCompPtr) {
+    G_SelectedBtnCompPtr = nullptr;
+  }
+  if (G_SelectTexMeshPtr) {
+    G_SelectTexMeshPtr = nullptr;
+  }
+  G_CanThisFrameProcessSelect = true;
+  G_ShouleUseMouseSelect = false;
+}
+
+void
+UButtonComponent::setIsBeingSelected(bool BeingSelected) {
+  SelectedFlag = BeingSelected;
+}
+
+bool
+UButtonComponent::isBeingSelected() const {
+  return SelectedFlag;
+}
+
+bool
+UButtonComponent::isCursorOnBtn() {
+  if (G_ShouleUseMouseSelect && SelectedFlag) {
+    auto Utc = getUiOwner()->GetComponent<UTransformComponent>();
+#ifdef _DEBUG
+    assert(Utc);
+#endif // _DEBUG
+    static dx::XMFLOAT2 Cur = {};
+    static dx::XMFLOAT3 Pos = {};
+    static dx::XMFLOAT3 Size = {};
+    Cur = G_ScreenSpaceCursorPosition;
+    Pos = Utc->getPosition();
+    Size = Utc->getScaling();
+    if (fabsf(Cur.x - Pos.x) < Size.x / 2.f &&
+        fabsf(Cur.y - Pos.y) < Size.y / 2.f) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+
+void
+UButtonComponent::selectUpBtn() {
+  if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
+      SurroundBtnObjectNames[BTN_UP] != NULL_BTN) {
+    auto UpUi = getUiOwner()->GetSceneNode().GetUiObject(
+        SurroundBtnObjectNames[BTN_UP]);
+    if (!UpUi) {
+      return;
+    }
+
+    auto UpUbc = UpUi->GetComponent<UButtonComponent>();
+    if (!UpUbc) {
+      return;
+    }
+
+    setIsBeingSelected(false);
+    UpUbc->setIsBeingSelected(true);
+    G_CanThisFrameProcessSelect = false;
+  }
+}
+
+void
+UButtonComponent::selectDownBtn() {
+  if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
+      SurroundBtnObjectNames[BTN_DOWN] != NULL_BTN) {
+    auto DownUi = getUiOwner()->GetSceneNode().GetUiObject(
+        SurroundBtnObjectNames[BTN_DOWN]);
+    if (!DownUi) {
+      return;
+    }
+
+    auto DownUbc = DownUi->GetComponent<UButtonComponent>();
+    if (!DownUbc) {
+      return;
+    }
+
+    setIsBeingSelected(false);
+    DownUbc->setIsBeingSelected(true);
+    G_CanThisFrameProcessSelect = false;
+  }
+}
+
+void
+UButtonComponent::selectLeftBtn() {
+  if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
+      SurroundBtnObjectNames[BTN_LEFT] != NULL_BTN) {
+    auto LeftUi = getUiOwner()->GetSceneNode().GetUiObject(
+        SurroundBtnObjectNames[BTN_LEFT]);
+    if (!LeftUi) {
+      return;
+    }
+
+    auto LeftUbc = LeftUi->GetComponent<UButtonComponent>();
+    if (!LeftUbc) {
+      return;
+    }
+
+    setIsBeingSelected(false);
+    LeftUbc->setIsBeingSelected(true);
+    G_CanThisFrameProcessSelect = false;
+  }
+}
+
+void
+UButtonComponent::selectRightBtn() {
+  if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
+      SurroundBtnObjectNames[BTN_RIGHT] != NULL_BTN) {
+    auto RightUi = getUiOwner()->GetSceneNode().GetUiObject(
+        SurroundBtnObjectNames[BTN_RIGHT]);
+    if (!RightUi) {
+      return;
+    }
+
+    auto RightUbc = RightUi->GetComponent<UButtonComponent>();
+    if (!RightUbc) {
+      return;
+    }
+
+    setIsBeingSelected(false);
+    RightUbc->setIsBeingSelected(true);
+    G_CanThisFrameProcessSelect = false;
+  }
+}
+
+UButtonComponent *
+UButtonComponent::getUpBtn() {
+  auto Ui =
+      getUiOwner()->GetSceneNode().GetUiObject(SurroundBtnObjectNames[BTN_UP]);
+  if (!Ui) {
+    P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
+          SurroundBtnObjectNames[BTN_UP].c_str());
+    return nullptr;
+  }
+
+  auto Ubc = Ui->GetComponent<UButtonComponent>();
+  if (!Ubc) {
+    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
+          SurroundBtnObjectNames[BTN_UP].c_str());
+    return nullptr;
+  } else {
+    return Ubc;
+  }
+}
+
+UButtonComponent *
+UButtonComponent::getDownBtn() {
+  auto Ui = getUiOwner()->GetSceneNode().GetUiObject(
+      SurroundBtnObjectNames[BTN_DOWN]);
+  if (!Ui) {
+    P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
+          SurroundBtnObjectNames[BTN_DOWN].c_str());
+    return nullptr;
+  }
+
+  auto Ubc = Ui->GetComponent<UButtonComponent>();
+  if (!Ubc) {
+    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
+          SurroundBtnObjectNames[BTN_DOWN].c_str());
+    return nullptr;
+  } else {
+    return Ubc;
+  }
+}
+
+UButtonComponent *
+UButtonComponent::getLeftBtn() {
+  auto Ui = getUiOwner()->GetSceneNode().GetUiObject(
+      SurroundBtnObjectNames[BTN_LEFT]);
+  if (!Ui) {
+    P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
+          SurroundBtnObjectNames[BTN_LEFT].c_str());
+    return nullptr;
+  }
+
+  auto Ubc = Ui->GetComponent<UButtonComponent>();
+  if (!Ubc) {
+    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
+          SurroundBtnObjectNames[BTN_LEFT].c_str());
+    return nullptr;
+  } else {
+    return Ubc;
+  }
+}
+
+UButtonComponent *
+UButtonComponent::getRightBtn() {
+  auto Ui = getUiOwner()->GetSceneNode().GetUiObject(
+      SurroundBtnObjectNames[BTN_RIGHT]);
+  if (!Ui) {
+    P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
+          SurroundBtnObjectNames[BTN_RIGHT].c_str());
+    return nullptr;
+  }
+
+  auto Ubc = Ui->GetComponent<UButtonComponent>();
+  if (!Ubc) {
+    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
+          SurroundBtnObjectNames[BTN_RIGHT].c_str());
+    return nullptr;
+  } else {
+    return Ubc;
+  }
+}
+
+void
+UButtonComponent::setUpBtnObjName(const std::string &UpBtn) {
+  SurroundBtnObjectNames[BTN_UP] = UpBtn;
+}
+
+void
+UButtonComponent::setDownBtnObjName(const std::string &DownBtn) {
+  SurroundBtnObjectNames[BTN_DOWN] = DownBtn;
+}
+
+void
+UButtonComponent::setLeftBtnObjName(const std::string &LeftBtn) {
+  SurroundBtnObjectNames[BTN_LEFT] = LeftBtn;
+}
+
+void
+UButtonComponent::setRightBtnObjName(const std::string &RightBtn) {
+  SurroundBtnObjectNames[BTN_RIGHT] = RightBtn;
+}
+
+void
+UButtonComponent::syncDataFromTransform() {
+  UTransformComponent *Utc = getUiOwner()->GetComponent<UTransformComponent>();
+#ifdef _DEBUG
+  assert(Utc);
 #endif // _DEBUG
 
-    DirectX::XMFLOAT3 world = utc->GetProcessingPosition();
-    DirectX::XMFLOAT3 angle = utc->GetProcessingRotation();
-    DirectX::XMFLOAT3 scale = utc->GetProcessingScaling();
+  dx::XMFLOAT3 World = Utc->getProcessingPosition();
+  dx::XMFLOAT3 Angle = Utc->getProcessingRotation();
+  dx::XMFLOAT3 Scale = Utc->getProcessingScaling();
 
-    auto& map = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        getSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME)->InstanceMap;
+  auto &InsMap = getUiOwner()
+                     ->GetSceneNode()
+                     .GetAssetsPool()
+                     ->getSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME)
+                     ->InstanceMap;
 
-    for (auto& ins : map)
-    {
-        auto& ins_data = ins.second;
+  for (auto &Ins : InsMap) {
+    auto &InsData = Ins.second;
 
-        DirectX::XMMATRIX mat = {};
-        mat = DirectX::XMMatrixMultiply(
-            DirectX::XMMatrixScaling(scale.x, scale.y, scale.z),
-            DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
-        mat = DirectX::XMMatrixMultiply(mat,
-            DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-        DirectX::XMStoreFloat4x4(&(ins_data.WorldMatrix), mat);
+    dx::XMMATRIX Matrix = {};
+    Matrix = dx::XMMatrixMultiply(
+        dx::XMMatrixScaling(Scale.x, Scale.y, Scale.z),
+        dx::XMMatrixRotationRollPitchYaw(Angle.x, Angle.y, Angle.z));
+    Matrix = dx::XMMatrixMultiply(
+        Matrix, dx::XMMatrixTranslation(World.x, World.y, World.z));
+    dx::XMStoreFloat4x4(&(InsData.WorldMatrix), Matrix);
 
-        break;
-    }
+    break;
+  }
 }
 
-void UButtonComponent::SetScreenSpaceCursorPos(float _inputX, float _inputY)
-{
-    g_ScreenSpaceCursorPosition = { _inputX,_inputY };
+void
+UButtonComponent::setScreenSpaceCursorPos(float InputX, float InputY) {
+  G_ScreenSpaceCursorPosition = {InputX, InputY};
 }
 
-void UButtonComponent::SetShouldUseMouse(bool _shouldMouse)
-{
-    g_ShouleUseMouseSelect = _shouldMouse;
+void
+UButtonComponent::setShouldUseMouse(bool ShouldMouse) {
+  G_ShouleUseMouseSelect = ShouldMouse;
 }

@@ -37,7 +37,7 @@ void AnimationSystem::Run(Timer& _timer)
 {
     for (auto& aanc : *mAAnimateVecPtr)
     {
-        if (aanc.GetCompStatus() == STATUS::ACTIVE) { aanc.Update(_timer); }
+        if (aanc.getCompStatus() == STATUS::ACTIVE) { aanc.update(_timer); }
     }
 }
 

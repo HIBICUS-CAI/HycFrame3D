@@ -1,49 +1,55 @@
 #pragma once
 
 #include "UiComponent.h"
+
 #include <unordered_map>
 
-struct UI_TIMER
-{
-    std::string mName = "";
-    bool mActive = false;
-    float mTime = 0.f;
+struct UI_TIMER {
+  std::string Name = "";
+  bool ActiveFlag = false;
+  float Time = 0.f;
 
-    bool IsGreaterThan(float _value) { return (mTime > _value); }
+  bool
+  IsGreaterThan(float Value) {
+    return (Time > Value);
+  }
 };
 
-class UTimerComponent :public UiComponent
-{
-public:
-    UTimerComponent(std::string&& _compName, class UiObject* _uiOwner);
-    UTimerComponent(std::string& _compName, class UiObject* _uiOwner);
-    virtual ~UTimerComponent();
-
-    UTimerComponent& operator=(const UTimerComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mTimerMap = _source.mTimerMap;
-        UiComponent::operator=(_source);
-        return *this;
-    }
-
-public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
-
-public:
-    void AddTimer(std::string&& _timerName);
-    void AddTimer(std::string& _timerName);
-    void StartTimer(std::string&& _timerName);
-    void StartTimer(std::string& _timerName);
-    void PauseTimer(std::string&& _timerName);
-    void PauseTimer(std::string& _timerName);
-    void ResetTimer(std::string&& _timerName);
-    void ResetTimer(std::string& _timerName);
-    UI_TIMER* GetTimer(std::string&& _timerName);
-    UI_TIMER* GetTimer(std::string& _timerName);
-
+class UTimerComponent : public UiComponent {
 private:
-    std::unordered_map<std::string, UI_TIMER> mTimerMap;
+  std::unordered_map<std::string, UI_TIMER> TimerMap;
+
+public:
+  UTimerComponent(const std::string &CompName, class UiObject *UiOwner);
+  virtual ~UTimerComponent();
+
+  UTimerComponent &
+  operator=(const UTimerComponent &Source) {
+    if (this == &Source) {
+      return *this;
+    }
+    TimerMap = Source.TimerMap;
+    UiComponent::operator=(Source);
+    return *this;
+  }
+
+public:
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
+
+public:
+  void
+  addTimer(const std::string &TimerName);
+  void
+  startTimer(const std::string &TimerName);
+  void
+  pauseTimer(const std::string &TimerName);
+  void
+  resetTimer(const std::string &TimerName);
+  UI_TIMER *
+  getTimer(const std::string &TimerName);
 };

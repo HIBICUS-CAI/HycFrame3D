@@ -11,13 +11,11 @@ public:
     ObjectContainer(class SceneNode& _sceneNode);
     ~ObjectContainer();
 
-    class ActorObject* GetActorObject(std::string&& _actorName);
-    class ActorObject* GetActorObject(std::string& _actorName);
+    class ActorObject* GetActorObject(const std::string& _actorName);
     void AddActorObject(class ActorObject& _newActor);
     void DeleteActorObject(std::string&& _actorName);
     void DeleteActorObject(std::string& _actorName);
-    class UiObject* GetUiObject(std::string&& _uiName);
-    class UiObject* GetUiObject(std::string& _uiName);
+    class UiObject* GetUiObject(const std::string& _uiName);
     void AddUiObject(class UiObject& _newUi);
     void DeleteUiObject(std::string&& _uiName);
     void DeleteUiObject(std::string& _uiName);

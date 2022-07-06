@@ -59,8 +59,9 @@ RSParticlesContainer::finishResetRSParticleSystem() {
 }
 
 RSParticleEmitter *
-RSParticlesContainer::createRSParticleEmitter(std::string &Name,
-                                              PARTICLE_EMITTER_INFO *Info) {
+RSParticlesContainer::createRSParticleEmitter(
+    const std::string &Name,
+    const PARTICLE_EMITTER_INFO *Info) {
   auto Size = ParticleEmitterArray.size();
   (void)Size;
   RSParticleEmitter *Emitter = new RSParticleEmitter(Info);
@@ -73,7 +74,7 @@ RSParticlesContainer::createRSParticleEmitter(std::string &Name,
 }
 
 void
-RSParticlesContainer::deleteRSParticleEmitter(std::string &Name) {
+RSParticlesContainer::deleteRSParticleEmitter(const std::string &Name) {
   LOCK;
   auto Found = ParticleEmitterMap.find(Name);
   if (Found != ParticleEmitterMap.end()) {
@@ -92,7 +93,7 @@ RSParticlesContainer::deleteRSParticleEmitter(std::string &Name) {
 }
 
 RSParticleEmitter *
-RSParticlesContainer::getRSParticleEmitter(std::string &Name) {
+RSParticlesContainer::getRSParticleEmitter(const std::string &Name) {
   LOCK;
   auto Found = ParticleEmitterMap.find(Name);
   if (Found != ParticleEmitterMap.end()) {
@@ -111,7 +112,7 @@ RSParticlesContainer::getAllParticleEmitters() {
 }
 
 void
-RSParticlesContainer::startRSParticleEmitter(std::string &Name) {
+RSParticlesContainer::startRSParticleEmitter(const std::string &Name) {
   LOCK;
   auto Found = ParticleEmitterMap.find(Name);
   if (Found != ParticleEmitterMap.end()) {
@@ -121,7 +122,7 @@ RSParticlesContainer::startRSParticleEmitter(std::string &Name) {
 }
 
 void
-RSParticlesContainer::pauseRSParticleEmitter(std::string &Name) {
+RSParticlesContainer::pauseRSParticleEmitter(const std::string &Name) {
   LOCK;
   auto Found = ParticleEmitterMap.find(Name);
   if (Found != ParticleEmitterMap.end()) {

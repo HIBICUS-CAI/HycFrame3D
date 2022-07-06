@@ -2,35 +2,43 @@
 
 #include "ActorComponent.h"
 
-class AParticleComponent :public ActorComponent
-{
-public:
-    AParticleComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    AParticleComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~AParticleComponent();
+class AParticleComponent : public ActorComponent {
+private:
+  class RSParticleEmitter *RSParticleEmitterPtr;
 
-    AParticleComponent& operator=(const AParticleComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mRSParticleEmitterPtr = _source.mRSParticleEmitterPtr;
-        ActorComponent::operator=(_source);
-        return *this;
+public:
+  AParticleComponent(const std::string &CompName,
+                     class ActorObject *ActorOwner);
+  virtual ~AParticleComponent();
+
+  AParticleComponent &
+  operator=(const AParticleComponent &Source) {
+    if (this == &Source) {
+      return *this;
     }
+    RSParticleEmitterPtr = Source.RSParticleEmitterPtr;
+    ActorComponent::operator=(Source);
+    return *this;
+  }
 
 public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
 
 public:
-    void CreateEmitter(struct PARTICLE_EMITTER_INFO* _emitterInfo);
-    void ResetEmitter(struct PARTICLE_EMITTER_INFO* _emitterInfo);
+  void
+  createEmitter(const struct PARTICLE_EMITTER_INFO *EmitterInfo);
+  void
+  resetEmitter(const struct PARTICLE_EMITTER_INFO *EmitterInfo);
 
-    struct RS_PARTICLE_EMITTER_INFO& GetEmitterInfo();
+  struct RS_PARTICLE_EMITTER_INFO &
+  getEmitterInfo();
 
 private:
-    void SyncDataFromTransform();
-
-private:
-    class RSParticleEmitter* mRSParticleEmitterPtr;
+  void
+  syncDataFromTransform();
 };

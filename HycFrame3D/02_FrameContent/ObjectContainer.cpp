@@ -17,23 +17,7 @@ ObjectContainer::~ObjectContainer()
 
 }
 
-ActorObject* ObjectContainer::GetActorObject(std::string&& _actorName)
-{
-    auto found = mActorObjMap.find(_actorName);
-    if (found != mActorObjMap.end())
-    {
-        return &(found->second);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find actor object name : %s\n",
-            _actorName.c_str());
-        return nullptr;
-    }
-}
-
-ActorObject* ObjectContainer::GetActorObject(std::string& _actorName)
+ActorObject* ObjectContainer::GetActorObject(const std::string& _actorName)
 {
     auto found = mActorObjMap.find(_actorName);
     if (found != mActorObjMap.end())
@@ -86,23 +70,7 @@ void ObjectContainer::DeleteActorObject(std::string& _actorName)
     }
 }
 
-UiObject* ObjectContainer::GetUiObject(std::string&& _uiName)
-{
-    auto found = mUiObjMap.find(_uiName);
-    if (found != mUiObjMap.end())
-    {
-        return &(found->second);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING,
-            "cannot find ui object name : %s\n",
-            _uiName.c_str());
-        return nullptr;
-    }
-}
-
-UiObject* ObjectContainer::GetUiObject(std::string& _uiName)
+UiObject* ObjectContainer::GetUiObject(const std::string& _uiName)
 {
     auto found = mUiObjMap.find(_uiName);
     if (found != mUiObjMap.end())

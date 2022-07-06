@@ -1,76 +1,53 @@
 #include "AInputComponent.h"
+
 #include "ActorObject.h"
 #include "UiObject.h"
 
-AInputComponent::AInputComponent(std::string&& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mInputPrecessFunctionPtr(nullptr)
-{
+AInputComponent::AInputComponent(const std::string &CompName,
+                                 ActorObject *ActorOwner)
+    : ActorComponent(CompName, ActorOwner), InputPrecessFunctionPtr(nullptr) {}
 
+AInputComponent::~AInputComponent() {}
+
+bool
+AInputComponent::init() {
+  if (!InputPrecessFunctionPtr) {
+    P_LOG(LOG_ERROR, "there's still no input func in : %s\n",
+          getCompName().c_str());
+  }
+
+  return true;
 }
 
-AInputComponent::AInputComponent(std::string& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mInputPrecessFunctionPtr(nullptr)
-{
-
+void
+AInputComponent::update(Timer &Timer) {
+  if (InputPrecessFunctionPtr) {
+    InputPrecessFunctionPtr(this, Timer);
+  }
 }
 
-AInputComponent::~AInputComponent()
-{
+void
+AInputComponent::destory() {}
 
-}
-
-bool AInputComponent::Init()
-{
-    if (!mInputPrecessFunctionPtr)
-    {
-        P_LOG(LOG_ERROR, "there's still no input func in : %s\n",
-            GetCompName().c_str());
-    }
-
-    return true;
-}
-
-void AInputComponent::Update(Timer& _timer)
-{
-    if (mInputPrecessFunctionPtr) { mInputPrecessFunctionPtr(this, _timer); }
-}
-
-void AInputComponent::Destory()
-{
-
-}
-
-void AInputComponent::SetInputFunction(ActorInputProcessFuncType _func)
-{
+void
+AInputComponent::setInputFunction(ActorInputProcessFuncType FuncPtr) {
 #ifdef _DEBUG
-    assert(_func);
+  assert(FuncPtr);
 #endif // _DEBUG
-    mInputPrecessFunctionPtr = _func;
+  InputPrecessFunctionPtr = FuncPtr;
 }
 
-void AInputComponent::ClearInputFunction()
-{
-    mInputPrecessFunctionPtr = nullptr;
+void
+AInputComponent::clearInputFunction() {
+  InputPrecessFunctionPtr = nullptr;
 }
 
-ActorObject* AInputComponent::GetActorObject(std::string&& _actorName)
-{
-    return GetSceneNode().GetActorObject(_actorName);
+ActorObject *
+AInputComponent::getActorObject(const std::string &ActorName) {
+  return getSceneNode().GetActorObject(ActorName);
 }
 
-ActorObject* AInputComponent::GetActorObject(std::string& _actorName)
-{
-    return GetSceneNode().GetActorObject(_actorName);
-}
-
-UiObject* AInputComponent::GetUiObject(std::string&& _uiName)
-{
-    return GetSceneNode().GetUiObject(_uiName);
-}
-
-UiObject* AInputComponent::GetUiObject(std::string& _uiName)
-{
-    return GetSceneNode().GetUiObject(_uiName);
+UiObject *
+AInputComponent::getUiObject(const std::string &UiName) {
+  return getSceneNode().GetUiObject(UiName);
 }

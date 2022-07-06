@@ -1,62 +1,72 @@
 #pragma once
 
 #include "UiComponent.h"
-#include <DirectXMath.h>
+
+#include <directxmath.h>
 #include <unordered_map>
 
-struct ANIMATE_INFO
-{
-    std::string mTexName = "";
-    DirectX::XMFLOAT2 mStride = { 0.f, 0.f };
-    unsigned int mMaxCut = 0;
-    bool mRepeatFlg = false;
-    float mSwitchTime = 0.f;
+struct ANIMATE_INFO {
+  std::string TexName = "";
+  DirectX::XMFLOAT2 Stride = {0.f, 0.f};
+  unsigned int MaxCut = 0;
+  bool RepeatFlg = false;
+  float SwitchTime = 0.f;
 };
 
-class UAnimateComponent :public UiComponent
-{
-public:
-    UAnimateComponent(std::string&& _compName, class UiObject* _uiOwner);
-    UAnimateComponent(std::string& _compName, class UiObject* _uiOwner);
-    virtual ~UAnimateComponent();
+class UAnimateComponent : public UiComponent {
+private:
+  std::unordered_map<std::string, ANIMATE_INFO *> AnimateMap;
+  UINT CurrentAnimateCut;
+  ANIMATE_INFO *CurrentAnimate;
+  bool AnimateChangedFlg;
+  float TimeCounter;
 
-    UAnimateComponent& operator=(const UAnimateComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mAnimateMap = _source.mAnimateMap;
-        mCurrentAnimateCut = _source.mCurrentAnimateCut;
-        mCurrentAnimate = _source.mCurrentAnimate;
-        mAnimateChangedFlg = _source.mAnimateChangedFlg;
-        mTimeCounter = _source.mTimeCounter;
-        UiComponent::operator=(_source);
-        return *this;
+public:
+  UAnimateComponent(const std::string &CompName, class UiObject *UiOwner);
+  virtual ~UAnimateComponent();
+
+  UAnimateComponent &
+  operator=(const UAnimateComponent &Source) {
+    if (this == &Source) {
+      return *this;
     }
+    AnimateMap = Source.AnimateMap;
+    CurrentAnimateCut = Source.CurrentAnimateCut;
+    CurrentAnimate = Source.CurrentAnimate;
+    AnimateChangedFlg = Source.AnimateChangedFlg;
+    TimeCounter = Source.TimeCounter;
+    UiComponent::operator=(Source);
+    return *this;
+  }
 
 public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
 
 public:
-    bool LoadAnimate(std::string _aniName, std::string _aniPath,
-        DirectX::XMFLOAT2 _stride, UINT _maxCount,
-        bool _repeatFlg, float _switchTime);
-    void DeleteAnimate(std::string&& _aniName);
-    void DeleteAnimate(std::string& _aniName);
+  bool
+  loadAnimate(const std::string &AniName,
+              const std::string &AniPath,
+              const DirectX::XMFLOAT2 &Stride,
+              UINT MaxCount,
+              bool RepeatFlg,
+              float SwitchTime);
+  void
+  deleteAnimate(const std::string &AniName);
 
-    void ResetCurrentAnimate();
-    void ClearCurrentAnimate();
+  void
+  resetCurrentAnimate();
+  void
+  clearCurrentAnimate();
 
-    void ChangeAnimateTo(std::string&& _aniName);
-    void ChangeAnimateTo(std::string& _aniName);
+  void
+  changeAnimateTo(const std::string &AniName);
 
 private:
-    void SyncAniInfoToSprite();
-
-private:
-    std::unordered_map<std::string, ANIMATE_INFO*> mAnimateMap;
-    UINT mCurrentAnimateCut;
-    ANIMATE_INFO* mCurrentAnimate;
-    bool mAnimateChangedFlg;
-    float mTimeCounter;
+  void
+  syncAniInfoToSprite();
 };

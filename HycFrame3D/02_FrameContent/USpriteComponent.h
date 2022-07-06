@@ -1,49 +1,57 @@
 #pragma once
 
 #include "UiComponent.h"
+
+#include <RSCommon.h>
+
 #include <vector>
-#include "RSCommon.h"
 
-class USpriteComponent :public UiComponent
-{
+class USpriteComponent : public UiComponent {
+private:
+  std::string MeshesName;
+  std::string OriginTextureName;
+
+  DirectX::XMFLOAT4 OffsetColor;
+
 public:
-    USpriteComponent(std::string&& _compName, class UiObject* _uiOwner);
-    USpriteComponent(std::string& _compName, class UiObject* _uiOwner);
-    virtual ~USpriteComponent();
+  USpriteComponent(const std::string &CompName, class UiObject *UiOwner);
+  virtual ~USpriteComponent();
 
-    USpriteComponent& operator=(const USpriteComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mMeshesName = _source.mMeshesName;
-        mOriginTextureName = _source.mOriginTextureName;
-        mOffsetColor = _source.mOffsetColor;
-        UiComponent::operator=(_source);
-        return *this;
+  USpriteComponent &
+  operator=(const USpriteComponent &Source) {
+    if (this == &Source) {
+      return *this;
     }
+    MeshesName = Source.MeshesName;
+    OriginTextureName = Source.OriginTextureName;
+    OffsetColor = Source.OffsetColor;
+    UiComponent::operator=(Source);
+    return *this;
+  }
 
 public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
 
 public:
-    bool CreateSpriteMesh(class SceneNode* _scene,
-        DirectX::XMFLOAT4 _offsetColor, std::string& _texName);
-    bool CreateSpriteMesh(class SceneNode* _scene,
-        DirectX::XMFLOAT4 _offsetColor, std::string&& _texName);
+  bool
+  createSpriteMesh(class SceneNode *Scene,
+                   const DirectX::XMFLOAT4 &OffsetColorSprite,
+                   const std::string &TexName);
 
-    const DirectX::XMFLOAT4& GetOffsetColor() const;
-    void SetOffsetColor(DirectX::XMFLOAT4& _offsetColor);
-    void SetOffsetColor(DirectX::XMFLOAT4&& _offsetColor);
+  const DirectX::XMFLOAT4 &
+  getOffsetColor() const;
+  void
+  setOffsetColor(const DirectX::XMFLOAT4 &OffsetColorSprite);
 
-    void ResetTexture();
+  void
+  resetTexture();
 
 private:
-    void SyncTransformDataToInstance();
-
-private:
-    std::string mMeshesName;
-    std::string mOriginTextureName;
-
-    DirectX::XMFLOAT4 mOffsetColor;
+  void
+  syncTransformDataToInstance();
 };

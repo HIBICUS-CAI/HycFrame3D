@@ -1,225 +1,174 @@
 #include "UAnimateComponent.h"
-#include "UiObject.h"
-#include "SceneNode.h"
+
 #include "AssetsPool.h"
+#include "SceneNode.h"
 #include "USpriteComponent.h"
+#include "UiObject.h"
+
+#include <DDSTextureLoader11.h>
+#include <RSCommon.h>
+#include <RSDevices.h>
+#include <RSResourceManager.h>
+#include <RSRoot_DX11.h>
+#include <WICTextureLoader11.h>
+
 #include <vector>
-#include "RSCommon.h"
-#include "RSRoot_DX11.h"
-#include "RSDevices.h"
-#include "RSResourceManager.h"
-#include "DDSTextureLoader11.h"
-#include "WICTextureLoader11.h"
 
-UAnimateComponent::UAnimateComponent(std::string&& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner),
-    mAnimateMap({}), mCurrentAnimateCut(0), mCurrentAnimate(nullptr),
-    mAnimateChangedFlg(false), mTimeCounter(0.f)
-{
+UAnimateComponent::UAnimateComponent(const std::string &CompName,
+                                     UiObject *UiOwner)
+    : UiComponent(CompName, UiOwner), AnimateMap({}), CurrentAnimateCut(0),
+      CurrentAnimate(nullptr), AnimateChangedFlg(false), TimeCounter(0.f) {}
 
+UAnimateComponent::~UAnimateComponent() {}
+
+bool
+UAnimateComponent::init() {
+  return true;
 }
 
-UAnimateComponent::UAnimateComponent(std::string& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner),
-    mAnimateMap({}), mCurrentAnimateCut(0), mCurrentAnimate(nullptr),
-    mAnimateChangedFlg(false), mTimeCounter(0.f)
-{
+void
+UAnimateComponent::update(Timer &Timer) {
+  if (AnimateChangedFlg) {
+    AnimateChangedFlg = false;
+    resetCurrentAnimate();
+    syncAniInfoToSprite();
+  }
 
-}
-
-UAnimateComponent::~UAnimateComponent()
-{
-
-}
-
-bool UAnimateComponent::Init()
-{
-    return true;
-}
-
-void UAnimateComponent::Update(Timer& _timer)
-{
-    if (mAnimateChangedFlg)
-    {
-        mAnimateChangedFlg = false;
-        ResetCurrentAnimate();
-        SyncAniInfoToSprite();
-    }
-
-    if (mCurrentAnimate)
-    {
-        if (mTimeCounter > mCurrentAnimate->mSwitchTime)
-        {
-            mTimeCounter = 0.f;
-            ++mCurrentAnimateCut;
-            if (mCurrentAnimateCut >= mCurrentAnimate->mMaxCut)
-            {
-                if (mCurrentAnimate->mRepeatFlg) { mCurrentAnimateCut = 0; }
-                else { --mCurrentAnimateCut; }
-            }
-            SyncAniInfoToSprite();
+  if (CurrentAnimate) {
+    if (TimeCounter > CurrentAnimate->SwitchTime) {
+      TimeCounter = 0.f;
+      ++CurrentAnimateCut;
+      if (CurrentAnimateCut >= CurrentAnimate->MaxCut) {
+        if (CurrentAnimate->RepeatFlg) {
+          CurrentAnimateCut = 0;
+        } else {
+          --CurrentAnimateCut;
         }
-        mTimeCounter += _timer.floatDeltaTime() / 1000.f;
+      }
+      syncAniInfoToSprite();
     }
+    TimeCounter += Timer.floatDeltaTime() / 1000.f;
+  }
 }
 
-void UAnimateComponent::Destory()
-{
-    mCurrentAnimate = nullptr;
-    for (auto& ani : mAnimateMap) { delete ani.second; }
+void
+UAnimateComponent::destory() {
+  CurrentAnimate = nullptr;
+  for (const auto &Ani : AnimateMap) {
+    delete Ani.second;
+  }
 
-    mAnimateMap.clear();
+  AnimateMap.clear();
 }
 
-bool UAnimateComponent::LoadAnimate(std::string _aniName, std::string _aniPath,
-    DirectX::XMFLOAT2 _stride, UINT _maxCount,
-    bool _repeatFlg, float _switchTime)
-{
-    std::wstring texPathWStr = L"";
-    HRESULT hr = S_OK;
-    ID3D11ShaderResourceView* srv = nullptr;
-    texPathWStr = std::wstring(_aniPath.begin(), _aniPath.end());
-    texPathWStr = L".\\Assets\\Textures\\" + texPathWStr;
+bool
+UAnimateComponent::loadAnimate(const std::string &AniName,
+                               const std::string &AniPath,
+                               const DirectX::XMFLOAT2 &Stride,
+                               UINT MaxCount,
+                               bool RepeatFlg,
+                               float SwitchTime) {
+  std::wstring TexPathWStr = L"";
+  HRESULT Hr = S_OK;
+  ID3D11ShaderResourceView *Srv = nullptr;
+  TexPathWStr = std::wstring(AniPath.begin(), AniPath.end());
+  TexPathWStr = L".\\Assets\\Textures\\" + TexPathWStr;
 
-    auto resourceManager = getRSDX11RootInstance()->getResourceManager();
-    auto ifExist = resourceManager->getMeshSrv(_aniPath);
+  auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
+  auto IfExist = ResourceManager->getMeshSrv(AniPath);
 
-    if (ifExist) {}
-    else if (_aniPath.find(".dds") != std::string::npos ||
-        _aniPath.find(".DDS") != std::string::npos)
-    {
-        hr = DirectX::CreateDDSTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->getDevice(),
-            texPathWStr.c_str(), nullptr, &srv);
-        if (SUCCEEDED(hr))
-        {
-            getRSDX11RootInstance()->getResourceManager()->
-                addMeshSrv(_aniPath, srv);
-        }
-        else
-        {
-            P_LOG(LOG_ERROR, "fail to load texture : %s\n", _aniPath.c_str());
-            return false;
-        }
+  if (IfExist) {
+  } else if (AniPath.find(".dds") != std::string::npos ||
+             AniPath.find(".DDS") != std::string::npos) {
+    Hr = DirectX::CreateDDSTextureFromFile(
+        getRSDX11RootInstance()->getDevices()->getDevice(), TexPathWStr.c_str(),
+        nullptr, &Srv);
+    if (SUCCEEDED(Hr)) {
+      getRSDX11RootInstance()->getResourceManager()->addMeshSrv(AniPath, Srv);
+    } else {
+      P_LOG(LOG_ERROR, "fail to load texture : %s\n", AniPath.c_str());
+      return false;
     }
-    else
-    {
-        hr = DirectX::CreateWICTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->getDevice(),
-            texPathWStr.c_str(), nullptr, &srv);
-        if (SUCCEEDED(hr))
-        {
-            getRSDX11RootInstance()->getResourceManager()->
-                addMeshSrv(_aniPath, srv);
-        }
-        else
-        {
-            P_LOG(LOG_ERROR, "fail to load texture : %s\n", _aniPath.c_str());
-            return false;
-        }
+  } else {
+    Hr = DirectX::CreateWICTextureFromFile(
+        getRSDX11RootInstance()->getDevices()->getDevice(), TexPathWStr.c_str(),
+        nullptr, &Srv);
+    if (SUCCEEDED(Hr)) {
+      getRSDX11RootInstance()->getResourceManager()->addMeshSrv(AniPath, Srv);
+    } else {
+      P_LOG(LOG_ERROR, "fail to load texture : %s\n", AniPath.c_str());
+      return false;
     }
+  }
 
-    ANIMATE_INFO* ani = new ANIMATE_INFO();
-    ani->mTexName = _aniPath;
-    ani->mMaxCut = _maxCount;
-    ani->mStride = _stride;
-    ani->mRepeatFlg = _repeatFlg;
-    ani->mSwitchTime = _switchTime;
+  ANIMATE_INFO *Ani = new ANIMATE_INFO();
+  Ani->TexName = AniPath;
+  Ani->MaxCut = MaxCount;
+  Ani->Stride = Stride;
+  Ani->RepeatFlg = RepeatFlg;
+  Ani->SwitchTime = SwitchTime;
 
-    mAnimateMap.insert({ _aniName,ani });
+  AnimateMap.insert({AniName, Ani});
 
-    return true;
+  return true;
 }
 
-void UAnimateComponent::DeleteAnimate(std::string&& _aniName)
-{
-    auto found = mAnimateMap.find(_aniName);
-    if (found != mAnimateMap.end())
-    {
-        if (mCurrentAnimate == found->second) { mCurrentAnimate = nullptr; }
-        delete found->second;
+void
+UAnimateComponent::deleteAnimate(const std::string &AniName) {
+  auto Found = AnimateMap.find(AniName);
+  if (Found != AnimateMap.end()) {
+    if (CurrentAnimate == Found->second) {
+      CurrentAnimate = nullptr;
     }
-    else
-    {
-        P_LOG(LOG_ERROR, "this animate doesnt exist : %s\n", _aniName.c_str());
-    }
+    delete Found->second;
+  } else {
+    P_LOG(LOG_ERROR, "this animate doesnt exist : %s\n", AniName.c_str());
+  }
 }
 
-void UAnimateComponent::DeleteAnimate(std::string& _aniName)
-{
-    auto found = mAnimateMap.find(_aniName);
-    if (found != mAnimateMap.end())
-    {
-        if (mCurrentAnimate == found->second) { mCurrentAnimate = nullptr; }
-        delete found->second;
-    }
-    else
-    {
-        P_LOG(LOG_ERROR, "this animate doesnt exist : %s\n", _aniName.c_str());
-    }
+void
+UAnimateComponent::resetCurrentAnimate() {
+  CurrentAnimateCut = 0;
+  TimeCounter = 0.f;
 }
 
-void UAnimateComponent::ResetCurrentAnimate()
-{
-    mCurrentAnimateCut = 0;
-    mTimeCounter = 0.f;
+void
+UAnimateComponent::clearCurrentAnimate() {
+  CurrentAnimate = nullptr;
+  CurrentAnimateCut = 0;
+  TimeCounter = 0.f;
 }
 
-void UAnimateComponent::ClearCurrentAnimate()
-{
-    mCurrentAnimate = nullptr;
-    mCurrentAnimateCut = 0;
-    mTimeCounter = 0.f;
+void
+UAnimateComponent::changeAnimateTo(const std::string &AniName) {
+  if (AnimateMap.find(AniName) == AnimateMap.end()) {
+    P_LOG(LOG_ERROR, "cannot find this animation : %s\n", AniName.c_str());
+    return;
+  }
+
+  CurrentAnimate = AnimateMap[AniName];
+  AnimateChangedFlg = true;
 }
 
-void UAnimateComponent::ChangeAnimateTo(std::string&& _aniName)
-{
-    if (mAnimateMap.find(_aniName) == mAnimateMap.end())
-    {
-        P_LOG(LOG_ERROR, "cannot find this animation : %s\n", _aniName.c_str());
-        return;
-    }
+void
+UAnimateComponent::syncAniInfoToSprite() {
+  auto MeshPtr =
+      getUiOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+          getUiOwner()->GetComponent<USpriteComponent>()->getCompName());
 
-    mCurrentAnimate = mAnimateMap[_aniName];
-    mAnimateChangedFlg = true;
-}
+  MeshPtr->MeshData.Textures[0] = CurrentAnimate->TexName;
 
-void UAnimateComponent::ChangeAnimateTo(std::string& _aniName)
-{
-    if (mAnimateMap.find(_aniName) == mAnimateMap.end())
-    {
-        P_LOG(LOG_ERROR, "cannot find this animation : %s\n", _aniName.c_str());
-        return;
-    }
+  float StartX = 0.f;
+  float StartY = 0.f;
+  unsigned int MaxX = (int)(1.f / CurrentAnimate->Stride.x);
+  MaxX = (((1.f / CurrentAnimate->Stride.x) - MaxX) > 0.5f) ? (MaxX + 1) : MaxX;
+  StartX = (float)(CurrentAnimateCut % MaxX) * CurrentAnimate->Stride.x;
+  StartY = (float)(CurrentAnimateCut / MaxX) * CurrentAnimate->Stride.y;
+  DirectX::XMFLOAT4 UV = {StartX, StartY, StartX + CurrentAnimate->Stride.x,
+                          StartY + CurrentAnimate->Stride.y};
 
-    mCurrentAnimate = mAnimateMap[_aniName];
-    mAnimateChangedFlg = true;
-}
-
-void UAnimateComponent::SyncAniInfoToSprite()
-{
-    std::string uscName = GetUiOwner()->
-        GetComponent<USpriteComponent>()->GetCompName();
-    auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        getSubMeshIfExisted(uscName);
-
-    mesh->MeshData.Textures[0] = mCurrentAnimate->mTexName;
-
-    float startX = 0.f;
-    float startY = 0.f;
-    unsigned int maxX = (int)(1.f / mCurrentAnimate->mStride.x);
-    maxX = (((1.f / mCurrentAnimate->mStride.x) - maxX) > 0.5f) ?
-        (maxX + 1) : maxX;
-    startX = (float)(mCurrentAnimateCut % maxX) * mCurrentAnimate->mStride.x;
-    startY = (float)(mCurrentAnimateCut / maxX) * mCurrentAnimate->mStride.y;
-    DirectX::XMFLOAT4 uv = { startX, startY,
-        startX + mCurrentAnimate->mStride.x,
-        startY + mCurrentAnimate->mStride.y };
-
-    for (auto& ins : mesh->InstanceMap)
-    {
-        ins.second.CustomizedData2 = uv; break;
-    }
+  for (auto &Ins : MeshPtr->InstanceMap) {
+    Ins.second.CustomizedData2 = UV;
+    break;
+  }
 }

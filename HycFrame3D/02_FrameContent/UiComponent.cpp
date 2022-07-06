@@ -1,34 +1,23 @@
 #include "UiComponent.h"
+
 #include "UiObject.h"
 
-UiComponent::UiComponent(std::string&& _compName, UiObject* _uiOwner) :
-    Component(_compName), mUiOwner(_uiOwner)
-{
+UiComponent::UiComponent(const std::string &CompName, UiObject *UiOwner)
+    : Component(CompName), UiOwner(UiOwner) {}
 
+UiComponent::~UiComponent() {}
+
+SceneNode &
+UiComponent::getSceneNode() const {
+  return UiOwner->GetSceneNode();
 }
 
-UiComponent::UiComponent(std::string& _compName, UiObject* _uiOwner) :
-    Component(_compName), mUiOwner(_uiOwner)
-{
-
+UiObject *
+UiComponent::getUiOwner() const {
+  return UiOwner;
 }
 
-UiComponent::~UiComponent()
-{
-
-}
-
-SceneNode& UiComponent::GetSceneNode() const
-{
-    return mUiOwner->GetSceneNode();
-}
-
-UiObject* UiComponent::GetUiOwner() const
-{
-    return mUiOwner;
-}
-
-void UiComponent::ResetUiOwner(UiObject* _owner)
-{
-    mUiOwner = _owner;
+void
+UiComponent::resetUiOwner(UiObject *Owner) {
+  UiOwner = Owner;
 }

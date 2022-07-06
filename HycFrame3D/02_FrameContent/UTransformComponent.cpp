@@ -1,220 +1,189 @@
 #include "UTransformComponent.h"
+
 #include "UiObject.h"
 
-using namespace DirectX;
+using namespace dx;
 
-UTransformComponent::UTransformComponent(std::string&& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner),
-    mPosition({ 0.f,0.f,0.f }),
-    mRotation({ 0.f,0.f,0.f }),
-    mScaling({ 0.f,0.f,0.f }),
-    mProcessingPosition({ 0.f,0.f,0.f }),
-    mProcessingRotation({ 0.f,0.f,0.f }),
-    mProcessingScaling({ 0.f,0.f,0.f }),
-    mPositionDirtyFlg(false),
-    mRotationDirtyFlg(false),
-    mScalingDirtyFlg(false)
-{
+UTransformComponent::UTransformComponent(const std::string &CompName,
+                                         UiObject *UiOwner)
+    : UiComponent(CompName, UiOwner), Position({0.f, 0.f, 0.f}),
+      Rotation({0.f, 0.f, 0.f}), Scaling({0.f, 0.f, 0.f}),
+      ProcessingPosition({0.f, 0.f, 0.f}), ProcessingRotation({0.f, 0.f, 0.f}),
+      ProcessingScaling({0.f, 0.f, 0.f}), PositionDirtyFlg(false),
+      RotationDirtyFlg(false), ScalingDirtyFlg(false) {}
 
+UTransformComponent::~UTransformComponent() {}
+
+bool
+UTransformComponent::init() {
+  return true;
 }
 
-UTransformComponent::UTransformComponent(std::string& _compName,
-    UiObject* _uiOwner) :
-    UiComponent(_compName, _uiOwner),
-    mPosition({ 0.f,0.f,0.f }),
-    mRotation({ 0.f,0.f,0.f }),
-    mScaling({ 0.f,0.f,0.f }),
-    mProcessingPosition({ 0.f,0.f,0.f }),
-    mProcessingRotation({ 0.f,0.f,0.f }),
-    mProcessingScaling({ 0.f,0.f,0.f }),
-    mPositionDirtyFlg(false),
-    mRotationDirtyFlg(false),
-    mScalingDirtyFlg(false)
-{
-
+void
+UTransformComponent::update(Timer &Timer) {
+  applyProcessingData();
 }
 
-UTransformComponent::~UTransformComponent()
-{
+void
+UTransformComponent::destory() {}
 
+void
+UTransformComponent::setPosition(const dx::XMFLOAT3 &Pos) {
+  ProcessingPosition = Pos;
+  PositionDirtyFlg = true;
 }
 
-bool UTransformComponent::Init()
-{
-    return true;
+void
+UTransformComponent::forcePosition(const dx::XMFLOAT3 &Pos) {
+  Position = Pos;
+  ProcessingPosition = Pos;
 }
 
-void UTransformComponent::Update(Timer& _timer)
-{
-    ApplyProcessingData();
+void
+UTransformComponent::setRotation(const dx::XMFLOAT3 &Angle) {
+  ProcessingRotation = Angle;
+  RotationDirtyFlg = true;
 }
 
-void UTransformComponent::Destory()
-{
-
+void
+UTransformComponent::forceRotation(const dx::XMFLOAT3 &Angle) {
+  Rotation = Angle;
+  ProcessingRotation = Angle;
 }
 
-void UTransformComponent::SetPosition(DirectX::XMFLOAT3 _pos)
-{
-    mProcessingPosition = _pos;
-    mPositionDirtyFlg = true;
+void
+UTransformComponent::setScaling(const dx::XMFLOAT3 &Factor) {
+  ProcessingScaling = Factor;
+  ScalingDirtyFlg = true;
 }
 
-void UTransformComponent::ForcePosition(DirectX::XMFLOAT3 _pos)
-{
-    mPosition = _pos;
-    mProcessingPosition = _pos;
+void
+UTransformComponent::forceScaling(const dx::XMFLOAT3 &Factor) {
+  Scaling = Factor;
+  ProcessingScaling = Factor;
 }
 
-void UTransformComponent::SetRotation(DirectX::XMFLOAT3 _angle)
-{
-    mProcessingRotation = _angle;
-    mRotationDirtyFlg = true;
+void
+UTransformComponent::translate(const dx::XMFLOAT3 &DeltaPos) {
+  dx::XMVECTOR Point = dx::XMLoadFloat3(&ProcessingPosition);
+  dx::XMVECTOR Delta = dx::XMLoadFloat3(&DeltaPos);
+  Point += Delta;
+  dx::XMStoreFloat3(&ProcessingPosition, Point);
+  PositionDirtyFlg = true;
 }
 
-void UTransformComponent::ForceRotation(DirectX::XMFLOAT3 _angle)
-{
-    mRotation = _angle;
-    mProcessingRotation = _angle;
+void
+UTransformComponent::translateXAsix(float DeltaPosX) {
+  ProcessingPosition.x += DeltaPosX;
+  PositionDirtyFlg = true;
 }
 
-void UTransformComponent::SetScaling(DirectX::XMFLOAT3 _factor)
-{
-    mProcessingScaling = _factor;
-    mScalingDirtyFlg = true;
+void
+UTransformComponent::translateYAsix(float DeltaPosY) {
+  ProcessingPosition.y += DeltaPosY;
+  PositionDirtyFlg = true;
 }
 
-void UTransformComponent::ForceScaling(DirectX::XMFLOAT3 _factor)
-{
-    mScaling = _factor;
-    mProcessingScaling = _factor;
+void
+UTransformComponent::translateZAsix(float DeltaPosZ) {
+  ProcessingPosition.z += DeltaPosZ;
+  PositionDirtyFlg = true;
 }
 
-void UTransformComponent::Translate(DirectX::XMFLOAT3 _deltaPos)
-{
-    DirectX::XMVECTOR point = DirectX::XMLoadFloat3(&mProcessingPosition);
-    DirectX::XMVECTOR delta = DirectX::XMLoadFloat3(&_deltaPos);
-    point += delta;
-    DirectX::XMStoreFloat3(&mProcessingPosition, point);
-    mPositionDirtyFlg = true;
+void
+UTransformComponent::rotate(const dx::XMFLOAT3 &DeltaAngle) {
+  dx::XMVECTOR Angle = dx::XMLoadFloat3(&ProcessingRotation);
+  dx::XMVECTOR Delta = dx::XMLoadFloat3(&DeltaAngle);
+  Angle += Delta;
+  dx::XMStoreFloat3(&ProcessingRotation, Angle);
+  RotationDirtyFlg = true;
 }
 
-void UTransformComponent::TranslateXAsix(float _deltaPosX)
-{
-    mProcessingPosition.x += _deltaPosX;
-    mPositionDirtyFlg = true;
+void
+UTransformComponent::rotateXAsix(float DeltaAngleX) {
+  ProcessingRotation.x += DeltaAngleX;
+  RotationDirtyFlg = true;
 }
 
-void UTransformComponent::TranslateYAsix(float _deltaPosY)
-{
-    mProcessingPosition.y += _deltaPosY;
-    mPositionDirtyFlg = true;
+void
+UTransformComponent::rotateYAsix(float DeltaAngleY) {
+  ProcessingRotation.y += DeltaAngleY;
+  RotationDirtyFlg = true;
 }
 
-void UTransformComponent::TranslateZAsix(float _deltaPosZ)
-{
-    mProcessingPosition.z += _deltaPosZ;
-    mPositionDirtyFlg = true;
+void
+UTransformComponent::rotateZAsix(float DeltaAngleZ) {
+  ProcessingRotation.z += DeltaAngleZ;
+  RotationDirtyFlg = true;
 }
 
-void UTransformComponent::Rotate(DirectX::XMFLOAT3 _deltaAngle)
-{
-    DirectX::XMVECTOR angle = DirectX::XMLoadFloat3(&mProcessingRotation);
-    DirectX::XMVECTOR delta = DirectX::XMLoadFloat3(&_deltaAngle);
-    angle += delta;
-    DirectX::XMStoreFloat3(&mProcessingRotation, angle);
-    mRotationDirtyFlg = true;
+void
+UTransformComponent::scale(const dx::XMFLOAT3 &Factor) {
+  ProcessingScaling = Factor;
+  ScalingDirtyFlg = true;
 }
 
-void UTransformComponent::RotateXAsix(float _deltaAngleX)
-{
-    mProcessingRotation.x += _deltaAngleX;
-    mRotationDirtyFlg = true;
+void
+UTransformComponent::scaleXAsix(float FactorX) {
+  ProcessingScaling.x = FactorX;
+  ScalingDirtyFlg = true;
 }
 
-void UTransformComponent::RotateYAsix(float _deltaAngleY)
-{
-    mProcessingRotation.y += _deltaAngleY;
-    mRotationDirtyFlg = true;
+void
+UTransformComponent::scaleYAsix(float FactorY) {
+  ProcessingScaling.y = FactorY;
+  ScalingDirtyFlg = true;
 }
 
-void UTransformComponent::RotateZAsix(float _deltaAngleZ)
-{
-    mProcessingRotation.z += _deltaAngleZ;
-    mRotationDirtyFlg = true;
+void
+UTransformComponent::scaleZAsix(float FactorZ) {
+  ProcessingScaling.z = FactorZ;
+  ScalingDirtyFlg = true;
 }
 
-void UTransformComponent::Scale(DirectX::XMFLOAT3 _factor)
-{
-    mProcessingScaling = _factor;
-    mScalingDirtyFlg = true;
+const dx::XMFLOAT3 &
+UTransformComponent::getPosition() const {
+  return Position;
 }
 
-void UTransformComponent::ScaleXAsix(float _factorX)
-{
-    mProcessingScaling.x = _factorX;
-    mScalingDirtyFlg = true;
+const dx::XMFLOAT3 &
+UTransformComponent::getRotation() const {
+  return Rotation;
 }
 
-void UTransformComponent::ScaleYAsix(float _factorY)
-{
-    mProcessingScaling.y = _factorY;
-    mScalingDirtyFlg = true;
+const dx::XMFLOAT3 &
+UTransformComponent::getScaling() const {
+  return Scaling;
 }
 
-void UTransformComponent::ScaleZAsix(float _factorZ)
-{
-    mProcessingScaling.z = _factorZ;
-    mScalingDirtyFlg = true;
+const dx::XMFLOAT3 &
+UTransformComponent::getProcessingPosition() const {
+  return ProcessingPosition;
 }
 
-const DirectX::XMFLOAT3& UTransformComponent::GetPosition() const
-{
-    return mPosition;
+const dx::XMFLOAT3 &
+UTransformComponent::getProcessingRotation() const {
+  return ProcessingRotation;
 }
 
-const DirectX::XMFLOAT3& UTransformComponent::GetRotation() const
-{
-    return mRotation;
+const dx::XMFLOAT3 &
+UTransformComponent::getProcessingScaling() const {
+  return ProcessingScaling;
 }
 
-const DirectX::XMFLOAT3& UTransformComponent::GetScaling() const
-{
-    return mScaling;
-}
+void
+UTransformComponent::applyProcessingData() {
+  if (PositionDirtyFlg) {
+    Position = ProcessingPosition;
+    PositionDirtyFlg = false;
+  }
 
-const DirectX::XMFLOAT3& UTransformComponent::GetProcessingPosition() const
-{
-    return mProcessingPosition;
-}
-
-const DirectX::XMFLOAT3& UTransformComponent::GetProcessingRotation() const
-{
-    return mProcessingRotation;
-}
-
-const DirectX::XMFLOAT3& UTransformComponent::GetProcessingScaling() const
-{
-    return mProcessingScaling;
-}
-
-void UTransformComponent::ApplyProcessingData()
-{
-    if (mPositionDirtyFlg)
-    {
-        mPosition = mProcessingPosition;
-        mPositionDirtyFlg = false;
-    }
-
-    if (mRotationDirtyFlg)
-    {
-        mRotation = mProcessingRotation;
-        mRotationDirtyFlg = false;
-    }
-    if (mPositionDirtyFlg)
-    {
-        mScaling = mProcessingScaling;
-        mPositionDirtyFlg = false;
-    }
+  if (RotationDirtyFlg) {
+    Rotation = ProcessingRotation;
+    RotationDirtyFlg = false;
+  }
+  if (PositionDirtyFlg) {
+    Scaling = ProcessingScaling;
+    PositionDirtyFlg = false;
+  }
 }

@@ -1,183 +1,188 @@
 #include "AMeshComponent.h"
+
+#include "ATransformComponent.h"
 #include "ActorComponent.h"
+#include "ActorObject.h"
 #include "AssetsPool.h"
 #include "SceneNode.h"
-#include "ActorObject.h"
-#include "ATransformComponent.h"
+
 #include <set>
 
-AMeshComponent::AMeshComponent(std::string&& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner),
-    mMeshesName({}),
-    mSubMeshesName({}),
-    mOffsetPosition({}),
-    mEmissiveIntensity(0.f)
-{
+AMeshComponent::AMeshComponent(const std::string &CompName,
+                               ActorObject *ActorOwner)
+    : ActorComponent(CompName, ActorOwner), MeshesNameArray({}),
+      SubMeshesNameArray({}), OffsetPositionArray({}), EmissiveIntensity(0.f) {}
 
-}
+AMeshComponent::~AMeshComponent() {}
 
-AMeshComponent::AMeshComponent(std::string& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner),
-    mMeshesName({}),
-    mSubMeshesName({}),
-    mOffsetPosition({}),
-    mEmissiveIntensity(0.f)
-{
-
-}
-
-AMeshComponent::~AMeshComponent()
-{
-
-}
-
-bool AMeshComponent::Init()
-{
-    int meshIndex = 0;
-    std::vector<DirectX::XMFLOAT3>* tempOffset = new std::vector<DirectX::XMFLOAT3>;
-    if (!tempOffset) { return false; }
-    tempOffset->reserve(256);
-    for (auto& meshName : mMeshesName)
-    {
-        auto subVec = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            getMeshIfExisted(meshName);
+bool
+AMeshComponent::init() {
+  int MeshIndex = 0;
+  std::vector<DirectX::XMFLOAT3> *TempOffset =
+      new std::vector<DirectX::XMFLOAT3>;
+  if (!TempOffset) {
+    return false;
+  }
+  TempOffset->reserve(256);
+  for (const auto &MeshName : MeshesNameArray) {
+    auto SubArray =
+        getActorOwner()->GetSceneNode().GetAssetsPool()->getMeshIfExisted(
+            MeshName);
 #ifdef _DEBUG
-        assert(subVec);
+    assert(SubArray);
 #endif // _DEBUG
-        auto subSize = subVec->size();
-        for (size_t i = 0; i < subSize; i++)
-        {
-            mSubMeshesName.push_back((*subVec)[i]);
-            tempOffset->push_back(mOffsetPosition[meshIndex]);
-        }
-        ++meshIndex;
+    auto SubSize = SubArray->size();
+    for (size_t I = 0; I < SubSize; I++) {
+      SubMeshesNameArray.push_back((*SubArray)[I]);
+      TempOffset->push_back(OffsetPositionArray[MeshIndex]);
     }
-    auto allOffset = tempOffset->size();
-    mOffsetPosition.clear(); mOffsetPosition.resize(allOffset);
-    for (size_t i = 0; i < allOffset; i++)
-    {
-        mOffsetPosition[i] = tempOffset->at(i);
+    ++MeshIndex;
+  }
+  auto AllOffset = TempOffset->size();
+  OffsetPositionArray.clear();
+  OffsetPositionArray.resize(AllOffset);
+  for (size_t I = 0; I < AllOffset; I++) {
+    OffsetPositionArray[I] = TempOffset->at(I);
+  }
+  TempOffset->clear();
+  delete TempOffset;
+
+  for (const auto &MeshName : SubMeshesNameArray) {
+    if (!bindInstanceToAssetsPool(MeshName)) {
+      return false;
     }
-    tempOffset->clear();
-    delete tempOffset;
+  }
 
-    for (auto& meshName : mSubMeshesName)
-    {
-        if (!BindInstanceToAssetsPool(meshName)) { return false; }
+  return true;
+}
+
+void
+AMeshComponent::update(Timer &Timer) {
+  syncTransformDataToInstance();
+}
+
+void
+AMeshComponent::destory() {
+  for (const auto &MeshName : SubMeshesNameArray) {
+    SUBMESH_DATA *MeshPtr =
+        getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+            MeshName);
+    if (MeshPtr) {
+      MeshPtr->InstanceMap.erase(getCompName());
     }
-
-    return true;
+  }
 }
 
-void AMeshComponent::Update(Timer& _timer)
-{
-    SyncTransformDataToInstance();
+void
+AMeshComponent::addMeshInfo(const std::string &MeshName,
+                            DirectX::XMFLOAT3 Offset) {
+  MeshesNameArray.push_back(MeshName);
+  OffsetPositionArray.push_back(Offset);
 }
 
-void AMeshComponent::Destory()
-{
-    for (auto& meshName : mSubMeshesName)
-    {
-        SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            getSubMeshIfExisted(meshName);
-        if (mesh) { mesh->InstanceMap.erase(GetCompName()); }
-    }
+void
+AMeshComponent::setEmissiveIntensity(float Intensity) {
+  EmissiveIntensity = Intensity;
+  if (EmissiveIntensity > 255.f) {
+    EmissiveIntensity = 255.f;
+  }
 }
 
-void AMeshComponent::AddMeshInfo(std::string&& _meshName, DirectX::XMFLOAT3 _offset)
-{
-    mMeshesName.push_back(_meshName);
-    mOffsetPosition.push_back(_offset);
+float
+AMeshComponent::getEmissiveIntensity() {
+  return EmissiveIntensity;
 }
 
-void AMeshComponent::AddMeshInfo(std::string& _meshName, DirectX::XMFLOAT3 _offset)
-{
-    mMeshesName.push_back(_meshName);
-    mOffsetPosition.push_back(_offset);
+bool
+AMeshComponent::bindInstanceToAssetsPool(const std::string &MeshName) {
+  SUBMESH_DATA *MeshPtr =
+      getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+          MeshName);
+  if (!MeshPtr) {
+    return false;
+  }
+
+  RS_INSTANCE_DATA InsData = {};
+  InsData.MaterialData = MeshPtr->MeshData.Material;
+  if (MeshPtr->MeshData.Textures[1] != "") {
+    InsData.CustomizedData1.x = 1.f;
+  } else {
+    InsData.CustomizedData1.x = -1.f;
+  }
+  if (MeshPtr->MeshData.Textures[2] != "") {
+    InsData.CustomizedData1.y = 1.f;
+  } else {
+    InsData.CustomizedData1.y = -1.f;
+  }
+  if (MeshPtr->MeshData.Textures[3] != "") {
+    InsData.CustomizedData1.z = 1.f;
+  } else {
+    InsData.CustomizedData1.z = -1.f;
+  }
+  if (MeshPtr->MeshData.Textures[4] != "") {
+    InsData.CustomizedData1.w = 1.f;
+  } else {
+    InsData.CustomizedData1.w = -1.f;
+  }
+  if (MeshPtr->MeshData.Textures[4] != "") {
+    InsData.CustomizedData2.x = EmissiveIntensity;
+  } else {
+    InsData.CustomizedData2.x = 0.f;
+  }
+
+  MeshPtr->InstanceMap.insert({getCompName(), InsData});
+
+  return true;
 }
 
-void AMeshComponent::SetEmissiveIntensity(float _intensity)
-{
-    mEmissiveIntensity = _intensity;
-    if (mEmissiveIntensity > 255.f) { mEmissiveIntensity = 255.f; }
-}
-
-float AMeshComponent::GetEmissiveIntensity()
-{
-    return mEmissiveIntensity;
-}
-
-bool AMeshComponent::BindInstanceToAssetsPool(std::string& _meshName)
-{
-    SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-        getSubMeshIfExisted(_meshName);
-    if (!mesh) { return false; }
-
-    RS_INSTANCE_DATA id = {};
-    id.MaterialData = mesh->MeshData.Material;
-    if (mesh->MeshData.Textures[1] != "") { id.CustomizedData1.x = 1.f; }
-    else { id.CustomizedData1.x = -1.f; }
-    if (mesh->MeshData.Textures[2] != "") { id.CustomizedData1.y = 1.f; }
-    else { id.CustomizedData1.y = -1.f; }
-    if (mesh->MeshData.Textures[3] != "") { id.CustomizedData1.z = 1.f; }
-    else { id.CustomizedData1.z = -1.f; }
-    if (mesh->MeshData.Textures[4] != "") { id.CustomizedData1.w = 1.f; }
-    else { id.CustomizedData1.w = -1.f; }
-    if (mesh->MeshData.Textures[4] != "") { id.CustomizedData2.x = mEmissiveIntensity; }
-    else { id.CustomizedData2.x = 0.f; }
-
-    mesh->InstanceMap.insert({ GetCompName(),id });
-
-    return true;
-}
-
-void AMeshComponent::SyncTransformDataToInstance()
-{
-    ATransformComponent* atc = GetActorOwner()->
-        GetComponent<ATransformComponent>();
+void
+AMeshComponent::syncTransformDataToInstance() {
+  ATransformComponent *Atc =
+      getActorOwner()->GetComponent<ATransformComponent>();
 #ifdef _DEBUG
-    assert(atc);
+  assert(Atc);
 #endif // _DEBUG
-    size_t index = 0;
-    std::set<std::string> hasChecked = {};
+  size_t Index = 0;
+  std::set<std::string> HasChecked = {};
 
-    for (auto& meshName : mSubMeshesName)
-    {
-        if (hasChecked.find(meshName) != hasChecked.end()) { continue; }
-
-        auto& ins_map = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            getSubMeshIfExisted(meshName)->InstanceMap;
-        std::pair<
-            std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator,
-            std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator>
-            myRange;
-        myRange = ins_map.equal_range(GetCompName());
-
-        for (auto& it = myRange.first; it != myRange.second; ++it)
-        {
-            auto& ins_data = it->second;
-            DirectX::XMFLOAT3 delta = mOffsetPosition[index];
-            DirectX::XMFLOAT3 world = atc->GetPosition();
-            DirectX::XMFLOAT3 angle = atc->GetRotation();
-            DirectX::XMFLOAT3 scale = atc->GetScaling();
-
-            DirectX::XMMATRIX mat = {};
-            mat = DirectX::XMMatrixMultiply(
-                DirectX::XMMatrixTranslation(delta.x, delta.y, delta.z),
-                DirectX::XMMatrixScaling(scale.x, scale.y, scale.z));
-            mat = DirectX::XMMatrixMultiply(mat,
-                DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
-            mat = DirectX::XMMatrixMultiply(mat,
-                DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-            DirectX::XMStoreFloat4x4(&(ins_data.WorldMatrix), mat);
-
-            ins_data.CustomizedData2.x = mEmissiveIntensity;
-
-            ++index;
-        }
-
-        hasChecked.insert(meshName);
+  for (const auto &SubMeshName : SubMeshesNameArray) {
+    if (HasChecked.find(SubMeshName) != HasChecked.end()) {
+      continue;
     }
+
+    auto &InsMap = getActorOwner()
+                       ->GetSceneNode()
+                       .GetAssetsPool()
+                       ->getSubMeshIfExisted(SubMeshName)
+                       ->InstanceMap;
+    std::pair<std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator,
+              std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator>
+        MyRange;
+    MyRange = InsMap.equal_range(getCompName());
+
+    for (auto &It = MyRange.first, End = MyRange.second; It != End; ++It) {
+      auto &InsData = It->second;
+      DirectX::XMFLOAT3 Delta = OffsetPositionArray[Index];
+      DirectX::XMFLOAT3 World = Atc->getPosition();
+      DirectX::XMFLOAT3 Angle = Atc->getRotation();
+      DirectX::XMFLOAT3 Scale = Atc->getScaling();
+
+      DirectX::XMMATRIX Matrix = {};
+      Matrix = DirectX::XMMatrixMultiply(
+          DirectX::XMMatrixTranslation(Delta.x, Delta.y, Delta.z),
+          DirectX::XMMatrixScaling(Scale.x, Scale.y, Scale.z));
+      Matrix = DirectX::XMMatrixMultiply(
+          Matrix,
+          DirectX::XMMatrixRotationRollPitchYaw(Angle.x, Angle.y, Angle.z));
+      Matrix = DirectX::XMMatrixMultiply(
+          Matrix, DirectX::XMMatrixTranslation(World.x, World.y, World.z));
+      DirectX::XMStoreFloat4x4(&(InsData.WorldMatrix), Matrix);
+
+      InsData.CustomizedData2.x = EmissiveIntensity;
+
+      ++Index;
+    }
+
+    HasChecked.insert(SubMeshName);
+  }
 }

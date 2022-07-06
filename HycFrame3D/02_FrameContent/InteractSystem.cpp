@@ -40,12 +40,12 @@ void InteractSystem::Run(Timer& _timer)
 {
     for (auto& aitc : *mAInterVecPtr)
     {
-        if (aitc.GetCompStatus() == STATUS::ACTIVE) { aitc.Update(_timer); }
+        if (aitc.getCompStatus() == STATUS::ACTIVE) { aitc.update(_timer); }
     }
 
     for (auto& uitc : *mUInterVecPtr)
     {
-        if (uitc.GetCompStatus() == STATUS::ACTIVE) { uitc.Update(_timer); }
+        if (uitc.getCompStatus() == STATUS::ACTIVE) { uitc.update(_timer); }
     }
 }
 

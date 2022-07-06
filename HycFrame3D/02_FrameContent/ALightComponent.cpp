@@ -1,157 +1,132 @@
 #include "ALightComponent.h"
-#include "ActorObject.h"
-#include "SceneNode.h"
-#include "AssetsPool.h"
+
 #include "ATransformComponent.h"
+#include "ActorObject.h"
+#include "AssetsPool.h"
+#include "SceneNode.h"
+
+#include <RSLight.h>
+#include <RSLightsContainer.h>
+#include <RSMeshHelper.h>
+#include <RSRoot_DX11.h>
+
 #include <vector>
-#include "RSLight.h"
-#include "RSRoot_DX11.h"
-#include "RSLightsContainer.h"
-#include "RSMeshHelper.h"
 
-ALightComponent::ALightComponent(std::string&& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner),
-    mLightName(""),
-    mRSLightPtr(nullptr),
-    mCanCreateLight(false),
-    mLightInfoForInit({}),
-    mLightCamInfoForInit({}),
-    mIsBloom(false),
-    mIsCamera(false)
-{
+ALightComponent::ALightComponent(const std::string &CompName,
+                                 ActorObject *ActorOwner)
+    : ActorComponent(CompName, ActorOwner), LightName(""), RSLightPtr(nullptr),
+      CanCreateLight(false), LightInfoForInit({}), LightCamInfoForInit({}),
+      IsBloom(false), IsCamera(false) {}
 
+ALightComponent::~ALightComponent() {}
+
+bool
+ALightComponent::init() {
+  if (!CanCreateLight) {
+    return false;
+  }
+
+  createLight();
+
+  if (RSLightPtr) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-ALightComponent::ALightComponent(std::string& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner),
-    mLightName(""),
-    mRSLightPtr(nullptr),
-    mCanCreateLight(false),
-    mLightInfoForInit({}),
-    mLightCamInfoForInit({}),
-    mIsBloom(false),
-    mIsCamera(false)
-{
-
+void
+ALightComponent::update(Timer &Timer) {
+  syncDataFromTransform();
 }
 
-ALightComponent::~ALightComponent()
-{
-
+void
+ALightComponent::destory() {
+  getRSDX11RootInstance()->getLightsContainer()->deleteRSLight(LightName, true);
 }
 
-bool ALightComponent::Init()
-{
-    if (!mCanCreateLight) { return false; }
-
-    CreateLight();
-
-    if (mRSLightPtr) { return true; }
-    else { return false; }
-}
-
-void ALightComponent::Update(Timer& _timer)
-{
-    SyncDataFromTransform();
-}
-
-void ALightComponent::Destory()
-{
-    getRSDX11RootInstance()->getLightsContainer()->
-        deleteRSLight(mLightName, true);
-}
-
-void ALightComponent::CreateLight()
-{
-    mLightName = GetCompName();
-    mRSLightPtr = getRSDX11RootInstance()->getLightsContainer()->
-        createRSLight(mLightName, &mLightInfoForInit);
+void
+ALightComponent::createLight() {
+  LightName = getCompName();
+  RSLightPtr = getRSDX11RootInstance()->getLightsContainer()->createRSLight(
+      LightName, &LightInfoForInit);
 #ifdef _DEBUG
-    assert(mRSLightPtr);
+  assert(RSLightPtr);
 #endif // _DEBUG
 
-    if (mIsBloom)
-    {
-        SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            getSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
-        if (!mesh)
-        {
-            RS_SUBMESH_DATA boxBloom = getRSDX11RootInstance()->
-                getMeshHelper()->getGeoGenerator()->
-                createBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
-            GetActorOwner()->GetSceneNode().GetAssetsPool()->insertNewSubMesh(
-                BOX_BLOOM_MESH_NAME, boxBloom, MESH_TYPE::LIGHT);
-            mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-                getSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
-        }
-        mRSLightPtr->setLightBloom(mesh->MeshData);
+  if (IsBloom) {
+    SUBMESH_DATA *MeshPtr =
+        getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+            BOX_BLOOM_MESH_NAME);
+    if (!MeshPtr) {
+      RS_SUBMESH_DATA BoxBloom =
+          getRSDX11RootInstance()
+              ->getMeshHelper()
+              ->getGeoGenerator()
+              ->createBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
+      getActorOwner()->GetSceneNode().GetAssetsPool()->insertNewSubMesh(
+          BOX_BLOOM_MESH_NAME, BoxBloom, MESH_TYPE::LIGHT);
+      MeshPtr =
+          getActorOwner()->GetSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+              BOX_BLOOM_MESH_NAME);
     }
+    RSLightPtr->setLightBloom(MeshPtr->MeshData);
+  }
 
-    if (mIsCamera)
-    {
-        bool cam_create = getRSDX11RootInstance()->getLightsContainer()->
-            createLightCameraFor(mLightName, &mLightCamInfoForInit);
+  if (IsCamera) {
+    bool CamCreate =
+        getRSDX11RootInstance()->getLightsContainer()->createLightCameraFor(
+            LightName, &LightCamInfoForInit);
 #ifdef _DEBUG
-        assert(cam_create);
+    assert(CamCreate);
 #endif // _DEBUG
-        (void)cam_create;
-    }
+    (void)CamCreate;
+  }
 }
 
-void ALightComponent::ResetLight(LIGHT_INFO* _lightInfo)
-{
-    mRSLightPtr->resetRSLight(_lightInfo);
+void
+ALightComponent::resetLight(const LIGHT_INFO *LightInfo) {
+  RSLightPtr->resetRSLight(LightInfo);
 }
 
-RSLight* ALightComponent::GetLightInfo()
-{
-    return mRSLightPtr;
+RSLight *
+ALightComponent::getLightInfo() {
+  return RSLightPtr;
 }
 
-void ALightComponent::SyncDataFromTransform()
-{
-    ATransformComponent* atc = GetActorOwner()->
-        GetComponent<ATransformComponent>();
+void
+ALightComponent::syncDataFromTransform() {
+  ATransformComponent *Atc =
+      getActorOwner()->GetComponent<ATransformComponent>();
 #ifdef _DEBUG
-    assert(atc);
+  assert(Atc);
 #endif // _DEBUG
 
-    DirectX::XMFLOAT3 world = atc->GetPosition();
-    DirectX::XMFLOAT3 angle = atc->GetRotation();
-    DirectX::XMFLOAT3 scale = atc->GetScaling();
+  dx::XMFLOAT3 World = Atc->getPosition();
+  dx::XMFLOAT3 Angle = Atc->getRotation();
+  dx::XMFLOAT3 Scale = Atc->getScaling();
 
-    mRSLightPtr->setRSLightPosition(world);
+  RSLightPtr->setRSLightPosition(World);
 
-    if (mIsBloom)
-    {
-        DirectX::XMMATRIX mat = {};
-        mat = DirectX::XMMatrixMultiply(
-            DirectX::XMMatrixScaling(scale.x, scale.y, scale.z),
-            DirectX::XMMatrixRotationRollPitchYaw(angle.x, angle.y, angle.z));
-        mat = DirectX::XMMatrixMultiply(mat,
-            DirectX::XMMatrixTranslation(world.x, world.y, world.z));
-        DirectX::XMStoreFloat4x4(mRSLightPtr->getLightWorldMat(), mat);
-    }
+  if (IsBloom) {
+    dx::XMMATRIX Matrix = {};
+    Matrix = dx::XMMatrixMultiply(
+        dx::XMMatrixScaling(Scale.x, Scale.y, Scale.z),
+        dx::XMMatrixRotationRollPitchYaw(Angle.x, Angle.y, Angle.z));
+    Matrix = dx::XMMatrixMultiply(
+        Matrix, dx::XMMatrixTranslation(World.x, World.y, World.z));
+    dx::XMStoreFloat4x4(RSLightPtr->getLightWorldMat(), Matrix);
+  }
 }
 
-void ALightComponent::AddLight(LIGHT_INFO& _lightInfo,
-    bool _setBloom, bool _setCamera, CAM_INFO& _camInfo)
-{
-    mLightInfoForInit = _lightInfo;
-    mLightCamInfoForInit = _camInfo;
-    mIsBloom = _setBloom;
-    mIsCamera = _setCamera;
-    mCanCreateLight = true;
-}
-
-void ALightComponent::AddLight(LIGHT_INFO& _lightInfo,
-    bool _setBloom, bool _setCamera, CAM_INFO&& _camInfo)
-{
-    mLightInfoForInit = _lightInfo;
-    mLightCamInfoForInit = _camInfo;
-    mIsBloom = _setBloom;
-    mIsCamera = _setCamera;
-    mCanCreateLight = true;
+void
+ALightComponent::addLight(const LIGHT_INFO &LightInfo,
+                          bool SetBloom,
+                          bool SetCamera,
+                          const CAM_INFO &CamInfo) {
+  LightInfoForInit = LightInfo;
+  LightCamInfoForInit = CamInfo;
+  IsBloom = SetBloom;
+  IsCamera = SetCamera;
+  CanCreateLight = true;
 }

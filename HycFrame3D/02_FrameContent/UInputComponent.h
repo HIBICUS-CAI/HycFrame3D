@@ -2,37 +2,42 @@
 
 #include "UiComponent.h"
 
-using UiInputProcessFuncType = void(*)(class UInputComponent*, Timer&);
+using UiInputProcessFuncType = void (*)(class UInputComponent *, Timer &);
 
-class UInputComponent :public UiComponent
-{
-public:
-    UInputComponent(std::string&& _compName, class UiObject* _uiOwner);
-    UInputComponent(std::string& _compName, class UiObject* _uiOwner);
-    virtual ~UInputComponent();
-
-    UInputComponent& operator=(const UInputComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mInputPrecessFunctionPtr = _source.mInputPrecessFunctionPtr;
-        UiComponent::operator=(_source);
-        return *this;
-    }
-
-public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
-
-public:
-    void SetInputFunction(UiInputProcessFuncType _func);
-    void ClearInputFunction();
-
-    class ActorObject* GetActorObject(std::string&& _actorName);
-    class ActorObject* GetActorObject(std::string& _actorName);
-    class UiObject* GetUiObject(std::string&& _uiName);
-    class UiObject* GetUiObject(std::string& _uiName);
-
+class UInputComponent : public UiComponent {
 private:
-    UiInputProcessFuncType mInputPrecessFunctionPtr;
+  UiInputProcessFuncType InputPrecessFunctionPtr;
+
+public:
+  UInputComponent(const std::string &CompName, class UiObject *UiOwner);
+  virtual ~UInputComponent();
+
+  UInputComponent &
+  operator=(const UInputComponent &Source) {
+    if (this == &Source) {
+      return *this;
+    }
+    InputPrecessFunctionPtr = Source.InputPrecessFunctionPtr;
+    UiComponent::operator=(Source);
+    return *this;
+  }
+
+public:
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
+
+public:
+  void
+  setInputFunction(UiInputProcessFuncType FuncPtr);
+  void
+  clearInputFunction();
+
+  class ActorObject *
+  getActorObject(const std::string &ActorName);
+  class UiObject *
+  getUiObject(const std::string &UiName);
 };

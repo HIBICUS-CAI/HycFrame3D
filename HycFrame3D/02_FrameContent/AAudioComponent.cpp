@@ -1,96 +1,59 @@
 #include "AAudioComponent.h"
+
 #include "ActorObject.h"
-#include "SceneNode.h"
 #include "AssetsPool.h"
+#include "SceneNode.h"
 
-AAudioComponent::AAudioComponent(std::string&& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mAudioMap({})
-{
+AAudioComponent::AAudioComponent(const std::string &CompName,
+                                 ActorObject *ActorOwner)
+    : ActorComponent(CompName, ActorOwner), AudioMap({}) {}
 
+AAudioComponent::~AAudioComponent() {}
+
+bool
+AAudioComponent::init() {
+  if (AudioMap.size()) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-AAudioComponent::AAudioComponent(std::string& _compName,
-    ActorObject* _actorOwner) :
-    ActorComponent(_compName, _actorOwner), mAudioMap({})
-{
+void
+AAudioComponent::update(Timer &Timer) {}
 
+void
+AAudioComponent::destory() {
+  AudioMap.clear();
 }
 
-AAudioComponent::~AAudioComponent()
-{
-
-}
-
-bool AAudioComponent::Init()
-{
-    if (mAudioMap.size()) { return true; }
-    else { return false; }
-}
-
-void AAudioComponent::Update(Timer& _timer)
-{
-
-}
-
-void AAudioComponent::Destory()
-{
-    mAudioMap.clear();
-}
-
-void AAudioComponent::AddAudio(std::string&& _audioName, SceneNode& _scene)
-{
-    SOUND_HANDLE audio = _scene.GetAssetsPool()->getSoundIfExisted(_audioName);
+void
+AAudioComponent::addAudio(const std::string &AudioName, SceneNode &Scene) {
+  SOUND_HANDLE Audio = Scene.GetAssetsPool()->getSoundIfExisted(AudioName);
 #ifdef _DEBUG
-    assert(audio);
+  assert(Audio);
 #endif // _DEBUG
-    mAudioMap.insert({ _audioName,audio });
+  AudioMap.insert({AudioName, Audio});
 }
 
-void AAudioComponent::AddAudio(std::string& _audioName, SceneNode& _scene)
-{
-    SOUND_HANDLE audio = _scene.GetAssetsPool()->getSoundIfExisted(_audioName);
-#ifdef _DEBUG
-    assert(audio);
-#endif // _DEBUG
-    mAudioMap.insert({ _audioName,audio });
+void
+AAudioComponent::playBgm(const std::string &BgmName, float Volume) {
+  setVolume(BgmName, Volume);
+  playBGM(BgmName);
 }
 
-void AAudioComponent::PlayBgm(std::string&& _bgmName, float _volume)
-{
-    setVolume(_bgmName, _volume);
-    playBGM(_bgmName);
+void
+AAudioComponent::playSe(const std::string &SeName, float Volume) {
+  setVolume(SeName, Volume);
+  playSE(SeName);
 }
 
-void AAudioComponent::PlayBgm(std::string& _bgmName, float _volume)
-{
-    setVolume(_bgmName, _volume);
-    playBGM(_bgmName);
+void
+AAudioComponent::stopBgm() {
+  stopBGM();
 }
 
-void AAudioComponent::PlaySe(std::string&& _seName, float _volume)
-{
-    setVolume(_seName, _volume);
-    playSE(_seName);
-}
-
-void AAudioComponent::PlaySe(std::string& _seName, float _volume)
-{
-    setVolume(_seName, _volume);
-    playSE(_seName);
-}
-
-void AAudioComponent::StopBgm()
-{
-    stopBGM();
-}
-
-void AAudioComponent::StopBgm(std::string&& _bgmName)
-{
-    stopBGM(_bgmName);
-}
-
-void AAudioComponent::StopBgm(std::string& _bgmName)
-{
-    stopBGM(_bgmName);
+void
+AAudioComponent::stopBgm(const std::string &BgmName) {
+  stopBGM(BgmName);
 }

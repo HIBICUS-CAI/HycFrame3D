@@ -1,48 +1,56 @@
 #pragma once
 
 #include "ActorComponent.h"
+
+#include <directxmath.h>
 #include <vector>
-#include <DirectXMath.h>
 
-class AMeshComponent :public ActorComponent
-{
+class AMeshComponent : public ActorComponent {
+private:
+  std::vector<std::string> MeshesNameArray;
+  std::vector<std::string> SubMeshesNameArray;
+  std::vector<DirectX::XMFLOAT3> OffsetPositionArray;
+  float EmissiveIntensity;
+
 public:
-    AMeshComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    AMeshComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~AMeshComponent();
+  AMeshComponent(const std::string &CompName, class ActorObject *ActorOwner);
+  virtual ~AMeshComponent();
 
-    AMeshComponent& operator=(const AMeshComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mMeshesName = _source.mMeshesName;
-        mSubMeshesName = _source.mSubMeshesName;
-        mOffsetPosition = _source.mOffsetPosition;
-        ActorComponent::operator=(_source);
-        return *this;
+  AMeshComponent &
+  operator=(const AMeshComponent &Source) {
+    if (this == &Source) {
+      return *this;
     }
+    MeshesNameArray = Source.MeshesNameArray;
+    SubMeshesNameArray = Source.SubMeshesNameArray;
+    OffsetPositionArray = Source.OffsetPositionArray;
+    ActorComponent::operator=(Source);
+    return *this;
+  }
 
 public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
 
 public:
-    void AddMeshInfo(std::string&& _meshName,
-        DirectX::XMFLOAT3 _offset = { 0.f,0.f,0.f });
-    void AddMeshInfo(std::string& _meshName,
-        DirectX::XMFLOAT3 _offset = { 0.f,0.f,0.f });
-    
-    void SetEmissiveIntensity(float _intensity);
-    float GetEmissiveIntensity();
+  void
+  addMeshInfo(const std::string &MeshName,
+              DirectX::XMFLOAT3 Offset = {0.f, 0.f, 0.f});
+
+  void
+  setEmissiveIntensity(float Intensity);
+  float
+  getEmissiveIntensity();
 
 private:
-    bool BindInstanceToAssetsPool(std::string& _meshName);
-    void SyncTransformDataToInstance();
+  bool
+  bindInstanceToAssetsPool(const std::string &MeshName);
+  void
+  syncTransformDataToInstance();
 
-private:
-    friend class AAnimateComponent;
-    std::vector<std::string> mMeshesName;
-    std::vector<std::string> mSubMeshesName;
-    std::vector<DirectX::XMFLOAT3> mOffsetPosition;
-    float mEmissiveIntensity;
+  friend class AAnimateComponent;
 };

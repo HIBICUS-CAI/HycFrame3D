@@ -50,9 +50,9 @@ bool UiObject::Init()
 #ifdef _DEBUG
         assert(comp);
 #endif // _DEBUG
-        ((UiComponent*)comp)->ResetUiOwner(this);
-        if (!comp->Init()) { return false; }
-        comp->SetCompStatus(STATUS::ACTIVE);
+        ((UiComponent*)comp)->resetUiOwner(this);
+        if (!comp->init()) { return false; }
+        comp->setCompStatus(STATUS::ACTIVE);
     }
 
     SetObjectStatus(STATUS::ACTIVE);
@@ -70,9 +70,9 @@ void UiObject::Destory()
 #ifdef _DEBUG
         assert(comp);
 #endif // _DEBUG
-        ((UiComponent*)comp)->ResetUiOwner(this);
-        comp->Destory();
-        comp->SetCompStatus(STATUS::NEED_DESTORY);
+        ((UiComponent*)comp)->resetUiOwner(this);
+        comp->destory();
+        comp->setCompStatus(STATUS::NEED_DESTORY);
         compContainer->DeleteComponent(compInfo.first, compInfo.second);
     }
 
@@ -89,6 +89,6 @@ void UiObject::SyncStatusToAllComps()
 #ifdef _DEBUG
         assert(comp);
 #endif // _DEBUG
-        comp->SetCompStatus(GetObjectStatus());
+        comp->setCompStatus(GetObjectStatus());
     }
 }

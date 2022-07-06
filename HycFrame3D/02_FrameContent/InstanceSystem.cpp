@@ -70,42 +70,42 @@ void InstanceSystem::Run(Timer& _timer)
 {
     for (auto& atc : *mATransVecPtr)
     {
-        if (atc.GetCompStatus() == STATUS::ACTIVE) { atc.Update(_timer); }
+        if (atc.getCompStatus() == STATUS::ACTIVE) { atc.update(_timer); }
     }
 
     for (auto& utc : *mUTransVecPtr)
     {
-        if (utc.GetCompStatus() == STATUS::ACTIVE) { utc.Update(_timer); }
+        if (utc.getCompStatus() == STATUS::ACTIVE) { utc.update(_timer); }
     }
 
     for (auto& amc : *mAMeshVecPtr)
     {
-        if (amc.GetCompStatus() == STATUS::ACTIVE) { amc.Update(_timer); }
+        if (amc.getCompStatus() == STATUS::ACTIVE) { amc.update(_timer); }
     }
 
     for (auto& alc : *mALightVecPtr)
     {
-        if (alc.GetCompStatus() == STATUS::ACTIVE) { alc.Update(_timer); }
+        if (alc.getCompStatus() == STATUS::ACTIVE) { alc.update(_timer); }
     }
 
     for (auto& apc : *mAParitcleVecPtr)
     {
-        if (apc.GetCompStatus() == STATUS::ACTIVE) { apc.Update(_timer); }
+        if (apc.getCompStatus() == STATUS::ACTIVE) { apc.update(_timer); }
     }
 
     for (auto& asc : *mASpriteVecPtr)
     {
-        if (asc.GetCompStatus() == STATUS::ACTIVE) { asc.Update(_timer); }
+        if (asc.getCompStatus() == STATUS::ACTIVE) { asc.update(_timer); }
     }
 
     for (auto& usc : *mUSpriteVecPtr)
     {
-        if (usc.GetCompStatus() == STATUS::ACTIVE) { usc.Update(_timer); }
+        if (usc.getCompStatus() == STATUS::ACTIVE) { usc.update(_timer); }
     }
 
     for (auto& uamc : *mUAnimateVecPtr)
     {
-        if (uamc.GetCompStatus() == STATUS::ACTIVE) { uamc.Update(_timer); }
+        if (uamc.getCompStatus() == STATUS::ACTIVE) { uamc.update(_timer); }
     }
 }
 

@@ -1,68 +1,77 @@
 #pragma once
 
 #include "ActorComponent.h"
+
+#include <RSCommon.h>
+
 #include <vector>
-#include "RSCommon.h"
 
-class ASpriteComponent :public ActorComponent
-{
+class ASpriteComponent : public ActorComponent {
+private:
+  std::string GeoPointName;
+  std::string TextureName;
+  bool EnabledBillboardFlag;
+
+  dx::XMFLOAT2 Size;
+  dx::XMFLOAT4 TexCoord; // origin u & v, offset length & width
+
+  bool EnabledAnimationFlag;
+  dx::XMFLOAT2 Stride;
+  UINT MaxCut;
+  UINT CurrentAnimateCut;
+  bool RepeatFlag;
+  float SwitchTime;
+  float TimeCounter;
+
 public:
-    ASpriteComponent(std::string&& _compName, class ActorObject* _actorOwner);
-    ASpriteComponent(std::string& _compName, class ActorObject* _actorOwner);
-    virtual ~ASpriteComponent();
+  ASpriteComponent(const std::string &CompName, class ActorObject *ActorOwner);
+  virtual ~ASpriteComponent();
 
-    ASpriteComponent& operator=(const ASpriteComponent& _source)
-    {
-        if (this == &_source) { return *this; }
-        mGeoPointName = _source.mGeoPointName;
-        mTextureName = _source.mTextureName;
-        mIsBillboard = _source.mIsBillboard;
-        mSize = _source.mSize;
-        mTexCoord = _source.mTexCoord;
-        mWithAnimation = _source.mWithAnimation;
-        mStride = _source.mStride;
-        mMaxCut = _source.mMaxCut;
-        mCurrentAnimateCut = _source.mCurrentAnimateCut;
-        mRepeatFlg = _source.mRepeatFlg;
-        mSwitchTime = _source.mSwitchTime;
-        mTimeCounter = _source.mTimeCounter;
-        ActorComponent::operator=(_source);
-        return *this;
+  ASpriteComponent &
+  operator=(const ASpriteComponent &Source) {
+    if (this == &Source) {
+      return *this;
     }
+    GeoPointName = Source.GeoPointName;
+    TextureName = Source.TextureName;
+    EnabledBillboardFlag = Source.EnabledBillboardFlag;
+    Size = Source.Size;
+    TexCoord = Source.TexCoord;
+    EnabledAnimationFlag = Source.EnabledAnimationFlag;
+    Stride = Source.Stride;
+    MaxCut = Source.MaxCut;
+    CurrentAnimateCut = Source.CurrentAnimateCut;
+    RepeatFlag = Source.RepeatFlag;
+    SwitchTime = Source.SwitchTime;
+    TimeCounter = Source.TimeCounter;
+    ActorComponent::operator=(Source);
+    return *this;
+  }
 
 public:
-    virtual bool Init();
-    virtual void Update(Timer& _timer);
-    virtual void Destory();
+  virtual bool
+  init();
+  virtual void
+  update(Timer &Timer);
+  virtual void
+  destory();
 
 public:
-    bool CreateGeoPointWithTexture(class SceneNode* _scene,
-        std::string& _texName);
-    bool CreateGeoPointWithTexture(class SceneNode* _scene,
-        std::string&& _texName);
+  bool
+  createGeoPointWithTexture(class SceneNode *Scene, const std::string &TexName);
 
-    void SetSpriteProperty(DirectX::XMFLOAT2 _size, DirectX::XMFLOAT4 _texCoord,
-        bool _isBillboard);
+  void
+  setSpriteProperty(const dx::XMFLOAT2 &SpriteSize,
+                    const dx::XMFLOAT4 &SpriteTexCoord,
+                    bool IsBillboard);
 
-    void SetAnimationProperty(DirectX::XMFLOAT2 _stride,
-        UINT _maxCut, bool _repeatFlg, float _switchTime);
+  void
+  setAnimationProperty(const dx::XMFLOAT2 &Stride,
+                       UINT MaxCut,
+                       bool RepeatFlag,
+                       float WwitchTime);
 
 private:
-    void SyncTransformDataToInstance();
-
-private:
-    std::string mGeoPointName;
-    std::string mTextureName;
-    bool mIsBillboard;
-
-    DirectX::XMFLOAT2 mSize;
-    DirectX::XMFLOAT4 mTexCoord;    // origin u & v, offset length & width
-
-    bool mWithAnimation;
-    DirectX::XMFLOAT2 mStride;
-    UINT mMaxCut;
-    UINT mCurrentAnimateCut;
-    bool mRepeatFlg;
-    float mSwitchTime;
-    float mTimeCounter;
+  void
+  syncTransformDataToInstance();
 };

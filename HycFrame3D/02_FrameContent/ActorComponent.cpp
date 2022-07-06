@@ -1,34 +1,24 @@
 #include "ActorComponent.h"
+
 #include "ActorObject.h"
 
-ActorComponent::ActorComponent(std::string&& _compName, ActorObject* _actorOwner) :
-    Component(_compName), mActorOwner(_actorOwner)
-{
+ActorComponent::ActorComponent(const std::string &CompName,
+                               ActorObject *ActorOwner)
+    : Component(CompName), ActorOwner(ActorOwner) {}
 
+ActorComponent::~ActorComponent() {}
+
+SceneNode &
+ActorComponent::getSceneNode() const {
+  return ActorOwner->GetSceneNode();
 }
 
-ActorComponent::ActorComponent(std::string& _compName, ActorObject* _actorOwner) :
-    Component(_compName), mActorOwner(_actorOwner)
-{
-
+ActorObject *
+ActorComponent::getActorOwner() const {
+  return ActorOwner;
 }
 
-ActorComponent::~ActorComponent()
-{
-
-}
-
-SceneNode& ActorComponent::GetSceneNode() const
-{
-    return mActorOwner->GetSceneNode();
-}
-
-ActorObject* ActorComponent::GetActorOwner() const
-{
-    return mActorOwner;
-}
-
-void ActorComponent::ResetActorOwner(ActorObject* _owner)
-{
-    mActorOwner = _owner;
+void
+ActorComponent::resetActorOwner(ActorObject *Owner) {
+  ActorOwner = Owner;
 }
