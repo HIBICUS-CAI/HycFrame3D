@@ -25,13 +25,13 @@ public:
   ObjectContainer(class SceneNode &SceneNode);
   ~ObjectContainer();
 
-  class ActorObject *
+  ActorObject *
   getActorObject(const std::string &ActorName);
   void
   addActorObject(const ActorObject &NewActor);
   void
   deleteActorObject(const std::string &ActorName);
-  class UiObject *
+  UiObject *
   getUiObject(const std::string &UiName);
   void
   addUiObject(const UiObject &NewUi);

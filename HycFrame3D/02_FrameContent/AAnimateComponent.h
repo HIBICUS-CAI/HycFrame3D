@@ -61,28 +61,28 @@ public:
   changeAnimationTo(int AniIndex);
 
   void
-  ResetTimeStamp();
+  resetTimeStamp();
   void
   SetSpeedFactor(float Factor);
 
 private:
   void
-  ProcessNodes(float AniTime,
+  processNodes(float AniTime,
                const MESH_NODE *Node,
                const dx::XMFLOAT4X4 &ParentTrans,
                const dx::XMFLOAT4X4 &GlbInvTrans,
                const ANIMATION_INFO *const AniInfo);
 
   void
-  InterpPos(dx::XMVECTOR &OutResult,
-            float AniTime,
-            const ANIMATION_CHANNEL *const AniInfo);
+  interpolatePosition(dx::XMVECTOR &OutResult,
+                      float AniTime,
+                      const ANIMATION_CHANNEL *const AniInfo);
   void
-  InterpRot(dx::XMVECTOR &OutResult,
-            float AniTime,
-            const ANIMATION_CHANNEL *const AniInfo);
+  interpolateRotation(dx::XMVECTOR &OutResult,
+                      float AniTime,
+                      const ANIMATION_CHANNEL *const AniInfo);
   void
-  InterpSca(dx::XMVECTOR &OutResult,
-            float AniTime,
-            const ANIMATION_CHANNEL *const AniInfo);
+  interpolateScaling(dx::XMVECTOR &OutResult,
+                     float AniTime,
+                     const ANIMATION_CHANNEL *const AniInfo);
 };

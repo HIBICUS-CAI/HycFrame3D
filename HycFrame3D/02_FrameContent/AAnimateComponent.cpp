@@ -155,7 +155,7 @@ AAnimateComponent::update(Timer &Timer) {
     dx::XMStoreFloat4x4(&GlbInv, GlbInvM);
   }
 
-  ProcessNodes(AniTime, MeshAnimationDataPtr->RootNode, Identity, GlbInv,
+  processNodes(AniTime, MeshAnimationDataPtr->RootNode, Identity, GlbInv,
                CurrentAnimationInfo);
 
   if (SubMeshBoneDataPtrVec.size() != 1 && ShareBoneData) {
@@ -199,7 +199,7 @@ AAnimateComponent::changeAnimationTo(int AniIndex) {
 }
 
 void
-AAnimateComponent::ResetTimeStamp() {
+AAnimateComponent::resetTimeStamp() {
   TotalTime = 0.f;
 }
 
@@ -209,7 +209,7 @@ AAnimateComponent::SetSpeedFactor(float Factor) {
 }
 
 void
-AAnimateComponent::ProcessNodes(float AniTime,
+AAnimateComponent::processNodes(float AniTime,
                                 const MESH_NODE *Node,
                                 const dx::XMFLOAT4X4 &ParentTrans,
                                 const dx::XMFLOAT4X4 &GlbInvTrans,
@@ -239,11 +239,11 @@ AAnimateComponent::ProcessNodes(float AniTime,
 
   if (NodeActPtr) {
     dx::XMVECTOR Sca = {};
-    InterpSca(Sca, AniTime, NodeActPtr);
+    interpolateScaling(Sca, AniTime, NodeActPtr);
     dx::XMVECTOR Rot = {};
-    InterpRot(Rot, AniTime, NodeActPtr);
+    interpolateRotation(Rot, AniTime, NodeActPtr);
     dx::XMVECTOR Pos = {};
-    InterpPos(Pos, AniTime, NodeActPtr);
+    interpolatePosition(Pos, AniTime, NodeActPtr);
 
     dx::XMVECTOR Zero = dx::XMVectorSet(0.f, 0.f, 0.f, 1.f);
     NodeTrans = dx::XMMatrixAffineTransformation(Sca, Zero, Rot, Pos);
@@ -262,14 +262,14 @@ AAnimateComponent::ProcessNodes(float AniTime,
   }
 
   for (const auto Child : Node->Children) {
-    ProcessNodes(AniTime, Child, ThisGlbTrans, GlbInvTrans, AniInfo);
+    processNodes(AniTime, Child, ThisGlbTrans, GlbInvTrans, AniInfo);
   }
 }
 
 void
-AAnimateComponent::InterpPos(dx::XMVECTOR &OutResult,
-                             float AniTime,
-                             const ANIMATION_CHANNEL *const AniInfo) {
+AAnimateComponent::interpolatePosition(dx::XMVECTOR &OutResult,
+                                       float AniTime,
+                                       const ANIMATION_CHANNEL *const AniInfo) {
   auto Size = AniInfo->PositionKeys.size();
   assert(Size > 0);
   if (Size == 1) {
@@ -300,9 +300,9 @@ AAnimateComponent::InterpPos(dx::XMVECTOR &OutResult,
 }
 
 void
-AAnimateComponent::InterpRot(dx::XMVECTOR &OutResult,
-                             float AniTime,
-                             const ANIMATION_CHANNEL *const AniInfo) {
+AAnimateComponent::interpolateRotation(dx::XMVECTOR &OutResult,
+                                       float AniTime,
+                                       const ANIMATION_CHANNEL *const AniInfo) {
   auto Size = AniInfo->RotationKeys.size();
   assert(Size > 0);
   if (Size == 1) {
@@ -337,9 +337,9 @@ AAnimateComponent::InterpRot(dx::XMVECTOR &OutResult,
 }
 
 void
-AAnimateComponent::InterpSca(dx::XMVECTOR &OuResult,
-                             float AniTime,
-                             const ANIMATION_CHANNEL *const AniInfo) {
+AAnimateComponent::interpolateScaling(dx::XMVECTOR &OuResult,
+                                      float AniTime,
+                                      const ANIMATION_CHANNEL *const AniInfo) {
   auto Size = AniInfo->ScalingKeys.size();
   assert(Size > 0);
   if (Size == 1) {
