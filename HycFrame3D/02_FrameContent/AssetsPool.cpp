@@ -1,328 +1,164 @@
 #include "AssetsPool.h"
-#include "RSMeshHelper.h"
-#include "RSRoot_DX11.h"
+
 #include "ALightComponent.h"
 #include "UButtonComponent.h"
 
-AssetsPool::AssetsPool(SceneNode& _sceneNode) :
-    mSceneNodeOwner(_sceneNode),
-    mSubMeshPool({}),
-    mSubMeshToMesh({}),
-    mMeshPool({}),
-    mMeshAnimationsPool({}),
-    mSoundPool({})
-{
-    mSubMeshPool.reserve(256);
-    mMeshPool.reserve(256);
-    mSubMeshToMesh.reserve(256);
+#include <RSMeshHelper.h>
+#include <RSRoot_DX11.h>
+
+AssetsPool::AssetsPool(SceneNode &SceneNode)
+    : SceneNodeOwner(SceneNode), SubMeshPool({}), SubMeshToMesh({}),
+      MeshPool({}), MeshAnimationsPool({}), SoundPool({}) {
+  SubMeshPool.reserve(256);
+  MeshPool.reserve(256);
+  SubMeshToMesh.reserve(256);
 }
 
-AssetsPool::~AssetsPool()
-{
+AssetsPool::~AssetsPool() {}
 
+SUBMESH_DATA *
+AssetsPool::getSubMeshIfExisted(const std::string &MeshName) {
+  auto Found = SubMeshPool.find(MeshName);
+  if (Found != SubMeshPool.end()) {
+    return &(Found->second);
+  } else {
+    P_LOG(LOG_WARNING, "this mesh doesnt exist : %s\n", MeshName.c_str());
+    return nullptr;
+  }
 }
 
-SUBMESH_DATA* AssetsPool::GetSubMeshIfExisted(std::string&& _meshName)
-{
-    auto found = mSubMeshPool.find(_meshName);
-    if (found != mSubMeshPool.end())
-    {
-        return &(found->second);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "this mesh doesnt exist : %s\n", _meshName.c_str());
-        return nullptr;
-    }
+SUBMESH_NAME_VEC *
+AssetsPool::getMeshIfExisted(const std::string &MeshName) {
+  auto Found = MeshPool.find(MeshName);
+  if (Found != MeshPool.end()) {
+    return &(Found->second);
+  } else {
+    P_LOG(LOG_WARNING, "this mesh doesnt exist : %s\n", MeshName.c_str());
+    return nullptr;
+  }
 }
 
-SUBMESH_DATA* AssetsPool::GetSubMeshIfExisted(std::string& _meshName)
-{
-    auto found = mSubMeshPool.find(_meshName);
-    if (found != mSubMeshPool.end())
-    {
-        return &(found->second);
+MESH_ANIMATION_DATA *
+AssetsPool::getAnimationIfExistedSub(const std::string &AniName) {
+  auto Found = SubMeshToMesh.find(AniName);
+  if (Found != SubMeshToMesh.end()) {
+    auto AniFound = MeshAnimationsPool.find(Found->second);
+    if (AniFound != MeshAnimationsPool.end()) {
+      return AniFound->second;
+    } else {
+      P_LOG(LOG_WARNING, "cannot found this animation : %s\n", AniName.c_str());
+      return nullptr;
     }
-    else
-    {
-        P_LOG(LOG_WARNING, "this mesh doesnt exist : %s\n", _meshName.c_str());
-        return nullptr;
-    }
+  } else {
+    P_LOG(LOG_WARNING, "cannot found this animation's main mesh : %s\n",
+          AniName.c_str());
+    return nullptr;
+  }
 }
 
-SUBMESH_NAME_VEC* AssetsPool::GetMeshIfExisted(std::string&& _meshName)
-{
-    auto found = mMeshPool.find(_meshName);
-    if (found != mMeshPool.end())
-    {
-        return &(found->second);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "this mesh doesnt exist : %s\n", _meshName.c_str());
-        return nullptr;
-    }
+MESH_ANIMATION_DATA *
+AssetsPool::getAnimationIfExisted(const std::string &AniName) {
+  auto AniFound = MeshAnimationsPool.find(AniName);
+  if (AniFound != MeshAnimationsPool.end()) {
+    return AniFound->second;
+  } else {
+    P_LOG(LOG_WARNING, "cannot found this animation : %s\n", AniName.c_str());
+    return nullptr;
+  }
 }
 
-SUBMESH_NAME_VEC* AssetsPool::GetMeshIfExisted(std::string& _meshName)
-{
-    auto found = mMeshPool.find(_meshName);
-    if (found != mMeshPool.end())
-    {
-        return &(found->second);
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "this mesh doesnt exist : %s\n", _meshName.c_str());
-        return nullptr;
-    }
+SOUND_HANDLE
+AssetsPool::getSoundIfExisted(const std::string &SoundName) {
+  auto Found = SoundPool.find(SoundName);
+  if (Found != SoundPool.end()) {
+    return Found->second;
+  } else {
+    P_LOG(LOG_WARNING, "this sound doesnt exist : %s\n", SoundName.c_str());
+    return nullptr;
+  }
 }
 
-MESH_ANIMATION_DATA* AssetsPool::GetAnimationIfExistedSub(
-    std::string&& _aniName)
-{
-    auto found = mSubMeshToMesh.find(_aniName);
-    if (found != mSubMeshToMesh.end())
-    {
-        auto aniFound = mMeshAnimationsPool.find(found->second);
-        if (aniFound != mMeshAnimationsPool.end())
-        {
-            return aniFound->second;
-        }
-        else
-        {
-            P_LOG(LOG_WARNING, "cannot found this animation : %s\n",
-                _aniName.c_str());
-            return nullptr;
-        }
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "cannot found this animation's main mesh : %s\n",
-            _aniName.c_str());
-        return nullptr;
-    }
+void
+AssetsPool::insertNewSubMesh(const std::string &MeshName,
+                             const RS_SUBMESH_DATA &MeshData,
+                             MESH_TYPE MeshType,
+                             const SUBMESH_BONES *BonesData,
+                             const MESH_ANIMATION_DATA *AnimationData) {
+  SUBMESH_DATA SD = {};
+  SubMeshPool.insert({MeshName, SD});
+  SubMeshPool[MeshName].MeshData = MeshData;
+  SubMeshPool[MeshName].MeshType = MeshType;
+  if (BonesData) {
+    SubMeshPool[MeshName].OriginBoneData = *BonesData;
+  }
+  SubMeshPool[MeshName].InstanceVector.reserve(MAX_INSTANCE_SIZE);
+
+  if (MeshData.AnimationFlag && AnimationData) {
+    MeshAnimationsPool.insert(
+        {MeshName, const_cast<MESH_ANIMATION_DATA *>(AnimationData)});
+  }
 }
 
-MESH_ANIMATION_DATA* AssetsPool::GetAnimationIfExistedSub(
-    std::string& _aniName)
-{
-    auto found = mSubMeshToMesh.find(_aniName);
-    if (found != mSubMeshToMesh.end())
-    {
-        auto aniFound = mMeshAnimationsPool.find(found->second);
-        if (aniFound != mMeshAnimationsPool.end())
-        {
-            return aniFound->second;
-        }
-        else
-        {
-            P_LOG(LOG_WARNING, "cannot found this animation : %s\n",
-                _aniName.c_str());
-            return nullptr;
-        }
+void
+AssetsPool::insertNewIndexedMesh(const std::string &MeshName,
+                                 const RS_SUBMESH_DATA &MeshData,
+                                 MESH_TYPE MeshType,
+                                 int SubIndex,
+                                 const SUBMESH_BONES *BonesData,
+                                 const MESH_ANIMATION_DATA *AnimationData) {
+  std::string SubMeshName = MeshName + std::to_string(SubIndex);
+  MeshPool[MeshName].emplace_back(SubMeshName);
+  SubMeshToMesh[SubMeshName] = MeshName;
+
+  SUBMESH_DATA SD = {};
+  SubMeshPool.insert({SubMeshName, SD});
+  SubMeshPool[SubMeshName].MeshData = MeshData;
+  SubMeshPool[SubMeshName].MeshType = MeshType;
+  if (BonesData) {
+    SubMeshPool[SubMeshName].OriginBoneData = *BonesData;
+  }
+  SubMeshPool[SubMeshName].InstanceVector.reserve(MAX_INSTANCE_SIZE);
+
+  if (MeshData.AnimationFlag && AnimationData &&
+      MeshAnimationsPool.find(MeshName) == MeshAnimationsPool.end()) {
+    MeshAnimationsPool.insert(
+        {MeshName, const_cast<MESH_ANIMATION_DATA *>(AnimationData)});
+  } else {
+    if (AnimationData) {
+      delete AnimationData;
     }
-    else
-    {
-        P_LOG(LOG_WARNING, "cannot found this animation's main mesh : %s\n",
-            _aniName.c_str());
-        return nullptr;
-    }
+  }
 }
 
-MESH_ANIMATION_DATA* AssetsPool::GetAnimationIfExisted(
-    std::string&& _aniName)
-{
-    auto aniFound = mMeshAnimationsPool.find(_aniName);
-    if (aniFound != mMeshAnimationsPool.end())
-    {
-        return aniFound->second;
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "cannot found this animation : %s\n",
-            _aniName.c_str());
-        return nullptr;
-    }
-}
-
-MESH_ANIMATION_DATA* AssetsPool::GetAnimationIfExisted(
-    std::string& _aniName)
-{
-    auto aniFound = mMeshAnimationsPool.find(_aniName);
-    if (aniFound != mMeshAnimationsPool.end())
-    {
-        return aniFound->second;
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "cannot found this animation : %s\n",
-            _aniName.c_str());
-        return nullptr;
-    }
-}
-
-SOUND_HANDLE AssetsPool::GetSoundIfExisted(std::string&& _soundName)
-{
-    auto found = mSoundPool.find(_soundName);
-    if (found != mSoundPool.end())
-    {
-        return found->second;
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "this sound doesnt exist : %s\n",
-            _soundName.c_str());
-        return nullptr;
-    }
-}
-
-SOUND_HANDLE AssetsPool::GetSoundIfExisted(std::string& _soundName)
-{
-    auto found = mSoundPool.find(_soundName);
-    if (found != mSoundPool.end())
-    {
-        return found->second;
-    }
-    else
-    {
-        P_LOG(LOG_WARNING, "this sound doesnt exist : %s\n",
-            _soundName.c_str());
-        return nullptr;
-    }
-}
-
-void AssetsPool::InsertNewSubMesh(std::string&& _meshName,
-    RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
-    SUBMESH_BONES* _bonesData, MESH_ANIMATION_DATA* _animationData)
-{
-    SUBMESH_DATA md = {};
-    mSubMeshPool.insert({ _meshName,md });
-    mSubMeshPool[_meshName].mMeshData = _meshData;
-    mSubMeshPool[_meshName].mMeshType = _meshType;
-    if (_bonesData) { mSubMeshPool[_meshName].mOriginBoneData = *_bonesData; }
-    mSubMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
-
-    if (_meshData.AnimationFlag && _animationData)
-    {
-        mMeshAnimationsPool.insert({ _meshName,_animationData });
-    }
-}
-
-void AssetsPool::InsertNewSubMesh(std::string& _meshName,
-    RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
-    SUBMESH_BONES* _bonesData, MESH_ANIMATION_DATA* _animationData)
-{
-    SUBMESH_DATA md = {};
-    mSubMeshPool.insert({ _meshName,md });
-    mSubMeshPool[_meshName].mMeshData = _meshData;
-    mSubMeshPool[_meshName].mMeshType = _meshType;
-    if (_bonesData) { mSubMeshPool[_meshName].mOriginBoneData = *_bonesData; }
-    mSubMeshPool[_meshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
-
-    if (_meshData.AnimationFlag && _animationData)
-    {
-        mMeshAnimationsPool.insert({ _meshName,_animationData });
-    }
-}
-
-void AssetsPool::InsertNewIndexedMesh(std::string&& _meshName,
-    RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
-    int _subIndex, SUBMESH_BONES* _bonesData,
-    MESH_ANIMATION_DATA* _animationData)
-{
-    std::string subMeshName = _meshName + std::to_string(_subIndex);
-    mMeshPool[_meshName].emplace_back(subMeshName);
-    mSubMeshToMesh[subMeshName] = _meshName;
-
-    SUBMESH_DATA md = {};
-    mSubMeshPool.insert({ subMeshName,md });
-    mSubMeshPool[subMeshName].mMeshData = _meshData;
-    mSubMeshPool[subMeshName].mMeshType = _meshType;
-    if (_bonesData) { mSubMeshPool[subMeshName].mOriginBoneData = *_bonesData; }
-    mSubMeshPool[subMeshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
-
-    if (_meshData.AnimationFlag && _animationData &&
-        mMeshAnimationsPool.find(_meshName) == mMeshAnimationsPool.end())
-    {
-        mMeshAnimationsPool.insert({ _meshName,_animationData });
-    }
-    else
-    {
-        if (_animationData) { delete _animationData; }
-    }
-}
-
-void AssetsPool::InsertNewIndexedMesh(std::string& _meshName,
-    RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
-    int _subIndex, SUBMESH_BONES* _bonesData,
-    MESH_ANIMATION_DATA* _animationData)
-{
-    std::string subMeshName = _meshName + std::to_string(_subIndex);
-    mMeshPool[_meshName].emplace_back(subMeshName);
-    mSubMeshToMesh[subMeshName] = _meshName;
-
-    SUBMESH_DATA md = {};
-    mSubMeshPool.insert({ subMeshName,md });
-    mSubMeshPool[subMeshName].mMeshData = _meshData;
-    mSubMeshPool[subMeshName].mMeshType = _meshType;
-    if (_bonesData) { mSubMeshPool[subMeshName].mOriginBoneData = *_bonesData; }
-    mSubMeshPool[subMeshName].mInstanceVector.reserve(MAX_INSTANCE_SIZE);
-
-    if (_meshData.AnimationFlag && _animationData &&
-        mMeshAnimationsPool.find(_meshName) == mMeshAnimationsPool.end())
-    {
-        mMeshAnimationsPool.insert({ _meshName,_animationData });
-    }
-    else
-    {
-        if (_animationData) { delete _animationData; }
-    }
-}
-
-void AssetsPool::InsertNewSound(std::string&& _soundName)
-{
-    SOUND_HANDLE sound = getSoundHandle(_soundName);
+void
+AssetsPool::insertNewSound(const std::string &SoundName) {
+  SOUND_HANDLE Sound = getSoundHandle(SoundName);
 #ifdef _DEBUG
-    assert(sound);
+  assert(Sound);
 #endif // _DEBUG
-    mSoundPool.insert({ _soundName,sound });
+  SoundPool.insert({SoundName, Sound});
 }
 
-void AssetsPool::InsertNewSound(std::string& _soundName)
-{
-    SOUND_HANDLE sound = getSoundHandle(_soundName);
-#ifdef _DEBUG
-    assert(sound);
-#endif // _DEBUG
-    mSoundPool.insert({ _soundName,sound });
-}
-
-void AssetsPool::DeleteAllAssets()
-{
-    for (auto& mesh_data : mSubMeshPool)
-    {
-        if (mesh_data.first.find("-sprite") != std::string::npos)
-        {
-            continue;
-        }
-        else if (mesh_data.first == SELECTED_BTN_SPRITE_NAME)
-        {
-            continue;
-        }
-
-        getRSDX11RootInstance()->getMeshHelper()->
-            releaseSubMesh(mesh_data.second.mMeshData);
+void
+AssetsPool::deleteAllAssets() {
+  for (auto &SubMeshData : SubMeshPool) {
+    if (SubMeshData.first.find("-sprite") != std::string::npos) {
+      continue;
+    } else if (SubMeshData.first == SELECTED_BTN_SPRITE_NAME) {
+      continue;
     }
-    mSubMeshPool.clear();
-    mMeshPool.clear();
-    mSubMeshToMesh.clear();
 
-    for (auto& mesh_ani_data : mMeshAnimationsPool)
-    {
-        delete mesh_ani_data.second;
-    }
-    mMeshAnimationsPool.clear();
+    getRSDX11RootInstance()->getMeshHelper()->releaseSubMesh(
+        SubMeshData.second.MeshData);
+  }
+  SubMeshPool.clear();
+  MeshPool.clear();
+  SubMeshToMesh.clear();
 
-    mSoundPool.clear();
+  for (auto &MeshAniData : MeshAnimationsPool) {
+    delete MeshAniData.second;
+  }
+  MeshAnimationsPool.clear();
+
+  SoundPool.clear();
 }

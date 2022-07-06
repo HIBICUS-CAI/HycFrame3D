@@ -254,7 +254,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         getRSDX11RootInstance()->getStaticResources()->remapMaterialData();
     }
 
-    float& factor = g_MatBallMesh->mInstanceMap.begin()->
+    float& factor = g_MatBallMesh->InstanceMap.begin()->
         second.MaterialData.InterpolateFactor;
     if (input::isKeyDownInSingle(KB_COMMA))
     {
@@ -291,7 +291,7 @@ bool MatEditorInit(AInteractComponent* _aitc)
     if (!g_MaterialBallAtc) { return false; }
 
     g_MatBallMesh = &(*_aitc->GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted("mat-ball0"));
+        getSubMeshIfExisted("mat-ball0"));
     if (!g_MatBallMesh) { return false; }
 
     g_Material = getRSDX11RootInstance()->getStaticResources()->

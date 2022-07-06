@@ -40,7 +40,7 @@ void AAudioComponent::Destory()
 
 void AAudioComponent::AddAudio(std::string&& _audioName, SceneNode& _scene)
 {
-    SOUND_HANDLE audio = _scene.GetAssetsPool()->GetSoundIfExisted(_audioName);
+    SOUND_HANDLE audio = _scene.GetAssetsPool()->getSoundIfExisted(_audioName);
 #ifdef _DEBUG
     assert(audio);
 #endif // _DEBUG
@@ -49,7 +49,7 @@ void AAudioComponent::AddAudio(std::string&& _audioName, SceneNode& _scene)
 
 void AAudioComponent::AddAudio(std::string& _audioName, SceneNode& _scene)
 {
-    SOUND_HANDLE audio = _scene.GetAssetsPool()->GetSoundIfExisted(_audioName);
+    SOUND_HANDLE audio = _scene.GetAssetsPool()->getSoundIfExisted(_audioName);
 #ifdef _DEBUG
     assert(audio);
 #endif // _DEBUG

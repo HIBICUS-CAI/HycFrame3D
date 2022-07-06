@@ -52,8 +52,8 @@ void USpriteComponent::Update(Timer& _timer)
 void USpriteComponent::Destory()
 {
     SUBMESH_DATA* mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(mMeshesName);
-    if (mesh) { mesh->mInstanceMap.erase(GetCompName()); }
+        getSubMeshIfExisted(mMeshesName);
+    if (mesh) { mesh->InstanceMap.erase(GetCompName()); }
 }
 
 bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
@@ -66,16 +66,16 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
         createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
 
     mMeshesName = GetCompName();
-    _scene->GetAssetsPool()->InsertNewSubMesh(mMeshesName, sprite,
+    _scene->GetAssetsPool()->insertNewSubMesh(mMeshesName, sprite,
         MESH_TYPE::UI_SPRITE);
 
     SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        GetSubMeshIfExisted(mMeshesName);
+        getSubMeshIfExisted(mMeshesName);
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
     id.CustomizedData2 = { 0.f,0.f,1.f,1.f };
-    spriteRect->mInstanceMap.insert({ mMeshesName,id });
+    spriteRect->InstanceMap.insert({ mMeshesName,id });
 
     mOffsetColor = _offsetColor;
     mOriginTextureName = _texName;
@@ -93,16 +93,16 @@ bool USpriteComponent::CreateSpriteMesh(SceneNode* _scene,
         createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, _texName);
 
     mMeshesName = GetCompName();
-    _scene->GetAssetsPool()->InsertNewSubMesh(mMeshesName, sprite,
+    _scene->GetAssetsPool()->insertNewSubMesh(mMeshesName, sprite,
         MESH_TYPE::UI_SPRITE);
 
     SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        GetSubMeshIfExisted(mMeshesName);
+        getSubMeshIfExisted(mMeshesName);
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
     id.CustomizedData2 = { 0.f,0.f,1.f,1.f };
-    spriteRect->mInstanceMap.insert({ mMeshesName,id });
+    spriteRect->InstanceMap.insert({ mMeshesName,id });
 
     mOffsetColor = _offsetColor;
     mOriginTextureName = _texName;
@@ -139,7 +139,7 @@ void USpriteComponent::SyncTransformDataToInstance()
 
     std::string compName = GetCompName();
     auto& map = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(compName)->mInstanceMap;
+        getSubMeshIfExisted(compName)->InstanceMap;
 
     for (auto& ins : map)
     {
@@ -162,11 +162,11 @@ void USpriteComponent::ResetTexture()
 {
     std::string compName = GetCompName();
     auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(compName);
+        getSubMeshIfExisted(compName);
 
-    mesh->mMeshData.Textures[0] = mOriginTextureName;
+    mesh->MeshData.Textures[0] = mOriginTextureName;
 
-    for (auto& ins : mesh->mInstanceMap)
+    for (auto& ins : mesh->InstanceMap)
     {
         ins.second.CustomizedData2 = { 0.f,0.f,1.f,1.f };
         break;

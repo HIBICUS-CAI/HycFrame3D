@@ -42,7 +42,7 @@ bool AMeshComponent::Init()
     for (auto& meshName : mMeshesName)
     {
         auto subVec = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetMeshIfExisted(meshName);
+            getMeshIfExisted(meshName);
 #ifdef _DEBUG
         assert(subVec);
 #endif // _DEBUG
@@ -81,8 +81,8 @@ void AMeshComponent::Destory()
     for (auto& meshName : mSubMeshesName)
     {
         SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetSubMeshIfExisted(meshName);
-        if (mesh) { mesh->mInstanceMap.erase(GetCompName()); }
+            getSubMeshIfExisted(meshName);
+        if (mesh) { mesh->InstanceMap.erase(GetCompName()); }
     }
 }
 
@@ -112,23 +112,23 @@ float AMeshComponent::GetEmissiveIntensity()
 bool AMeshComponent::BindInstanceToAssetsPool(std::string& _meshName)
 {
     SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(_meshName);
+        getSubMeshIfExisted(_meshName);
     if (!mesh) { return false; }
 
     RS_INSTANCE_DATA id = {};
-    id.MaterialData = mesh->mMeshData.Material;
-    if (mesh->mMeshData.Textures[1] != "") { id.CustomizedData1.x = 1.f; }
+    id.MaterialData = mesh->MeshData.Material;
+    if (mesh->MeshData.Textures[1] != "") { id.CustomizedData1.x = 1.f; }
     else { id.CustomizedData1.x = -1.f; }
-    if (mesh->mMeshData.Textures[2] != "") { id.CustomizedData1.y = 1.f; }
+    if (mesh->MeshData.Textures[2] != "") { id.CustomizedData1.y = 1.f; }
     else { id.CustomizedData1.y = -1.f; }
-    if (mesh->mMeshData.Textures[3] != "") { id.CustomizedData1.z = 1.f; }
+    if (mesh->MeshData.Textures[3] != "") { id.CustomizedData1.z = 1.f; }
     else { id.CustomizedData1.z = -1.f; }
-    if (mesh->mMeshData.Textures[4] != "") { id.CustomizedData1.w = 1.f; }
+    if (mesh->MeshData.Textures[4] != "") { id.CustomizedData1.w = 1.f; }
     else { id.CustomizedData1.w = -1.f; }
-    if (mesh->mMeshData.Textures[4] != "") { id.CustomizedData2.x = mEmissiveIntensity; }
+    if (mesh->MeshData.Textures[4] != "") { id.CustomizedData2.x = mEmissiveIntensity; }
     else { id.CustomizedData2.x = 0.f; }
 
-    mesh->mInstanceMap.insert({ GetCompName(),id });
+    mesh->InstanceMap.insert({ GetCompName(),id });
 
     return true;
 }
@@ -148,7 +148,7 @@ void AMeshComponent::SyncTransformDataToInstance()
         if (hasChecked.find(meshName) != hasChecked.end()) { continue; }
 
         auto& ins_map = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetSubMeshIfExisted(meshName)->mInstanceMap;
+            getSubMeshIfExisted(meshName)->InstanceMap;
         std::pair<
             std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator,
             std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator>

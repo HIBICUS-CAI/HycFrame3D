@@ -81,8 +81,8 @@ void ASpriteComponent::Update(Timer& _timer)
 void ASpriteComponent::Destory()
 {
     SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(mGeoPointName);
-    if (mesh) { mesh->mInstanceMap.erase(GetCompName()); }
+        getSubMeshIfExisted(mGeoPointName);
+    if (mesh) { mesh->InstanceMap.erase(GetCompName()); }
 }
 
 bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
@@ -96,18 +96,18 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
             _texName.c_str());
     mGeoPointName = GetCompName();
     mTextureName = _texName;
-    _scene->GetAssetsPool()->InsertNewSubMesh(mGeoPointName,
+    _scene->GetAssetsPool()->insertNewSubMesh(mGeoPointName,
         point,
         MESH_TYPE::TRANSPARENCY);
 
     SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        GetSubMeshIfExisted(mGeoPointName);
+        getSubMeshIfExisted(mGeoPointName);
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
     id.CustomizedData1 = { mSize.x, mSize.y, (mIsBillboard ? 1.f : 0.f), 0.f };
     id.CustomizedData2 = mTexCoord;
-    spriteRect->mInstanceMap.insert({ mGeoPointName,id });
+    spriteRect->InstanceMap.insert({ mGeoPointName,id });
 
     return true;
 }
@@ -123,18 +123,18 @@ bool ASpriteComponent::CreateGeoPointWithTexture(SceneNode* _scene,
             _texName.c_str());
     mGeoPointName = GetCompName();
     mTextureName = _texName;
-    _scene->GetAssetsPool()->InsertNewSubMesh(mGeoPointName,
+    _scene->GetAssetsPool()->insertNewSubMesh(mGeoPointName,
         point,
         MESH_TYPE::TRANSPARENCY);
 
     SUBMESH_DATA* spriteRect = _scene->GetAssetsPool()->
-        GetSubMeshIfExisted(mGeoPointName);
+        getSubMeshIfExisted(mGeoPointName);
     if (!spriteRect) { return false; }
 
     RS_INSTANCE_DATA id = {};
     id.CustomizedData1 = { mSize.x, mSize.y, (mIsBillboard ? 1.f : 0.f), 0.f };
     id.CustomizedData2 = mTexCoord;
-    spriteRect->mInstanceMap.insert({ mGeoPointName,id });
+    spriteRect->InstanceMap.insert({ mGeoPointName,id });
 
     return true;
 }
@@ -175,7 +175,7 @@ void ASpriteComponent::SyncTransformDataToInstance()
 
     std::string compName = GetCompName();
     auto& map = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(compName)->mInstanceMap;
+        getSubMeshIfExisted(compName)->InstanceMap;
 
     for (auto& ins : map)
     {

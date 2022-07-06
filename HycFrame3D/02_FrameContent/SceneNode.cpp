@@ -69,7 +69,7 @@ void SceneNode::ReleaseScene()
     mObjContainerPtr->DeleteAllDeadObjects();
     mCompContainerPtr->DeleteAllComponent();
     mPhysicsWorldPtr->DeletePhysicsWorld();
-    mAssetsPoolPtr->DeleteAllAssets();
+    mAssetsPoolPtr->deleteAllAssets();
 
     if (mCameraAmbientInfo.mIBLEnvTex)
     {

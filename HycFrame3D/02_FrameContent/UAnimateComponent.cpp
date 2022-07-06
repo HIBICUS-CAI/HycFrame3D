@@ -203,9 +203,9 @@ void UAnimateComponent::SyncAniInfoToSprite()
     std::string uscName = GetUiOwner()->
         GetComponent<USpriteComponent>()->GetCompName();
     auto mesh = GetUiOwner()->GetSceneNode().GetAssetsPool()->
-        GetSubMeshIfExisted(uscName);
+        getSubMeshIfExisted(uscName);
 
-    mesh->mMeshData.Textures[0] = mCurrentAnimate->mTexName;
+    mesh->MeshData.Textures[0] = mCurrentAnimate->mTexName;
 
     float startX = 0.f;
     float startY = 0.f;
@@ -218,7 +218,7 @@ void UAnimateComponent::SyncAniInfoToSprite()
         startX + mCurrentAnimate->mStride.x,
         startY + mCurrentAnimate->mStride.y };
 
-    for (auto& ins : mesh->mInstanceMap)
+    for (auto& ins : mesh->InstanceMap)
     {
         ins.second.CustomizedData2 = uv; break;
     }

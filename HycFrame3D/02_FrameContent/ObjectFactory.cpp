@@ -385,7 +385,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
             }
 
             _node->GetAssetsPool()->
-                InsertNewIndexedMesh(meshName, meshData,
+                insertNewIndexedMesh(meshName, meshData,
                     MESH_TYPE::OPACITY, subIndex,
                     &bonesData, animationData);
         }
@@ -403,7 +403,7 @@ void ObjectFactory::CreateSceneAssets(SceneNode* _node, JsonFile& _json)
                 "/audio-assets/" + std::to_string(i) + "/audio-file");
             std::string file = audio->GetString();
             loadSound(name, file);
-            _node->GetAssetsPool()->InsertNewSound(name);
+            _node->GetAssetsPool()->insertNewSound(name);
         }
     }
 }

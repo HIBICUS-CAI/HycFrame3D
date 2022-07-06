@@ -90,27 +90,27 @@ void RenderSystem::Run(Timer& _timer)
 #endif // _DEBUG
 
     static RS_DRAWCALL_DATA drawCall = {};
-    auto& meshPool = mAssetsPool->mSubMeshPool;
+    auto& meshPool = mAssetsPool->SubMeshPool;
     RS_DRAWCALL_DATA btnSelectFlg = {};
     bool hasBtnSelect = false;
     for (auto& mesh : meshPool)
     {
-        mesh.second.mInstanceVector.clear();
-        for (auto& instance : mesh.second.mInstanceMap)
+        mesh.second.InstanceVector.clear();
+        for (auto& instance : mesh.second.InstanceMap)
         {
-            mesh.second.mInstanceVector.emplace_back(instance.second);
+            mesh.second.InstanceVector.emplace_back(instance.second);
         }
-        if (!mesh.second.mInstanceVector.size()) { continue; }
+        if (!mesh.second.InstanceVector.size()) { continue; }
 
-        mesh.second.mBonesVector.clear();
-        for (auto& bone : mesh.second.mBonesMap)
+        mesh.second.BonesVector.clear();
+        for (auto& bone : mesh.second.BonesMap)
         {
-            mesh.second.mBonesVector.emplace_back(bone.second);
+            mesh.second.BonesVector.emplace_back(bone.second);
         }
 
         auto drawCallPool = mRenderSystemRoot->getDrawCallsPool();
         DRAWCALL_TYPE dType = DRAWCALL_TYPE::MAX;
-        MESH_TYPE mType = mesh.second.mMeshType;
+        MESH_TYPE mType = mesh.second.MeshType;
         switch (mType)
         {
         case MESH_TYPE::OPACITY: dType = DRAWCALL_TYPE::OPACITY; break;
@@ -121,15 +121,15 @@ void RenderSystem::Run(Timer& _timer)
         }
 
         drawCall = {};
-        drawCall.MeshData.InputLayout = mesh.second.mMeshData.InputLayout;
-        drawCall.MeshData.TopologyType = mesh.second.mMeshData.TopologyType;
-        drawCall.MeshData.VertexBuffer = mesh.second.mMeshData.VertexBuffer;
-        drawCall.MeshData.IndexBuffer = mesh.second.mMeshData.IndexBuffer;
-        drawCall.MeshData.IndexSize = mesh.second.mMeshData.IndexSize;
-        drawCall.InstanceData.DataArrayPtr = &(mesh.second.mInstanceVector);
-        drawCall.InstanceData.BonesArrayPtr = &(mesh.second.mBonesVector);
-        auto texSize = mesh.second.mMeshData.Textures.size();
-        auto& texArray = mesh.second.mMeshData.Textures;
+        drawCall.MeshData.InputLayout = mesh.second.MeshData.InputLayout;
+        drawCall.MeshData.TopologyType = mesh.second.MeshData.TopologyType;
+        drawCall.MeshData.VertexBuffer = mesh.second.MeshData.VertexBuffer;
+        drawCall.MeshData.IndexBuffer = mesh.second.MeshData.IndexBuffer;
+        drawCall.MeshData.IndexSize = mesh.second.MeshData.IndexSize;
+        drawCall.InstanceData.DataArrayPtr = &(mesh.second.InstanceVector);
+        drawCall.InstanceData.BonesArrayPtr = &(mesh.second.BonesVector);
+        auto texSize = mesh.second.MeshData.Textures.size();
+        auto& texArray = mesh.second.MeshData.Textures;
         for (size_t i = 0; i < texSize; i++)
         {
             if (texArray[i] != "")

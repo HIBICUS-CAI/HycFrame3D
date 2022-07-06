@@ -1,83 +1,87 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
-#include <vector>
-#include <string>
-#include <queue>
-#include <unordered_map>
-#include "RSCommon.h"
-#include "SoundHelper.h"
+
 #include "ModelHelper.h"
+#include "SoundHelper.h"
 
-enum class MESH_TYPE
-{
-    OPACITY,
-    TRANSPARENCY,
-    LIGHT,
-    UI_SPRITE,
+#include <RSCommon.h>
 
-    SIZE
+#include <queue>
+#include <string>
+#include <unordered_map>
+#include <vector>
+
+enum class MESH_TYPE {
+  OPACITY,
+  TRANSPARENCY,
+  LIGHT,
+  UI_SPRITE,
+
+  SIZE
 };
 
-struct SUBMESH_DATA
-{
-    RS_SUBMESH_DATA mMeshData = {};
-    MESH_TYPE mMeshType = MESH_TYPE::SIZE;
-    std::unordered_multimap<std::string, RS_INSTANCE_DATA> mInstanceMap = {};
-    std::vector<RS_INSTANCE_DATA> mInstanceVector = {};
-    SUBMESH_BONES mOriginBoneData = {};
-    std::unordered_map<std::string, SUBMESH_BONES> mBonesMap = {};
-    std::vector<SUBMESH_BONES> mBonesVector = {};
+struct SUBMESH_DATA {
+  RS_SUBMESH_DATA MeshData = {};
+  MESH_TYPE MeshType = MESH_TYPE::SIZE;
+  std::unordered_multimap<std::string, RS_INSTANCE_DATA> InstanceMap = {};
+  std::vector<RS_INSTANCE_DATA> InstanceVector = {};
+  SUBMESH_BONES OriginBoneData = {};
+  std::unordered_map<std::string, SUBMESH_BONES> BonesMap = {};
+  std::vector<SUBMESH_BONES> BonesVector = {};
 };
 
 using SUBMESH_NAME_VEC = std::vector<std::string>;
 
-class AssetsPool
-{
-    friend class RenderSystem;
+class AssetsPool {
+private:
+  const class SceneNode &SceneNodeOwner;
+
+  std::unordered_map<std::string, SUBMESH_DATA> SubMeshPool;
+  std::unordered_map<std::string, std::string> SubMeshToMesh;
+  std::unordered_map<std::string, SUBMESH_NAME_VEC> MeshPool;
+  std::unordered_map<std::string, MESH_ANIMATION_DATA *> MeshAnimationsPool;
+  std::unordered_map<std::string, SOUND_HANDLE> SoundPool;
 
 public:
-    AssetsPool(class SceneNode& _sceneNode);
-    ~AssetsPool();
+  AssetsPool(class SceneNode &SceneNode);
+  ~AssetsPool();
 
-    SUBMESH_DATA* GetSubMeshIfExisted(std::string&& _meshName);
-    SUBMESH_DATA* GetSubMeshIfExisted(std::string& _meshName);
-    SUBMESH_NAME_VEC* GetMeshIfExisted(std::string&& _meshName);
-    SUBMESH_NAME_VEC* GetMeshIfExisted(std::string& _meshName);
-    MESH_ANIMATION_DATA* GetAnimationIfExistedSub(std::string&& _aniName);
-    MESH_ANIMATION_DATA* GetAnimationIfExistedSub(std::string& _aniName);
-    MESH_ANIMATION_DATA* GetAnimationIfExisted(std::string&& _aniName);
-    MESH_ANIMATION_DATA* GetAnimationIfExisted(std::string& _aniName);
-    SOUND_HANDLE GetSoundIfExisted(std::string&& _soundName);
-    SOUND_HANDLE GetSoundIfExisted(std::string& _soundName);
+  SUBMESH_DATA *
+  getSubMeshIfExisted(const std::string &MeshName);
 
-    void InsertNewSubMesh(std::string&& _meshName,
-        RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
-        SUBMESH_BONES* _bonesData = nullptr,
-        MESH_ANIMATION_DATA* _animationData = nullptr);
-    void InsertNewSubMesh(std::string& _meshName,
-        RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
-        SUBMESH_BONES* _bonesData = nullptr,
-        MESH_ANIMATION_DATA* _animationData = nullptr);
-    void InsertNewIndexedMesh(std::string&& _meshName,
-        RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
-        int _subIndex, SUBMESH_BONES* _bonesData = nullptr,
-        MESH_ANIMATION_DATA* _animationData = nullptr);
-    void InsertNewIndexedMesh(std::string& _meshName,
-        RS_SUBMESH_DATA& _meshData, MESH_TYPE _meshType,
-        int _subIndex, SUBMESH_BONES* _bonesData = nullptr,
-        MESH_ANIMATION_DATA* _animationData = nullptr);
-    void InsertNewSound(std::string&& _soundName);
-    void InsertNewSound(std::string& _soundName);
+  SUBMESH_NAME_VEC *
+  getMeshIfExisted(const std::string &MeshName);
 
-    void DeleteAllAssets();
+  MESH_ANIMATION_DATA *
+  getAnimationIfExistedSub(const std::string &AniName);
 
-private:
-    const class SceneNode& mSceneNodeOwner;
+  MESH_ANIMATION_DATA *
+  getAnimationIfExisted(const std::string &AniName);
 
-    std::unordered_map<std::string, SUBMESH_DATA> mSubMeshPool;
-    std::unordered_map<std::string, std::string> mSubMeshToMesh;
-    std::unordered_map<std::string, SUBMESH_NAME_VEC> mMeshPool;
-    std::unordered_map<std::string, MESH_ANIMATION_DATA*> mMeshAnimationsPool;
-    std::unordered_map<std::string, SOUND_HANDLE> mSoundPool;
+  SOUND_HANDLE
+  getSoundIfExisted(const std::string &SoundName);
+
+  void
+  insertNewSubMesh(const std::string &MeshName,
+                   const RS_SUBMESH_DATA &MeshData,
+                   MESH_TYPE MeshType,
+                   const SUBMESH_BONES *BonesData = nullptr,
+                   const MESH_ANIMATION_DATA *AnimationData = nullptr);
+
+  void
+  insertNewIndexedMesh(const std::string &MeshName,
+                       const RS_SUBMESH_DATA &MeshData,
+                       MESH_TYPE MeshType,
+                       int SubIndex,
+                       const SUBMESH_BONES *BonesData = nullptr,
+                       const MESH_ANIMATION_DATA *AnimationData = nullptr);
+
+  void
+  insertNewSound(const std::string &SoundName);
+
+  void
+  deleteAllAssets();
+
+  friend class RenderSystem;
 };

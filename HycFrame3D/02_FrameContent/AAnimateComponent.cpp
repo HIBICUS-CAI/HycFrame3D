@@ -52,29 +52,29 @@ bool AAnimateComponent::Init()
 
     std::string meshName = amc->mMeshesName[0];
     mMeshAnimationDataPtr = GetActorOwner()->GetSceneNode().
-        GetAssetsPool()->GetAnimationIfExisted(meshName);
+        GetAssetsPool()->getAnimationIfExisted(meshName);
     if (!mMeshAnimationDataPtr) { return false; }
 
     auto subVec = GetActorOwner()->GetSceneNode().
-        GetAssetsPool()->GetMeshIfExisted(meshName);
+        GetAssetsPool()->getMeshIfExisted(meshName);
 #ifdef _DEBUG
     assert(subVec);
 #endif // _DEBUG
     for (auto& subMeshName : *subVec)
     {
         auto mesh = GetActorOwner()->GetSceneNode().
-            GetAssetsPool()->GetSubMeshIfExisted(subMeshName);
+            GetAssetsPool()->getSubMeshIfExisted(subMeshName);
 #ifdef _DEBUG
         assert(mesh);
 #endif // _DEBUG
-        if (!mesh->mMeshData.AnimationFlag)
+        if (!mesh->MeshData.AnimationFlag)
         {
             P_LOG(LOG_ERROR, "this mesh doesn't have animation info : %s\n",
                 meshName.c_str());
             return false;
         }
-        mesh->mBonesMap.insert({ GetCompName(),mesh->mOriginBoneData });
-        mSubMeshBoneDataPtrVec.push_back(&(mesh->mBonesMap[GetCompName()]));
+        mesh->BonesMap.insert({ GetCompName(),mesh->OriginBoneData });
+        mSubMeshBoneDataPtrVec.push_back(&(mesh->BonesMap[GetCompName()]));
         mSubMeshNameVec.push_back(subMeshName);
     }
 
@@ -218,8 +218,8 @@ void AAnimateComponent::Destory()
     for (auto& subMeshName : mSubMeshNameVec)
     {
         SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetSubMeshIfExisted(subMeshName);
-        if (mesh) { mesh->mBonesMap.erase(GetCompName()); }
+            getSubMeshIfExisted(subMeshName);
+        if (mesh) { mesh->BonesMap.erase(GetCompName()); }
     }
     mSubMeshBoneDataPtrVec.clear();
     mSubMeshNameVec.clear();

@@ -75,18 +75,18 @@ void ALightComponent::CreateLight()
     if (mIsBloom)
     {
         SUBMESH_DATA* mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-            GetSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
+            getSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
         if (!mesh)
         {
             RS_SUBMESH_DATA boxBloom = getRSDX11RootInstance()->
                 getMeshHelper()->getGeoGenerator()->
                 createBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
-            GetActorOwner()->GetSceneNode().GetAssetsPool()->InsertNewSubMesh(
+            GetActorOwner()->GetSceneNode().GetAssetsPool()->insertNewSubMesh(
                 BOX_BLOOM_MESH_NAME, boxBloom, MESH_TYPE::LIGHT);
             mesh = GetActorOwner()->GetSceneNode().GetAssetsPool()->
-                GetSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
+                getSubMeshIfExisted(BOX_BLOOM_MESH_NAME);
         }
-        mRSLightPtr->setLightBloom(mesh->mMeshData);
+        mRSLightPtr->setLightBloom(mesh->MeshData);
     }
 
     if (mIsCamera)
