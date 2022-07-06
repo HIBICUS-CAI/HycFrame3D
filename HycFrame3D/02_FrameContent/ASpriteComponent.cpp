@@ -51,7 +51,7 @@ ASpriteComponent::update(Timer &Timer) {
 void
 ASpriteComponent::destory() {
   SUBMESH_DATA *MeshPtr =
-      getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+      getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           GeoPointName);
   if (MeshPtr) {
     MeshPtr->InstanceMap.erase(getCompName());
@@ -73,11 +73,11 @@ ASpriteComponent::createGeoPointWithTexture(SceneNode *Scene,
                                    TexName.c_str());
   GeoPointName = getCompName();
   TextureName = TexName;
-  Scene->GetAssetsPool()->insertNewSubMesh(GeoPointName, Point,
+  Scene->getAssetsPool()->insertNewSubMesh(GeoPointName, Point,
                                            MESH_TYPE::TRANSPARENCY);
 
   SUBMESH_DATA *SpriteRect =
-      Scene->GetAssetsPool()->getSubMeshIfExisted(GeoPointName);
+      Scene->getAssetsPool()->getSubMeshIfExisted(GeoPointName);
   if (!SpriteRect) {
     return false;
   }
@@ -130,7 +130,7 @@ ASpriteComponent::syncTransformDataToInstance() {
 
   auto &InsMap = getActorOwner()
                      ->getSceneNode()
-                     .GetAssetsPool()
+                     .getAssetsPool()
                      ->getSubMeshIfExisted(getCompName())
                      ->InstanceMap;
 

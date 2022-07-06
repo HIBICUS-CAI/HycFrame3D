@@ -81,7 +81,7 @@ ObjectFactory::createSceneNode(const std::string &Name,
                           SceneConfig["ambient-factor"][1].GetFloat(),
                           SceneConfig["ambient-factor"][2].GetFloat(),
                           SceneConfig["ambient-factor"][3].GetFloat()};
-  NewNode->SetCurrentAmbientFactor(Ambient);
+  NewNode->setCurrentAmbientFactor(Ambient);
 
   {
     std::string IblEnvTexName = "";
@@ -102,7 +102,7 @@ ObjectFactory::createSceneNode(const std::string &Name,
       IblSpecTexName = IblSpecNode->GetString();
     }
 
-    NewNode->LoadIBLTexture(IblEnvTexName, IblDiffTexName, IblSpecTexName);
+    NewNode->loadIBLTexture(IblEnvTexName, IblDiffTexName, IblSpecTexName);
   }
 
   createSceneAssets(NewNode, SceneConfig);
@@ -341,7 +341,7 @@ ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
         return;
       }
 
-      Scene->GetAssetsPool()->insertNewIndexedMesh(MeshName, MeshData,
+      Scene->getAssetsPool()->insertNewIndexedMesh(MeshName, MeshData,
                                                    MESH_TYPE::OPACITY, SubIndex,
                                                    &BonesData, AnimationData);
     }
@@ -357,7 +357,7 @@ ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
                           "/audio-assets/" + std::to_string(I) + "/audio-file");
       std::string File = Audio->GetString();
       loadSound(Name, File);
-      Scene->GetAssetsPool()->insertNewSound(Name);
+      Scene->getAssetsPool()->insertNewSound(Name);
     }
   }
 }
@@ -393,7 +393,7 @@ ObjectFactory::createActorObject(SceneNode *Scene,
     }
   }
 
-  Scene->AddActorObject(Actor);
+  Scene->addActorObject(Actor);
 }
 
 void
@@ -427,7 +427,7 @@ ObjectFactory::createUiObject(SceneNode *Scene,
     }
   }
 
-  Scene->AddUiObject(Ui);
+  Scene->addUiObject(Ui);
 }
 
 void
@@ -461,7 +461,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_TRANSFORM;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Atc);
+    Scene->getComponentContainer()->addComponent(Type, Atc);
   } else if (CompType == "input") {
     AInputComponent Aic(CompName, nullptr);
 
@@ -476,7 +476,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_INPUT;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Aic);
+    Scene->getComponentContainer()->addComponent(Type, Aic);
   } else if (CompType == "interact") {
     AInteractComponent Aitc(CompName, nullptr);
 
@@ -509,7 +509,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_INTERACT;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Aitc);
+    Scene->getComponentContainer()->addComponent(Type, Aitc);
   } else if (CompType == "timer") {
     ATimerComponent Atmc(CompName, nullptr);
 
@@ -523,7 +523,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_TIMER;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Atmc);
+    Scene->getComponentContainer()->addComponent(Type, Atmc);
   } else if (CompType == "collision") {
     ACollisionComponent Acc(CompName, nullptr);
 
@@ -551,7 +551,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_COLLISION;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Acc);
+    Scene->getComponentContainer()->addComponent(Type, Acc);
   } else if (CompType == "mesh") {
     AMeshComponent Amc(CompName, nullptr);
 
@@ -586,7 +586,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_MESH;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Amc);
+    Scene->getComponentContainer()->addComponent(Type, Amc);
   } else if (CompType == "light") {
     ALightComponent Alc(CompName, nullptr);
 
@@ -649,7 +649,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_LIGHT;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Alc);
+    Scene->getComponentContainer()->addComponent(Type, Alc);
   } else if (CompType == "audio") {
     AAudioComponent Aauc(CompName, nullptr);
 
@@ -663,7 +663,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_AUDIO;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Aauc);
+    Scene->getComponentContainer()->addComponent(Type, Aauc);
   } else if (CompType == "particle") {
     AParticleComponent Apc(CompName, nullptr);
 
@@ -734,7 +734,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_PARTICLE;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Apc);
+    Scene->getComponentContainer()->addComponent(Type, Apc);
   } else if (CompType == "animate") {
     AAnimateComponent Aac(CompName, nullptr);
 
@@ -749,7 +749,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_ANIMATE;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Aac);
+    Scene->getComponentContainer()->addComponent(Type, Aac);
   } else if (CompType == "sprite") {
     ASpriteComponent Asc(CompName, nullptr);
 
@@ -792,7 +792,7 @@ ObjectFactory::createActorComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::A_SPRITE;
     Actor->addAComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Asc);
+    Scene->getComponentContainer()->addComponent(Type, Asc);
   } else {
     P_LOG(LOG_ERROR, "invlaid comp type : %s\n", CompType.c_str());
     return;
@@ -830,7 +830,7 @@ ObjectFactory::createUiComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::U_TRANSFORM;
     Ui->addUComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Utc);
+    Scene->getComponentContainer()->addComponent(Type, Utc);
   } else if (CompType == "input") {
     UInputComponent Uic(CompName, nullptr);
 
@@ -845,7 +845,7 @@ ObjectFactory::createUiComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::U_INPUT;
     Ui->addUComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Uic);
+    Scene->getComponentContainer()->addComponent(Type, Uic);
   } else if (CompType == "interact") {
     UInteractComponent Uitc(CompName, nullptr);
 
@@ -878,7 +878,7 @@ ObjectFactory::createUiComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::U_INTERACT;
     Ui->addUComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Uitc);
+    Scene->getComponentContainer()->addComponent(Type, Uitc);
   } else if (CompType == "timer") {
     UTimerComponent Utmc(CompName, nullptr);
 
@@ -892,7 +892,7 @@ ObjectFactory::createUiComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::U_TIMER;
     Ui->addUComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Utmc);
+    Scene->getComponentContainer()->addComponent(Type, Utmc);
   } else if (CompType == "audio") {
     UAudioComponent Uauc(CompName, nullptr);
 
@@ -906,7 +906,7 @@ ObjectFactory::createUiComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::U_AUDIO;
     Ui->addUComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Uauc);
+    Scene->getComponentContainer()->addComponent(Type, Uauc);
   } else if (CompType == "sprite") {
     USpriteComponent Usc(CompName, nullptr);
 
@@ -922,7 +922,7 @@ ObjectFactory::createUiComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::U_SPRITE;
     Ui->addUComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Usc);
+    Scene->getComponentContainer()->addComponent(Type, Usc);
   } else if (CompType == "animate") {
     UAnimateComponent Uac(CompName, nullptr);
 
@@ -955,7 +955,7 @@ ObjectFactory::createUiComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::U_ANIMATE;
     Ui->addUComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Uac);
+    Scene->getComponentContainer()->addComponent(Type, Uac);
   } else if (CompType == "button") {
     UButtonComponent Ubc(CompName, nullptr);
 
@@ -981,7 +981,7 @@ ObjectFactory::createUiComp(SceneNode *Scene,
 
     COMP_TYPE Type = COMP_TYPE::U_BUTTON;
     Ui->addUComponent(Type);
-    Scene->GetComponentContainer()->addComponent(Type, Ubc);
+    Scene->getComponentContainer()->addComponent(Type, Ubc);
   } else {
     P_LOG(LOG_ERROR, "invlaid comp type : %s\n", CompType.c_str());
     return;

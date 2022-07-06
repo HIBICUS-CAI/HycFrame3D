@@ -22,7 +22,7 @@ public:
   template <typename T>
   inline T *
   getComponent() {
-    auto Container = getSceneNode().GetComponentContainer();
+    auto Container = getSceneNode().getComponentContainer();
     std::string Name = getObjectName();
     component_name::generateCompName<T>(Name);
 

@@ -9,12 +9,12 @@ int WinMain(
     _In_ int iCmdShow
 )
 {
-    if (g_RootSystem.StartUp(hInstance, iCmdShow))
+    if (g_RootSystem.startUp(hInstance, iCmdShow))
     {
-        g_RootSystem.RunGameLoop();
+        g_RootSystem.runGameLoop();
     }
 
-    g_RootSystem.CleanAndStop();
+    g_RootSystem.cleanAndStop();
 
     return 0;
 }

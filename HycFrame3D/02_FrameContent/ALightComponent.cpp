@@ -56,7 +56,7 @@ ALightComponent::createLight() {
 
   if (IsBloom) {
     SUBMESH_DATA *MeshPtr =
-        getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+        getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
             BOX_BLOOM_MESH_NAME);
     if (!MeshPtr) {
       RS_SUBMESH_DATA BoxBloom =
@@ -64,10 +64,10 @@ ALightComponent::createLight() {
               ->getMeshHelper()
               ->getGeoGenerator()
               ->createBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
-      getActorOwner()->getSceneNode().GetAssetsPool()->insertNewSubMesh(
+      getActorOwner()->getSceneNode().getAssetsPool()->insertNewSubMesh(
           BOX_BLOOM_MESH_NAME, BoxBloom, MESH_TYPE::LIGHT);
       MeshPtr =
-          getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+          getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
               BOX_BLOOM_MESH_NAME);
     }
     RSLightPtr->setLightBloom(MeshPtr->MeshData);

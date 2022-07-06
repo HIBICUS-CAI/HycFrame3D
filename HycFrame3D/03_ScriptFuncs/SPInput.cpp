@@ -49,14 +49,14 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     {
         auto mouseOffset = input::getMouseOffset();
         float horiR = -mouseOffset.x * _timer.floatDeltaTime() / 800.f;
-        _aic->getSceneNode().GetMainCamera()->rotateRSCamera(0.f, horiR);
+        _aic->getSceneNode().getMainCamera()->rotateRSCamera(0.f, horiR);
     }
 
     if (input::isKeyPushedInSingle(KB_RETURN))
     {
         P_LOG(LOG_DEBUG, "to test2\n");
-        _aic->getSceneNode().GetSceneManager()->
-            LoadSceneNode("sample2-scene", "sample2-scene.json");
+        _aic->getSceneNode().getSceneManager()->
+            loadSceneNode("sample2-scene", "sample2-scene.json");
     }
 
     if (input::isKeyDownInSingle(KB_W))
@@ -210,8 +210,8 @@ void TestUSpInput(UInputComponent* _uic, Timer& _timer)
     if (input::isKeyPushedInSingle(KB_RETURN))
     {
         P_LOG(LOG_DEBUG, "to test1\n");
-        _uic->getSceneNode().GetSceneManager()->
-            LoadSceneNode("sample1-scene", "sample1-scene.json");
+        _uic->getSceneNode().getSceneManager()->
+            loadSceneNode("sample1-scene", "sample1-scene.json");
     }
 }
 
@@ -265,8 +265,8 @@ void TempToTitle(AInputComponent* _aic, Timer&)
     if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to title\n");
-        _aic->getSceneNode().GetSceneManager()->
-            LoadSceneNode("title-scene", "title-scene.json");
+        _aic->getSceneNode().getSceneManager()->
+            loadSceneNode("title-scene", "title-scene.json");
     }
 }
 
@@ -275,8 +275,8 @@ void TempToSelect(AInputComponent* _aic, Timer&)
     if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to select\n");
-        _aic->getSceneNode().GetSceneManager()->
-            LoadSceneNode("select-scene", "select-scene.json");
+        _aic->getSceneNode().getSceneManager()->
+            loadSceneNode("select-scene", "select-scene.json");
     }
 }
 
@@ -285,8 +285,8 @@ void TempToRun(AInputComponent* _aic, Timer&)
     if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to run\n");
-        _aic->getSceneNode().GetSceneManager()->
-            LoadSceneNode("run-scene", "run-scene.json");
+        _aic->getSceneNode().getSceneManager()->
+            loadSceneNode("run-scene", "run-scene.json");
     }
 }
 
@@ -295,8 +295,8 @@ void TempToResult(AInputComponent* _aic, Timer&)
     if (input::isKeyPushedInSingle(KB_RCONTROL))
     {
         P_LOG(LOG_DEBUG, "to result\n");
-        _aic->getSceneNode().GetSceneManager()->
-            LoadSceneNode("result-scene", "result-scene.json");
+        _aic->getSceneNode().getSceneManager()->
+            loadSceneNode("result-scene", "result-scene.json");
     }
 }
 

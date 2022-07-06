@@ -26,7 +26,7 @@ AMeshComponent::init() {
   TempOffset->reserve(256);
   for (const auto &MeshName : MeshesNameArray) {
     auto SubArray =
-        getActorOwner()->getSceneNode().GetAssetsPool()->getMeshIfExisted(
+        getActorOwner()->getSceneNode().getAssetsPool()->getMeshIfExisted(
             MeshName);
 #ifdef _DEBUG
     assert(SubArray);
@@ -65,7 +65,7 @@ void
 AMeshComponent::destory() {
   for (const auto &MeshName : SubMeshesNameArray) {
     SUBMESH_DATA *MeshPtr =
-        getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+        getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
             MeshName);
     if (MeshPtr) {
       MeshPtr->InstanceMap.erase(getCompName());
@@ -96,7 +96,7 @@ AMeshComponent::getEmissiveIntensity() {
 bool
 AMeshComponent::bindInstanceToAssetsPool(const std::string &MeshName) {
   SUBMESH_DATA *MeshPtr =
-      getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+      getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           MeshName);
   if (!MeshPtr) {
     return false;
@@ -152,7 +152,7 @@ AMeshComponent::syncTransformDataToInstance() {
 
     auto &InsMap = getActorOwner()
                        ->getSceneNode()
-                       .GetAssetsPool()
+                       .getAssetsPool()
                        ->getSubMeshIfExisted(SubMeshName)
                        ->InstanceMap;
     std::pair<std::unordered_multimap<std::string, RS_INSTANCE_DATA>::iterator,

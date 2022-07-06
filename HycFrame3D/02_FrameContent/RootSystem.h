@@ -1,22 +1,25 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
+
 #include <Windows.h>
 
-class RootSystem
-{
-public:
-    RootSystem();
-    ~RootSystem();
-
-    bool StartUp(HINSTANCE _hInstance, int _iCmdShow);
-    void CleanAndStop();
-    void RunGameLoop();
-
+class RootSystem {
 private:
-    class SceneManager* mSceneManagerPtr;
-    class ObjectFactory* mObjectFactoryPtr;
-    class SystemExecutive* mSystemExecutivePtr;
+  class SceneManager *SceneManagerPtr;
+  class ObjectFactory *ObjectFactoryPtr;
+  class SystemExecutive *SystemExecutivePtr;
 
-    Timer mTimer;
+  Timer Timer;
+
+public:
+  RootSystem();
+  ~RootSystem();
+
+  bool
+  startUp(HINSTANCE Instance, int CmdShow);
+  void
+  cleanAndStop();
+  void
+  runGameLoop();
 };

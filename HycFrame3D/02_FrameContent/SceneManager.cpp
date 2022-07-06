@@ -1,154 +1,147 @@
 #include "SceneManager.h"
+
+#include "ObjectContainer.h"
 #include "ObjectFactory.h"
 #include "SceneNode.h"
-#include "ObjectContainer.h"
+
 #include <TextUtility.h>
+
 #include <thread>
 
-SceneManager::SceneManager() :
-    mObjectFactoryPtr(nullptr), mLoadingScenePtr(nullptr),
-    mCurrentScenePtr(nullptr), mNextScenePtr(nullptr),
-    mLoadSceneFlg(false), mLoadSceneInfo({ "","" }),
-    mSceneSwitchFlg(false) {}
+SceneManager::SceneManager()
+    : ObjectFactoryPtr(nullptr), LoadingScenePtr(nullptr),
+      CurrentScenePtr(nullptr), NextScenePtr(nullptr), LoadNewSceneFlag(false),
+      NewSceneInfo({"", ""}), SceneSwitchFlag(false) {}
 
 SceneManager::~SceneManager() {}
 
-bool SceneManager::StartUp(ObjectFactory* _objectFactory)
-{
-    if (!_objectFactory)
-    {
-        P_LOG(LOG_ERROR, "invalid object factory pointer\n");
-        return false;
+bool
+SceneManager::startUp(ObjectFactory *ObjectFactory) {
+  if (!ObjectFactory) {
+    P_LOG(LOG_ERROR, "invalid object factory pointer\n");
+    return false;
+  }
+
+  ObjectFactoryPtr = ObjectFactory;
+
+  LoadingScenePtr = new SceneNode("temp-loading-scene", this);
+
+  if (!LoadingScenePtr) {
+    P_LOG(LOG_ERROR, "fail to create temp loading scene\n");
+    return false;
+  }
+
+  CurrentScenePtr = LoadingScenePtr;
+
+  return true;
+}
+
+bool
+SceneManager::deferedStartUp() {
+  LoadingScenePtr->releaseScene();
+  delete LoadingScenePtr;
+  if (!loadLoadingScene()) {
+    P_LOG(LOG_ERROR, "failed to load loading scene\n");
+    return false;
+  }
+
+  using namespace hyc;
+  using namespace hyc::text;
+  TomlNode EntryInfo = {};
+  std::string ErrorMess = "";
+  if (!loadTomlAndParse(EntryInfo,
+                        ".\\Assets\\Configs\\scene-entry-config.toml",
+                        ErrorMess)) {
+    P_LOG(LOG_ERROR, "failed to parse entry scene config : %s\n",
+          ErrorMess.c_str());
+    return false;
+  }
+
+  loadSceneNode(getAs<std::string>(EntryInfo["entry-scene"]["name"]),
+                getAs<std::string>(EntryInfo["entry-scene"]["file"]));
+
+  return true;
+}
+
+void
+SceneManager::cleanAndStop() {
+  if (CurrentScenePtr != LoadingScenePtr) {
+    CurrentScenePtr->releaseScene();
+    delete CurrentScenePtr;
+  }
+  releaseLoadingScene();
+}
+
+void
+SceneManager::loadSceneNode(const std::string &Name, const std::string &File) {
+  LoadNewSceneFlag = true;
+  NewSceneInfo[0] = Name;
+  NewSceneInfo[1] = ".\\Assets\\Scenes\\" + File;
+}
+
+void
+SceneManager::checkLoadStatus() {
+  if (SceneSwitchFlag) {
+    SceneSwitchFlag = false;
+  }
+
+  if (LoadNewSceneFlag) {
+    LoadNewSceneFlag = false;
+    SceneSwitchFlag = true;
+    SceneNode *NeedRelScenePtr = nullptr;
+    if (CurrentScenePtr != LoadingScenePtr) {
+      NeedRelScenePtr = CurrentScenePtr;
+      CurrentScenePtr = LoadingScenePtr;
     }
 
-    mObjectFactoryPtr = _objectFactory;
+    std::thread LoadThread(&SceneManager::loadNextScene, this, NeedRelScenePtr);
+    LoadThread.detach();
+  }
 
-    mLoadingScenePtr = new SceneNode("temp-loading-scene", this);
-
-    if (!mLoadingScenePtr)
-    {
-        P_LOG(LOG_ERROR, "fail to create temp loading scene\n");
-        return false;
-    }
-
-    mCurrentScenePtr = mLoadingScenePtr;
-
-    return true;
+  if (NextScenePtr && (CurrentScenePtr == LoadingScenePtr)) {
+    SceneSwitchFlag = true;
+    CurrentScenePtr = NextScenePtr;
+    NextScenePtr = nullptr;
+  }
 }
 
-bool SceneManager::DeferedStartUp()
-{
-    mLoadingScenePtr->ReleaseScene();
-    delete mLoadingScenePtr;
-    if (!LoadLoadingScene())
-    {
-        P_LOG(LOG_ERROR, "failed to load loading scene\n");
-        return false;
-    }
-
-    using namespace hyc;
-    using namespace hyc::text;
-    TomlNode entryInfo = {};
-    std::string errorMess = "";
-    if (!loadTomlAndParse(entryInfo,
-        ".\\Assets\\Configs\\scene-entry-config.toml",
-        errorMess))
-    {
-        P_LOG(LOG_ERROR, "failed to parse entry scene config : %s\n",
-            errorMess.c_str());
-        return false;
-    }
-
-    LoadSceneNode(getAs<std::string>(entryInfo["entry-scene"]["name"]),
-        getAs<std::string>(entryInfo["entry-scene"]["file"]));
-
-    return true;
+ObjectFactory *
+SceneManager::getObjectFactory() const {
+  return ObjectFactoryPtr;
 }
 
-void SceneManager::CleanAndStop()
-{
-    if (mCurrentScenePtr != mLoadingScenePtr)
-    {
-        mCurrentScenePtr->ReleaseScene();
-        delete mCurrentScenePtr;
-    }
-    ReleaseLoadingScene();
+SceneNode *
+SceneManager::getCurrentSceneNode() const {
+  return CurrentScenePtr;
 }
 
-void SceneManager::LoadSceneNode(std::string&& _name, std::string&& _file)
-{
-    mLoadSceneFlg = true;
-    mLoadSceneInfo[0] = _name;
-    mLoadSceneInfo[1] = ".\\Assets\\Scenes\\" + _file;
+bool
+SceneManager::loadLoadingScene() {
+  LoadingScenePtr = ObjectFactoryPtr->createSceneNode(
+      "loading-scene", ".\\Assets\\Scenes\\loading-scene.json");
+  CurrentScenePtr = LoadingScenePtr;
+
+  return (LoadingScenePtr ? true : false);
 }
 
-void SceneManager::CheckLoadStatus()
-{
-    if (mSceneSwitchFlg) { mSceneSwitchFlg = false; }
-
-    if (mLoadSceneFlg)
-    {
-        mLoadSceneFlg = false;
-        mSceneSwitchFlg = true;
-        SceneNode* needRelScene = nullptr;
-        if (mCurrentScenePtr != mLoadingScenePtr)
-        {
-            needRelScene = mCurrentScenePtr;
-            mCurrentScenePtr = mLoadingScenePtr;
-        }
-
-        std::thread loadThread(&SceneManager::LoadNextScene,
-            this, needRelScene);
-        loadThread.detach();
-    }
-
-    if (mNextScenePtr && (mCurrentScenePtr == mLoadingScenePtr))
-    {
-        mSceneSwitchFlg = true;
-        mCurrentScenePtr = mNextScenePtr;
-        mNextScenePtr = nullptr;
-    }
+void
+SceneManager::releaseLoadingScene() {
+  LoadingScenePtr->releaseScene();
+  delete LoadingScenePtr;
 }
 
-ObjectFactory* SceneManager::GetObjectFactory() const
-{
-    return mObjectFactoryPtr;
+void
+SceneManager::loadNextScene(SceneNode *RelScene) {
+  if (RelScene) {
+    RelScene->releaseScene();
+    delete RelScene;
+  }
+
+  NextScenePtr =
+      ObjectFactoryPtr->createSceneNode(NewSceneInfo[0], NewSceneInfo[1]);
 }
 
-SceneNode* SceneManager::GetCurrentSceneNode() const
-{
-    return mCurrentScenePtr;
-}
-
-bool SceneManager::LoadLoadingScene()
-{
-    mLoadingScenePtr = mObjectFactoryPtr->createSceneNode(
-        "loading-scene",
-        ".\\Assets\\Scenes\\loading-scene.json");
-    mCurrentScenePtr = mLoadingScenePtr;
-
-    return (mLoadingScenePtr ? true : false);
-}
-
-void SceneManager::ReleaseLoadingScene()
-{
-    mLoadingScenePtr->ReleaseScene();
-    delete mLoadingScenePtr;
-}
-
-void SceneManager::LoadNextScene(SceneNode* _relScene)
-{
-    if (_relScene)
-    {
-        _relScene->ReleaseScene();
-        delete _relScene;
-    }
-
-    mNextScenePtr = mObjectFactoryPtr->createSceneNode(
-        mLoadSceneInfo[0], mLoadSceneInfo[1]);
-}
-
-bool SceneManager::GetSceneSwitchFlg() const
-{
-    return mSceneSwitchFlg;
+bool
+SceneManager::getSceneSwitchFlg() const {
+  return SceneSwitchFlag;
 }

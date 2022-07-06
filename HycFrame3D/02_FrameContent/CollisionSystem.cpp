@@ -25,8 +25,8 @@ bool CollisionSystem::Init()
 #endif // _DEBUG
 
     mACollisionVecPtr = (std::vector<ACollisionComponent>*)GetSystemExecutive()->
-        GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->getCompVecPtr(COMP_TYPE::A_COLLISION);
+        GetSceneManager()->getCurrentSceneNode()->
+        getComponentContainer()->getCompVecPtr(COMP_TYPE::A_COLLISION);
 
     if (!(mACollisionVecPtr)) { return false; }
 
@@ -40,8 +40,8 @@ void CollisionSystem::Run(Timer& _timer)
         if (acc.getCompStatus() == STATUS::ACTIVE) { acc.update(_timer); }
     }
 
-    GetSystemExecutive()->GetSceneManager()->GetCurrentSceneNode()->
-        GetPhysicsWorld()->DetectCollision();
+    GetSystemExecutive()->GetSceneManager()->getCurrentSceneNode()->
+        getPhysicsWorld()->detectCollision();
 }
 
 void CollisionSystem::Destory()

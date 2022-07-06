@@ -35,7 +35,7 @@ USpriteComponent::update(Timer &Timer) {
 void
 USpriteComponent::destory() {
   SUBMESH_DATA *MeshPtr =
-      getUiOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+      getUiOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           MeshesName);
   if (MeshPtr) {
     MeshPtr->InstanceMap.erase(getCompName());
@@ -57,11 +57,11 @@ USpriteComponent::createSpriteMesh(SceneNode *Scene,
           ->createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, TexName);
 
   MeshesName = getCompName();
-  Scene->GetAssetsPool()->insertNewSubMesh(MeshesName, Sprite,
+  Scene->getAssetsPool()->insertNewSubMesh(MeshesName, Sprite,
                                            MESH_TYPE::UI_SPRITE);
 
   SUBMESH_DATA *SpriteRect =
-      Scene->GetAssetsPool()->getSubMeshIfExisted(MeshesName);
+      Scene->getAssetsPool()->getSubMeshIfExisted(MeshesName);
   if (!SpriteRect) {
     return false;
   }
@@ -99,7 +99,7 @@ USpriteComponent::syncTransformDataToInstance() {
 
   auto &Map = getUiOwner()
                   ->getSceneNode()
-                  .GetAssetsPool()
+                  .getAssetsPool()
                   ->getSubMeshIfExisted(getCompName())
                   ->InstanceMap;
 
@@ -122,7 +122,7 @@ USpriteComponent::syncTransformDataToInstance() {
 void
 USpriteComponent::resetTexture() {
   auto MeshPtr =
-      getUiOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+      getUiOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           getCompName());
 
   MeshPtr->MeshData.Textures[0] = OriginTextureName;

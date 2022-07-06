@@ -1,103 +1,95 @@
 #include "Hyc3DCommon.h"
-#include "WM_Interface.h"
-#include "ID_Interface.h"
-#include "RootSystem.h"
-#include "SystemExecutive.h"
+
 #include "ObjectFactory.h"
+#include "RootSystem.h"
 #include "SceneManager.h"
+#include "SystemExecutive.h"
 
-RootSystem::RootSystem() :
-    mSceneManagerPtr(nullptr), mObjectFactoryPtr(nullptr),
-    mSystemExecutivePtr(nullptr), mTimer({})
-{
+#include <ID_Interface.h>
+#include <WM_Interface.h>
 
-}
+RootSystem::RootSystem()
+    : SceneManagerPtr(nullptr), ObjectFactoryPtr(nullptr),
+      SystemExecutivePtr(nullptr), Timer({}) {}
 
 RootSystem::~RootSystem() {}
 
-bool RootSystem::StartUp(HINSTANCE _hInstance, int _iCmdShow)
-{
-    if (!window::startUp())
-    {
-        P_LOG(LOG_ERROR, "failed to start up windows system\n");
-        return false;
-    }
-    if (!window::createWindow("a game wnd dont know how to name",
+bool
+RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
+  if (!window::startUp()) {
+    P_LOG(LOG_ERROR, "failed to start up windows system\n");
+    return false;
+  }
+  if (!window::createWindow("a game wnd dont know how to name",
 #ifdef _DEBUG
-        _hInstance, _iCmdShow, 1280, 720, false))
+                            Instance, CmdShow, 1280, 720, false))
 #else
-        _hInstance, _iCmdShow, 1280, 720, true))
+                            Instance, CmdShow, 1280, 720, true))
 #endif // _DEBUG
-    {
-        P_LOG(LOG_ERROR, "failed to create window\n");
-        return false;
-    }
-    if (!input::startUp())
-    {
-        P_LOG(LOG_ERROR, "failed to start up input system\n");
-        return false;
-    }
+  {
+    P_LOG(LOG_ERROR, "failed to create window\n");
+    return false;
+  }
+  if (!input::startUp()) {
+    P_LOG(LOG_ERROR, "failed to start up input system\n");
+    return false;
+  }
 
-    mSceneManagerPtr = new SceneManager();
-    mObjectFactoryPtr = new ObjectFactory();
-    mSystemExecutivePtr = new SystemExecutive();
-    assert(mSceneManagerPtr && mObjectFactoryPtr && mSystemExecutivePtr);
+  SceneManagerPtr = new SceneManager();
+  ObjectFactoryPtr = new ObjectFactory();
+  SystemExecutivePtr = new SystemExecutive();
+  assert(SceneManagerPtr && ObjectFactoryPtr && SystemExecutivePtr);
 
-    if (!mSceneManagerPtr->StartUp(mObjectFactoryPtr))
-    {
-        P_LOG(LOG_ERROR, "cannot init scene manager correctly\n");
-        return false;
-    }
-    if (!mSystemExecutivePtr->StartUp(mSceneManagerPtr))
-    {
-        P_LOG(LOG_ERROR, "cannot init system executive correctly\n");
-        return false;
-    }
-    if (!mObjectFactoryPtr->startUp(mSceneManagerPtr))
-    {
-        P_LOG(LOG_ERROR, "cannot init object factory correctly\n");
-        return false;
-    }
-    if (!mSceneManagerPtr->DeferedStartUp())
-    {
-        P_LOG(LOG_ERROR, "cannot parse entry scene correctly\n");
-        return false;
-    }
+  if (!SceneManagerPtr->startUp(ObjectFactoryPtr)) {
+    P_LOG(LOG_ERROR, "cannot init scene manager correctly\n");
+    return false;
+  }
+  if (!SystemExecutivePtr->StartUp(SceneManagerPtr)) {
+    P_LOG(LOG_ERROR, "cannot init system executive correctly\n");
+    return false;
+  }
+  if (!ObjectFactoryPtr->startUp(SceneManagerPtr)) {
+    P_LOG(LOG_ERROR, "cannot init object factory correctly\n");
+    return false;
+  }
+  if (!SceneManagerPtr->deferedStartUp()) {
+    P_LOG(LOG_ERROR, "cannot parse entry scene correctly\n");
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
-void RootSystem::CleanAndStop()
-{
-    mSceneManagerPtr->CleanAndStop();
-    mObjectFactoryPtr->cleanAndStop();
-    mSystemExecutivePtr->CleanAndStop();
-    delete mSceneManagerPtr; mSceneManagerPtr = nullptr;
-    delete mObjectFactoryPtr; mObjectFactoryPtr = nullptr;
-    delete mSystemExecutivePtr; mSystemExecutivePtr = nullptr;
+void
+RootSystem::cleanAndStop() {
+  SceneManagerPtr->cleanAndStop();
+  ObjectFactoryPtr->cleanAndStop();
+  SystemExecutivePtr->CleanAndStop();
+  delete SceneManagerPtr;
+  SceneManagerPtr = nullptr;
+  delete ObjectFactoryPtr;
+  ObjectFactoryPtr = nullptr;
+  delete SystemExecutivePtr;
+  SystemExecutivePtr = nullptr;
 
-    input::cleanAndStop();
-    window::cleanAndStop();
+  input::cleanAndStop();
+  window::cleanAndStop();
 }
 
-void RootSystem::RunGameLoop()
-{
-    MSG msg = { 0 };
-    while (WM_QUIT != msg.message)
-    {
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        else
-        {
-            mTimer.timeIn();
+void
+RootSystem::runGameLoop() {
+  MSG Msg = {0};
+  while (WM_QUIT != Msg.message) {
+    if (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE)) {
+      TranslateMessage(&Msg);
+      DispatchMessage(&Msg);
+    } else {
+      Timer.timeIn();
 
-            mSceneManagerPtr->CheckLoadStatus();
-            mSystemExecutivePtr->RunAllSystems(mTimer);
+      SceneManagerPtr->checkLoadStatus();
+      SystemExecutivePtr->RunAllSystems(Timer);
 
-            mTimer.timeOut();
-        }
+      Timer.timeOut();
     }
+  }
 }

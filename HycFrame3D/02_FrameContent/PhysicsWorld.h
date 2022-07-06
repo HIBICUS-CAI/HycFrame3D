@@ -1,41 +1,49 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
-#include <set>
+
+#include <directxmath.h>
 #include <map>
-#include <DirectXMath.h>
+#include <set>
 
-using COLLIED_PAIR = std::pair<class btCollisionObject*,
-    class btCollisionObject*>;
-using CONTACT_PONT_PAIR = std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>;
+namespace dx = DirectX;
 
-class PhysicsWorld
-{
-public:
-    PhysicsWorld(class SceneNode& _sceneNode);
-    ~PhysicsWorld();
+using COLLIED_PAIR =
+    std::pair<const class btCollisionObject *, const class btCollisionObject *>;
+using CONTACT_PONT_PAIR = std::pair<dx::XMFLOAT3, dx::XMFLOAT3>;
 
-    void CreatePhysicsWorld();
-
-    void AddCollisionObject(class btCollisionObject* _colliObj);
-    void DeleteCollisionObject(class btCollisionObject* _colliObj);
-
-    void DetectCollision();
-
-    bool CheckCollisionResult(COLLIED_PAIR& _pair,
-        CONTACT_PONT_PAIR* _contactPair);
-
-    void DeletePhysicsWorld();
-
+class PhysicsWorld {
 private:
-    const class SceneNode& mSceneNodeOwner;
+  const class SceneNode &SceneNodeOwner;
 
-    std::set<COLLIED_PAIR> mColliedPair;
-    std::map<COLLIED_PAIR, CONTACT_PONT_PAIR> mContactPointMap;
+  std::set<COLLIED_PAIR> ColliedPair;
+  std::map<COLLIED_PAIR, CONTACT_PONT_PAIR> ContactPointMap;
 
-    class btCollisionWorld* mCollisionWorld;
+  class btCollisionWorld *CollisionWorld;
 
-    class btDefaultCollisionConfiguration* mCollisionConfig;
-    class btCollisionDispatcher* mCollisionDispatcher;
-    class btBroadphaseInterface* mBroadphaseInterface;
+  class btDefaultCollisionConfiguration *CollisionConfig;
+  class btCollisionDispatcher *CollisionDispatcher;
+  class btBroadphaseInterface *BroadphaseInterface;
+
+public:
+  PhysicsWorld(class SceneNode &SceneNode);
+  ~PhysicsWorld();
+
+  void
+  createPhysicsWorld();
+
+  void
+  addCollisionObject(class btCollisionObject *ColliObj);
+  void
+  deleteCollisionObject(class btCollisionObject *ColliObj);
+
+  void
+  detectCollision();
+
+  bool
+  checkCollisionResult(const COLLIED_PAIR &Pair,
+                       CONTACT_PONT_PAIR *OutContactPair);
+
+  void
+  deletePhysicsWorld();
 };

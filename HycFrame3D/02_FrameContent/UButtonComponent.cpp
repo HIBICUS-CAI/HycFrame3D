@@ -45,7 +45,7 @@ UButtonComponent::init() {
   }
 
   SUBMESH_DATA *MeshPtr =
-      getUiOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+      getUiOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           SELECTED_BTN_SPRITE_NAME);
   if (!MeshPtr) {
     if (G_SelectFlagTexture == "") {
@@ -69,9 +69,9 @@ UButtonComponent::init() {
             ->getGeoGenerator()
             ->createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX,
                                G_SelectFlagTexture);
-    getUiOwner()->getSceneNode().GetAssetsPool()->insertNewSubMesh(
+    getUiOwner()->getSceneNode().getAssetsPool()->insertNewSubMesh(
         SELECTED_BTN_SPRITE_NAME, BtnSelect, MESH_TYPE::UI_SPRITE);
-    MeshPtr = getUiOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+    MeshPtr = getUiOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
         SELECTED_BTN_SPRITE_NAME);
 
     RS_INSTANCE_DATA InsData = {};
@@ -168,7 +168,7 @@ void
 UButtonComponent::selectUpBtn() {
   if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
       SurroundBtnObjectNames[BTN_UP] != NULL_BTN) {
-    auto UpUi = getUiOwner()->getSceneNode().GetUiObject(
+    auto UpUi = getUiOwner()->getSceneNode().getUiObject(
         SurroundBtnObjectNames[BTN_UP]);
     if (!UpUi) {
       return;
@@ -189,7 +189,7 @@ void
 UButtonComponent::selectDownBtn() {
   if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
       SurroundBtnObjectNames[BTN_DOWN] != NULL_BTN) {
-    auto DownUi = getUiOwner()->getSceneNode().GetUiObject(
+    auto DownUi = getUiOwner()->getSceneNode().getUiObject(
         SurroundBtnObjectNames[BTN_DOWN]);
     if (!DownUi) {
       return;
@@ -210,7 +210,7 @@ void
 UButtonComponent::selectLeftBtn() {
   if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
       SurroundBtnObjectNames[BTN_LEFT] != NULL_BTN) {
-    auto LeftUi = getUiOwner()->getSceneNode().GetUiObject(
+    auto LeftUi = getUiOwner()->getSceneNode().getUiObject(
         SurroundBtnObjectNames[BTN_LEFT]);
     if (!LeftUi) {
       return;
@@ -231,7 +231,7 @@ void
 UButtonComponent::selectRightBtn() {
   if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
       SurroundBtnObjectNames[BTN_RIGHT] != NULL_BTN) {
-    auto RightUi = getUiOwner()->getSceneNode().GetUiObject(
+    auto RightUi = getUiOwner()->getSceneNode().getUiObject(
         SurroundBtnObjectNames[BTN_RIGHT]);
     if (!RightUi) {
       return;
@@ -251,7 +251,7 @@ UButtonComponent::selectRightBtn() {
 UButtonComponent *
 UButtonComponent::getUpBtn() {
   auto Ui =
-      getUiOwner()->getSceneNode().GetUiObject(SurroundBtnObjectNames[BTN_UP]);
+      getUiOwner()->getSceneNode().getUiObject(SurroundBtnObjectNames[BTN_UP]);
   if (!Ui) {
     P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
           SurroundBtnObjectNames[BTN_UP].c_str());
@@ -270,7 +270,7 @@ UButtonComponent::getUpBtn() {
 
 UButtonComponent *
 UButtonComponent::getDownBtn() {
-  auto Ui = getUiOwner()->getSceneNode().GetUiObject(
+  auto Ui = getUiOwner()->getSceneNode().getUiObject(
       SurroundBtnObjectNames[BTN_DOWN]);
   if (!Ui) {
     P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
@@ -290,7 +290,7 @@ UButtonComponent::getDownBtn() {
 
 UButtonComponent *
 UButtonComponent::getLeftBtn() {
-  auto Ui = getUiOwner()->getSceneNode().GetUiObject(
+  auto Ui = getUiOwner()->getSceneNode().getUiObject(
       SurroundBtnObjectNames[BTN_LEFT]);
   if (!Ui) {
     P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
@@ -310,7 +310,7 @@ UButtonComponent::getLeftBtn() {
 
 UButtonComponent *
 UButtonComponent::getRightBtn() {
-  auto Ui = getUiOwner()->getSceneNode().GetUiObject(
+  auto Ui = getUiOwner()->getSceneNode().getUiObject(
       SurroundBtnObjectNames[BTN_RIGHT]);
   if (!Ui) {
     P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
@@ -361,7 +361,7 @@ UButtonComponent::syncDataFromTransform() {
 
   auto &InsMap = getUiOwner()
                      ->getSceneNode()
-                     .GetAssetsPool()
+                     .getAssetsPool()
                      ->getSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME)
                      ->InstanceMap;
 

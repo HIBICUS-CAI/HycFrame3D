@@ -67,15 +67,15 @@ bool RenderSystem::Init()
 
     mAssetsPool = nullptr;
     mAssetsPool = GetSystemExecutive()->GetSceneManager()->
-        GetCurrentSceneNode()->GetAssetsPool();
+        getCurrentSceneNode()->getAssetsPool();
     if (!mAssetsPool) { return false; }
 
     mEnvTex = GetSystemExecutive()->GetSceneManager()->
-        GetCurrentSceneNode()->GetIBLEnvironment();
+        getCurrentSceneNode()->getIBLEnvironment();
     mDiffTex = GetSystemExecutive()->GetSceneManager()->
-        GetCurrentSceneNode()->GetIBLDiffuse();
+        getCurrentSceneNode()->getIBLDiffuse();
     mSpecTex = GetSystemExecutive()->GetSceneManager()->
-        GetCurrentSceneNode()->GetIBLSpecular();
+        getCurrentSceneNode()->getIBLSpecular();
 
     getRSDX11RootInstance()->getParticlesContainer()->resetRSParticleSystem();
 
@@ -156,7 +156,7 @@ void RenderSystem::Run(Timer& _timer)
 
     mRenderSystemRoot->getLightsContainer()->forceCurrentAmbientLight(
         GetSystemExecutive()->GetSceneManager()->
-        GetCurrentSceneNode()->GetCurrentAmbientFactor());
+        getCurrentSceneNode()->getCurrentAmbientFactor());
 
     setPipelineIBLTextures(mEnvTex, mDiffTex, mSpecTex);
     setPipelineDeltaTime(_timer.floatDeltaTime());

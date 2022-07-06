@@ -75,10 +75,10 @@ UInteractComponent::clearDestoryFunction() {
 
 ActorObject *
 UInteractComponent::getActorObject(const std::string &ActorName) {
-  return getSceneNode().GetActorObject(ActorName);
+  return getSceneNode().getActorObject(ActorName);
 }
 
 UiObject *
 UInteractComponent::getUiObject(const std::string &UiName) {
-  return getSceneNode().GetUiObject(UiName);
+  return getSceneNode().getUiObject(UiName);
 }

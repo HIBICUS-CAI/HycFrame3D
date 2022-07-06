@@ -29,11 +29,11 @@ bool AudioSystem::Init()
 #endif // _DEBUG
 
     mAAudioVecPtr = (std::vector<AAudioComponent>*)GetSystemExecutive()->
-        GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->getCompVecPtr(COMP_TYPE::A_AUDIO);
+        GetSceneManager()->getCurrentSceneNode()->
+        getComponentContainer()->getCompVecPtr(COMP_TYPE::A_AUDIO);
     mUAudioVecPtr = (std::vector<UAudioComponent>*)GetSystemExecutive()->
-        GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->getCompVecPtr(COMP_TYPE::U_AUDIO);
+        GetSceneManager()->getCurrentSceneNode()->
+        getComponentContainer()->getCompVecPtr(COMP_TYPE::U_AUDIO);
 
     if (!(mAAudioVecPtr && mUAudioVecPtr)) { return false; }
 

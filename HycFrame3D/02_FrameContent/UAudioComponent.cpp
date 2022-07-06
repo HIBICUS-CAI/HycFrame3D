@@ -28,7 +28,7 @@ UAudioComponent::destory() {
 
 void
 UAudioComponent::addAudio(const std::string &AudioName, SceneNode &Scene) {
-  SOUND_HANDLE Audio = Scene.GetAssetsPool()->getSoundIfExisted(AudioName);
+  SOUND_HANDLE Audio = Scene.getAssetsPool()->getSoundIfExisted(AudioName);
 #ifdef _DEBUG
   assert(Audio);
 #endif // _DEBUG

@@ -1,215 +1,194 @@
 #include "SceneNode.h"
-#include <vector>
-#include "DDSTextureLoader11.h"
-#include "RSDevices.h"
-#include "RSCamerasContainer.h"
-#include "RSCamera.h"
-#include "RSRoot_DX11.h"
-#include "ObjectContainer.h"
-#include "ComponentContainer.h"
+
 #include "AssetsPool.h"
+#include "ComponentContainer.h"
+#include "ObjectContainer.h"
 #include "PhysicsWorld.h"
 
-SceneNode::SceneNode(const std::string& _sceneName, SceneManager* _sceneManager) :
-    mSceneName(_sceneName), mSceneManagerPtr(_sceneManager),
-    mObjContainerPtr(nullptr), mCompContainerPtr(nullptr),
-    mAssetsPoolPtr(nullptr), mPhysicsWorldPtr(nullptr),
-    mCameraAmbientInfo({})
-{
-    mObjContainerPtr = new ObjectContainer(*this);
-    mCompContainerPtr = new ComponentContainer(*this);
-    mAssetsPoolPtr = new AssetsPool(*this);
-    mPhysicsWorldPtr = new PhysicsWorld(*this);
-    if (_sceneName != "temp-loading-scene")
-    {
-        std::string cam = "temp-cam";
-        mCameraAmbientInfo.mRSCameraPtr = getRSDX11RootInstance()->
-            getCamerasContainer()->getRSCamera(cam);
-        bool new_scene_fail = mObjContainerPtr && mCompContainerPtr &&
-            mAssetsPoolPtr && mPhysicsWorldPtr && mCameraAmbientInfo.mRSCameraPtr;
-        assert(new_scene_fail);
-        (void)new_scene_fail;
-    }
+#include <DDSTextureLoader11.h>
+#include <RSCamera.h>
+#include <RSCamerasContainer.h>
+#include <RSDevices.h>
+#include <RSRoot_DX11.h>
+
+#include <vector>
+
+SceneNode::SceneNode(const std::string &Name, SceneManager *SceneManager)
+    : SceneName(Name), SceneManagerPtr(SceneManager),
+      ObjectContainerPtr(nullptr), ComponentContainerPtr(nullptr),
+      AssetsPoolPtr(nullptr), PhysicsWorldPtr(nullptr), CameraAmbientInfo({}) {
+  ObjectContainerPtr = new ObjectContainer(*this);
+  ComponentContainerPtr = new ComponentContainer(*this);
+  AssetsPoolPtr = new AssetsPool(*this);
+  PhysicsWorldPtr = new PhysicsWorld(*this);
+  if (Name != "temp-loading-scene") {
+    std::string Cam = "temp-cam";
+    CameraAmbientInfo.RSCameraPtr =
+        getRSDX11RootInstance()->getCamerasContainer()->getRSCamera(Cam);
+    assert(ObjectContainerPtr && ComponentContainerPtr && AssetsPoolPtr &&
+           PhysicsWorldPtr && CameraAmbientInfo.RSCameraPtr &&
+           "new scene fail");
+  }
 }
 
-SceneNode::~SceneNode()
-{
-    delete mPhysicsWorldPtr;
-    delete mAssetsPoolPtr;
-    delete mCompContainerPtr;
-    delete mObjContainerPtr;
+SceneNode::~SceneNode() {
+  delete PhysicsWorldPtr;
+  delete AssetsPoolPtr;
+  delete ComponentContainerPtr;
+  delete ObjectContainerPtr;
 }
 
-void SceneNode::ReleaseScene()
-{
-    mObjContainerPtr->deleteAllActor();
-    mObjContainerPtr->deleteAllUi();
-    mObjContainerPtr->deleteAllDeadObjects();
-    mCompContainerPtr->deleteAllComponent();
-    mPhysicsWorldPtr->DeletePhysicsWorld();
-    mAssetsPoolPtr->deleteAllAssets();
+void
+SceneNode::releaseScene() {
+  ObjectContainerPtr->deleteAllActor();
+  ObjectContainerPtr->deleteAllUi();
+  ObjectContainerPtr->deleteAllDeadObjects();
+  ComponentContainerPtr->deleteAllComponent();
+  PhysicsWorldPtr->deletePhysicsWorld();
+  AssetsPoolPtr->deleteAllAssets();
 
-    if (mCameraAmbientInfo.mIBLEnvTex)
-    {
-        mCameraAmbientInfo.mIBLEnvTex->Release();
-        mCameraAmbientInfo.mIBLEnvTex = nullptr;
-    }
-    if (mCameraAmbientInfo.mIBLDiffTex)
-    {
-        mCameraAmbientInfo.mIBLDiffTex->Release();
-        mCameraAmbientInfo.mIBLDiffTex = nullptr;
-    }
-    if (mCameraAmbientInfo.mIBLSpecTex)
-    {
-        mCameraAmbientInfo.mIBLSpecTex->Release();
-        mCameraAmbientInfo.mIBLSpecTex = nullptr;
-    }
+  if (CameraAmbientInfo.IBLEnvironmentTexture) {
+    CameraAmbientInfo.IBLEnvironmentTexture->Release();
+    CameraAmbientInfo.IBLEnvironmentTexture = nullptr;
+  }
+  if (CameraAmbientInfo.IBLDiffuseTexture) {
+    CameraAmbientInfo.IBLDiffuseTexture->Release();
+    CameraAmbientInfo.IBLDiffuseTexture = nullptr;
+  }
+  if (CameraAmbientInfo.IBLSpecularTexture) {
+    CameraAmbientInfo.IBLSpecularTexture->Release();
+    CameraAmbientInfo.IBLSpecularTexture = nullptr;
+  }
 }
 
-const std::string& SceneNode::GetSceneNodeName() const
-{
-    return mSceneName;
+const std::string &
+SceneNode::getSceneNodeName() const {
+  return SceneName;
 }
 
-SceneManager* SceneNode::GetSceneManager() const
-{
-    return mSceneManagerPtr;
+SceneManager *
+SceneNode::getSceneManager() const {
+  return SceneManagerPtr;
 }
 
-void SceneNode::SetCurrentAmbientFactor(DirectX::XMFLOAT4&& _ambientColor)
-{
-    mCameraAmbientInfo.mAmbientFactor = _ambientColor;
+void
+SceneNode::setCurrentAmbientFactor(const DirectX::XMFLOAT4 &Factor) {
+  CameraAmbientInfo.AmbientFactor = Factor;
 }
 
-void SceneNode::SetCurrentAmbientFactor(DirectX::XMFLOAT4& _ambientColor)
-{
-    mCameraAmbientInfo.mAmbientFactor = _ambientColor;
+const DirectX::XMFLOAT4 &
+SceneNode::getCurrentAmbientFactor() {
+  return CameraAmbientInfo.AmbientFactor;
 }
 
-DirectX::XMFLOAT4& SceneNode::GetCurrentAmbientFactor()
-{
-    return mCameraAmbientInfo.mAmbientFactor;
+void
+SceneNode::loadIBLTexture(const std::string &Env,
+                          const std::string &Diff,
+                          const std::string &Spec) {
+  std::wstring WStr = L"";
+  HRESULT Hr = S_OK;
+  ID3D11ShaderResourceView *Srv = nullptr;
+
+  if (Env != "") {
+    WStr = std::wstring(Env.begin(), Env.end());
+    WStr = L".\\Assets\\Textures\\" + WStr;
+    Hr = DirectX::CreateDDSTextureFromFile(
+        getRSDX11RootInstance()->getDevices()->getDevice(), WStr.c_str(),
+        nullptr, &Srv);
+    assert(!FAILED(Hr) && "fail to load IBL env texture");
+    (void)Hr;
+    CameraAmbientInfo.IBLEnvironmentTexture = Srv;
+  }
+
+  if (Diff != "") {
+    WStr = std::wstring(Diff.begin(), Diff.end());
+    WStr = L".\\Assets\\Textures\\" + WStr;
+    Hr = DirectX::CreateDDSTextureFromFile(
+        getRSDX11RootInstance()->getDevices()->getDevice(), WStr.c_str(),
+        nullptr, &Srv);
+    assert(!FAILED(Hr) && "fail to load IBL diff texture");
+    (void)Hr;
+    CameraAmbientInfo.IBLDiffuseTexture = Srv;
+  }
+
+  if (Spec != "") {
+    WStr = std::wstring(Spec.begin(), Spec.end());
+    WStr = L".\\Assets\\Textures\\" + WStr;
+    Hr = DirectX::CreateDDSTextureFromFile(
+        getRSDX11RootInstance()->getDevices()->getDevice(), WStr.c_str(),
+        nullptr, &Srv);
+    assert(!FAILED(Hr) && "fail to load IBL spec texture");
+    (void)Hr;
+    CameraAmbientInfo.IBLSpecularTexture = Srv;
+  }
 }
 
-void SceneNode::LoadIBLTexture(std::string _env, std::string _diff, std::string _spc)
-{
-    std::wstring wstr = L"";
-    HRESULT hr = S_OK;
-    ID3D11ShaderResourceView* srv = nullptr;
-
-    if (_env != "")
-    {
-        wstr = std::wstring(_env.begin(), _env.end());
-        wstr = L".\\Assets\\Textures\\" + wstr;
-        hr = DirectX::CreateDDSTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->getDevice(),
-            wstr.c_str(), nullptr, &srv);
-        assert(!FAILED(hr));
-        (void)hr;
-        mCameraAmbientInfo.mIBLEnvTex = srv;
-    }
-
-    if (_diff != "")
-    {
-        wstr = std::wstring(_diff.begin(), _diff.end());
-        wstr = L".\\Assets\\Textures\\" + wstr;
-        hr = DirectX::CreateDDSTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->getDevice(),
-            wstr.c_str(), nullptr, &srv);
-        assert(!FAILED(hr));
-        (void)hr;
-        mCameraAmbientInfo.mIBLDiffTex = srv;
-    }
-
-    if (_spc != "")
-    {
-        wstr = std::wstring(_spc.begin(), _spc.end());
-        wstr = L".\\Assets\\Textures\\" + wstr;
-        hr = DirectX::CreateDDSTextureFromFile(
-            getRSDX11RootInstance()->getDevices()->getDevice(),
-            wstr.c_str(), nullptr, &srv);
-        assert(!FAILED(hr));
-        (void)hr;
-        mCameraAmbientInfo.mIBLSpecTex = srv;
-    }    
+ID3D11ShaderResourceView *
+SceneNode::getIBLEnvironment() {
+  return CameraAmbientInfo.IBLEnvironmentTexture;
 }
 
-ID3D11ShaderResourceView* SceneNode::GetIBLEnvironment()
-{
-    return mCameraAmbientInfo.mIBLEnvTex;
+ID3D11ShaderResourceView *
+SceneNode::getIBLDiffuse() {
+  return CameraAmbientInfo.IBLDiffuseTexture;
 }
 
-ID3D11ShaderResourceView* SceneNode::GetIBLDiffuse()
-{
-    return mCameraAmbientInfo.mIBLDiffTex;
+ID3D11ShaderResourceView *
+SceneNode::getIBLSpecular() {
+  return CameraAmbientInfo.IBLSpecularTexture;
 }
 
-ID3D11ShaderResourceView* SceneNode::GetIBLSpecular()
-{
-    return mCameraAmbientInfo.mIBLSpecTex;
+RSCamera *
+SceneNode::getMainCamera() {
+  return CameraAmbientInfo.RSCameraPtr;
 }
 
-RSCamera* SceneNode::GetMainCamera()
-{
-    return mCameraAmbientInfo.mRSCameraPtr;
+ActorObject *
+SceneNode::getActorObject(const std::string &ActorName) {
+  return ObjectContainerPtr->getActorObject(ActorName);
 }
 
-ActorObject* SceneNode::GetActorObject(const std::string& _actorName)
-{
-    return mObjContainerPtr->getActorObject(_actorName);
+void
+SceneNode::addActorObject(const class ActorObject &NewActor) {
+  ObjectContainerPtr->addActorObject(NewActor);
 }
 
-void SceneNode::AddActorObject(class ActorObject& _newActor)
-{
-    mObjContainerPtr->addActorObject(_newActor);
+void
+SceneNode::deleteActorObject(const std::string &ActorName) {
+  ObjectContainerPtr->deleteActorObject(ActorName);
 }
 
-void SceneNode::DeleteActorObject(std::string&& _actorName)
-{
-    mObjContainerPtr->deleteActorObject(_actorName);
+UiObject *
+SceneNode::getUiObject(const std::string &UiName) {
+  return ObjectContainerPtr->getUiObject(UiName);
 }
 
-void SceneNode::DeleteActorObject(std::string& _actorName)
-{
-    mObjContainerPtr->deleteActorObject(_actorName);
+void
+SceneNode::addUiObject(const class UiObject &NewUi) {
+  ObjectContainerPtr->addUiObject(NewUi);
 }
 
-UiObject* SceneNode::GetUiObject(const std::string& _uiName)
-{
-    return mObjContainerPtr->getUiObject(_uiName);
+void
+SceneNode::deleteUiObject(const std::string &UiName) {
+  ObjectContainerPtr->deleteUiObject(UiName);
 }
 
-void SceneNode::AddUiObject(class UiObject& _newUi)
-{
-    mObjContainerPtr->addUiObject(_newUi);
+AssetsPool *
+SceneNode::getAssetsPool() const {
+  return AssetsPoolPtr;
 }
 
-void SceneNode::DeleteUiObject(std::string&& _uiName)
-{
-    mObjContainerPtr->deleteUiObject(_uiName);
+PhysicsWorld *
+SceneNode::getPhysicsWorld() const {
+  return PhysicsWorldPtr;
 }
 
-void SceneNode::DeleteUiObject(std::string& _uiName)
-{
-    mObjContainerPtr->deleteUiObject(_uiName);
+ComponentContainer *
+SceneNode::getComponentContainer() const {
+  return ComponentContainerPtr;
 }
 
-AssetsPool* SceneNode::GetAssetsPool() const
-{
-    return mAssetsPoolPtr;
-}
-
-PhysicsWorld* SceneNode::GetPhysicsWorld() const
-{
-    return mPhysicsWorldPtr;
-}
-
-ComponentContainer* SceneNode::GetComponentContainer() const
-{
-    return mCompContainerPtr;
-}
-
-ObjectContainer* SceneNode::GetObjectContainer() const
-{
-    return mObjContainerPtr;
+ObjectContainer *
+SceneNode::getObjectContainer() const {
+  return ObjectContainerPtr;
 }

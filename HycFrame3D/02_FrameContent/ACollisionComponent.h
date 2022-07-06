@@ -50,7 +50,7 @@ public:
 
   bool
   checkCollisionWith(const std::string &ActorName,
-                     CONTACT_PONT_PAIR *ContactPair = nullptr);
+                     CONTACT_PONT_PAIR *OutContactPair = nullptr);
 
   static dx::XMFLOAT3
   calcCenterOfContact(const CONTACT_PONT_PAIR &Pair);

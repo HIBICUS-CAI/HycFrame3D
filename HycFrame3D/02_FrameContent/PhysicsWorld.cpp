@@ -9,164 +9,133 @@
 #include "bullet/btBulletCollisionCommon.h"
 #pragma clang diagnostic pop
 
-using namespace DirectX;
+using namespace dx;
 
-PhysicsWorld::PhysicsWorld(class SceneNode& _sceneNode) :
-    mSceneNodeOwner(_sceneNode),
-    mColliedPair({}),
-    mContactPointMap({}),
-    mCollisionWorld(nullptr),
-    mCollisionConfig(nullptr),
-    mCollisionDispatcher(nullptr),
-    mBroadphaseInterface(nullptr)
-{
-    CreatePhysicsWorld();
+PhysicsWorld::PhysicsWorld(class SceneNode &SceneNode)
+    : SceneNodeOwner(SceneNode), ColliedPair({}), ContactPointMap({}),
+      CollisionWorld(nullptr), CollisionConfig(nullptr),
+      CollisionDispatcher(nullptr), BroadphaseInterface(nullptr) {
+  createPhysicsWorld();
 }
 
-PhysicsWorld::~PhysicsWorld()
-{
+PhysicsWorld::~PhysicsWorld() {}
 
-}
+void
+PhysicsWorld::createPhysicsWorld() {
+  CollisionConfig = new btDefaultCollisionConfiguration();
+  CollisionDispatcher = new btCollisionDispatcher(CollisionConfig);
+  BroadphaseInterface = new btDbvtBroadphase();
 
-void PhysicsWorld::CreatePhysicsWorld()
-{
-    mCollisionConfig = new btDefaultCollisionConfiguration();
-    mCollisionDispatcher = new btCollisionDispatcher(mCollisionConfig);
-    mBroadphaseInterface = new btDbvtBroadphase();
-
-    mCollisionWorld = new btCollisionWorld(mCollisionDispatcher,
-        mBroadphaseInterface, mCollisionConfig);
+  CollisionWorld = new btCollisionWorld(CollisionDispatcher,
+                                        BroadphaseInterface, CollisionConfig);
 
 #ifdef _DEBUG
-    assert(mCollisionConfig && mCollisionDispatcher &&
-        mBroadphaseInterface && mCollisionWorld);
+  assert(CollisionConfig && CollisionDispatcher && BroadphaseInterface &&
+         CollisionWorld);
 #endif // _DEBUG
-
 }
 
-void PhysicsWorld::AddCollisionObject(btCollisionObject* _colliObj)
-{
-    if (!_colliObj)
-    {
-        P_LOG(LOG_ERROR, "passing a null collision object to collision world\n");
-        return;
+void
+PhysicsWorld::addCollisionObject(btCollisionObject *ColliObj) {
+  if (!ColliObj) {
+    P_LOG(LOG_ERROR, "passing a null collision object to collision world\n");
+    return;
+  }
+
+  CollisionWorld->addCollisionObject(ColliObj);
+}
+
+void
+PhysicsWorld::deleteCollisionObject(btCollisionObject *ColliObj) {
+  if (!ColliObj) {
+    P_LOG(LOG_ERROR, "searching a null collision object in collision world\n");
+    return;
+  }
+
+  CollisionWorld->removeCollisionObject(ColliObj);
+}
+
+void
+PhysicsWorld::detectCollision() {
+  ColliedPair.clear();
+  ContactPointMap.clear();
+  CollisionWorld->performDiscreteCollisionDetection();
+
+  int NumManifolds = CollisionWorld->getDispatcher()->getNumManifolds();
+
+  for (int I = 0; I < NumManifolds; I++) {
+    btPersistentManifold *ContactManifold =
+        CollisionWorld->getDispatcher()->getManifoldByIndexInternal(I);
+    const btCollisionObject *ObjA = ContactManifold->getBody0();
+    const btCollisionObject *ObjB = ContactManifold->getBody1();
+    int NumContacts = ContactManifold->getNumContacts();
+
+    COLLIED_PAIR Pair = {};
+    if (ObjA < ObjB) {
+      Pair = {ObjA, ObjB};
+    } else {
+      Pair = {ObjB, ObjA};
     }
 
-    mCollisionWorld->addCollisionObject(_colliObj);
-}
-
-void PhysicsWorld::DeleteCollisionObject(btCollisionObject* _colliObj)
-{
-    if (!_colliObj)
-    {
-        P_LOG(LOG_ERROR, "searching a null collision object in collision world\n");
-        return;
+    if (NumContacts && ColliedPair.find(Pair) == ColliedPair.end()) {
+      ColliedPair.insert(Pair);
     }
 
-    mCollisionWorld->removeCollisionObject(_colliObj);
-}
-
-void PhysicsWorld::DetectCollision()
-{
-    mColliedPair.clear();
-    mContactPointMap.clear();
-    mCollisionWorld->performDiscreteCollisionDetection();
-
-    int numManifolds = mCollisionWorld->getDispatcher()->getNumManifolds();
-
-    for (int i = 0; i < numManifolds; i++)
-    {
-        btPersistentManifold* contactManifold = mCollisionWorld->
-            getDispatcher()->getManifoldByIndexInternal(i);
-        btCollisionObject* obA = (btCollisionObject*)
-            (contactManifold->getBody0());
-        btCollisionObject* obB = (btCollisionObject*)
-            (contactManifold->getBody1());
-        int numContacts = contactManifold->getNumContacts();
-
-        COLLIED_PAIR pair = {};
-        if (obA < obB) { pair = { obA,obB }; }
-        else { pair = { obB,obA }; }
-
-        if (numContacts && mColliedPair.find(pair) == mColliedPair.end())
-        {
-            mColliedPair.insert(pair);
+    for (int J = 0; J < NumContacts; J++) {
+      btManifoldPoint &Point = ContactManifold->getContactPoint(J);
+      if (Point.getDistance() <= 0.f) {
+        btVector3 PosA = Point.getPositionWorldOnA();
+        btVector3 PosB = Point.getPositionWorldOnB();
+        CONTACT_PONT_PAIR ContPair = {{PosA.getX(), PosA.getY(), -PosA.getZ()},
+                                      {PosB.getX(), PosB.getY(), -PosB.getZ()}};
+        auto Found = ContactPointMap.find(Pair);
+        if (Found == ContactPointMap.end()) {
+          ContactPointMap.insert({Pair, ContPair});
+        } else {
+          dx::XMVECTOR BeforeA = dx::XMLoadFloat3(&Found->second.first);
+          dx::XMVECTOR NewoneA = dx::XMLoadFloat3(&ContPair.first);
+          dx::XMVECTOR BeforeB = dx::XMLoadFloat3(&Found->second.second);
+          dx::XMVECTOR NewoneB = dx::XMLoadFloat3(&ContPair.second);
+          BeforeA += NewoneA;
+          BeforeB += NewoneB;
+          dx::XMStoreFloat3(&Found->second.first, BeforeA);
+          dx::XMStoreFloat3(&Found->second.second, BeforeB);
         }
-
-        for (int j = 0; j < numContacts; j++)
-        {
-            btManifoldPoint& pt = contactManifold->getContactPoint(j);
-            if (pt.getDistance() <= 0.f)
-            {
-                btVector3 posA = pt.getPositionWorldOnA();
-                btVector3 posB = pt.getPositionWorldOnB();
-                CONTACT_PONT_PAIR contPair =
-                {
-                    { posA.getX(),posA.getY(),-posA.getZ() },
-                    { posB.getX(),posB.getY(),-posB.getZ() }
-                };
-                auto found = mContactPointMap.find(pair);
-                if (found == mContactPointMap.end())
-                {
-                    mContactPointMap.insert({ pair,contPair });
-                }
-                else
-                {
-                    DirectX::XMVECTOR beforeA =
-                        DirectX::XMLoadFloat3(&found->second.first);
-                    DirectX::XMVECTOR newoneA =
-                        DirectX::XMLoadFloat3(&contPair.first);
-                    DirectX::XMVECTOR beforeB =
-                        DirectX::XMLoadFloat3(&found->second.second);
-                    DirectX::XMVECTOR newoneB =
-                        DirectX::XMLoadFloat3(&contPair.second);
-                    beforeA += newoneA;
-                    beforeB += newoneB;
-                    DirectX::XMStoreFloat3(&found->second.first, beforeA);
-                    DirectX::XMStoreFloat3(&found->second.second, beforeB);
-                }
-            }
-        }
-        if (numContacts)
-        {
-            auto found = mContactPointMap.find(pair);
-            if (found == mContactPointMap.end())
-            {
-                mColliedPair.erase(pair); continue;
-            }
-            DirectX::XMVECTOR contactA =
-                DirectX::XMLoadFloat3(&found->second.first);
-            DirectX::XMVECTOR contactB =
-                DirectX::XMLoadFloat3(&found->second.second);
-            contactA /= (float)numContacts;
-            contactB /= (float)numContacts;
-            DirectX::XMStoreFloat3(&found->second.first, contactA);
-            DirectX::XMStoreFloat3(&found->second.second, contactB);
-        }
+      }
     }
+    if (NumContacts) {
+      auto Found = ContactPointMap.find(Pair);
+      if (Found == ContactPointMap.end()) {
+        ColliedPair.erase(Pair);
+        continue;
+      }
+      dx::XMVECTOR ContactA = dx::XMLoadFloat3(&Found->second.first);
+      dx::XMVECTOR ContactB = dx::XMLoadFloat3(&Found->second.second);
+      ContactA /= static_cast<float>(NumContacts);
+      ContactB /= static_cast<float>(NumContacts);
+      dx::XMStoreFloat3(&Found->second.first, ContactA);
+      dx::XMStoreFloat3(&Found->second.second, ContactB);
+    }
+  }
 }
 
-void PhysicsWorld::DeletePhysicsWorld()
-{
-    delete mCollisionWorld;
-    delete mBroadphaseInterface;
-    delete mCollisionDispatcher;
-    delete mCollisionConfig;
+void
+PhysicsWorld::deletePhysicsWorld() {
+  delete CollisionWorld;
+  delete BroadphaseInterface;
+  delete CollisionDispatcher;
+  delete CollisionConfig;
 }
 
-bool PhysicsWorld::CheckCollisionResult(COLLIED_PAIR& _pair,
-    CONTACT_PONT_PAIR* _contactPair)
-{
-    if (mColliedPair.find(_pair) == mColliedPair.end())
-    {
-        return false;
+bool
+PhysicsWorld::checkCollisionResult(const COLLIED_PAIR &_pair,
+                                   CONTACT_PONT_PAIR *_contactPair) {
+  if (ColliedPair.find(_pair) == ColliedPair.end()) {
+    return false;
+  } else {
+    if (_contactPair) {
+      *_contactPair = ContactPointMap.find(_pair)->second;
     }
-    else
-    {
-        if (_contactPair)
-        {
-            *_contactPair = mContactPointMap.find(_pair)->second;
-        }
-        return true;
-    }
+    return true;
+  }
 }

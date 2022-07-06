@@ -43,10 +43,10 @@ UInputComponent::clearInputFunction() {
 
 ActorObject *
 UInputComponent::getActorObject(const std::string &ActorName) {
-  return getSceneNode().GetActorObject(ActorName);
+  return getSceneNode().getActorObject(ActorName);
 }
 
 UiObject *
 UInputComponent::getUiObject(const std::string &UiName) {
-  return getSceneNode().GetUiObject(UiName);
+  return getSceneNode().getUiObject(UiName);
 }

@@ -25,11 +25,11 @@ bool TimerSystem::Init()
 #endif // _DEBUG
 
     mATimerVecPtr = (std::vector<ATimerComponent>*)GetSystemExecutive()->
-        GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->getCompVecPtr(COMP_TYPE::A_TIMER);
+        GetSceneManager()->getCurrentSceneNode()->
+        getComponentContainer()->getCompVecPtr(COMP_TYPE::A_TIMER);
     mUTimerVecPtr = (std::vector<UTimerComponent>*)GetSystemExecutive()->
-        GetSceneManager()->GetCurrentSceneNode()->
-        GetComponentContainer()->getCompVecPtr(COMP_TYPE::U_TIMER);
+        GetSceneManager()->getCurrentSceneNode()->
+        getComponentContainer()->getCompVecPtr(COMP_TYPE::U_TIMER);
 
     if (!(mATimerVecPtr && mUTimerVecPtr)) { return false; }
 

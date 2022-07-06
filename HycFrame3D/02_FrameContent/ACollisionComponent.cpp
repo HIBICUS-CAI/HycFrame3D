@@ -43,7 +43,7 @@ ACollisionComponent::update(Timer &Timer) {
 
 void
 ACollisionComponent::destory() {
-  getActorOwner()->getSceneNode().GetPhysicsWorld()->DeleteCollisionObject(
+  getActorOwner()->getSceneNode().getPhysicsWorld()->deleteCollisionObject(
       CollisionObject);
   delete CollisionObject;
   delete CollisionShape;
@@ -51,8 +51,8 @@ ACollisionComponent::destory() {
 
 bool
 ACollisionComponent::checkCollisionWith(const std::string &ActorName,
-                                        CONTACT_PONT_PAIR *ContactPair) {
-  auto Actor = getActorOwner()->getSceneNode().GetActorObject(ActorName);
+                                        CONTACT_PONT_PAIR *OutContactPair) {
+  auto Actor = getActorOwner()->getSceneNode().getActorObject(ActorName);
   if (!Actor) {
     P_LOG(LOG_ERROR, "doesnt exist a actor name : %s\n", ActorName.c_str());
     return false;
@@ -74,8 +74,8 @@ ACollisionComponent::checkCollisionWith(const std::string &ActorName,
 
   return getActorOwner()
       ->getSceneNode()
-      .GetPhysicsWorld()
-      ->CheckCollisionResult(Pair, ContactPair);
+      .getPhysicsWorld()
+      ->checkCollisionResult(Pair, OutContactPair);
 }
 
 void
@@ -99,7 +99,7 @@ ACollisionComponent::createCollisionShape(COLLISION_SHAPE Type,
 
 void
 ACollisionComponent::addCollisionObjectToWorld() {
-  getActorOwner()->getSceneNode().GetPhysicsWorld()->AddCollisionObject(
+  getActorOwner()->getSceneNode().getPhysicsWorld()->addCollisionObject(
       CollisionObject);
 }
 

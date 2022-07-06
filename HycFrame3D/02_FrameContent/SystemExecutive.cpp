@@ -29,7 +29,7 @@ bool SystemExecutive::StartUp(SceneManager* _sceneManager)
     }
 
     mSceneManagerPtr = _sceneManager;
-    mCurrentSceneNode = _sceneManager->GetCurrentSceneNode();
+    mCurrentSceneNode = _sceneManager->getCurrentSceneNode();
 
     System* sys = nullptr;
 
@@ -69,8 +69,8 @@ void SystemExecutive::RunAllSystems(Timer& _timer)
 {
     CheckCurrentScene();
 
-    mCurrentSceneNode->GetObjectContainer()->deleteAllDeadObjects();
-    mCurrentSceneNode->GetObjectContainer()->initAllNewObjects();
+    mCurrentSceneNode->getObjectContainer()->deleteAllDeadObjects();
+    mCurrentSceneNode->getObjectContainer()->initAllNewObjects();
 
     for (auto& sys : mSystemsVec)
     {
@@ -97,9 +97,9 @@ bool SystemExecutive::InitAllSystem()
 
 void SystemExecutive::CheckCurrentScene()
 {
-    if (mSceneManagerPtr->GetSceneSwitchFlg())
+    if (mSceneManagerPtr->getSceneSwitchFlg())
     {
-        mCurrentSceneNode = mSceneManagerPtr->GetCurrentSceneNode();
+        mCurrentSceneNode = mSceneManagerPtr->getCurrentSceneNode();
         bool next_scene_init = InitAllSystem();
 #ifdef _DEBUG
         assert(next_scene_init);

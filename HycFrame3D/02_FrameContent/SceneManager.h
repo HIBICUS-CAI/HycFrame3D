@@ -1,42 +1,53 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
-#include <string>
+
 #include <array>
+#include <string>
 
-class SceneManager
-{
+class SceneManager {
+private:
+  class ObjectFactory *ObjectFactoryPtr;
+
+  class SceneNode *LoadingScenePtr;
+  class SceneNode *CurrentScenePtr;
+  class SceneNode *NextScenePtr;
+
+  bool LoadNewSceneFlag;
+  std::array<std::string, 2> NewSceneInfo;
+
+  bool SceneSwitchFlag;
+
 public:
-    SceneManager();
-    ~SceneManager();
+  SceneManager();
+  ~SceneManager();
 
-    bool StartUp(class ObjectFactory* _objectFactory);
-    bool DeferedStartUp();
-    void CleanAndStop();
+  bool
+  startUp(class ObjectFactory *ObjectFactory);
+  bool
+  deferedStartUp();
+  void
+  cleanAndStop();
 
-    void LoadSceneNode(std::string&& _name, std::string&& _file);
-    void CheckLoadStatus();
+  void
+  loadSceneNode(const std::string &Name, const std::string &File);
+  void
+  checkLoadStatus();
 
-    class ObjectFactory* GetObjectFactory() const;
-    class SceneNode* GetCurrentSceneNode() const;
+  class ObjectFactory *
+  getObjectFactory() const;
+  class SceneNode *
+  getCurrentSceneNode() const;
 
-    bool GetSceneSwitchFlg() const;
+  bool
+  getSceneSwitchFlg() const;
 
 private:
-    bool LoadLoadingScene();
-    void ReleaseLoadingScene();
+  bool
+  loadLoadingScene();
+  void
+  releaseLoadingScene();
 
-    void LoadNextScene(class SceneNode* _relScene = nullptr);
-
-private:
-    class ObjectFactory* mObjectFactoryPtr;
-
-    class SceneNode* mLoadingScenePtr;
-    class SceneNode* mCurrentScenePtr;
-    class SceneNode* mNextScenePtr;
-
-    bool mLoadSceneFlg;
-    std::array<std::string, 2> mLoadSceneInfo;
-
-    bool mSceneSwitchFlg;
+  void
+  loadNextScene(class SceneNode *RelScene);
 };

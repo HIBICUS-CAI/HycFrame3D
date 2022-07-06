@@ -24,21 +24,21 @@ AAnimateComponent::init() {
 
   const std::string &MeshName = Amc->MeshesNameArray[0];
   MeshAnimationDataPtr =
-      getActorOwner()->getSceneNode().GetAssetsPool()->getAnimationIfExisted(
+      getActorOwner()->getSceneNode().getAssetsPool()->getAnimationIfExisted(
           MeshName);
   if (!MeshAnimationDataPtr) {
     return false;
   }
 
   auto SubArray =
-      getActorOwner()->getSceneNode().GetAssetsPool()->getMeshIfExisted(
+      getActorOwner()->getSceneNode().getAssetsPool()->getMeshIfExisted(
           MeshName);
 #ifdef _DEBUG
   assert(SubArray);
 #endif // _DEBUG
   for (const auto &SubMeshName : *SubArray) {
     auto SubMesh =
-        getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+        getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
             SubMeshName);
 #ifdef _DEBUG
     assert(SubMesh);
@@ -174,7 +174,7 @@ void
 AAnimateComponent::destory() {
   for (auto &SubMeshName : SubMeshNameVec) {
     SUBMESH_DATA *MeshPtr =
-        getActorOwner()->getSceneNode().GetAssetsPool()->getSubMeshIfExisted(
+        getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
             SubMeshName);
     if (MeshPtr) {
       MeshPtr->BonesMap.erase(getCompName());

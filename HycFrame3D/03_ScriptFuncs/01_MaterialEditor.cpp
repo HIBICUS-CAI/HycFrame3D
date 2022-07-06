@@ -64,8 +64,8 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
 {
     if (input::isKeyPushedInSingle(KB_F5))
     {
-        _aic->getSceneNode().GetSceneManager()->
-            LoadSceneNode("material-scene", "material-scene.json");
+        _aic->getSceneNode().getSceneManager()->
+            loadSceneNode("material-scene", "material-scene.json");
     }
 
     if (input::isKeyPushedInSingle(KB_P))
@@ -290,7 +290,7 @@ bool MatEditorInit(AInteractComponent* _aitc)
         getComponent<ATransformComponent>();
     if (!g_MaterialBallAtc) { return false; }
 
-    g_MatBallMesh = &(*_aitc->getSceneNode().GetAssetsPool()->
+    g_MatBallMesh = &(*_aitc->getSceneNode().getAssetsPool()->
         getSubMeshIfExisted("mat-ball0"));
     if (!g_MatBallMesh) { return false; }
 

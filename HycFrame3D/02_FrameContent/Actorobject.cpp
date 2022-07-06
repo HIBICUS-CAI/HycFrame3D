@@ -56,7 +56,7 @@ ActorObject::addAComponent(COMP_TYPE CompType) {
 
 bool
 ActorObject::init() {
-  auto CompContainer = getSceneNode().GetComponentContainer();
+  auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : ActorCompMap) {
     auto Comp = CompContainer->getComponent(CompInfo.second);
@@ -77,7 +77,7 @@ ActorObject::init() {
 
 void
 ActorObject::destory() {
-  auto CompContainer = getSceneNode().GetComponentContainer();
+  auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : ActorCompMap) {
     auto Comp = CompContainer->getComponent(CompInfo.second);
@@ -95,7 +95,7 @@ ActorObject::destory() {
 
 void
 ActorObject::syncStatusToAllComps() {
-  auto CompContainer = getSceneNode().GetComponentContainer();
+  auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : ActorCompMap) {
     auto Comp = CompContainer->getComponent(CompInfo.second);

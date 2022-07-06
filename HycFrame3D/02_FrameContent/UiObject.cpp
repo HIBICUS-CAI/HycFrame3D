@@ -47,7 +47,7 @@ UiObject::addUComponent(COMP_TYPE CompType) {
 
 bool
 UiObject::init() {
-  auto CompContainer = getSceneNode().GetComponentContainer();
+  auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : UiCompMap) {
     auto Comp = CompContainer->getComponent(CompInfo.second);
@@ -68,7 +68,7 @@ UiObject::init() {
 
 void
 UiObject::destory() {
-  auto CompContainer = getSceneNode().GetComponentContainer();
+  auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : UiCompMap) {
     auto Comp = CompContainer->getComponent(CompInfo.second);
@@ -86,7 +86,7 @@ UiObject::destory() {
 
 void
 UiObject::syncStatusToAllComps() {
-  auto CompContainer = getSceneNode().GetComponentContainer();
+  auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : UiCompMap) {
     auto Comp = CompContainer->getComponent(CompInfo.second);

@@ -1,61 +1,80 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
-#include <string>
-#include <DirectXMath.h>
 
-struct CAMERA_AND_AMBIENT
-{
-    class RSCamera* mRSCameraPtr = nullptr;
-    DirectX::XMFLOAT4 mAmbientFactor = {};
-    struct ID3D11ShaderResourceView* mIBLEnvTex = nullptr;
-    struct ID3D11ShaderResourceView* mIBLDiffTex = nullptr;
-    struct ID3D11ShaderResourceView* mIBLSpecTex = nullptr;
+#include <directxmath.h>
+#include <string>
+
+namespace dx = DirectX;
+
+struct CAMERA_AND_AMBIENT {
+  class RSCamera *RSCameraPtr = nullptr;
+  dx::XMFLOAT4 AmbientFactor = {};
+  struct ID3D11ShaderResourceView *IBLEnvironmentTexture = nullptr;
+  struct ID3D11ShaderResourceView *IBLDiffuseTexture = nullptr;
+  struct ID3D11ShaderResourceView *IBLSpecularTexture = nullptr;
 };
 
-class SceneNode
-{
-public:
-    SceneNode(const std::string& _sceneName, class SceneManager* _sceneManager);
-    ~SceneNode();
-
-    void ReleaseScene();
-
-    const std::string& GetSceneNodeName() const;
-    class SceneManager* GetSceneManager() const;
-
-    void SetCurrentAmbientFactor(DirectX::XMFLOAT4&& _ambientColor);
-    void SetCurrentAmbientFactor(DirectX::XMFLOAT4& _ambientColor);
-    DirectX::XMFLOAT4& GetCurrentAmbientFactor();
-
-    void LoadIBLTexture(std::string _env = "", std::string _diff = "",
-        std::string _spc = "");
-    struct ID3D11ShaderResourceView* GetIBLEnvironment();
-    struct ID3D11ShaderResourceView* GetIBLDiffuse();
-    struct ID3D11ShaderResourceView* GetIBLSpecular();
-
-    class RSCamera* GetMainCamera();
-
-    class ActorObject* GetActorObject(const std::string& _actorName);
-    void AddActorObject(class ActorObject& _newActor);
-    void DeleteActorObject(std::string&& _actorName);
-    void DeleteActorObject(std::string& _actorName);
-    class UiObject* GetUiObject(const std::string& _uiName);
-    void AddUiObject(class UiObject& _newUi);
-    void DeleteUiObject(std::string&& _uiName);
-    void DeleteUiObject(std::string& _uiName);
-
-    class AssetsPool* GetAssetsPool() const;
-    class PhysicsWorld* GetPhysicsWorld() const;
-    class ObjectContainer* GetObjectContainer() const;
-    class ComponentContainer* GetComponentContainer() const;
-
+class SceneNode {
 private:
-    const std::string mSceneName;
-    class SceneManager* mSceneManagerPtr;
-    class ObjectContainer* mObjContainerPtr;
-    class ComponentContainer* mCompContainerPtr;
-    class AssetsPool* mAssetsPoolPtr;
-    class PhysicsWorld* mPhysicsWorldPtr;
-    CAMERA_AND_AMBIENT mCameraAmbientInfo;
+  const std::string SceneName;
+  class SceneManager *SceneManagerPtr;
+  class ObjectContainer *ObjectContainerPtr;
+  class ComponentContainer *ComponentContainerPtr;
+  class AssetsPool *AssetsPoolPtr;
+  class PhysicsWorld *PhysicsWorldPtr;
+  CAMERA_AND_AMBIENT CameraAmbientInfo;
+
+public:
+  SceneNode(const std::string &SceneName, class SceneManager *SceneManager);
+  ~SceneNode();
+
+  void
+  releaseScene();
+
+  const std::string &
+  getSceneNodeName() const;
+  class SceneManager *
+  getSceneManager() const;
+
+  void
+  setCurrentAmbientFactor(const dx::XMFLOAT4 &_ambientColor);
+  const dx::XMFLOAT4 &
+  getCurrentAmbientFactor();
+
+  void
+  loadIBLTexture(const std::string &Env,
+                 const std::string &Diff,
+                 const std::string &Spec);
+  struct ID3D11ShaderResourceView *
+  getIBLEnvironment();
+  struct ID3D11ShaderResourceView *
+  getIBLDiffuse();
+  struct ID3D11ShaderResourceView *
+  getIBLSpecular();
+
+  class RSCamera *
+  getMainCamera();
+
+  class ActorObject *
+  getActorObject(const std::string &ActorName);
+  void
+  addActorObject(const class ActorObject &NewActor);
+  void
+  deleteActorObject(const std::string &ActorName);
+  class UiObject *
+  getUiObject(const std::string &UiName);
+  void
+  addUiObject(const class UiObject &NewUi);
+  void
+  deleteUiObject(const std::string &UiName);
+
+  class AssetsPool *
+  getAssetsPool() const;
+  class PhysicsWorld *
+  getPhysicsWorld() const;
+  class ObjectContainer *
+  getObjectContainer() const;
+  class ComponentContainer *
+  getComponentContainer() const;
 };
