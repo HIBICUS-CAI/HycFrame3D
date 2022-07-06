@@ -73,7 +73,7 @@ void ASpriteComponent::Update(Timer& _timer)
         startY = (float)(mCurrentAnimateCut / maxX) * mStride.y;
         mTexCoord = { startX, startY, mStride.x, mStride.y };
     }
-    mTimeCounter += _timer.FloatDeltaTime() / 1000.f;
+    mTimeCounter += _timer.floatDeltaTime() / 1000.f;
 
     SyncTransformDataToInstance();
 }

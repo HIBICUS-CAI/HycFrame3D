@@ -33,7 +33,7 @@ void ATimerComponent::Update(Timer& _timer)
     {
         if (t.second.mActive)
         {
-            t.second.mTime += _timer.FloatDeltaTime() / 1000.f;
+            t.second.mTime += _timer.floatDeltaTime() / 1000.f;
         }
     }
 }

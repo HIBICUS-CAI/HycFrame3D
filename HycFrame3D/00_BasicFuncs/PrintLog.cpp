@@ -1,79 +1,80 @@
 #include "PrintLog.h"
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN (1)
+#endif // !WIN32_LEAN_AND_MEAN
+
 #include <assert.h>
+#include <stdio.h>
+#include <windows.h>
 
 // FOR SETTING LOG LEVEL ------------------------------
-#define LOG_LEVEL_FOR_SETTING   (LOG_WARNING)
+#define LOG_LEVEL_FOR_SETTING (LOG_WARNING)
 // FOR SETTING LOG LEVEL ------------------------------
 
-int VDebugPrintF(const char* format, va_list argList)
-{
-    const UINT32 MAX_CHARS = 1024;
-    static char s_LogBuffer[MAX_CHARS];
+int
+vDebugPrintF(const char *Format, va_list ArgList) {
+  const UINT32 MAX_CHARS = 1024;
+  static char LogBuffer[MAX_CHARS];
 
-    int charsWritten = vsnprintf(
-        s_LogBuffer, MAX_CHARS, format, argList);
+  int CharsWritten = vsnprintf(LogBuffer, MAX_CHARS, Format, ArgList);
 
-    OutputDebugString(s_LogBuffer);
+  OutputDebugString(LogBuffer);
 
-    return charsWritten;
+  return CharsWritten;
 }
 
-int DebugPrintF(int level, const char* format, ...)
-{
-    static bool invalid_log_level = false;
-
-    if (level >= LOG_LEVEL_FOR_SETTING)
-    {
-        switch (level)
-        {
-        case LOG_MESSAGE:
-            OutputDebugString("[[[MESSAGE]]] : "); break;
-        case LOG_WARNING:
-            OutputDebugString("[[[WARNING]]] : "); break;
-        case LOG_DEBUG:
-            OutputDebugString("[[[DEBUG]]] : "); break;
-        case LOG_ERROR:
-            OutputDebugString("[[[ERROR]]] : "); break;
-        default:
-            assert(invalid_log_level); break;
-        }
-        (void)invalid_log_level;
-
-        va_list argList = {};
-        va_start(argList, format);
-
-        int charsWritten = VDebugPrintF(format, argList);
-
-        va_end(argList);
-
-        return charsWritten;
+int
+debugPrintF(int Level, const char *Format, ...) {
+  if (Level >= LOG_LEVEL_FOR_SETTING) {
+    switch (Level) {
+    case LOG_MESSAGE:
+      OutputDebugString("[[[MESSAGE]]] : ");
+      break;
+    case LOG_WARNING:
+      OutputDebugString("[[[WARNING]]] : ");
+      break;
+    case LOG_DEBUG:
+      OutputDebugString("[[[DEBUG]]] : ");
+      break;
+    case LOG_ERROR:
+      OutputDebugString("[[[ERROR]]] : ");
+      break;
+    default:
+      assert(false && "invalid log level");
+      break;
     }
-    else
-    {
-        return -1;
-    }
+
+    va_list ArgList = {};
+    va_start(ArgList, Format);
+
+    int CharsWritten = vDebugPrintF(Format, ArgList);
+
+    va_end(ArgList);
+
+    return CharsWritten;
+  } else {
+    return -1;
+  }
 }
 
-int VMyPrintF(const char* format, va_list argList)
-{
-    return vprintf(format, argList);
+int
+vMyPrintF(const char *Format, va_list ArgList) {
+  return vprintf(Format, ArgList);
 }
 
-int MyPrintF(int level, const char* format, ...)
-{
-    if (level >= LOG_LEVEL_FOR_SETTING)
-    {
-        va_list argList = {};
-        va_start(argList, format);
+int
+myPrintF(int Level, const char *Format, ...) {
+  if (Level >= LOG_LEVEL_FOR_SETTING) {
+    va_list ArgList = {};
+    va_start(ArgList, Format);
 
-        int charsWritten = VMyPrintF(format, argList);
+    int CharsWritten = vMyPrintF(Format, ArgList);
 
-        va_end(argList);
+    va_end(ArgList);
 
-        return charsWritten;
-    }
-    else
-    {
-        return -1;
-    }
+    return CharsWritten;
+  } else {
+    return -1;
+  }
 }

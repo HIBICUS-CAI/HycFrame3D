@@ -159,7 +159,7 @@ void RenderSystem::Run(Timer& _timer)
         GetCurrentSceneNode()->GetCurrentAmbientFactor());
 
     SetPipelineIBLTextures(mEnvTex, mDiffTex, mSpecTex);
-    SetPipelineDeltaTime(_timer.FloatDeltaTime());
+    SetPipelineDeltaTime(_timer.floatDeltaTime());
 
     getRSDX11RootInstance()->getPipelinesManager()->useNextPipeline();
     mRenderSystemRoot->getPipelinesManager()->execuateCurrentPipeline();

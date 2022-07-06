@@ -1,21 +1,14 @@
 #pragma once
 
-#include <stdio.h>
+#define LOG_MESSAGE (0)
+#define LOG_WARNING (1)
+#define LOG_DEBUG (2)
+#define LOG_ERROR (3)
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN (1)
-#endif // !WIN32_LEAN_AND_MEAN
+#define P_LOG debugPrintF
 
-#include <Windows.h>
+int
+debugPrintF(int Level, const char *Format, ...);
 
-#define LOG_MESSAGE             (0)
-#define LOG_WARNING             (1)
-#define LOG_DEBUG               (2)
-#define LOG_ERROR               (3)
-
-#define P_LOG DebugPrintF
-
-int DebugPrintF(int level, const char* format, ...);
-
-int MyPrintF(int level, const char* format, ...);
-
+int
+myPrintF(int Level, const char *Format, ...);

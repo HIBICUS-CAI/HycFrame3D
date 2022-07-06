@@ -1,52 +1,50 @@
 #include "FineGrainedTimer.h"
-#include <assert.h>
 
-Timer::Timer(void) :
-    mLitmp({}), mQt1(0), mQt2(0), mDft(0.), mDff(0.), mDfm(0.), mActiveFlg(false)
-{
-    (void)mActiveFlg;
+#include <cassert>
+
+Timer::Timer()
+    : Litmp({}), Qt1(0), Qt2(0), Dft(0.), Dff(0.), Dfm(0.), ActiveFlag(false) {
+  (void)ActiveFlag;
 }
 
+Timer::~Timer() {}
 
-Timer::~Timer(void) {}
-
-void Timer::TimeIn()
-{
+void
+Timer::timeIn() {
 #ifdef _DEBUG
-    assert(!mActiveFlg);
-    mActiveFlg = true;
+  assert(!ActiveFlag);
+  ActiveFlag = true;
 #endif // _DEBUG
 
-    QueryPerformanceFrequency(&mLitmp);
-    mDff = (double)mLitmp.QuadPart;
-    QueryPerformanceCounter(&mLitmp);
-    mQt1 = mLitmp.QuadPart;
+  QueryPerformanceFrequency(&Litmp);
+  Dff = static_cast<double>(Litmp.QuadPart);
+  QueryPerformanceCounter(&Litmp);
+  Qt1 = Litmp.QuadPart;
 }
 
-void Timer::TimeOut()
-{
-    QueryPerformanceCounter(&mLitmp);
-    mQt2 = mLitmp.QuadPart;
-    mDfm = 1000. * (double)(mQt2 - mQt1);
-    mDft = mDfm / mDff;
+void
+Timer::timeOut() {
+  QueryPerformanceCounter(&Litmp);
+  Qt2 = Litmp.QuadPart;
+  Dfm = 1000. * static_cast<double>(Qt2 - Qt1);
+  Dft = Dfm / Dff;
 
-    if (mDft > 33.3333333333f)
-    {
-        mDft = 33.3333333333f;
-    }
+  if (Dft > 33.3333333333) {
+    Dft = 33.3333333333;
+  }
 
 #ifdef _DEBUG
-    assert(mActiveFlg);
-    mActiveFlg = false;
+  assert(ActiveFlag);
+  ActiveFlag = false;
 #endif // _DEBUG
 }
 
-double Timer::DoubleDeltaTime() const
-{
-    return mDft;
+double
+Timer::doubleDeltaTime() const {
+  return Dft;
 }
 
-float Timer::FloatDeltaTime() const
-{
-    return (float)mDft;
+float
+Timer::floatDeltaTime() const {
+  return static_cast<float>(Dft);
 }

@@ -48,7 +48,7 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     if (input::isKeyDownInSingle(M_LEFTBTN))
     {
         auto mouseOffset = input::getMouseOffset();
-        float horiR = -mouseOffset.x * _timer.FloatDeltaTime() / 800.f;
+        float horiR = -mouseOffset.x * _timer.floatDeltaTime() / 800.f;
         _aic->GetSceneNode().GetMainCamera()->rotateRSCamera(0.f, horiR);
     }
 
@@ -63,25 +63,25 @@ void TestASpInput(AInputComponent* _aic, Timer& _timer)
     {
         _aic->GetActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            TranslateZAsix(0.1f * _timer.FloatDeltaTime());
+            TranslateZAsix(0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyDownInSingle(KB_A))
     {
         _aic->GetActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            TranslateXAsix(-0.1f * _timer.FloatDeltaTime());
+            TranslateXAsix(-0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyDownInSingle(KB_S))
     {
         _aic->GetActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            TranslateZAsix(-0.1f * _timer.FloatDeltaTime());
+            TranslateZAsix(-0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyDownInSingle(KB_D))
     {
         _aic->GetActorObject("sp-point-light-actor")->
             GetComponent<ATransformComponent>()->
-            TranslateXAsix(0.1f * _timer.FloatDeltaTime());
+            TranslateXAsix(0.1f * _timer.floatDeltaTime());
     }
     if (input::isKeyPushedInSingle(KB_P))
     {
@@ -154,7 +154,7 @@ void TestASpDestory(AInteractComponent*)
 
 void TestUSpInput(UInputComponent* _uic, Timer& _timer)
 {
-    float delta = _timer.FloatDeltaTime();
+    float delta = _timer.floatDeltaTime();
     auto utc = _uic->GetUiOwner()->
         GetComponent<UTransformComponent>();
 
@@ -318,7 +318,7 @@ void AniUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
     _aitc->GetActorOwner()->
         GetComponent<ATransformComponent>()->
-        RotateYAsix(_timer.FloatDeltaTime() / 1000.f);
+        RotateYAsix(_timer.floatDeltaTime() / 1000.f);
 
     if (input::isKeyPushedInSingle(KB_1))
     {
@@ -373,7 +373,7 @@ bool BBInit(AInteractComponent* _aitc)
 
 void BBUpdate(AInteractComponent* _aitc, Timer& _timer)
 {
-    g_BBAtc->TranslateXAsix(_timer.FloatDeltaTime() * g_XFactor * 0.01f);
+    g_BBAtc->TranslateXAsix(_timer.floatDeltaTime() * g_XFactor * 0.01f);
     if (fabsf(g_BBAtc->GetProcessingPosition().x) > 18.f)
     {
         g_BBAtc->RollBackPositionX();

@@ -171,7 +171,7 @@ void AAnimateComponent::Update(Timer& _timer)
     }
     else
     {
-        mTotalTime += _timer.FloatDeltaTime() / 1000.f * mAnimationSpeedFactor;
+        mTotalTime += _timer.floatDeltaTime() / 1000.f * mAnimationSpeedFactor;
     }
 
     float aniTime = 0.f;

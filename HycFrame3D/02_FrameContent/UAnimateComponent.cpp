@@ -61,7 +61,7 @@ void UAnimateComponent::Update(Timer& _timer)
             }
             SyncAniInfoToSprite();
         }
-        mTimeCounter += _timer.FloatDeltaTime() / 1000.f;
+        mTimeCounter += _timer.floatDeltaTime() / 1000.f;
     }
 }
 

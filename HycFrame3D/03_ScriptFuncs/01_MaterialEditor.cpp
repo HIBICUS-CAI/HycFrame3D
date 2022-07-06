@@ -86,7 +86,7 @@ void MatEditorInput(AInputComponent* _aic, Timer& _timer)
         simp = !simp;
     }
 
-    const float deltatime = _timer.FloatDeltaTime();
+    const float deltatime = _timer.floatDeltaTime();
 
     if (input::isKeyDownInSingle(M_LEFTBTN))
     {

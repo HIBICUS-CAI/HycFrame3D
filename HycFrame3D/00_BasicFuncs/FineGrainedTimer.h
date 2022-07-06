@@ -2,24 +2,29 @@
 
 #include <Windows.h>
 
-class Timer
-{
-public:
-    Timer(void);
-    ~Timer(void);
-
-    void TimeIn();
-    void TimeOut();
-
-    double DoubleDeltaTime() const;
-    float FloatDeltaTime() const;
-
+class Timer {
 private:
-    LARGE_INTEGER mLitmp;
-    LONGLONG mQt1;
-    LONGLONG mQt2;
-    double mDft;
-    double mDff;
-    double mDfm;
-    bool mActiveFlg;
+  LARGE_INTEGER Litmp;
+  LONGLONG Qt1;
+  LONGLONG Qt2;
+  double Dft;
+  double Dff;
+  double Dfm;
+  bool ActiveFlag;
+
+public:
+  Timer();
+  ~Timer();
+
+  void
+  timeIn();
+
+  void
+  timeOut();
+
+  double
+  doubleDeltaTime() const;
+
+  float
+  floatDeltaTime() const;
 };
