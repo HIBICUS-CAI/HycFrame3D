@@ -14,6 +14,7 @@ int WinMain(_In_ HINSTANCE Instance,
   Root.cleanAndStop();
 
   std::string Error = "";
+  tcp::sockSysStartUp(&Error);
   auto Sock = tcp::TcpSocket::create(tcp::ADDRFAM::INET);
   auto Addr = tcp::createIPv4FromString("127.0.0.1:32580", Error);
   Sock->tcpConnect(*Addr);
