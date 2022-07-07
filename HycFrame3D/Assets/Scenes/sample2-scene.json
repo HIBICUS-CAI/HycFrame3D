@@ -188,13 +188,13 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "TestUSpInput"
+                    "uic-func-name": "testUSpInput"
                 },
                 {
                     "type": "interact",
-                    "uitc-init-func-name": "TestUSpInit",
-                    "uitc-update-func-name": "TestUSpUpdate",
-                    "uitc-destory-func-name": "TestUSpDestory"
+                    "uitc-init-func-name": "testUSpInit",
+                    "uitc-update-func-name": "testUSpUpdate",
+                    "uitc-destory-func-name": "testUSpDestory"
                 },
                 {
                     "type": "timer",
@@ -249,7 +249,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "TestUSpBtnInput"
+                    "uic-func-name": "testUSpBtnInput"
                 }
             ]
         },
@@ -293,7 +293,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "TestUSpBtnInput"
+                    "uic-func-name": "testUSpBtnInput"
                 }
             ]
         },
@@ -335,7 +335,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "TestUSpBtnInput"
+                    "uic-func-name": "testUSpBtnInput"
                 }
             ]
         },
@@ -378,7 +378,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "TestUSpBtnInput"
+                    "uic-func-name": "testUSpBtnInput"
                 }
             ]
         },
@@ -420,7 +420,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "TestUSpBtnInput"
+                    "uic-func-name": "testUSpBtnInput"
                 }
             ]
         }

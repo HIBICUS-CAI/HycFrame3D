@@ -193,13 +193,13 @@
                 },
                 {
                     "type": "input",
-                    "aic-func-name": "TestASpInput"
+                    "aic-func-name": "testASpInput"
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "TestASpInit",
-                    "aitc-update-func-name": "TestASpUpdate",
-                    "aitc-destory-func-name": "TestASpDestory"
+                    "aitc-init-func-name": "testASpInit",
+                    "aitc-update-func-name": "testASpUpdate",
+                    "aitc-destory-func-name": "testASpDestory"
                 },
                 {
                     "type": "timer",
@@ -476,9 +476,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "AniInit",
-                    "aitc-update-func-name": "AniUpdate",
-                    "aitc-destory-func-name": "AniDestory"
+                    "aitc-init-func-name": "aniInit",
+                    "aitc-update-func-name": "aniUpdate",
+                    "aitc-destory-func-name": "aniDestory"
                 }
             ]
         },
@@ -601,9 +601,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "BBInit",
-                    "aitc-update-func-name": "BBUpdate",
-                    "aitc-destory-func-name": "BBDestory"
+                    "aitc-init-func-name": "bbInit",
+                    "aitc-update-func-name": "bbUpdate",
+                    "aitc-destory-func-name": "bbDestory"
                 }
             ]
         }

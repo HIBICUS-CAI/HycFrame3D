@@ -210,13 +210,13 @@
             "components": [
                 {
                     "type": "input",
-                    "aic-func-name": "MatEditorInput"
+                    "aic-func-name": "matEditorInput"
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "MatEditorInit",
-                    "aitc-update-func-name": "MatEditorUpdate",
-                    "aitc-destory-func-name": "MatEditorDestory"
+                    "aitc-init-func-name": "matEditorInit",
+                    "aitc-update-func-name": "matEditorUpdate",
+                    "aitc-destory-func-name": "matEditorDestory"
                 }
             ]
         }

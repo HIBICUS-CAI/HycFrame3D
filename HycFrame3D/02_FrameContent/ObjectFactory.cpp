@@ -31,7 +31,7 @@ ObjectFactory::startUp(SceneManager *SceneManager) {
 
   SceneManagerPtr = SceneManager;
 
-  RegisterAllFuncPtr(this);
+  registerAllFuncPtr(this);
 
   return true;
 }

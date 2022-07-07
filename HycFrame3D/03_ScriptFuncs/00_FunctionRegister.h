@@ -2,4 +2,5 @@
 
 #include "ObjectFactory.h"
 
-void RegisterAllFuncPtr(ObjectFactory* _factory);
+void
+registerAllFuncPtr(ObjectFactory *Factory);

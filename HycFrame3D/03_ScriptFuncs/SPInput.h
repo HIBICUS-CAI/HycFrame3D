@@ -3,30 +3,50 @@
 #include "ActorAll.h"
 #include "UiAll.h"
 
-void RegisterSPInput(ObjectFactory* _factory);
+void
+registerSPInput(ObjectFactory *Factory);
 
-void TestASpInput(AInputComponent*, Timer&);
+void
+testASpInput(AInputComponent *, Timer &);
 
-bool TestASpInit(AInteractComponent*);
-void TestASpUpdate(AInteractComponent*, Timer&);
-void TestASpDestory(AInteractComponent*);
+bool
+testASpInit(AInteractComponent *);
+void
+testASpUpdate(AInteractComponent *, Timer &);
+void
+testASpDestory(AInteractComponent *);
 
-void TestUSpInput(UInputComponent*, Timer&);
-void TestUSpBtnInput(UInputComponent*, Timer&);
+void
+testUSpInput(UInputComponent *, Timer &);
+void
+testUSpBtnInput(UInputComponent *, Timer &);
 
-bool TestUSpInit(UInteractComponent*);
-void TestUSpUpdate(UInteractComponent*, Timer&);
-void TestUSpDestory(UInteractComponent*);
+bool
+testUSpInit(UInteractComponent *);
+void
+testUSpUpdate(UInteractComponent *, Timer &);
+void
+testUSpDestory(UInteractComponent *);
 
-void TempToTitle(AInputComponent*, Timer&);
-void TempToSelect(AInputComponent*, Timer&);
-void TempToRun(AInputComponent*, Timer&);
-void TempToResult(AInputComponent*, Timer&);
+void
+tempToTitle(AInputComponent *, Timer &);
+void
+tempToSelect(AInputComponent *, Timer &);
+void
+tempToRun(AInputComponent *, Timer &);
+void
+tempToResult(AInputComponent *, Timer &);
 
-bool AniInit(AInteractComponent*);
-void AniUpdate(AInteractComponent*, Timer&);
-void AniDestory(AInteractComponent*);
+bool
+aniInit(AInteractComponent *);
+void
+aniUpdate(AInteractComponent *, Timer &);
+void
+aniDestory(AInteractComponent *);
 
-bool BBInit(AInteractComponent*);
-void BBUpdate(AInteractComponent*, Timer&);
-void BBDestory(AInteractComponent*);
+bool
+bbInit(AInteractComponent *);
+void
+bbUpdate(AInteractComponent *, Timer &);
+void
+bbDestory(AInteractComponent *);
