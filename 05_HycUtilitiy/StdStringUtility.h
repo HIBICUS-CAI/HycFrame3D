@@ -11,10 +11,9 @@
 namespace hyc {
 namespace string {
 
-inline void
-split(const std::string &Source,
-      char Symbol,
-      std::vector<std::string> &OutResult) {
+inline void split(const std::string &Source,
+                  char Symbol,
+                  std::vector<std::string> &OutResult) {
   OutResult.clear();
   std::string::size_type Pos1 = 0;
   std::string::size_type Pos2 = Source.find(Symbol);
@@ -48,10 +47,9 @@ split(cstring Source, char Symbol, std::vector<std::string> &OutResult) {
   }
 }
 
-inline void
-split(const std::string &Source,
-      const std::string &Symbol,
-      std::vector<std::string> &OutResult) {
+inline void split(const std::string &Source,
+                  const std::string &Symbol,
+                  std::vector<std::string> &OutResult) {
   OutResult.clear();
   std::string::size_type Pos1 = 0;
   std::string::size_type Pos2 = Source.find(Symbol);

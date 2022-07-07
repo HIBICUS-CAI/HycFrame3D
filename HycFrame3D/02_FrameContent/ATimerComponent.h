@@ -9,10 +9,7 @@ struct ACTOR_TIMER {
   bool ActiveFlag = false;
   float Time = 0.f;
 
-  bool
-  isGreaterThan(float Value) {
-    return (Time > Value);
-  }
+  bool isGreaterThan(float Value) { return (Time > Value); }
 };
 
 class ATimerComponent : public ActorComponent {
@@ -23,8 +20,7 @@ public:
   ATimerComponent(const std::string &CompName, class ActorObject *ActorOwner);
   virtual ~ATimerComponent();
 
-  ATimerComponent &
-  operator=(const ATimerComponent &Source) {
+  ATimerComponent &operator=(const ATimerComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -34,22 +30,14 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  addTimer(const std::string &TimerName);
-  void
-  startTimer(const std::string &TimerName);
-  void
-  pauseTimer(const std::string &TimerName);
-  void
-  resetTimer(const std::string &TimerName);
-  ACTOR_TIMER *
-  getTimer(const std::string &TimerName);
+  void addTimer(const std::string &TimerName);
+  void startTimer(const std::string &TimerName);
+  void pauseTimer(const std::string &TimerName);
+  void resetTimer(const std::string &TimerName);
+  ACTOR_TIMER *getTimer(const std::string &TimerName);
 };

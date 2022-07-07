@@ -18,13 +18,9 @@ ASpriteComponent::ASpriteComponent(const std::string &CompName,
 
 ASpriteComponent::~ASpriteComponent() {}
 
-bool
-ASpriteComponent::init() {
-  return true;
-}
+bool ASpriteComponent::init() { return true; }
 
-void
-ASpriteComponent::update(Timer &Timer) {
+void ASpriteComponent::update(Timer &Timer) {
   if (EnabledAnimationFlag && TimeCounter > SwitchTime) {
     TimeCounter = 0.f;
     ++CurrentAnimateCut;
@@ -48,8 +44,7 @@ ASpriteComponent::update(Timer &Timer) {
   syncTransformDataToInstance();
 }
 
-void
-ASpriteComponent::destory() {
+void ASpriteComponent::destory() {
   SUBMESH_DATA *MeshPtr =
       getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           GeoPointName);
@@ -58,9 +53,8 @@ ASpriteComponent::destory() {
   }
 }
 
-bool
-ASpriteComponent::createGeoPointWithTexture(SceneNode *Scene,
-                                            const std::string &TexName) {
+bool ASpriteComponent::createGeoPointWithTexture(SceneNode *Scene,
+                                                 const std::string &TexName) {
   if (!Scene) {
     return false;
   }
@@ -91,20 +85,19 @@ ASpriteComponent::createGeoPointWithTexture(SceneNode *Scene,
   return true;
 }
 
-void
-ASpriteComponent::setSpriteProperty(const DirectX::XMFLOAT2 &SpriteSize,
-                                    const DirectX::XMFLOAT4 &SpriteTexCoord,
-                                    bool IsBillboard) {
+void ASpriteComponent::setSpriteProperty(
+    const DirectX::XMFLOAT2 &SpriteSize,
+    const DirectX::XMFLOAT4 &SpriteTexCoord,
+    bool IsBillboard) {
   EnabledBillboardFlag = IsBillboard;
   Size = SpriteSize;
   TexCoord = SpriteTexCoord;
 }
 
-void
-ASpriteComponent::setAnimationProperty(const DirectX::XMFLOAT2 &AniStride,
-                                       UINT AniMaxCut,
-                                       bool AniRepeatFlg,
-                                       float AniSwitchTime) {
+void ASpriteComponent::setAnimationProperty(const DirectX::XMFLOAT2 &AniStride,
+                                            UINT AniMaxCut,
+                                            bool AniRepeatFlg,
+                                            float AniSwitchTime) {
   EnabledAnimationFlag = true;
   Stride = AniStride;
   MaxCut = AniMaxCut;
@@ -116,8 +109,7 @@ ASpriteComponent::setAnimationProperty(const DirectX::XMFLOAT2 &AniStride,
   TexCoord.w = Stride.y;
 }
 
-void
-ASpriteComponent::syncTransformDataToInstance() {
+void ASpriteComponent::syncTransformDataToInstance() {
   ATransformComponent *Atc =
       getActorOwner()->getComponent<ATransformComponent>();
 #ifdef _DEBUG

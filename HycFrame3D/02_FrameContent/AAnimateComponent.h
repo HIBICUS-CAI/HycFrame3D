@@ -26,8 +26,7 @@ public:
   AAnimateComponent(const std::string &CompName, class ActorObject *ActorOwner);
   virtual ~AAnimateComponent();
 
-  AAnimateComponent &
-  operator=(const AAnimateComponent &Source) {
+  AAnimateComponent &operator=(const AAnimateComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -47,42 +46,31 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  changeAnimationTo(const std::string &AniName);
-  void
-  changeAnimationTo(int AniIndex);
+  void changeAnimationTo(const std::string &AniName);
+  void changeAnimationTo(int AniIndex);
 
-  void
-  resetTimeStamp();
-  void
-  SetSpeedFactor(float Factor);
+  void resetTimeStamp();
+  void SetSpeedFactor(float Factor);
 
 private:
-  void
-  processNodes(float AniTime,
-               const MESH_NODE *Node,
-               const dx::XMFLOAT4X4 &ParentTrans,
-               const dx::XMFLOAT4X4 &GlbInvTrans,
-               const ANIMATION_INFO *const AniInfo);
+  void processNodes(float AniTime,
+                    const MESH_NODE *Node,
+                    const dx::XMFLOAT4X4 &ParentTrans,
+                    const dx::XMFLOAT4X4 &GlbInvTrans,
+                    const ANIMATION_INFO *const AniInfo);
 
-  void
-  interpolatePosition(dx::XMVECTOR &OutResult,
-                      float AniTime,
-                      const ANIMATION_CHANNEL *const AniInfo);
-  void
-  interpolateRotation(dx::XMVECTOR &OutResult,
-                      float AniTime,
-                      const ANIMATION_CHANNEL *const AniInfo);
-  void
-  interpolateScaling(dx::XMVECTOR &OutResult,
-                     float AniTime,
-                     const ANIMATION_CHANNEL *const AniInfo);
+  void interpolatePosition(dx::XMVECTOR &OutResult,
+                           float AniTime,
+                           const ANIMATION_CHANNEL *const AniInfo);
+  void interpolateRotation(dx::XMVECTOR &OutResult,
+                           float AniTime,
+                           const ANIMATION_CHANNEL *const AniInfo);
+  void interpolateScaling(dx::XMVECTOR &OutResult,
+                          float AniTime,
+                          const ANIMATION_CHANNEL *const AniInfo);
 };

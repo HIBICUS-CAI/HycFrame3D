@@ -22,8 +22,7 @@ ObjectFactory::ObjectFactory()
 
 ObjectFactory::~ObjectFactory() {}
 
-bool
-ObjectFactory::startUp(SceneManager *SceneManager) {
+bool ObjectFactory::startUp(SceneManager *SceneManager) {
   if (!SceneManager) {
     P_LOG(LOG_ERROR, "invalid scene manager pointer\n");
     return false;
@@ -36,12 +35,10 @@ ObjectFactory::startUp(SceneManager *SceneManager) {
   return true;
 }
 
-void
-ObjectFactory::cleanAndStop() {}
+void ObjectFactory::cleanAndStop() {}
 
-SceneNode *
-ObjectFactory::createSceneNode(const std::string &Name,
-                               const std::string &Path) {
+SceneNode *ObjectFactory::createSceneNode(const std::string &Name,
+                                          const std::string &Path) {
   SceneNode *NewNode = new SceneNode(Name, SceneManagerPtr);
   if (!NewNode) {
     P_LOG(LOG_ERROR, "failed to alloc a scene node memory name : %s , %s\n",
@@ -121,8 +118,7 @@ ObjectFactory::createSceneNode(const std::string &Name,
   return NewNode;
 }
 
-void
-ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
+void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
   JsonNode ModelRoot = getJsonNode(Json, "/model-assets");
   std::string JsonPath = "";
   if (ModelRoot && ModelRoot->Size()) {
@@ -362,10 +358,9 @@ ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
   }
 }
 
-void
-ObjectFactory::createActorObject(SceneNode *Scene,
-                                 JsonFile &Json,
-                                 const std::string &JsonPath) {
+void ObjectFactory::createActorObject(SceneNode *Scene,
+                                      JsonFile &Json,
+                                      const std::string &JsonPath) {
   JsonNode ActorRoot = getJsonNode(Json, JsonPath);
   if (!ActorRoot) {
     P_LOG(LOG_ERROR, "failed to get actor root node : %s\n", JsonPath.c_str());
@@ -396,10 +391,9 @@ ObjectFactory::createActorObject(SceneNode *Scene,
   Scene->addActorObject(Actor);
 }
 
-void
-ObjectFactory::createUiObject(SceneNode *Scene,
-                              JsonFile &Json,
-                              const std::string &JsonPath) {
+void ObjectFactory::createUiObject(SceneNode *Scene,
+                                   JsonFile &Json,
+                                   const std::string &JsonPath) {
   JsonNode UiRoot = getJsonNode(Json, JsonPath);
   if (!UiRoot) {
     P_LOG(LOG_ERROR, "failed to get ui root node : %s\n", JsonPath.c_str());
@@ -430,11 +424,10 @@ ObjectFactory::createUiObject(SceneNode *Scene,
   Scene->addUiObject(Ui);
 }
 
-void
-ObjectFactory::createActorComp(SceneNode *Scene,
-                               ActorObject *Actor,
-                               JsonFile &Json,
-                               const std::string &JsonPath) {
+void ObjectFactory::createActorComp(SceneNode *Scene,
+                                    ActorObject *Actor,
+                                    JsonFile &Json,
+                                    const std::string &JsonPath) {
   std::string CompType = getJsonNode(Json, JsonPath + "/type")->GetString();
   std::string CompName = Actor->getObjectName() + "-" + CompType;
 
@@ -799,11 +792,10 @@ ObjectFactory::createActorComp(SceneNode *Scene,
   }
 }
 
-void
-ObjectFactory::createUiComp(SceneNode *Scene,
-                            UiObject *Ui,
-                            JsonFile &Json,
-                            const std::string &JsonPath) {
+void ObjectFactory::createUiComp(SceneNode *Scene,
+                                 UiObject *Ui,
+                                 JsonFile &Json,
+                                 const std::string &JsonPath) {
   std::string CompType = getJsonNode(Json, JsonPath + "/type")->GetString();
   std::string CompName = Ui->getObjectName() + "-" + CompType;
 

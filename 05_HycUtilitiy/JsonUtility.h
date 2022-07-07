@@ -22,8 +22,7 @@ namespace text {
 using JsonFile = rapidjson::Document;
 using JsonNode = rapidjson::Value *;
 
-inline bool
-loadJsonAndParse(JsonFile &OutFile, const std::string &Path) {
+inline bool loadJsonAndParse(JsonFile &OutFile, const std::string &Path) {
   std::ifstream IfS(Path);
   rapidjson::IStreamWrapper ISW(IfS);
   OutFile.ParseStream(ISW);
@@ -31,8 +30,7 @@ loadJsonAndParse(JsonFile &OutFile, const std::string &Path) {
   return !OutFile.HasParseError();
 }
 
-inline bool
-loadJsonAndParse(JsonFile &OutFile, cstring Path) {
+inline bool loadJsonAndParse(JsonFile &OutFile, cstring Path) {
   std::ifstream IfS(Path);
   rapidjson::IStreamWrapper ISW(IfS);
   OutFile.ParseStream(ISW);
@@ -40,26 +38,22 @@ loadJsonAndParse(JsonFile &OutFile, cstring Path) {
   return !OutFile.HasParseError();
 }
 
-inline uint
-getJsonParseError(const JsonFile &File) {
+inline uint getJsonParseError(const JsonFile &File) {
   return static_cast<uint>(File.GetParseError());
 }
 
-inline JsonNode
-getJsonNode(JsonFile &File, const std::string &Path) {
+inline JsonNode getJsonNode(JsonFile &File, const std::string &Path) {
   rapidjson::Pointer Ptr(Path.c_str());
   return rapidjson::GetValueByPointer(File, Ptr);
 }
 
-inline JsonNode
-getJsonNode(JsonFile &File, cstring Path) {
+inline JsonNode getJsonNode(JsonFile &File, cstring Path) {
   rapidjson::Pointer Ptr(Path);
   return rapidjson::GetValueByPointer(File, Ptr);
 }
 
 template <typename T>
-T
-GetAs(const JsonNode &Node) {
+T GetAs(const JsonNode &Node) {
   return Node->Get<T>();
 }
 

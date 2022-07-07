@@ -18,8 +18,7 @@ public:
                      class ActorObject *ActorOwner);
   virtual ~AInteractComponent();
 
-  AInteractComponent &
-  operator=(const AInteractComponent &Source) {
+  AInteractComponent &operator=(const AInteractComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -31,29 +30,18 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  setInitFunction(ActorInteractInitFuncType InitFuncPtr);
-  void
-  setUpdateFunction(ActorInteractUpdateFuncType UpdateFuncPtr);
-  void
-  setDestoryFunction(ActorInteractDestoryFuncType DestoryFuncPtr);
-  void
-  clearInitFunction();
-  void
-  clearUpdateFunction();
-  void
-  clearDestoryFunction();
+  void setInitFunction(ActorInteractInitFuncType InitFuncPtr);
+  void setUpdateFunction(ActorInteractUpdateFuncType UpdateFuncPtr);
+  void setDestoryFunction(ActorInteractDestoryFuncType DestoryFuncPtr);
+  void clearInitFunction();
+  void clearUpdateFunction();
+  void clearDestoryFunction();
 
-  class ActorObject *
-  getActorObject(const std::string &ActorName);
-  class UiObject *
-  getUiObject(const std::string &UiName);
+  class ActorObject *getActorObject(const std::string &ActorName);
+  class UiObject *getUiObject(const std::string &UiName);
 };

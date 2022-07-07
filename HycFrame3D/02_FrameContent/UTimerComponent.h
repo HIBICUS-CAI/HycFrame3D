@@ -9,10 +9,7 @@ struct UI_TIMER {
   bool ActiveFlag = false;
   float Time = 0.f;
 
-  bool
-  IsGreaterThan(float Value) {
-    return (Time > Value);
-  }
+  bool IsGreaterThan(float Value) { return (Time > Value); }
 };
 
 class UTimerComponent : public UiComponent {
@@ -23,8 +20,7 @@ public:
   UTimerComponent(const std::string &CompName, class UiObject *UiOwner);
   virtual ~UTimerComponent();
 
-  UTimerComponent &
-  operator=(const UTimerComponent &Source) {
+  UTimerComponent &operator=(const UTimerComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -34,22 +30,14 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  addTimer(const std::string &TimerName);
-  void
-  startTimer(const std::string &TimerName);
-  void
-  pauseTimer(const std::string &TimerName);
-  void
-  resetTimer(const std::string &TimerName);
-  UI_TIMER *
-  getTimer(const std::string &TimerName);
+  void addTimer(const std::string &TimerName);
+  void startTimer(const std::string &TimerName);
+  void pauseTimer(const std::string &TimerName);
+  void resetTimer(const std::string &TimerName);
+  UI_TIMER *getTimer(const std::string &TimerName);
 };

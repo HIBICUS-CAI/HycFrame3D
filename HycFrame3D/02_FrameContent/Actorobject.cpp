@@ -9,8 +9,7 @@ ActorObject::ActorObject(const std::string &ActorName, SceneNode &SceneNode)
 
 ActorObject::~ActorObject() {}
 
-void
-ActorObject::addAComponent(COMP_TYPE CompType) {
+void ActorObject::addAComponent(COMP_TYPE CompType) {
   std::string CompName = getObjectName();
 
   switch (CompType) {
@@ -54,8 +53,7 @@ ActorObject::addAComponent(COMP_TYPE CompType) {
   ActorCompMap.insert({CompType, CompName});
 }
 
-bool
-ActorObject::init() {
+bool ActorObject::init() {
   auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : ActorCompMap) {
@@ -75,8 +73,7 @@ ActorObject::init() {
   return true;
 }
 
-void
-ActorObject::destory() {
+void ActorObject::destory() {
   auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : ActorCompMap) {
@@ -93,8 +90,7 @@ ActorObject::destory() {
   ActorCompMap.clear();
 }
 
-void
-ActorObject::syncStatusToAllComps() {
+void ActorObject::syncStatusToAllComps() {
   auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : ActorCompMap) {

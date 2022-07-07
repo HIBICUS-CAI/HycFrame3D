@@ -29,8 +29,7 @@ UButtonComponent::UButtonComponent(const std::string &CompName,
 
 UButtonComponent::~UButtonComponent() {}
 
-bool
-UButtonComponent::init() {
+bool UButtonComponent::init() {
   if (G_SelectedBtnCompPtr) {
     G_SelectedBtnCompPtr = nullptr;
   }
@@ -85,8 +84,7 @@ UButtonComponent::init() {
   return true;
 }
 
-void
-UButtonComponent::update(Timer &Timer) {
+void UButtonComponent::update(Timer &Timer) {
   if (!G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect) {
     G_CanThisFrameProcessSelect = true;
   }
@@ -118,8 +116,7 @@ UButtonComponent::update(Timer &Timer) {
   }
 }
 
-void
-UButtonComponent::destory() {
+void UButtonComponent::destory() {
   if (G_SelectedBtnCompPtr) {
     G_SelectedBtnCompPtr = nullptr;
   }
@@ -130,18 +127,13 @@ UButtonComponent::destory() {
   G_ShouleUseMouseSelect = false;
 }
 
-void
-UButtonComponent::setIsBeingSelected(bool BeingSelected) {
+void UButtonComponent::setIsBeingSelected(bool BeingSelected) {
   SelectedFlag = BeingSelected;
 }
 
-bool
-UButtonComponent::isBeingSelected() const {
-  return SelectedFlag;
-}
+bool UButtonComponent::isBeingSelected() const { return SelectedFlag; }
 
-bool
-UButtonComponent::isCursorOnBtn() {
+bool UButtonComponent::isCursorOnBtn() {
   if (G_ShouleUseMouseSelect && SelectedFlag) {
     auto Utc = getUiOwner()->getComponent<UTransformComponent>();
 #ifdef _DEBUG
@@ -164,8 +156,7 @@ UButtonComponent::isCursorOnBtn() {
   }
 }
 
-void
-UButtonComponent::selectUpBtn() {
+void UButtonComponent::selectUpBtn() {
   if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
       SurroundBtnObjectNames[BTN_UP] != NULL_BTN) {
     auto UpUi = getUiOwner()->getSceneNode().getUiObject(
@@ -185,8 +176,7 @@ UButtonComponent::selectUpBtn() {
   }
 }
 
-void
-UButtonComponent::selectDownBtn() {
+void UButtonComponent::selectDownBtn() {
   if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
       SurroundBtnObjectNames[BTN_DOWN] != NULL_BTN) {
     auto DownUi = getUiOwner()->getSceneNode().getUiObject(
@@ -206,8 +196,7 @@ UButtonComponent::selectDownBtn() {
   }
 }
 
-void
-UButtonComponent::selectLeftBtn() {
+void UButtonComponent::selectLeftBtn() {
   if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
       SurroundBtnObjectNames[BTN_LEFT] != NULL_BTN) {
     auto LeftUi = getUiOwner()->getSceneNode().getUiObject(
@@ -227,8 +216,7 @@ UButtonComponent::selectLeftBtn() {
   }
 }
 
-void
-UButtonComponent::selectRightBtn() {
+void UButtonComponent::selectRightBtn() {
   if (SelectedFlag && G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect &&
       SurroundBtnObjectNames[BTN_RIGHT] != NULL_BTN) {
     auto RightUi = getUiOwner()->getSceneNode().getUiObject(
@@ -248,8 +236,7 @@ UButtonComponent::selectRightBtn() {
   }
 }
 
-UButtonComponent *
-UButtonComponent::getUpBtn() {
+UButtonComponent *UButtonComponent::getUpBtn() {
   auto Ui =
       getUiOwner()->getSceneNode().getUiObject(SurroundBtnObjectNames[BTN_UP]);
   if (!Ui) {
@@ -268,8 +255,7 @@ UButtonComponent::getUpBtn() {
   }
 }
 
-UButtonComponent *
-UButtonComponent::getDownBtn() {
+UButtonComponent *UButtonComponent::getDownBtn() {
   auto Ui = getUiOwner()->getSceneNode().getUiObject(
       SurroundBtnObjectNames[BTN_DOWN]);
   if (!Ui) {
@@ -288,8 +274,7 @@ UButtonComponent::getDownBtn() {
   }
 }
 
-UButtonComponent *
-UButtonComponent::getLeftBtn() {
+UButtonComponent *UButtonComponent::getLeftBtn() {
   auto Ui = getUiOwner()->getSceneNode().getUiObject(
       SurroundBtnObjectNames[BTN_LEFT]);
   if (!Ui) {
@@ -308,8 +293,7 @@ UButtonComponent::getLeftBtn() {
   }
 }
 
-UButtonComponent *
-UButtonComponent::getRightBtn() {
+UButtonComponent *UButtonComponent::getRightBtn() {
   auto Ui = getUiOwner()->getSceneNode().getUiObject(
       SurroundBtnObjectNames[BTN_RIGHT]);
   if (!Ui) {
@@ -328,28 +312,23 @@ UButtonComponent::getRightBtn() {
   }
 }
 
-void
-UButtonComponent::setUpBtnObjName(const std::string &UpBtn) {
+void UButtonComponent::setUpBtnObjName(const std::string &UpBtn) {
   SurroundBtnObjectNames[BTN_UP] = UpBtn;
 }
 
-void
-UButtonComponent::setDownBtnObjName(const std::string &DownBtn) {
+void UButtonComponent::setDownBtnObjName(const std::string &DownBtn) {
   SurroundBtnObjectNames[BTN_DOWN] = DownBtn;
 }
 
-void
-UButtonComponent::setLeftBtnObjName(const std::string &LeftBtn) {
+void UButtonComponent::setLeftBtnObjName(const std::string &LeftBtn) {
   SurroundBtnObjectNames[BTN_LEFT] = LeftBtn;
 }
 
-void
-UButtonComponent::setRightBtnObjName(const std::string &RightBtn) {
+void UButtonComponent::setRightBtnObjName(const std::string &RightBtn) {
   SurroundBtnObjectNames[BTN_RIGHT] = RightBtn;
 }
 
-void
-UButtonComponent::syncDataFromTransform() {
+void UButtonComponent::syncDataFromTransform() {
   UTransformComponent *Utc = getUiOwner()->getComponent<UTransformComponent>();
 #ifdef _DEBUG
   assert(Utc);
@@ -380,12 +359,10 @@ UButtonComponent::syncDataFromTransform() {
   }
 }
 
-void
-UButtonComponent::setScreenSpaceCursorPos(float InputX, float InputY) {
+void UButtonComponent::setScreenSpaceCursorPos(float InputX, float InputY) {
   G_ScreenSpaceCursorPosition = {InputX, InputY};
 }
 
-void
-UButtonComponent::setShouldUseMouse(bool ShouldMouse) {
+void UButtonComponent::setShouldUseMouse(bool ShouldMouse) {
   G_ShouleUseMouseSelect = ShouldMouse;
 }

@@ -37,11 +37,9 @@ InputDeviceXInput::~InputDeviceXInput() {
   }
 }
 
-INPUT_TYPE
-InputDeviceXInput::getInputType() { return INPUT_TYPE::XINPUT; }
+INPUT_TYPE InputDeviceXInput::getInputType() { return INPUT_TYPE::XINPUT; }
 
-HRESULT
-InputDeviceXInput::pollDeviceStatus() {
+HRESULT InputDeviceXInput::pollDeviceStatus() {
   if (DeviceStatus && DeviceStatusBeforeThisPoll) {
     *DeviceStatusBeforeThisPoll = *DeviceStatus;
   } else {
@@ -57,13 +55,11 @@ InputDeviceXInput::pollDeviceStatus() {
   }
 }
 
-const LPVOID
-InputDeviceXInput::getDeviceStatus() {
+const LPVOID InputDeviceXInput::getDeviceStatus() {
   return static_cast<LPVOID>(DeviceStatus);
 }
 
-bool
-InputDeviceXInput::isKeyBeingPushed(UINT KeyCode) {
+bool InputDeviceXInput::isKeyBeingPushed(UINT KeyCode) {
   if (!DeviceStatus) {
     return false;
   }
@@ -120,8 +116,7 @@ InputDeviceXInput::isKeyBeingPushed(UINT KeyCode) {
   }
 }
 
-bool
-InputDeviceXInput::hasKeyPushedInLastFrame(UINT KeyCode) {
+bool InputDeviceXInput::hasKeyPushedInLastFrame(UINT KeyCode) {
   if (!DeviceStatusBeforeThisPoll) {
     return false;
   }
@@ -189,8 +184,7 @@ InputDeviceXInput::hasKeyPushedInLastFrame(UINT KeyCode) {
   }
 }
 
-LONG
-InputDeviceXInput::getXPositionOffset() {
+LONG InputDeviceXInput::getXPositionOffset() {
   if (!DeviceStatus) {
     return 0;
   }
@@ -204,8 +198,7 @@ InputDeviceXInput::getXPositionOffset() {
                            static_cast<FLOAT>(0x7FFF) * 1000.f);
 }
 
-LONG
-InputDeviceXInput::getYPositionOffset() {
+LONG InputDeviceXInput::getYPositionOffset() {
   if (!DeviceStatus) {
     return 0;
   }
@@ -219,8 +212,7 @@ InputDeviceXInput::getYPositionOffset() {
                             static_cast<FLOAT>(0x7FFF) * 1000.f);
 }
 
-LONG
-InputDeviceXInput::getZPositionOffset() {
+LONG InputDeviceXInput::getZPositionOffset() {
   if (!DeviceStatus) {
     return 0;
   }
@@ -230,8 +222,7 @@ InputDeviceXInput::getZPositionOffset() {
       static_cast<FLOAT>(255) * 1000.f);
 }
 
-LONG
-InputDeviceXInput::getXRotationOffset() {
+LONG InputDeviceXInput::getXRotationOffset() {
   if (!DeviceStatus) {
     return 0;
   }
@@ -245,8 +236,7 @@ InputDeviceXInput::getXRotationOffset() {
                            static_cast<FLOAT>(0x7FFF) * 1000.f);
 }
 
-LONG
-InputDeviceXInput::getYRotationOffset() {
+LONG InputDeviceXInput::getYRotationOffset() {
   if (!DeviceStatus) {
     return 0;
   }
@@ -260,8 +250,7 @@ InputDeviceXInput::getYRotationOffset() {
                             static_cast<FLOAT>(0x7FFF) * 1000.f);
 }
 
-LONG
-InputDeviceXInput::getZRotationOffset() {
+LONG InputDeviceXInput::getZRotationOffset() {
   if (!DeviceStatus) {
     return 0;
   }

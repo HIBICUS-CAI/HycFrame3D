@@ -21,8 +21,8 @@ RSParticleEmitter::RSParticleEmitter(const PARTICLE_EMITTER_INFO *Info)
 
 RSParticleEmitter::~RSParticleEmitter() {}
 
-void
-RSParticleEmitter::resetParticleEmitterInfo(const PARTICLE_EMITTER_INFO *Info) {
+void RSParticleEmitter::resetParticleEmitterInfo(
+    const PARTICLE_EMITTER_INFO *Info) {
   if (!Info) {
     assert(false && "didnt pass a valid info to particle reset");
     return;
@@ -48,27 +48,16 @@ RSParticleEmitter::resetParticleEmitterInfo(const PARTICLE_EMITTER_INFO *Info) {
   RSParticleEmitterInfo.MiscFlag = 0;
 }
 
-RS_PARTICLE_EMITTER_INFO &
-RSParticleEmitter::getRSParticleEmitterInfo() {
+RS_PARTICLE_EMITTER_INFO &RSParticleEmitter::getRSParticleEmitterInfo() {
   return RSParticleEmitterInfo;
 }
 
-void
-RSParticleEmitter::startParticleEmitter() {
-  ActiveFlag = true;
-}
+void RSParticleEmitter::startParticleEmitter() { ActiveFlag = true; }
 
-void
-RSParticleEmitter::pauseParticleEmitter() {
-  ActiveFlag = false;
-}
+void RSParticleEmitter::pauseParticleEmitter() { ActiveFlag = false; }
 
-void
-RSParticleEmitter::setEmitterPosition(const DirectX::XMFLOAT3 &Position) {
+void RSParticleEmitter::setEmitterPosition(const DirectX::XMFLOAT3 &Position) {
   RSParticleEmitterInfo.Position = Position;
 }
 
-void
-RSParticleEmitter::resetEmitterIndex() {
-  G_ParticleEmitterCounter = 0;
-}
+void RSParticleEmitter::resetEmitterIndex() { G_ParticleEmitterCounter = 0; }

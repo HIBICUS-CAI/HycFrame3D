@@ -13,8 +13,7 @@ public:
   Component(const std::string &CompName);
   virtual ~Component();
 
-  Component &
-  operator=(const Component &Source) {
+  Component &operator=(const Component &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -23,22 +22,13 @@ public:
     return *this;
   }
 
-  const std::string &
-  getCompName() const;
+  const std::string &getCompName() const;
 
-  STATUS
-  getCompStatus() const;
-
-  void
-  setCompStatus(STATUS CompStatus);
+  STATUS getCompStatus() const;
+  void setCompStatus(STATUS CompStatus);
 
 public:
-  virtual bool
-  init() = 0;
-
-  virtual void
-  update(Timer &Timer) = 0;
-
-  virtual void
-  destory() = 0;
+  virtual bool init() = 0;
+  virtual void update(Timer &Timer) = 0;
+  virtual void destory() = 0;
 };

@@ -51,8 +51,7 @@ struct MESH_ANIMATION_DATA {
   MESH_NODE *RootNode = nullptr;
   MESH_ANIMATIONS AllAnimations = {};
 
-  void
-  releaseNode(MESH_NODE *NodePtr) {
+  void releaseNode(MESH_NODE *NodePtr) {
     if (NodePtr->Children.size()) {
       for (auto Child : NodePtr->Children) {
         releaseNode(Child);
@@ -68,15 +67,13 @@ struct MESH_ANIMATION_DATA {
   }
 };
 
-void
-loadModelFile(const std::string& FilePath,
-              MODEL_FILE_TYPE Type,
-              int SubMeshIndex,
-              RS_SUBMESH_DATA *OutResult,
-              SUBMESH_BONES *OutBoneData = nullptr,
-              MESH_ANIMATION_DATA **AnimData = nullptr);
+void loadModelFile(const std::string &FilePath,
+                   MODEL_FILE_TYPE Type,
+                   int SubMeshIndex,
+                   RS_SUBMESH_DATA *OutResult,
+                   SUBMESH_BONES *OutBoneData = nullptr,
+                   MESH_ANIMATION_DATA **AnimData = nullptr);
 
-void
-addTextureToSubMesh(RS_SUBMESH_DATA *OutResult,
-                    const std::string& FilePath,
-                    MESH_TEXTURE_TYPE Type);
+void addTextureToSubMesh(RS_SUBMESH_DATA *OutResult,
+                         const std::string &FilePath,
+                         MESH_TEXTURE_TYPE Type);

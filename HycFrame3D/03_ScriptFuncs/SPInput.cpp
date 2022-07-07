@@ -4,8 +4,7 @@
 #include <RSPipelinesManager.h>
 #include <RSRoot_DX11.h>
 
-void
-registerSPInput(ObjectFactory *Factory) {
+void registerSPInput(ObjectFactory *Factory) {
 #ifdef _DEBUG
   assert(Factory);
 #endif // _DEBUG
@@ -34,8 +33,7 @@ registerSPInput(ObjectFactory *Factory) {
   Factory->getADestoryMapPtr().insert({FUNC_NAME(bbDestory), bbDestory});
 }
 
-void
-testASpInput(AInputComponent *Aic, Timer &Timer) {
+void testASpInput(AInputComponent *Aic, Timer &Timer) {
   if (input::isKeyDownInSingle(M_LEFTBTN)) {
     auto MouseOffset = input::getMouseOffset();
     float HoriR = -MouseOffset.x * Timer.floatDeltaTime() / 800.f;
@@ -81,16 +79,14 @@ testASpInput(AInputComponent *Aic, Timer &Timer) {
   }
 }
 
-bool
-testASpInit(AInteractComponent *Aitc) {
+bool testASpInit(AInteractComponent *Aitc) {
   P_LOG(LOG_DEBUG, "a sp init\n");
 
   Aitc->getActorOwner()->getComponent<ATimerComponent>()->startTimer("timer1");
 
   return true;
 }
-void
-testASpUpdate(AInteractComponent *Aitc, Timer &Timer) {
+void testASpUpdate(AInteractComponent *Aitc, Timer &Timer) {
   CONTACT_PONT_PAIR Contact = {};
   if (Aitc->getActorObject("sp-point-light-actor")
           ->getComponent<ACollisionComponent>()
@@ -116,13 +112,11 @@ testASpUpdate(AInteractComponent *Aitc, Timer &Timer) {
       ->translateYAsix(5.f);
 }
 
-void
-testASpDestory(AInteractComponent *Aitc) {
+void testASpDestory(AInteractComponent *Aitc) {
   P_LOG(LOG_DEBUG, "a sp destory\n");
 }
 
-void
-testUSpInput(UInputComponent *Uic, Timer &Timer) {
+void testUSpInput(UInputComponent *Uic, Timer &Timer) {
   float Delta = Timer.floatDeltaTime();
   auto Utc = Uic->getUiOwner()->getComponent<UTransformComponent>();
 
@@ -165,8 +159,7 @@ testUSpInput(UInputComponent *Uic, Timer &Timer) {
   }
 }
 
-void
-testUSpBtnInput(UInputComponent *Uic, Timer &Timer) {
+void testUSpBtnInput(UInputComponent *Uic, Timer &Timer) {
   auto Ubc = Uic->getUiOwner()->getComponent<UButtonComponent>();
   if (!Ubc) {
     return;
@@ -191,22 +184,18 @@ testUSpBtnInput(UInputComponent *Uic, Timer &Timer) {
   }
 }
 
-bool
-testUSpInit(UInteractComponent *Uitc) {
+bool testUSpInit(UInteractComponent *Uitc) {
   P_LOG(LOG_DEBUG, "u sp init\n");
   return true;
 }
 
-void
-testUSpUpdate(UInteractComponent *Uitc, Timer &Timer) {}
+void testUSpUpdate(UInteractComponent *Uitc, Timer &Timer) {}
 
-void
-testUSpDestory(UInteractComponent *_uitc) {
+void testUSpDestory(UInteractComponent *_uitc) {
   P_LOG(LOG_DEBUG, "u sp destory\n");
 }
 
-void
-tempToTitle(AInputComponent *Aic, Timer &Timer) {
+void tempToTitle(AInputComponent *Aic, Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_RCONTROL)) {
     P_LOG(LOG_DEBUG, "to title\n");
     Aic->getSceneNode().getSceneManager()->loadSceneNode("title-scene",
@@ -214,8 +203,7 @@ tempToTitle(AInputComponent *Aic, Timer &Timer) {
   }
 }
 
-void
-tempToSelect(AInputComponent *Aic, Timer &Timer) {
+void tempToSelect(AInputComponent *Aic, Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_RCONTROL)) {
     P_LOG(LOG_DEBUG, "to select\n");
     Aic->getSceneNode().getSceneManager()->loadSceneNode("select-scene",
@@ -223,8 +211,7 @@ tempToSelect(AInputComponent *Aic, Timer &Timer) {
   }
 }
 
-void
-tempToRun(AInputComponent *Aic, Timer &Timer) {
+void tempToRun(AInputComponent *Aic, Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_RCONTROL)) {
     P_LOG(LOG_DEBUG, "to run\n");
     Aic->getSceneNode().getSceneManager()->loadSceneNode("run-scene",
@@ -232,8 +219,7 @@ tempToRun(AInputComponent *Aic, Timer &Timer) {
   }
 }
 
-void
-tempToResult(AInputComponent *Aic, Timer &Timer) {
+void tempToResult(AInputComponent *Aic, Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_RCONTROL)) {
     P_LOG(LOG_DEBUG, "to result\n");
     Aic->getSceneNode().getSceneManager()->loadSceneNode("result-scene",
@@ -244,8 +230,7 @@ tempToResult(AInputComponent *Aic, Timer &Timer) {
 static float G_AniSpdFactor = 50.f;
 static AAnimateComponent *G_Aanc = nullptr;
 
-bool
-aniInit(AInteractComponent *Aitc) {
+bool aniInit(AInteractComponent *Aitc) {
   P_LOG(LOG_DEBUG, "animate init\n");
 
   G_Aanc = Aitc->getActorOwner()->getComponent<AAnimateComponent>();
@@ -256,8 +241,7 @@ aniInit(AInteractComponent *Aitc) {
   return true;
 }
 
-void
-aniUpdate(AInteractComponent *Aitc, Timer &Timer) {
+void aniUpdate(AInteractComponent *Aitc, Timer &Timer) {
   Aitc->getActorOwner()->getComponent<ATransformComponent>()->rotateYAsix(
       Timer.floatDeltaTime() / 1000.f);
 
@@ -280,8 +264,7 @@ aniUpdate(AInteractComponent *Aitc, Timer &Timer) {
   }
 }
 
-void
-aniDestory(AInteractComponent *Aitc) {
+void aniDestory(AInteractComponent *Aitc) {
   P_LOG(LOG_DEBUG, "animate destory\n");
   G_Aanc = nullptr;
 }
@@ -289,8 +272,7 @@ aniDestory(AInteractComponent *Aitc) {
 static ATransformComponent *G_BBAtc = nullptr;
 static float G_XFactor = 0.f;
 
-bool
-bbInit(AInteractComponent *Aitc) {
+bool bbInit(AInteractComponent *Aitc) {
   G_XFactor = -1.f;
   G_BBAtc = Aitc->getActorOwner()->getComponent<ATransformComponent>();
   if (!G_BBAtc) {
@@ -300,8 +282,7 @@ bbInit(AInteractComponent *Aitc) {
   return true;
 }
 
-void
-bbUpdate(AInteractComponent *Aitc, Timer &Timer) {
+void bbUpdate(AInteractComponent *Aitc, Timer &Timer) {
   G_BBAtc->translateXAsix(Timer.floatDeltaTime() * G_XFactor * 0.01f);
   if (fabsf(G_BBAtc->getProcessingPosition().x) > 18.f) {
     G_BBAtc->rollBackPositionX();
@@ -309,7 +290,4 @@ bbUpdate(AInteractComponent *Aitc, Timer &Timer) {
   }
 }
 
-void
-bbDestory(AInteractComponent *Aitc) {
-  G_BBAtc = nullptr;
-}
+void bbDestory(AInteractComponent *Aitc) { G_BBAtc = nullptr; }

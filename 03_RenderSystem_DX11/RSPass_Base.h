@@ -33,36 +33,18 @@ public:
 
   virtual ~RSPass_Base();
 
-  const std::string &
-  getPassName() const {
-    return PassName;
-  }
+  const std::string &getPassName() const { return PassName; }
+  PASS_TYPE getPassType() const { return PassType; }
 
-  PASS_TYPE
-  getPassType() const { return PassType; }
+  void setExecuateOrder(UINT Order) { ExecuateOrderInTopic = Order; }
+  UINT getExecuateOrder() const { return ExecuateOrderInTopic; }
 
-  void
-  setExecuateOrder(UINT Order) {
-    ExecuateOrderInTopic = Order;
-  }
-
-  UINT
-  getExecuateOrder() const {
-    return ExecuateOrderInTopic;
-  }
-
-  void
-  setMTContext(ID3D11DeviceContext *MTContextPtr) {
+  void setMTContext(ID3D11DeviceContext *MTContextPtr) {
     MTContext = MTContextPtr;
   }
 
-  ID3D11Device *
-  device() const {
-    return Device;
-  }
-
-  ID3D11DeviceContext *
-  context() const {
+  ID3D11Device *device() const { return Device; }
+  ID3D11DeviceContext *context() const {
     if (MTContext) {
       return MTContext;
     }
@@ -70,15 +52,8 @@ public:
   }
 
 public:
-  virtual RSPass_Base *
-  clonePass() = 0;
-
-  virtual bool
-  initPass() = 0;
-
-  virtual void
-  releasePass() = 0;
-
-  virtual void
-  execuatePass() = 0;
+  virtual RSPass_Base *clonePass() = 0;
+  virtual bool initPass() = 0;
+  virtual void releasePass() = 0;
+  virtual void execuatePass() = 0;
 };

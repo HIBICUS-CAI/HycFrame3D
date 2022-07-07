@@ -15,19 +15,13 @@ public:
   SystemExecutive();
   ~SystemExecutive();
 
-  bool
-  startUp(class SceneManager *SceneManager);
-  void
-  cleanAndStop();
-  void
-  runAllSystems(Timer &Timer);
+  bool startUp(class SceneManager *SceneManager);
+  void cleanAndStop();
+  void runAllSystems(Timer &Timer);
 
-  class SceneManager *
-  getSceneManager() const;
+  class SceneManager *getSceneManager() const;
 
 private:
-  bool
-  initAllSystem();
-  void
-  checkCurrentScene();
+  bool initAllSystem();
+  void checkCurrentScene();
 };

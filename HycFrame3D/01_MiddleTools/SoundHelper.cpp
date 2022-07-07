@@ -17,16 +17,12 @@ static CRITICAL_SECTION G_SoundLock = {};
 #define LOCK EnterCriticalSection(&G_SoundLock)
 #define UNLOCK LeaveCriticalSection(&G_SoundLock)
 
-bool
-soundHasInited() {
-  return G_SoundSystemHasInited;
-}
+bool soundHasInited() { return G_SoundSystemHasInited; }
 
-HRESULT
-CheckChunk(HANDLE FileHandle,
-           DWORD Format,
-           DWORD *ChunkSizePtr,
-           DWORD *ChunkDataPositionPtr) {
+HRESULT CheckChunk(HANDLE FileHandle,
+                   DWORD Format,
+                   DWORD *ChunkSizePtr,
+                   DWORD *ChunkDataPositionPtr) {
   HRESULT Hr = S_OK;
   DWORD DWRead = 0;
   DWORD DWChunkType = 0;
@@ -85,11 +81,10 @@ CheckChunk(HANDLE FileHandle,
   return S_OK;
 }
 
-HRESULT
-ReadChunkData(HANDLE FileHandle,
-              void *BufferPtr,
-              DWORD DWBuffersize,
-              DWORD DWBufferoffset) {
+HRESULT ReadChunkData(HANDLE FileHandle,
+                      void *BufferPtr,
+                      DWORD DWBuffersize,
+                      DWORD DWBufferoffset) {
   DWORD DWRead;
 
   if (SetFilePointer(FileHandle, DWBufferoffset, NULL, FILE_BEGIN) ==
@@ -104,10 +99,9 @@ ReadChunkData(HANDLE FileHandle,
   return S_OK;
 }
 
-void
-SplitByRomSymbolSound(const std::string &S,
-                      std::vector<std::string> &V,
-                      const std::string &C) {
+void SplitByRomSymbolSound(const std::string &S,
+                           std::vector<std::string> &V,
+                           const std::string &C) {
   V.clear();
   std::string::size_type Pos1 = 0, Pos2 = S.find(C);
   while (std::string::npos != Pos2) {
@@ -120,8 +114,7 @@ SplitByRomSymbolSound(const std::string &S,
     V.push_back(S.substr(Pos1));
 }
 
-bool
-initSound() {
+bool initSound() {
   InitializeCriticalSection(&G_SoundLock);
 
   HRESULT Hr;
@@ -159,8 +152,7 @@ initSound() {
   return true;
 }
 
-void
-uninitSound() {
+void uninitSound() {
   clearSoundPool();
 
   G_MasteringVoice->DestroyVoice();
@@ -178,11 +170,9 @@ uninitSound() {
   DeleteCriticalSection(&G_SoundLock);
 }
 
-void
-updateSound() {}
+void updateSound() {}
 
-void
-clearSoundPool() {
+void clearSoundPool() {
   for (auto &Sound : G_SoundPool) {
     if (Sound.second) {
       Sound.second->Stop(0);
@@ -199,8 +189,7 @@ clearSoundPool() {
   G_SoundLengthPool.clear();
 }
 
-void
-loadSound(const std::string &Name, LOAD_HANDLE Path) {
+void loadSound(const std::string &Name, LOAD_HANDLE Path) {
   HANDLE FileHandle;
   DWORD DWChunkSize = 0;
   DWORD DWChunkPosition = 0;
@@ -300,8 +289,7 @@ loadSound(const std::string &Name, LOAD_HANDLE Path) {
   UNLOCK;
 }
 
-void
-playBGM(const std::string &SoundName) {
+void playBGM(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
@@ -333,8 +321,7 @@ playBGM(const std::string &SoundName) {
   Sound->Start(0);
 }
 
-void
-stopBGM(const std::string &SoundName) {
+void stopBGM(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
@@ -353,8 +340,7 @@ stopBGM(const std::string &SoundName) {
   }
 }
 
-void
-stopBGM() {
+void stopBGM() {
   XAUDIO2_VOICE_STATE Xa2State;
 
   LOCK;
@@ -368,8 +354,7 @@ stopBGM() {
   UNLOCK;
 }
 
-void
-setVolume(const std::string &SoundName, float Volume) {
+void setVolume(const std::string &SoundName, float Volume) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
@@ -382,8 +367,7 @@ setVolume(const std::string &SoundName, float Volume) {
   Sound->SetVolume(Volume);
 }
 
-void
-playSE(const std::string &SoundName) {
+void playSE(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
@@ -415,8 +399,7 @@ playSE(const std::string &SoundName) {
   Sound->Start(0);
 }
 
-SOUND_HANDLE
-getSoundHandle(const std::string &SoundName) {
+SOUND_HANDLE getSoundHandle(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;

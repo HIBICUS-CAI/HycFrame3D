@@ -22,8 +22,7 @@ RSResourceManager::RSResourceManager()
 
 RSResourceManager::~RSResourceManager() {}
 
-bool
-RSResourceManager::startUp(RSRoot_DX11 *RootPtr) {
+bool RSResourceManager::startUp(RSRoot_DX11 *RootPtr) {
   if (!RootPtr) {
     return false;
   }
@@ -36,8 +35,7 @@ RSResourceManager::startUp(RSRoot_DX11 *RootPtr) {
   return true;
 }
 
-void
-RSResourceManager::cleanAndStop() {
+void RSResourceManager::cleanAndStop() {
   for (auto &RSMeshSrv : MeshSrvMap) {
     SAFE_RELEASE(RSMeshSrv.second);
   }
@@ -73,9 +71,8 @@ RSResourceManager::cleanAndStop() {
   DeleteCriticalSection(&MesDataLock);
 }
 
-void
-RSResourceManager::addResource(const std::string &Name,
-                               const RS_RESOURCE_INFO &Resource) {
+void RSResourceManager::addResource(const std::string &Name,
+                                    const RS_RESOURCE_INFO &Resource) {
   R_LOCK;
   if (ResourceMap.find(Name) == ResourceMap.end()) {
     ResourceMap.insert({Name, Resource});
@@ -83,9 +80,8 @@ RSResourceManager::addResource(const std::string &Name,
   R_UNLOCK;
 }
 
-void
-RSResourceManager::addMeshSrv(const std::string &Name,
-                              ID3D11ShaderResourceView *MeshSrv) {
+void RSResourceManager::addMeshSrv(const std::string &Name,
+                                   ID3D11ShaderResourceView *MeshSrv) {
   M_LOCK;
   if (MeshSrvMap.find(Name) == MeshSrvMap.end()) {
     MeshSrvMap.insert({Name, MeshSrv});
@@ -93,8 +89,7 @@ RSResourceManager::addMeshSrv(const std::string &Name,
   M_UNLOCK;
 }
 
-RS_RESOURCE_INFO *
-RSResourceManager::getResource(const std::string &Name) {
+RS_RESOURCE_INFO *RSResourceManager::getResource(const std::string &Name) {
   R_LOCK;
   auto Found = ResourceMap.find(Name);
   if (Found != ResourceMap.end()) {
@@ -121,8 +116,7 @@ RSResourceManager::getMeshSrv(const std::string &Name) {
   }
 }
 
-void
-RSResourceManager::deleteResource(const std::string &Name) {
+void RSResourceManager::deleteResource(const std::string &Name) {
   R_LOCK;
   auto Found = ResourceMap.find(Name);
   if (Found != ResourceMap.end()) {
@@ -154,8 +148,7 @@ RSResourceManager::deleteResource(const std::string &Name) {
   R_UNLOCK;
 }
 
-void
-RSResourceManager::deleteMeshSrv(const std::string &Name) {
+void RSResourceManager::deleteMeshSrv(const std::string &Name) {
   M_LOCK;
   auto Found = MeshSrvMap.find(Name);
   if (Found != MeshSrvMap.end()) {
@@ -165,8 +158,7 @@ RSResourceManager::deleteMeshSrv(const std::string &Name) {
   M_UNLOCK;
 }
 
-void
-RSResourceManager::clearResources() {
+void RSResourceManager::clearResources() {
   R_LOCK;
   for (auto &RSResource : ResourceMap) {
     SAFE_RELEASE(RSResource.second.Uav);
@@ -197,8 +189,7 @@ RSResourceManager::clearResources() {
   R_UNLOCK;
 }
 
-void
-RSResourceManager::clearMeshSrvs() {
+void RSResourceManager::clearMeshSrvs() {
   M_LOCK;
   for (auto &RSMeshSrv : MeshSrvMap) {
     SAFE_RELEASE(RSMeshSrv.second);

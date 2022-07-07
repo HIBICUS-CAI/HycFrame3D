@@ -25,26 +25,16 @@ public:
   ObjectContainer(class SceneNode &SceneNode);
   ~ObjectContainer();
 
-  ActorObject *
-  getActorObject(const std::string &ActorName);
-  void
-  addActorObject(const ActorObject &NewActor);
-  void
-  deleteActorObject(const std::string &ActorName);
-  UiObject *
-  getUiObject(const std::string &UiName);
-  void
-  addUiObject(const UiObject &NewUi);
-  void
-  deleteUiObject(const std::string &UiName);
+  ActorObject *getActorObject(const std::string &ActorName);
+  void addActorObject(const ActorObject &NewActor);
+  void deleteActorObject(const std::string &ActorName);
+  UiObject *getUiObject(const std::string &UiName);
+  void addUiObject(const UiObject &NewUi);
+  void deleteUiObject(const std::string &UiName);
 
-  void
-  deleteAllActor();
-  void
-  deleteAllUi();
+  void deleteAllActor();
+  void deleteAllUi();
 
-  void
-  initAllNewObjects();
-  void
-  deleteAllDeadObjects();
+  void initAllNewObjects();
+  void deleteAllDeadObjects();
 };

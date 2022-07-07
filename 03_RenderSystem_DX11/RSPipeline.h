@@ -46,40 +46,22 @@ public:
   RSPipeline(const RSPipeline &_source);
   ~RSPipeline();
 
-  const std::string &
-  getPipelineName() const;
+  const std::string &getPipelineName() const;
 
-  void
-  startAssembly();
+  void startAssembly();
+  void finishAssembly();
 
-  void
-  finishAssembly();
+  bool hasTopic(const std::string &TopicName);
+  void insertTopic(class RSTopic *Topic);
+  void eraseTopic(class RSTopic *Topic);
+  void eraseTopic(const std::string &TopicName);
 
-  bool
-  hasTopic(const std::string &TopicName);
+  bool initAllTopics(class RSDevices *DevicesPtr,
+                     bool ForceSingleThreadFlag = false);
 
-  void
-  insertTopic(class RSTopic *Topic);
+  void execuatePipeline();
+  void releasePipeline();
 
-  void
-  eraseTopic(class RSTopic *Topic);
-
-  void
-  eraseTopic(const std::string &TopicName);
-
-  bool
-  initAllTopics(class RSDevices *DevicesPtr,
-                bool ForceSingleThreadFlag = false);
-
-  void
-  execuatePipeline();
-
-  void
-  releasePipeline();
-
-  void
-  suspendAllThread();
-
-  void
-  resumeAllThread();
+  void suspendAllThread();
+  void resumeAllThread();
 };

@@ -26,33 +26,18 @@ public:
   RSResourceManager();
   ~RSResourceManager();
 
-  bool
-  startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_DX11 *RootPtr);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
+  void addResource(const std::string &Name, const RS_RESOURCE_INFO &Resource);
+  void addMeshSrv(const std::string &Name, ID3D11ShaderResourceView *Srv);
 
-  void
-  addResource(const std::string &Name, const RS_RESOURCE_INFO &Resource);
+  RS_RESOURCE_INFO *getResource(const std::string &Name);
+  ID3D11ShaderResourceView *getMeshSrv(const std::string &Name);
 
-  void
-  addMeshSrv(const std::string &Name, ID3D11ShaderResourceView *Srv);
+  void deleteResource(const std::string &Name);
+  void deleteMeshSrv(const std::string &Name);
 
-  RS_RESOURCE_INFO *
-  getResource(const std::string &Name);
-
-  ID3D11ShaderResourceView *
-  getMeshSrv(const std::string &Name);
-
-  void
-  deleteResource(const std::string &Name);
-
-  void
-  deleteMeshSrv(const std::string &Name);
-
-  void
-  clearResources();
-
-  void
-  clearMeshSrvs();
+  void clearResources();
+  void clearMeshSrvs();
 };

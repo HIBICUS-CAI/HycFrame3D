@@ -32,68 +32,34 @@ public:
   RSLightsContainer();
   ~RSLightsContainer();
 
-  bool
-  startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_DX11 *RootPtr);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
+  class RSLight *createRSLight(const std::string &Name, const LIGHT_INFO *Info);
+  class RSLight *getRSLight(const std::string &Name);
+  RS_LIGHT_INFO *getRSLightInfo(const std::string &Name);
+  void deleteRSLight(const std::string &Name, bool DeleteByFrameFlag);
 
-  class RSLight *
-  createRSLight(const std::string &Name, const LIGHT_INFO *Info);
+  bool createLightCameraFor(const std::string &Name, const CAM_INFO *Info);
 
-  class RSLight *
-  getRSLight(const std::string &Name);
+  void insertAmbientLight(const std::string &Name,
+                          const DirectX::XMFLOAT4 &Light);
+  void eraseAmbientLight(const std::string &Name);
+  void setCurrentAmbientLight(const std::string &Name);
+  void forceCurrentAmbientLight(const DirectX::XMFLOAT4 &Ambient);
+  const DirectX::XMFLOAT4 &getCurrentAmbientLight();
 
-  RS_LIGHT_INFO *
-  getRSLightInfo(const std::string &Name);
+  std::vector<class RSLight *> *getLightsArray();
+  std::vector<class RSLight *> *getShadowLightsArray();
+  std::vector<INT> *getShadowLightIndeicesArray();
 
-  void
-  deleteRSLight(const std::string &Name, bool DeleteByFrameFlag);
+  void createLightBloom(const std::string &Name,
+                        const RS_SUBMESH_DATA &MeshData);
+  void uploadLightBloomDrawCall();
 
-  bool
-  createLightCameraFor(const std::string &Name, const CAM_INFO *Info);
-
-  void
-  insertAmbientLight(const std::string &Name, const DirectX::XMFLOAT4 &Light);
-
-  void
-  eraseAmbientLight(const std::string &Name);
-
-  void
-  setCurrentAmbientLight(const std::string &Name);
-
-  void
-  forceCurrentAmbientLight(const DirectX::XMFLOAT4 &Ambient);
-
-  const DirectX::XMFLOAT4 &
-  getCurrentAmbientLight();
-
-  std::vector<class RSLight *> *
-  getLightsArray();
-
-  std::vector<class RSLight *> *
-  getShadowLightsArray();
-
-  std::vector<INT> *
-  getShadowLightIndeicesArray();
-
-  void
-  createLightBloom(const std::string &Name, const RS_SUBMESH_DATA &MeshData);
-
-  void
-  uploadLightBloomDrawCall();
-
-  void
-  lockContainer() {
-    EnterCriticalSection(&DataLock);
-  }
-
-  void
-  unlockContainer() {
-    LeaveCriticalSection(&DataLock);
-  }
+  void lockContainer() { EnterCriticalSection(&DataLock); }
+  void unlockContainer() { LeaveCriticalSection(&DataLock); }
 
 private:
-  const DirectX::XMFLOAT4 &
-  getAmbientLight(const std::string &Name);
+  const DirectX::XMFLOAT4 &getAmbientLight(const std::string &Name);
 };

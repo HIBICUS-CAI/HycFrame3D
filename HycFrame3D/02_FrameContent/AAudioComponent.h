@@ -14,8 +14,7 @@ public:
   AAudioComponent(const std::string &CompName, class ActorObject *ActorOwner);
   virtual ~AAudioComponent();
 
-  AAudioComponent &
-  operator=(const AAudioComponent &Source) {
+  AAudioComponent &operator=(const AAudioComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -25,24 +24,16 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  addAudio(const std::string &AudioName, class SceneNode &Scene);
+  void addAudio(const std::string &AudioName, class SceneNode &Scene);
 
-  void
-  playBgm(const std::string &BgmName, float Volume);
-  void
-  playSe(const std::string &SeName, float Volume);
+  void playBgm(const std::string &BgmName, float Volume);
+  void playSe(const std::string &SeName, float Volume);
 
-  void
-  stopBgm();
-  void
-  stopBgm(const std::string &BgmName);
+  void stopBgm();
+  void stopBgm(const std::string &BgmName);
 };

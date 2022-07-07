@@ -37,20 +37,17 @@ public:
   ObjectFactory();
   ~ObjectFactory();
 
-  bool
-  startUp(class SceneManager *SceneManager);
-  void
-  cleanAndStop();
+  bool startUp(class SceneManager *SceneManager);
+  void cleanAndStop();
 
-  class SceneNode *
-  createSceneNode(const std::string &Name, const std::string &File);
+  class SceneNode *createSceneNode(const std::string &Name,
+                                   const std::string &File);
 
   std::unordered_map<std::string, ActorInputProcessFuncType> &
   getAInputMapPtr() {
     return ActorInputFuncPtrMap;
   }
-  std::unordered_map<std::string, ActorInteractInitFuncType> &
-  getAInitMapPtr() {
+  std::unordered_map<std::string, ActorInteractInitFuncType> &getAInitMapPtr() {
     return ActorInteractInitFuncPtrMap;
   }
   std::unordered_map<std::string, ActorInteractUpdateFuncType> &
@@ -61,12 +58,10 @@ public:
   getADestoryMapPtr() {
     return ActorInteractDestoryFuncPtrMap;
   }
-  std::unordered_map<std::string, UiInputProcessFuncType> &
-  getUInputMapPtr() {
+  std::unordered_map<std::string, UiInputProcessFuncType> &getUInputMapPtr() {
     return UiInputFuncPtrMap;
   }
-  std::unordered_map<std::string, UiInteractInitFuncType> &
-  getUInitMapPtr() {
+  std::unordered_map<std::string, UiInteractInitFuncType> &getUInitMapPtr() {
     return UiInteractInitFuncPtrMap;
   }
   std::unordered_map<std::string, UiInteractUpdateFuncType> &
@@ -79,26 +74,21 @@ public:
   }
 
 private:
-  void
-  createSceneAssets(class SceneNode *Scene, hyc::text::JsonFile &Json);
+  void createSceneAssets(class SceneNode *Scene, hyc::text::JsonFile &Json);
 
-  void
-  createActorObject(class SceneNode *Scene,
+  void createActorObject(class SceneNode *Scene,
+                         hyc::text::JsonFile &Json,
+                         const std::string &JsonPath);
+  void createUiObject(class SceneNode *Scene,
+                      hyc::text::JsonFile &Json,
+                      const std::string &JsonPath);
+
+  void createActorComp(class SceneNode *Scene,
+                       class ActorObject *Actor,
+                       hyc::text::JsonFile &Json,
+                       const std::string &JsonPath);
+  void createUiComp(class SceneNode *Scene,
+                    class UiObject *Ui,
                     hyc::text::JsonFile &Json,
                     const std::string &JsonPath);
-  void
-  createUiObject(class SceneNode *Scene,
-                 hyc::text::JsonFile &Json,
-                 const std::string &JsonPath);
-
-  void
-  createActorComp(class SceneNode *Scene,
-                  class ActorObject *Actor,
-                  hyc::text::JsonFile &Json,
-                  const std::string &JsonPath);
-  void
-  createUiComp(class SceneNode *Scene,
-               class UiObject *Ui,
-               hyc::text::JsonFile &Json,
-               const std::string &JsonPath);
 };

@@ -13,36 +13,16 @@ public:
 
   ~InputDeviceDirectInput();
 
-  virtual INPUT_TYPE
-  getInputType();
+  virtual INPUT_TYPE getInputType();
+  virtual HRESULT pollDeviceStatus();
+  virtual const LPVOID getDeviceStatus();
 
-  virtual HRESULT
-  pollDeviceStatus();
-
-  virtual const LPVOID
-  getDeviceStatus();
-
-  virtual bool
-  isKeyBeingPushed(UINT KeyCode);
-
-  virtual bool
-  hasKeyPushedInLastFrame(UINT KeyCode);
-
-  virtual LONG
-  getXPositionOffset();
-
-  virtual LONG
-  getYPositionOffset();
-
-  virtual LONG
-  getZPositionOffset();
-
-  virtual LONG
-  getXRotationOffset();
-
-  virtual LONG
-  getYRotationOffset();
-
-  virtual LONG
-  getZRotationOffset();
+  virtual bool isKeyBeingPushed(UINT KeyCode);
+  virtual bool hasKeyPushedInLastFrame(UINT KeyCode);
+  virtual LONG getXPositionOffset();
+  virtual LONG getYPositionOffset();
+  virtual LONG getZPositionOffset();
+  virtual LONG getXRotationOffset();
+  virtual LONG getYRotationOffset();
+  virtual LONG getZRotationOffset();
 };

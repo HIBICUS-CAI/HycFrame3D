@@ -6,8 +6,7 @@ namespace window {
 
 WindowWIN32 *G_Wnd = nullptr;
 
-bool
-startUp() {
+bool startUp() {
   G_Wnd = new WindowWIN32();
 
   if (G_Wnd) {
@@ -17,13 +16,12 @@ startUp() {
   }
 }
 
-bool
-createWindow(const char *WndName,
-             HINSTANCE HInstance,
-             int CmdShow,
-             UINT Width,
-             UINT Height,
-             bool AsFullScreen) {
+bool createWindow(const char *WndName,
+                  HINSTANCE HInstance,
+                  int CmdShow,
+                  UINT Width,
+                  UINT Height,
+                  bool AsFullScreen) {
   if (!G_Wnd) {
     return false;
   }
@@ -40,13 +38,9 @@ createWindow(const char *WndName,
   return true;
 }
 
-WindowWIN32 *
-getWindowPtr() {
-  return G_Wnd;
-}
+WindowWIN32 *getWindowPtr() { return G_Wnd; }
 
-void
-cleanAndStop() {
+void cleanAndStop() {
   if (G_Wnd) {
     delete G_Wnd;
     G_Wnd = nullptr;

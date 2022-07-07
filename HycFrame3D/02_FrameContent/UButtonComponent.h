@@ -26,8 +26,7 @@ public:
   UButtonComponent(const std::string &CompName, class UiObject *UiOwner);
   virtual ~UButtonComponent();
 
-  UButtonComponent &
-  operator=(const UButtonComponent &Source) {
+  UButtonComponent &operator=(const UButtonComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -38,55 +37,34 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  setUpBtnObjName(const std::string &UpBtn);
-  void
-  setDownBtnObjName(const std::string &DownBtn);
-  void
-  setLeftBtnObjName(const std::string &LeftBtn);
-  void
-  setRightBtnObjName(const std::string &RightBtn);
+  void setUpBtnObjName(const std::string &UpBtn);
+  void setDownBtnObjName(const std::string &DownBtn);
+  void setLeftBtnObjName(const std::string &LeftBtn);
+  void setRightBtnObjName(const std::string &RightBtn);
 
-  void
-  setIsBeingSelected(bool BeingSelected);
-  bool
-  isBeingSelected() const;
+  void setIsBeingSelected(bool BeingSelected);
+  bool isBeingSelected() const;
 
-  bool
-  isCursorOnBtn();
+  bool isCursorOnBtn();
 
-  void
-  selectUpBtn();
-  void
-  selectDownBtn();
-  void
-  selectLeftBtn();
-  void
-  selectRightBtn();
+  void selectUpBtn();
+  void selectDownBtn();
+  void selectLeftBtn();
+  void selectRightBtn();
 
-  UButtonComponent *
-  getUpBtn();
-  UButtonComponent *
-  getDownBtn();
-  UButtonComponent *
-  getLeftBtn();
-  UButtonComponent *
-  getRightBtn();
+  UButtonComponent *getUpBtn();
+  UButtonComponent *getDownBtn();
+  UButtonComponent *getLeftBtn();
+  UButtonComponent *getRightBtn();
 
-  static void
-  setScreenSpaceCursorPos(float InputX, float InputY);
-  static void
-  setShouldUseMouse(bool ShouldMouse);
+  static void setScreenSpaceCursorPos(float InputX, float InputY);
+  static void setShouldUseMouse(bool ShouldMouse);
 
 private:
-  void
-  syncDataFromTransform();
+  void syncDataFromTransform();
 };

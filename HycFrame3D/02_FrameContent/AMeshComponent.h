@@ -16,8 +16,7 @@ public:
   AMeshComponent(const std::string &CompName, class ActorObject *ActorOwner);
   virtual ~AMeshComponent();
 
-  AMeshComponent &
-  operator=(const AMeshComponent &Source) {
+  AMeshComponent &operator=(const AMeshComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -29,28 +28,20 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  addMeshInfo(const std::string &MeshName,
-              DirectX::XMFLOAT3 Offset = {0.f, 0.f, 0.f});
+  void addMeshInfo(const std::string &MeshName,
+                   DirectX::XMFLOAT3 Offset = {0.f, 0.f, 0.f});
 
-  void
-  setEmissiveIntensity(float Intensity);
-  float
-  getEmissiveIntensity();
+  void setEmissiveIntensity(float Intensity);
+  float getEmissiveIntensity();
 
 private:
-  bool
-  bindInstanceToAssetsPool(const std::string &MeshName);
-  void
-  syncTransformDataToInstance();
+  bool bindInstanceToAssetsPool(const std::string &MeshName);
+  void syncTransformDataToInstance();
 
   friend class AAnimateComponent;
 };

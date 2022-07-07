@@ -15,8 +15,7 @@ SceneManager::SceneManager()
 
 SceneManager::~SceneManager() {}
 
-bool
-SceneManager::startUp(ObjectFactory *ObjectFactory) {
+bool SceneManager::startUp(ObjectFactory *ObjectFactory) {
   if (!ObjectFactory) {
     P_LOG(LOG_ERROR, "invalid object factory pointer\n");
     return false;
@@ -36,8 +35,7 @@ SceneManager::startUp(ObjectFactory *ObjectFactory) {
   return true;
 }
 
-bool
-SceneManager::deferedStartUp() {
+bool SceneManager::deferedStartUp() {
   LoadingScenePtr->releaseScene();
   delete LoadingScenePtr;
   if (!loadLoadingScene()) {
@@ -63,8 +61,7 @@ SceneManager::deferedStartUp() {
   return true;
 }
 
-void
-SceneManager::cleanAndStop() {
+void SceneManager::cleanAndStop() {
   if (CurrentScenePtr != LoadingScenePtr) {
     CurrentScenePtr->releaseScene();
     delete CurrentScenePtr;
@@ -72,15 +69,14 @@ SceneManager::cleanAndStop() {
   releaseLoadingScene();
 }
 
-void
-SceneManager::loadSceneNode(const std::string &Name, const std::string &File) {
+void SceneManager::loadSceneNode(const std::string &Name,
+                                 const std::string &File) {
   LoadNewSceneFlag = true;
   NewSceneInfo[0] = Name;
   NewSceneInfo[1] = ".\\Assets\\Scenes\\" + File;
 }
 
-void
-SceneManager::checkLoadStatus() {
+void SceneManager::checkLoadStatus() {
   if (SceneSwitchFlag) {
     SceneSwitchFlag = false;
   }
@@ -105,18 +101,13 @@ SceneManager::checkLoadStatus() {
   }
 }
 
-ObjectFactory *
-SceneManager::getObjectFactory() const {
+ObjectFactory *SceneManager::getObjectFactory() const {
   return ObjectFactoryPtr;
 }
 
-SceneNode *
-SceneManager::getCurrentSceneNode() const {
-  return CurrentScenePtr;
-}
+SceneNode *SceneManager::getCurrentSceneNode() const { return CurrentScenePtr; }
 
-bool
-SceneManager::loadLoadingScene() {
+bool SceneManager::loadLoadingScene() {
   LoadingScenePtr = ObjectFactoryPtr->createSceneNode(
       "loading-scene", ".\\Assets\\Scenes\\loading-scene.json");
   CurrentScenePtr = LoadingScenePtr;
@@ -124,14 +115,12 @@ SceneManager::loadLoadingScene() {
   return (LoadingScenePtr ? true : false);
 }
 
-void
-SceneManager::releaseLoadingScene() {
+void SceneManager::releaseLoadingScene() {
   LoadingScenePtr->releaseScene();
   delete LoadingScenePtr;
 }
 
-void
-SceneManager::loadNextScene(SceneNode *RelScene) {
+void SceneManager::loadNextScene(SceneNode *RelScene) {
   if (RelScene) {
     RelScene->releaseScene();
     delete RelScene;
@@ -141,7 +130,4 @@ SceneManager::loadNextScene(SceneNode *RelScene) {
       ObjectFactoryPtr->createSceneNode(NewSceneInfo[0], NewSceneInfo[1]);
 }
 
-bool
-SceneManager::getSceneSwitchFlg() const {
-  return SceneSwitchFlag;
-}
+bool SceneManager::getSceneSwitchFlg() const { return SceneSwitchFlag; }

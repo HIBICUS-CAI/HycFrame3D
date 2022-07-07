@@ -37,53 +37,27 @@ public:
   RSLight(const LIGHT_INFO *Info);
   ~RSLight();
 
-  class RSCamera *
-  createLightCamera(const std::string &LightName,
-                    const CAM_INFO *Info,
-                    class RSCamerasContainer *CameraContainer);
+  class RSCamera *createLightCamera(const std::string &LightName,
+                                    const CAM_INFO *Info,
+                                    class RSCamerasContainer *CameraContainer);
 
-  RS_LIGHT_INFO *
-  getRSLightInfo();
+  RS_LIGHT_INFO *getRSLightInfo();
+  LIGHT_TYPE getRSLightType();
+  class RSCamera *getRSLightCamera();
 
-  LIGHT_TYPE
-  getRSLightType();
+  void resetRSLight(const LIGHT_INFO *Info);
 
-  class RSCamera *
-  getRSLightCamera();
+  DirectX::XMFLOAT4X4 *getLightWorldMat();
 
-  void
-  resetRSLight(const LIGHT_INFO *Info);
+  void setRSLightAlbedo(const DirectX::XMFLOAT3 &Albedo);
+  void setRSLightDirection(const DirectX::XMFLOAT3 &Direction);
+  void setRSLightPosition(const DirectX::XMFLOAT3 &Position);
+  void setRSLightFallOff(float Start, float End);
+  void setRSLightSpotPower(float SpotPower);
+  void setRSLightIntensity(float Luminance);
+  void setLightBloom(const RS_SUBMESH_DATA &MeshData);
 
-  DirectX::XMFLOAT4X4 *
-  getLightWorldMat();
-
-  void
-  setRSLightAlbedo(const DirectX::XMFLOAT3& Albedo);
-
-  void
-  setRSLightDirection(const DirectX::XMFLOAT3& Direction);
-
-  void
-  setRSLightPosition(const DirectX::XMFLOAT3& Position);
-
-  void
-  setRSLightFallOff(float Start, float End);
-
-  void
-  setRSLightSpotPower(float SpotPower);
-
-  void
-  setRSLightIntensity(float Luminance);
-
-  void
-  setLightBloom(const RS_SUBMESH_DATA &MeshData);
-
-  void
-  uploadLightDrawCall();
-
-  void
-  releaseLightBloom(bool DeleteByFrameworkFlag);
-
-  void
-  updateBloomColor();
+  void uploadLightDrawCall();
+  void releaseLightBloom(bool DeleteByFrameworkFlag);
+  void updateBloomColor();
 };

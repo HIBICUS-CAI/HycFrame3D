@@ -38,8 +38,7 @@ SceneNode::~SceneNode() {
   delete ObjectContainerPtr;
 }
 
-void
-SceneNode::releaseScene() {
+void SceneNode::releaseScene() {
   ObjectContainerPtr->deleteAllActor();
   ObjectContainerPtr->deleteAllUi();
   ObjectContainerPtr->deleteAllDeadObjects();
@@ -61,30 +60,21 @@ SceneNode::releaseScene() {
   }
 }
 
-const std::string &
-SceneNode::getSceneNodeName() const {
-  return SceneName;
-}
+const std::string &SceneNode::getSceneNodeName() const { return SceneName; }
 
-SceneManager *
-SceneNode::getSceneManager() const {
-  return SceneManagerPtr;
-}
+SceneManager *SceneNode::getSceneManager() const { return SceneManagerPtr; }
 
-void
-SceneNode::setCurrentAmbientFactor(const DirectX::XMFLOAT4 &Factor) {
+void SceneNode::setCurrentAmbientFactor(const DirectX::XMFLOAT4 &Factor) {
   CameraAmbientInfo.AmbientFactor = Factor;
 }
 
-const DirectX::XMFLOAT4 &
-SceneNode::getCurrentAmbientFactor() {
+const DirectX::XMFLOAT4 &SceneNode::getCurrentAmbientFactor() {
   return CameraAmbientInfo.AmbientFactor;
 }
 
-void
-SceneNode::loadIBLTexture(const std::string &Env,
-                          const std::string &Diff,
-                          const std::string &Spec) {
+void SceneNode::loadIBLTexture(const std::string &Env,
+                               const std::string &Diff,
+                               const std::string &Spec) {
   std::wstring WStr = L"";
   HRESULT Hr = S_OK;
   ID3D11ShaderResourceView *Srv = nullptr;
@@ -123,72 +113,52 @@ SceneNode::loadIBLTexture(const std::string &Env,
   }
 }
 
-ID3D11ShaderResourceView *
-SceneNode::getIBLEnvironment() {
+ID3D11ShaderResourceView *SceneNode::getIBLEnvironment() {
   return CameraAmbientInfo.IBLEnvironmentTexture;
 }
 
-ID3D11ShaderResourceView *
-SceneNode::getIBLDiffuse() {
+ID3D11ShaderResourceView *SceneNode::getIBLDiffuse() {
   return CameraAmbientInfo.IBLDiffuseTexture;
 }
 
-ID3D11ShaderResourceView *
-SceneNode::getIBLSpecular() {
+ID3D11ShaderResourceView *SceneNode::getIBLSpecular() {
   return CameraAmbientInfo.IBLSpecularTexture;
 }
 
-RSCamera *
-SceneNode::getMainCamera() {
-  return CameraAmbientInfo.RSCameraPtr;
-}
+RSCamera *SceneNode::getMainCamera() { return CameraAmbientInfo.RSCameraPtr; }
 
-ActorObject *
-SceneNode::getActorObject(const std::string &ActorName) {
+ActorObject *SceneNode::getActorObject(const std::string &ActorName) {
   return ObjectContainerPtr->getActorObject(ActorName);
 }
 
-void
-SceneNode::addActorObject(const class ActorObject &NewActor) {
+void SceneNode::addActorObject(const class ActorObject &NewActor) {
   ObjectContainerPtr->addActorObject(NewActor);
 }
 
-void
-SceneNode::deleteActorObject(const std::string &ActorName) {
+void SceneNode::deleteActorObject(const std::string &ActorName) {
   ObjectContainerPtr->deleteActorObject(ActorName);
 }
 
-UiObject *
-SceneNode::getUiObject(const std::string &UiName) {
+UiObject *SceneNode::getUiObject(const std::string &UiName) {
   return ObjectContainerPtr->getUiObject(UiName);
 }
 
-void
-SceneNode::addUiObject(const class UiObject &NewUi) {
+void SceneNode::addUiObject(const class UiObject &NewUi) {
   ObjectContainerPtr->addUiObject(NewUi);
 }
 
-void
-SceneNode::deleteUiObject(const std::string &UiName) {
+void SceneNode::deleteUiObject(const std::string &UiName) {
   ObjectContainerPtr->deleteUiObject(UiName);
 }
 
-AssetsPool *
-SceneNode::getAssetsPool() const {
-  return AssetsPoolPtr;
-}
+AssetsPool *SceneNode::getAssetsPool() const { return AssetsPoolPtr; }
 
-PhysicsWorld *
-SceneNode::getPhysicsWorld() const {
-  return PhysicsWorldPtr;
-}
+PhysicsWorld *SceneNode::getPhysicsWorld() const { return PhysicsWorldPtr; }
 
-ComponentContainer *
-SceneNode::getComponentContainer() const {
+ComponentContainer *SceneNode::getComponentContainer() const {
   return ComponentContainerPtr;
 }
 
-ObjectContainer *
-SceneNode::getObjectContainer() const {
+ObjectContainer *SceneNode::getObjectContainer() const {
   return ObjectContainerPtr;
 }

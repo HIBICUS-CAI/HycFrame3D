@@ -28,8 +28,7 @@ RSStaticResources::RSStaticResources()
 
 RSStaticResources::~RSStaticResources() {}
 
-bool
-RSStaticResources::startUp(RSRoot_DX11 *RootPtr) {
+bool RSStaticResources::startUp(RSRoot_DX11 *RootPtr) {
   if (!RootPtr) {
     return false;
   }
@@ -58,8 +57,7 @@ RSStaticResources::startUp(RSRoot_DX11 *RootPtr) {
   return true;
 }
 
-void
-RSStaticResources::cleanAndStop() {
+void RSStaticResources::cleanAndStop() {
   for (auto &VShader : VertexShaderMap) {
     SAFE_RELEASE(VShader.second);
   }
@@ -125,22 +123,19 @@ RSStaticResources::cleanAndStop() {
   SAFE_RELEASE(MaterialBuffer)
 }
 
-bool
-RSStaticResources::compileStaticShaders() {
+bool RSStaticResources::compileStaticShaders() {
   // TEMP----------------------
   return true;
   // TEMP----------------------
 }
 
-bool
-RSStaticResources::buildStaticStates() {
+bool RSStaticResources::buildStaticStates() {
   // TEMP----------------------
   return true;
   // TEMP----------------------
 }
 
-bool
-RSStaticResources::buildStaticInputLayouts() {
+bool RSStaticResources::buildStaticInputLayouts() {
   ID3DBlob *ShaderBlob = nullptr;
   ID3D11InputLayout *InputLayout = nullptr;
   HRESULT Hr = S_OK;
@@ -258,22 +253,19 @@ RSStaticResources::buildStaticInputLayouts() {
   return true;
 }
 
-bool
-RSStaticResources::buildStaticTopics() {
+bool RSStaticResources::buildStaticTopics() {
   // TEMP----------------------
   return true;
   // TEMP----------------------
 }
 
-bool
-RSStaticResources::buildStaticPipelines() {
+bool RSStaticResources::buildStaticPipelines() {
   // TEMP----------------------
   return true;
   // TEMP----------------------
 }
 
-bool
-RSStaticResources::buildStaticMaterials() {
+bool RSStaticResources::buildStaticMaterials() {
   using namespace hyc::text;
   JsonFile MaterialFile = {};
   if (!loadJsonAndParse(
@@ -456,15 +448,14 @@ RSStaticResources::getStaticTopic(const std::string &TopicName) {
   }
 }
 
-UINT
-RSStaticResources::getStaticMaterialIndex(const std::string &MaterialName) {
+UINT RSStaticResources::getStaticMaterialIndex(
+    const std::string &MaterialName) {
   auto Found = MaterialIndexMap.find(MaterialName);
   assert(Found != MaterialIndexMap.end());
   return Found->second;
 }
 
-void
-RSStaticResources::remapMaterialData() {
+void RSStaticResources::remapMaterialData() {
   auto ContextPtr = RenderSystemRoot->getDevices()->getSTContext();
   D3D11_MAPPED_SUBRESOURCE msr = {};
   ContextPtr->Map(MaterialBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);

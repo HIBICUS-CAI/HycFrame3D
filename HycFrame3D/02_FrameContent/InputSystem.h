@@ -13,10 +13,7 @@ public:
   virtual ~InputSystem();
 
 public:
-  virtual bool
-  init();
-  virtual void
-  run(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void run(Timer &Timer);
+  virtual void destory();
 };

@@ -26,48 +26,21 @@ private:
 public:
   InputDeviceBase(INPUT_DEVICE_TYPE DeviceType,
                   DWORD XIDeviceHandle = MAX_INPUTDEVICE_NUM);
-
   virtual ~InputDeviceBase();
 
-  virtual INPUT_TYPE
-  getInputType() = 0;
+  virtual INPUT_TYPE getInputType() = 0;
+  INPUT_DEVICE_TYPE getInputDeviceType();
+  LPDIRECTINPUTDEVICE8 getDIDeviceHandle();
+  DWORD getXIDeviceHandle();
+  virtual HRESULT pollDeviceStatus() = 0;
+  virtual const LPVOID getDeviceStatus() = 0;
 
-  INPUT_DEVICE_TYPE
-  getInputDeviceType();
-
-  LPDIRECTINPUTDEVICE8
-  getDIDeviceHandle();
-
-  DWORD
-  getXIDeviceHandle();
-
-  virtual HRESULT
-  pollDeviceStatus() = 0;
-
-  virtual const LPVOID
-  getDeviceStatus() = 0;
-
-  virtual bool
-  isKeyBeingPushed(UINT KeyCode) = 0;
-
-  virtual bool
-  hasKeyPushedInLastFrame(UINT KeyCode) = 0;
-
-  virtual LONG
-  getXPositionOffset() = 0;
-
-  virtual LONG
-  getYPositionOffset() = 0;
-
-  virtual LONG
-  getZPositionOffset() = 0;
-
-  virtual LONG
-  getXRotationOffset() = 0;
-
-  virtual LONG
-  getYRotationOffset() = 0;
-
-  virtual LONG
-  getZRotationOffset() = 0;
+  virtual bool isKeyBeingPushed(UINT KeyCode) = 0;
+  virtual bool hasKeyPushedInLastFrame(UINT KeyCode) = 0;
+  virtual LONG getXPositionOffset() = 0;
+  virtual LONG getYPositionOffset() = 0;
+  virtual LONG getZPositionOffset() = 0;
+  virtual LONG getXRotationOffset() = 0;
+  virtual LONG getYRotationOffset() = 0;
+  virtual LONG getZRotationOffset() = 0;
 };

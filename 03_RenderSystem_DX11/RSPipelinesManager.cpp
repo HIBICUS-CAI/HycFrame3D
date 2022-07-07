@@ -23,8 +23,7 @@ RSPipelinesManager::RSPipelinesManager()
 
 RSPipelinesManager::~RSPipelinesManager() {}
 
-bool
-RSPipelinesManager::startUp(RSRoot_DX11 *RootPtr) {
+bool RSPipelinesManager::startUp(RSRoot_DX11 *RootPtr) {
   if (!RootPtr) {
     return false;
   }
@@ -35,8 +34,7 @@ RSPipelinesManager::startUp(RSRoot_DX11 *RootPtr) {
   return true;
 }
 
-void
-RSPipelinesManager::cleanAndStop() {
+void RSPipelinesManager::cleanAndStop() {
   NextPipeline = nullptr;
   CurrentPipeline = nullptr;
 
@@ -49,8 +47,8 @@ RSPipelinesManager::cleanAndStop() {
   DeleteCriticalSection(&DataLock);
 }
 
-void
-RSPipelinesManager::addPipeline(const std::string &Name, RSPipeline *Pipeline) {
+void RSPipelinesManager::addPipeline(const std::string &Name,
+                                     RSPipeline *Pipeline) {
   LOCK;
   if (PipelineMap.find(Name) == PipelineMap.end()) {
     PipelineMap.insert({Name, Pipeline});
@@ -58,8 +56,7 @@ RSPipelinesManager::addPipeline(const std::string &Name, RSPipeline *Pipeline) {
   UNLOCK;
 }
 
-RSPipeline *
-RSPipelinesManager::getPipeline(const std::string &Name) {
+RSPipeline *RSPipelinesManager::getPipeline(const std::string &Name) {
   LOCK;
   auto Found = PipelineMap.find(Name);
   if (Found != PipelineMap.end()) {
@@ -72,8 +69,7 @@ RSPipelinesManager::getPipeline(const std::string &Name) {
   }
 }
 
-void
-RSPipelinesManager::setPipeline(const std::string &Name) {
+void RSPipelinesManager::setPipeline(const std::string &Name) {
   LOCK;
   auto Found = PipelineMap.find(Name);
   if (Found != PipelineMap.end()) {
@@ -82,19 +78,16 @@ RSPipelinesManager::setPipeline(const std::string &Name) {
   UNLOCK;
 }
 
-void
-RSPipelinesManager::setPipeline(RSPipeline *Pipeline) {
+void RSPipelinesManager::setPipeline(RSPipeline *Pipeline) {
   NextPipeline = Pipeline;
 }
 
-void
-RSPipelinesManager::clearCurrentPipelineState() {
+void RSPipelinesManager::clearCurrentPipelineState() {
   CurrentPipeline = nullptr;
   NextPipeline = nullptr;
 }
 
-void
-RSPipelinesManager::execuateCurrentPipeline() {
+void RSPipelinesManager::execuateCurrentPipeline() {
   RenderSystemRoot->getLightsContainer()->lockContainer();
   RenderSystemRoot->getParticlesContainer()->lockContainer();
   CurrentPipeline->execuatePipeline();
@@ -102,8 +95,7 @@ RSPipelinesManager::execuateCurrentPipeline() {
   RenderSystemRoot->getParticlesContainer()->unlockContainer();
 }
 
-void
-RSPipelinesManager::changeToNextPipeline() {
+void RSPipelinesManager::changeToNextPipeline() {
   if (NextPipeline) {
     if (CurrentPipeline) {
       CurrentPipeline->suspendAllThread();

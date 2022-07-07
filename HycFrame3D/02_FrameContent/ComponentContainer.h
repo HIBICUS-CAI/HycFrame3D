@@ -41,17 +41,12 @@ public:
   ComponentContainer(class SceneNode &SceneNode);
   ~ComponentContainer();
 
-  class Component *
-  getComponent(const std::string &CompName);
+  class Component *getComponent(const std::string &CompName);
 
-  void
-  addComponent(COMP_TYPE Type, const class Component &Comp);
-  void
-  deleteComponent(COMP_TYPE Type, const std::string &CompName);
+  void addComponent(COMP_TYPE Type, const class Component &Comp);
+  void deleteComponent(COMP_TYPE Type, const std::string &CompName);
 
-  void
-  deleteAllComponent();
+  void deleteAllComponent();
 
-  void *
-  getCompVecPtr(COMP_TYPE Type);
+  void *getCompVecPtr(COMP_TYPE Type);
 };

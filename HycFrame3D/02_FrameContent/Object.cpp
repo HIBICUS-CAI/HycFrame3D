@@ -8,21 +8,14 @@ Object::Object(const std::string &ObjName, SceneNode &SceneNode)
 
 Object::~Object() {}
 
-const std::string &
-Object::getObjectName() const {
-  return ObjectName;
-}
+const std::string &Object::getObjectName() const { return ObjectName; }
 
 STATUS
 Object::getObjectStatus() const { return ObjectStatus; }
 
-void
-Object::setObjectStatus(STATUS ObjStatus) {
+void Object::setObjectStatus(STATUS ObjStatus) {
   ObjectStatus = ObjStatus;
   syncStatusToAllComps();
 }
 
-SceneNode &
-Object::getSceneNode() const {
-  return SceneNodeOwner;
-}
+SceneNode &Object::getSceneNode() const { return SceneNodeOwner; }

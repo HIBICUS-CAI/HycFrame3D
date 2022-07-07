@@ -4,8 +4,7 @@
 #include <RSRoot_DX11.h>
 #include <RSStaticResources.h>
 
-void
-registerMaterialEditor(ObjectFactory *Factory) {
+void registerMaterialEditor(ObjectFactory *Factory) {
 #ifdef _DEBUG
   assert(Factory);
 #endif // _DEBUG
@@ -37,8 +36,7 @@ static RS_MATERIAL_DATA *G_Material = nullptr;
 static MAT_TYPE G_EditingMatTerm = MAT_TYPE::ROUGHNESS;
 static SUBMESH_DATA *G_MatBallMesh = nullptr;
 
-void
-OutputThisMaterialInfo() {
+void OutputThisMaterialInfo() {
   std::string MatInfo = "Material Info\n";
   MatInfo += "===============================\n";
   MatInfo += "FresnelR0 :\t\t" + std::to_string(G_Material->FresnelR0.x);
@@ -62,8 +60,7 @@ OutputThisMaterialInfo() {
   P_LOG(LOG_DEBUG, "%s", MatInfo.c_str());
 }
 
-void
-matEditorInput(AInputComponent *Aic, Timer &Timer) {
+void matEditorInput(AInputComponent *Aic, Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_F5)) {
     Aic->getSceneNode().getSceneManager()->loadSceneNode("material-scene",
                                                          "material-scene.json");
@@ -255,8 +252,7 @@ matEditorInput(AInputComponent *Aic, Timer &Timer) {
   }
 }
 
-bool
-matEditorInit(AInteractComponent *Aitc) {
+bool matEditorInit(AInteractComponent *Aitc) {
   std::string Basic = "light-pipeline";
   getRSDX11RootInstance()->getPipelinesManager()->setPipeline(Basic);
 
@@ -290,11 +286,9 @@ matEditorInit(AInteractComponent *Aitc) {
   return true;
 }
 
-void
-matEditorUpdate(AInteractComponent *Aitc, Timer &Timer) {}
+void matEditorUpdate(AInteractComponent *Aitc, Timer &Timer) {}
 
-void
-matEditorDestory(AInteractComponent *Aitc) {
+void matEditorDestory(AInteractComponent *Aitc) {
   G_PointLightAtc = nullptr;
   G_MaterialBallAtc = nullptr;
   G_Material = nullptr;

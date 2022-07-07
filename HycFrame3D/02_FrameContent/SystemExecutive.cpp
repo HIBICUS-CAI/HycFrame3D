@@ -19,8 +19,7 @@ SystemExecutive::SystemExecutive()
 
 SystemExecutive::~SystemExecutive() {}
 
-bool
-SystemExecutive::startUp(SceneManager *SceneManager) {
+bool SystemExecutive::startUp(SceneManager *SceneManager) {
   if (!SceneManager) {
     P_LOG(LOG_ERROR, "invalid scene manager pointer\n");
     return false;
@@ -80,8 +79,7 @@ SystemExecutive::startUp(SceneManager *SceneManager) {
   return initAllSystem();
 }
 
-void
-SystemExecutive::cleanAndStop() {
+void SystemExecutive::cleanAndStop() {
   for (auto &Sys : SystemsArray) {
     Sys->destory();
     delete Sys;
@@ -89,8 +87,7 @@ SystemExecutive::cleanAndStop() {
   SystemsArray.clear();
 }
 
-void
-SystemExecutive::runAllSystems(Timer &Timer) {
+void SystemExecutive::runAllSystems(Timer &Timer) {
   checkCurrentScene();
 
   CurrentSceneNode->getObjectContainer()->deleteAllDeadObjects();
@@ -101,16 +98,14 @@ SystemExecutive::runAllSystems(Timer &Timer) {
   }
 }
 
-SceneManager *
-SystemExecutive::getSceneManager() const {
+SceneManager *SystemExecutive::getSceneManager() const {
 #ifdef _DEBUG
   assert(SceneManagerPtr);
 #endif // _DEBUG
   return SceneManagerPtr;
 }
 
-bool
-SystemExecutive::initAllSystem() {
+bool SystemExecutive::initAllSystem() {
   for (auto &Sys : SystemsArray) {
     if (!Sys->init()) {
       return false;
@@ -119,8 +114,7 @@ SystemExecutive::initAllSystem() {
   return true;
 }
 
-void
-SystemExecutive::checkCurrentScene() {
+void SystemExecutive::checkCurrentScene() {
   if (SceneManagerPtr->getSceneSwitchFlg()) {
     CurrentSceneNode = SceneManagerPtr->getCurrentSceneNode();
     bool Result = initAllSystem();

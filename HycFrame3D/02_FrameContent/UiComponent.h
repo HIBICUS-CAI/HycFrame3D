@@ -10,8 +10,7 @@ public:
   UiComponent(const std::string &CompName, class UiObject *UiOwner);
   virtual ~UiComponent();
 
-  UiComponent &
-  operator=(const UiComponent &Source) {
+  UiComponent &operator=(const UiComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -20,22 +19,13 @@ public:
     return *this;
   }
 
-  class SceneNode &
-  getSceneNode() const;
+  class SceneNode &getSceneNode() const;
+  class UiObject *getUiOwner() const;
 
-  class UiObject *
-  getUiOwner() const;
-
-  void
-  resetUiOwner(class UiObject *Owner);
+  void resetUiOwner(class UiObject *Owner);
 
 public:
-  virtual bool
-  init() = 0;
-
-  virtual void
-  update(Timer &Timer) = 0;
-
-  virtual void
-  destory() = 0;
+  virtual bool init() = 0;
+  virtual void update(Timer &Timer) = 0;
+  virtual void destory() = 0;
 };

@@ -30,47 +30,23 @@ public:
   RSParticlesContainer();
   ~RSParticlesContainer();
 
-  bool
-  startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_DX11 *RootPtr);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
+  bool getResetFlg();
+  void resetRSParticleSystem();
+  void finishResetRSParticleSystem();
 
-  bool
-  getResetFlg();
+  RSParticleEmitter *createRSParticleEmitter(const std::string &Name,
+                                             const PARTICLE_EMITTER_INFO *Info);
+  void deleteRSParticleEmitter(const std::string &Name);
+  RSParticleEmitter *getRSParticleEmitter(const std::string &Name);
 
-  void
-  resetRSParticleSystem();
+  std::vector<RSParticleEmitter *> *getAllParticleEmitters();
 
-  void
-  finishResetRSParticleSystem();
+  void startRSParticleEmitter(const std::string &Name);
+  void pauseRSParticleEmitter(const std::string &Name);
 
-  RSParticleEmitter *
-  createRSParticleEmitter(const std::string &Name,
-                          const PARTICLE_EMITTER_INFO *Info);
-
-  void
-  deleteRSParticleEmitter(const std::string &Name);
-
-  RSParticleEmitter *
-  getRSParticleEmitter(const std::string &Name);
-
-  std::vector<RSParticleEmitter *> *
-  getAllParticleEmitters();
-
-  void
-  startRSParticleEmitter(const std::string &Name);
-
-  void
-  pauseRSParticleEmitter(const std::string &Name);
-
-  inline void
-  lockContainer() {
-    EnterCriticalSection(&DataLock);
-  }
-
-  inline void
-  unlockContainer() {
-    LeaveCriticalSection(&DataLock);
-  }
+  inline void lockContainer() { EnterCriticalSection(&DataLock); }
+  inline void unlockContainer() { LeaveCriticalSection(&DataLock); }
 };

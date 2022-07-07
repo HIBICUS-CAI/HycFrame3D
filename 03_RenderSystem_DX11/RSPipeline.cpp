@@ -38,23 +38,13 @@ RSPipeline::RSPipeline(const RSPipeline &Source)
 
 RSPipeline::~RSPipeline() {}
 
-const std::string &
-RSPipeline::getPipelineName() const {
-  return PipelineName;
-}
+const std::string &RSPipeline::getPipelineName() const { return PipelineName; }
 
-void
-RSPipeline::startAssembly() {
-  AssemblyFinishFlag = false;
-}
+void RSPipeline::startAssembly() { AssemblyFinishFlag = false; }
 
-void
-RSPipeline::finishAssembly() {
-  AssemblyFinishFlag = true;
-}
+void RSPipeline::finishAssembly() { AssemblyFinishFlag = true; }
 
-bool
-RSPipeline::hasTopic(const std::string &TopicName) {
+bool RSPipeline::hasTopic(const std::string &TopicName) {
   for (auto &Topic : TopicArray) {
     if (Topic->getTopicName() == TopicName) {
       return true;
@@ -64,21 +54,18 @@ RSPipeline::hasTopic(const std::string &TopicName) {
   return false;
 }
 
-bool
-topicExecLessCompare(const RSTopic *A, const RSTopic *B) {
+bool topicExecLessCompare(const RSTopic *A, const RSTopic *B) {
   return A->getExecuateOrder() < B->getExecuateOrder();
 }
 
-void
-RSPipeline::insertTopic(RSTopic *Topic) {
+void RSPipeline::insertTopic(RSTopic *Topic) {
   if (!AssemblyFinishFlag) {
     TopicArray.push_back(Topic);
     std::sort(TopicArray.begin(), TopicArray.end(), topicExecLessCompare);
   }
 }
 
-void
-RSPipeline::eraseTopic(RSTopic *Topic) {
+void RSPipeline::eraseTopic(RSTopic *Topic) {
   if (!AssemblyFinishFlag) {
     for (auto I = TopicArray.begin(), E = TopicArray.end(); I != E; I++) {
       if (*I == Topic) {
@@ -91,8 +78,7 @@ RSPipeline::eraseTopic(RSTopic *Topic) {
   }
 }
 
-void
-RSPipeline::eraseTopic(const std::string &TopicName) {
+void RSPipeline::eraseTopic(const std::string &TopicName) {
   if (!AssemblyFinishFlag) {
     for (auto I = TopicArray.begin(), E = TopicArray.end(); I != E; I++) {
       if ((*I)->getTopicName() == TopicName) {
@@ -105,8 +91,8 @@ RSPipeline::eraseTopic(const std::string &TopicName) {
   }
 }
 
-bool
-RSPipeline::initAllTopics(RSDevices *DevicesPtr, bool ForceSingleThreadFlag) {
+bool RSPipeline::initAllTopics(RSDevices *DevicesPtr,
+                               bool ForceSingleThreadFlag) {
   if (!DevicesPtr) {
     return false;
   }
@@ -169,8 +155,7 @@ RSPipeline::initAllTopics(RSDevices *DevicesPtr, bool ForceSingleThreadFlag) {
   }
 }
 
-void
-RSPipeline::execuatePipeline() {
+void RSPipeline::execuatePipeline() {
   if (AssemblyFinishFlag) {
     if (MultipleThreadModeFlag) {
       for (auto &TT : TopicThreads) {
@@ -196,8 +181,7 @@ RSPipeline::execuatePipeline() {
   }
 }
 
-void
-RSPipeline::releasePipeline() {
+void RSPipeline::releasePipeline() {
   if (AssemblyFinishFlag) {
     for (auto &Topic : TopicArray) {
       Topic->releaseTopic();
@@ -254,15 +238,13 @@ unsigned __stdcall topicThreadFunc(PVOID Args) {
   return 0;
 }
 
-void
-RSPipeline::suspendAllThread() {
+void RSPipeline::suspendAllThread() {
   for (auto &TT : TopicThreads) {
     SuspendThread(TT.ThreadHandle);
   }
 }
 
-void
-RSPipeline::resumeAllThread() {
+void RSPipeline::resumeAllThread() {
   for (auto &TT : TopicThreads) {
     ResumeThread(TT.ThreadHandle);
   }

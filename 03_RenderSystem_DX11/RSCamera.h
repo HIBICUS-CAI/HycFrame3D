@@ -32,53 +32,25 @@ public:
   RSCamera(const CAM_INFO *CamInfo);
   ~RSCamera();
 
-  RS_CAM_INFO *
-  getRSCameraInfo();
+  RS_CAM_INFO *getRSCameraInfo();
+  void resetRSCamera(const CAM_INFO *CamInfo);
 
-  void
-  resetRSCamera(const CAM_INFO *CamInfo);
+  void translateRSCamera(const DirectX::XMFLOAT3 &Delta);
+  void rotateRSCamera(float Vertical, float Horizontal);
+  void rotateRSCamera(const DirectX::XMFLOAT3 &DeltaAngle);
 
-  void
-  translateRSCamera(const DirectX::XMFLOAT3& Delta);
+  void changeRSCameraFovY(float Angle);
+  void changeRSCameraNearFarZ(float Near, float Far);
 
-  void
-  rotateRSCamera(float Vertical, float Horizontal);
+  const DirectX::XMFLOAT3 &getRSCameraPosition() { return CameraPosition; }
+  const DirectX::XMFLOAT3 &getRSCameraUpVector() { return CameraUpVector; }
+  const DirectX::XMFLOAT3 &getRSCameraLookDir() { return CameraLookAtVector; }
 
-  void
-  rotateRSCamera(const DirectX::XMFLOAT3& DeltaAngle);
-
-  void
-  changeRSCameraFovY(float Angle);
-
-  void
-  changeRSCameraNearFarZ(float Near, float Far);
-
-  const DirectX::XMFLOAT3&
-  getRSCameraPosition() {
-    return CameraPosition;
-  }
-
-  const DirectX::XMFLOAT3&
-  getRSCameraUpVector() {
-    return CameraUpVector;
-  }
-
-  const DirectX::XMFLOAT3&
-  getRSCameraLookDir() {
-    return CameraLookAtVector;
-  }
-
-  void
-  changeRSCameraPosition(const DirectX::XMFLOAT3 &Position);
-
-  void
-  resetRSCameraRotation(const DirectX::XMFLOAT3 &LookAtVector,
-                        const DirectX::XMFLOAT3 &UpVector);
+  void changeRSCameraPosition(const DirectX::XMFLOAT3 &Position);
+  void resetRSCameraRotation(const DirectX::XMFLOAT3 &LookAtVector,
+                             const DirectX::XMFLOAT3 &UpVector);
 
 private:
-  void
-  calcViewMatrix();
-
-  void
-  calcProjMatrix();
+  void calcViewMatrix();
+  void calcProjMatrix();
 };

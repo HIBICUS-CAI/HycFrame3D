@@ -22,32 +22,21 @@ public:
   SceneManager();
   ~SceneManager();
 
-  bool
-  startUp(class ObjectFactory *ObjectFactory);
-  bool
-  deferedStartUp();
-  void
-  cleanAndStop();
+  bool startUp(class ObjectFactory *ObjectFactory);
+  bool deferedStartUp();
+  void cleanAndStop();
 
-  void
-  loadSceneNode(const std::string &Name, const std::string &File);
-  void
-  checkLoadStatus();
+  void loadSceneNode(const std::string &Name, const std::string &File);
+  void checkLoadStatus();
 
-  class ObjectFactory *
-  getObjectFactory() const;
-  class SceneNode *
-  getCurrentSceneNode() const;
+  class ObjectFactory *getObjectFactory() const;
+  class SceneNode *getCurrentSceneNode() const;
 
-  bool
-  getSceneSwitchFlg() const;
+  bool getSceneSwitchFlg() const;
 
 private:
-  bool
-  loadLoadingScene();
-  void
-  releaseLoadingScene();
+  bool loadLoadingScene();
+  void releaseLoadingScene();
 
-  void
-  loadNextScene(class SceneNode *RelScene);
+  void loadNextScene(class SceneNode *RelScene);
 };

@@ -11,8 +11,7 @@ ObjectContainer::ObjectContainer(SceneNode &SceneNode)
 
 ObjectContainer::~ObjectContainer() {}
 
-ActorObject *
-ObjectContainer::getActorObject(const std::string &ActorName) {
+ActorObject *ObjectContainer::getActorObject(const std::string &ActorName) {
   auto Found = ActorObjectMap.find(ActorName);
   if (Found != ActorObjectMap.end()) {
     return &(Found->second);
@@ -23,13 +22,11 @@ ObjectContainer::getActorObject(const std::string &ActorName) {
   }
 }
 
-void
-ObjectContainer::addActorObject(const ActorObject &NewActor) {
+void ObjectContainer::addActorObject(const ActorObject &NewActor) {
   NewActorObjectArray.emplace_back(NewActor);
 }
 
-void
-ObjectContainer::deleteActorObject(const std::string &ActorName) {
+void ObjectContainer::deleteActorObject(const std::string &ActorName) {
   auto Found = ActorObjectMap.find(ActorName);
   if (Found != ActorObjectMap.end()) {
     DeadActorObjectArray.emplace_back(Found->second);
@@ -40,8 +37,7 @@ ObjectContainer::deleteActorObject(const std::string &ActorName) {
   }
 }
 
-UiObject *
-ObjectContainer::getUiObject(const std::string &UiName) {
+UiObject *ObjectContainer::getUiObject(const std::string &UiName) {
   auto Found = UiObjectMap.find(UiName);
   if (Found != UiObjectMap.end()) {
     return &(Found->second);
@@ -51,13 +47,11 @@ ObjectContainer::getUiObject(const std::string &UiName) {
   }
 }
 
-void
-ObjectContainer::addUiObject(const UiObject &NewUi) {
+void ObjectContainer::addUiObject(const UiObject &NewUi) {
   NewUiObjectArray.emplace_back(NewUi);
 }
 
-void
-ObjectContainer::deleteUiObject(const std::string &UiName) {
+void ObjectContainer::deleteUiObject(const std::string &UiName) {
   auto Found = UiObjectMap.find(UiName);
   if (Found != UiObjectMap.end()) {
     DeadUiObjectArray.emplace_back(Found->second);
@@ -67,24 +61,21 @@ ObjectContainer::deleteUiObject(const std::string &UiName) {
   }
 }
 
-void
-ObjectContainer::deleteAllActor() {
+void ObjectContainer::deleteAllActor() {
   for (auto &Actor : ActorObjectMap) {
     DeadActorObjectArray.emplace_back(Actor.second);
   }
   ActorObjectMap.clear();
 }
 
-void
-ObjectContainer::deleteAllUi() {
+void ObjectContainer::deleteAllUi() {
   for (auto &Ui : UiObjectMap) {
     DeadUiObjectArray.emplace_back(Ui.second);
   }
   UiObjectMap.clear();
 }
 
-void
-ObjectContainer::initAllNewObjects() {
+void ObjectContainer::initAllNewObjects() {
   for (auto &NewActor : NewActorObjectArray) {
     const std::string &Name = NewActor.getObjectName();
     ActorObjectMap.insert({Name, NewActor});
@@ -110,8 +101,7 @@ ObjectContainer::initAllNewObjects() {
   NewUiObjectArray.clear();
 }
 
-void
-ObjectContainer::deleteAllDeadObjects() {
+void ObjectContainer::deleteAllDeadObjects() {
   for (auto &DeadActor : DeadActorObjectArray) {
     DeadActor.destory();
   }

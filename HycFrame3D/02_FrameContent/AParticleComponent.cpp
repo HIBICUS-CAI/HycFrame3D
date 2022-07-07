@@ -15,8 +15,7 @@ AParticleComponent::AParticleComponent(const std::string &CompName,
 
 AParticleComponent::~AParticleComponent() {}
 
-bool
-AParticleComponent::init() {
+bool AParticleComponent::init() {
   if (RSParticleEmitterPtr) {
     return true;
   } else {
@@ -24,39 +23,33 @@ AParticleComponent::init() {
   }
 }
 
-void
-AParticleComponent::update(Timer &Timer) {
-  syncDataFromTransform();
-}
+void AParticleComponent::update(Timer &Timer) { syncDataFromTransform(); }
 
-void
-AParticleComponent::destory() {
+void AParticleComponent::destory() {
   getRSDX11RootInstance()->getParticlesContainer()->deleteRSParticleEmitter(
       getCompName());
 }
 
-void
-AParticleComponent::createEmitter(const PARTICLE_EMITTER_INFO *EmitterInfo) {
+void AParticleComponent::createEmitter(
+    const PARTICLE_EMITTER_INFO *EmitterInfo) {
   RSParticleEmitterPtr =
       getRSDX11RootInstance()->getParticlesContainer()->createRSParticleEmitter(
           getCompName(), EmitterInfo);
 }
 
-void
-AParticleComponent::resetEmitter(const PARTICLE_EMITTER_INFO *EmitterInfo) {
+void AParticleComponent::resetEmitter(
+    const PARTICLE_EMITTER_INFO *EmitterInfo) {
   RSParticleEmitterPtr->resetParticleEmitterInfo(EmitterInfo);
 }
 
-RS_PARTICLE_EMITTER_INFO &
-AParticleComponent::getEmitterInfo() {
+RS_PARTICLE_EMITTER_INFO &AParticleComponent::getEmitterInfo() {
 #ifdef _DEBUG
   assert(RSParticleEmitterPtr);
 #endif // _DEBUG
   return RSParticleEmitterPtr->getRSParticleEmitterInfo();
 }
 
-void
-AParticleComponent::syncDataFromTransform() {
+void AParticleComponent::syncDataFromTransform() {
   ATransformComponent *Atc =
       getActorOwner()->getComponent<ATransformComponent>();
 #ifdef _DEBUG

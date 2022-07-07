@@ -12,8 +12,7 @@ AnimationSystem::AnimationSystem(SystemExecutive *SysExecutive)
 
 AnimationSystem::~AnimationSystem() {}
 
-bool
-AnimationSystem::init() {
+bool AnimationSystem::init() {
 #ifdef _DEBUG
   assert(getSystemExecutive());
 #endif // _DEBUG
@@ -32,8 +31,7 @@ AnimationSystem::init() {
   return true;
 }
 
-void
-AnimationSystem::run(Timer &Timer) {
+void AnimationSystem::run(Timer &Timer) {
   for (auto &Aac : *AAnimateArrayPtr) {
     if (Aac.getCompStatus() == STATUS::ACTIVE) {
       Aac.update(Timer);
@@ -41,5 +39,4 @@ AnimationSystem::run(Timer &Timer) {
   }
 }
 
-void
-AnimationSystem::destory() {}
+void AnimationSystem::destory() {}

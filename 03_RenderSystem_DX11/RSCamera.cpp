@@ -42,13 +42,9 @@ RSCamera::RSCamera(const CAM_INFO *CamInfo)
 
 RSCamera::~RSCamera() {}
 
-RS_CAM_INFO *
-RSCamera::getRSCameraInfo() {
-  return &RSCameraInfo;
-}
+RS_CAM_INFO *RSCamera::getRSCameraInfo() { return &RSCameraInfo; }
 
-void
-RSCamera::resetRSCamera(const CAM_INFO *CamInfo) {
+void RSCamera::resetRSCamera(const CAM_INFO *CamInfo) {
   LensType = CamInfo->Type;
   CameraPosition = CamInfo->Position;
   CameraUpVector = CamInfo->UpVector;
@@ -73,8 +69,7 @@ RSCamera::resetRSCamera(const CAM_INFO *CamInfo) {
   calcProjMatrix();
 }
 
-void
-RSCamera::translateRSCamera(const XMFLOAT3 &Delta) {
+void RSCamera::translateRSCamera(const XMFLOAT3 &Delta) {
   XMVECTOR LookAtVec = XMLoadFloat3(&CameraLookAtVector);
   XMVECTOR UpVec = XMLoadFloat3(&CameraUpVector);
   XMVECTOR RightVec = XMVector3Cross(LookAtVec, UpVec);
@@ -93,8 +88,7 @@ RSCamera::translateRSCamera(const XMFLOAT3 &Delta) {
   calcViewMatrix();
 }
 
-void
-RSCamera::rotateRSCamera(float Vertical, float Horizontal) {
+void RSCamera::rotateRSCamera(float Vertical, float Horizontal) {
   XMVECTOR LookAtVec = XMLoadFloat3(&CameraLookAtVector);
   XMVECTOR UpVec = XMLoadFloat3(&CameraUpVector);
   XMVECTOR RightVec = XMVector3Cross(LookAtVec, UpVec);
@@ -113,8 +107,7 @@ RSCamera::rotateRSCamera(float Vertical, float Horizontal) {
   calcViewMatrix();
 }
 
-void
-RSCamera::rotateRSCamera(const XMFLOAT3 &DeltaAngle) {
+void RSCamera::rotateRSCamera(const XMFLOAT3 &DeltaAngle) {
   XMVECTOR LookAtVec = XMLoadFloat3(&CameraLookAtVector);
   XMVECTOR UpVec = XMLoadFloat3(&CameraUpVector);
   XMMATRIX XMatrix = XMMatrixRotationX(DeltaAngle.x);
@@ -136,8 +129,7 @@ RSCamera::rotateRSCamera(const XMFLOAT3 &DeltaAngle) {
   calcViewMatrix();
 }
 
-void
-RSCamera::changeRSCameraFovY(float FovYOrHeight) {
+void RSCamera::changeRSCameraFovY(float FovYOrHeight) {
   switch (LensType) {
   case LENS_TYPE::PERSPECTIVE:
     PerspFovAngleY = FovYOrHeight;
@@ -153,32 +145,28 @@ RSCamera::changeRSCameraFovY(float FovYOrHeight) {
   calcProjMatrix();
 }
 
-void
-RSCamera::changeRSCameraNearFarZ(float Near, float Far) {
+void RSCamera::changeRSCameraNearFarZ(float Near, float Far) {
   NearZ = Near;
   FarZ = Far;
 
   calcProjMatrix();
 }
 
-void
-RSCamera::changeRSCameraPosition(const DirectX::XMFLOAT3 &Position) {
+void RSCamera::changeRSCameraPosition(const DirectX::XMFLOAT3 &Position) {
   CameraPosition = Position;
 
   calcViewMatrix();
 }
 
-void
-RSCamera::resetRSCameraRotation(const DirectX::XMFLOAT3 &LookAtVector,
-                                const DirectX::XMFLOAT3 &UpVector) {
+void RSCamera::resetRSCameraRotation(const DirectX::XMFLOAT3 &LookAtVector,
+                                     const DirectX::XMFLOAT3 &UpVector) {
   CameraLookAtVector = LookAtVector;
   CameraUpVector = UpVector;
 
   calcViewMatrix();
 }
 
-void
-RSCamera::calcViewMatrix() {
+void RSCamera::calcViewMatrix() {
   XMMATRIX ViewMat = XMMatrixLookAtLH(XMLoadFloat3(&CameraPosition),
                                       XMLoadFloat3(&CameraLookAtVector) +
                                           XMLoadFloat3(&CameraPosition),
@@ -195,8 +183,7 @@ RSCamera::calcViewMatrix() {
   RSCameraInfo.EyePosition = CameraPosition;
 }
 
-void
-RSCamera::calcProjMatrix() {
+void RSCamera::calcProjMatrix() {
   XMMATRIX ProjMat = {};
   XMVECTOR DetVec = {};
   XMMATRIX InvProjMat = {};

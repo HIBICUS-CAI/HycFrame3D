@@ -50,70 +50,33 @@ public:
   RSDevices();
   ~RSDevices();
 
-  bool
-  startUp(class RSRoot_DX11 *RootPtr, HWND WndHandle);
+  bool startUp(class RSRoot_DX11 *RootPtr, HWND WndHandle);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
+  ID3D11Device *getDevice() const { return DX11Device; }
+  ID3D11DeviceContext *getSTContext() const { return DX11ImmediateContext; }
 
-  ID3D11Device *
-  getDevice() const {
-    return DX11Device;
-  }
-
-  ID3D11DeviceContext *
-  getSTContext() const {
-    return DX11ImmediateContext;
-  }
-
-  ID3D11RenderTargetView *
-  getHighDynamicRtv() const {
-    return HighDynamicRtv;
-  }
-
-  ID3D11RenderTargetView *
-  getSwapChainRtv() const {
-    return SwapChainRtv;
-  }
-
-  ID3D11ShaderResourceView *
-  getHighDynamicSrv() const {
-    return HighDynamicSrv;
-  }
-
-  ID3D11UnorderedAccessView *
-  getHighDynamicUav() const {
+  ID3D11RenderTargetView *getHighDynamicRtv() const { return HighDynamicRtv; }
+  ID3D11RenderTargetView *getSwapChainRtv() const { return SwapChainRtv; }
+  ID3D11ShaderResourceView *getHighDynamicSrv() const { return HighDynamicSrv; }
+  ID3D11UnorderedAccessView *getHighDynamicUav() const {
     return HighDynamicUav;
   }
 
-  void
-  copyHighDynamicTexture(ID3D11DeviceContext *Context,
-                         ID3D11Resource *DstResource) {
+  void copyHighDynamicTexture(ID3D11DeviceContext *Context,
+                              ID3D11Resource *DstResource) {
     Context->CopyResource(DstResource, HighDynamicTexture);
   }
 
-  bool
-  getConcurrentCreateSupport() const;
+  bool getConcurrentCreateSupport() const;
+  bool getCommandListSupport() const;
+  UINT getCurrWndWidth() const;
+  UINT getCurrWndHeight() const;
 
-  bool
-  getCommandListSupport() const;
-
-  UINT
-  getCurrWndWidth() const;
-
-  UINT
-  getCurrWndHeight() const;
-
-  void
-  presentSwapChain();
+  void presentSwapChain();
 
 private:
-  bool
-  createDevices(HWND WndHandle, UINT Width, UINT Height);
-
-  bool
-  createHighDynamicTexture(UINT Width, UINT Height);
-
-  void
-  applyViewPort();
+  bool createDevices(HWND WndHandle, UINT Width, UINT Height);
+  bool createHighDynamicTexture(UINT Width, UINT Height);
+  void applyViewPort();
 };

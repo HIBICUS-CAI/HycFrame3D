@@ -26,8 +26,8 @@ RSMeshHelper::RSMeshHelper()
 
 RSMeshHelper::~RSMeshHelper() {}
 
-bool
-RSMeshHelper::startUp(RSRoot_DX11 *RootPtr, RSResourceManager *ResManagerPtr) {
+bool RSMeshHelper::startUp(RSRoot_DX11 *RootPtr,
+                           RSResourceManager *ResManagerPtr) {
   if (!RootPtr || !ResManagerPtr) {
     return false;
   }
@@ -40,23 +40,18 @@ RSMeshHelper::startUp(RSRoot_DX11 *RootPtr, RSResourceManager *ResManagerPtr) {
   return true;
 }
 
-void
-RSMeshHelper::cleanAndStop() {
+void RSMeshHelper::cleanAndStop() {
   if (GeoGenerator) {
     delete GeoGenerator;
     GeoGenerator = nullptr;
   }
 }
 
-RSGeometryGenerator *
-RSMeshHelper::getGeoGenerator() {
-  return GeoGenerator;
-}
+RSGeometryGenerator *RSMeshHelper::getGeoGenerator() { return GeoGenerator; }
 
-void
-RSMeshHelper::processSubMesh(RS_SUBMESH_DATA *OutResult,
-                             const SUBMESH_INFO *Info,
-                             LAYOUT_TYPE LayoutType) {
+void RSMeshHelper::processSubMesh(RS_SUBMESH_DATA *OutResult,
+                                  const SUBMESH_INFO *Info,
+                                  LAYOUT_TYPE LayoutType) {
   assert(Info);
 
   auto TopologyType = Info->TopologyType;
@@ -91,8 +86,7 @@ RSMeshHelper::processSubMesh(RS_SUBMESH_DATA *OutResult,
   }
 }
 
-ID3D11InputLayout *
-RSMeshHelper::refStaticInputLayout(LAYOUT_TYPE LayoutType) {
+ID3D11InputLayout *RSMeshHelper::refStaticInputLayout(LAYOUT_TYPE LayoutType) {
   ID3D11InputLayout *InputLayout = nullptr;
   std::string Name = "";
   switch (LayoutType) {
@@ -211,9 +205,9 @@ RSMeshHelper::createVertexBuffer(const void *const ConstRawVerticesPtr,
   }
 }
 
-void
-RSMeshHelper::createTexSrv(RS_SUBMESH_DATA *OutResult,
-                           const std::vector<std::string> *const Textures) {
+void RSMeshHelper::createTexSrv(
+    RS_SUBMESH_DATA *OutResult,
+    const std::vector<std::string> *const Textures) {
   auto &TexArrat = OutResult->Textures;
   static std::wstring WStr = L"";
   static std::string Name = "";
@@ -263,17 +257,15 @@ RSMeshHelper::createTexSrv(RS_SUBMESH_DATA *OutResult,
   }
 }
 
-void
-RSMeshHelper::createSubMeshMaterial(RS_SUBMESH_DATA *OutResult,
-                                    const MATERIAL_INFO *const Info) {
+void RSMeshHelper::createSubMeshMaterial(RS_SUBMESH_DATA *OutResult,
+                                         const MATERIAL_INFO *const Info) {
   assert(Info);
 
   RS_MATERIAL_INFO *MaterialPtr = &(OutResult->Material);
   memcpy_s(MaterialPtr, sizeof(RS_MATERIAL_INFO), Info, sizeof(MATERIAL_INFO));
 }
 
-void
-RSMeshHelper::releaseSubMesh(RS_SUBMESH_DATA &MeshData) {
+void RSMeshHelper::releaseSubMesh(RS_SUBMESH_DATA &MeshData) {
   SAFE_RELEASE(MeshData.IndexBuffer);
   SAFE_RELEASE(MeshData.VertexBuffer);
 }
@@ -1740,10 +1732,9 @@ RSGeometryGenerator::createSpriteRect(LAYOUT_TYPE LayoutType,
   return G_SpriteData;
 }
 
-void
-RSGeometryGenerator::processSubDivide(LAYOUT_TYPE LayoutType,
-                                      void *RawVertexArray,
-                                      std::vector<UINT> *RawIndexArray) {
+void RSGeometryGenerator::processSubDivide(LAYOUT_TYPE LayoutType,
+                                           void *RawVertexArray,
+                                           std::vector<UINT> *RawIndexArray) {
   switch (LayoutType) {
   case LAYOUT_TYPE::NORMAL_COLOR: {
     std::vector<vertex_type::ColorVertex> *ColorArray =
@@ -1897,8 +1888,7 @@ RSGeometryGenerator::createBasicMidPoint(const vertex_type::BasicVertex &V0,
   return V;
 }
 
-vertex_type::TangentVertex
-RSGeometryGenerator::createTangentMidPoint(
+vertex_type::TangentVertex RSGeometryGenerator::createTangentMidPoint(
     const vertex_type::TangentVertex &V0,
     const vertex_type::TangentVertex &V1) {
   dx::XMVECTOR P0 = dx::XMLoadFloat3(&V0.Position);
@@ -1944,16 +1934,15 @@ RSGeometryGenerator::createColorMidPoint(const vertex_type::ColorVertex &V0,
   return V;
 }
 
-void
-RSGeometryGenerator::buildCylinderTopCap(float BottomRadius,
-                                         float TopRadius,
-                                         float Height,
-                                         UINT SliceCount,
-                                         UINT StackCount,
-                                         LAYOUT_TYPE LayoutType,
-                                         void *RawVertexArray,
-                                         std::vector<UINT> *RawIndexArray,
-                                         const dx::XMFLOAT4 &VertexColor) {
+void RSGeometryGenerator::buildCylinderTopCap(float BottomRadius,
+                                              float TopRadius,
+                                              float Height,
+                                              UINT SliceCount,
+                                              UINT StackCount,
+                                              LAYOUT_TYPE LayoutType,
+                                              void *RawVertexArray,
+                                              std::vector<UINT> *RawIndexArray,
+                                              const dx::XMFLOAT4 &VertexColor) {
   switch (LayoutType) {
   case LAYOUT_TYPE::NORMAL_COLOR: {
     std::vector<vertex_type::ColorVertex> *ColorArray =
@@ -2063,16 +2052,16 @@ RSGeometryGenerator::buildCylinderTopCap(float BottomRadius,
   }
 }
 
-void
-RSGeometryGenerator::buildCylinderBottomCap(float BottomRadius,
-                                            float TopRadius,
-                                            float Height,
-                                            UINT SliceCount,
-                                            UINT StackCount,
-                                            LAYOUT_TYPE LayoutType,
-                                            void *RawVertexArray,
-                                            std::vector<UINT> *RawIndexArray,
-                                            const dx::XMFLOAT4 &VertexColor) {
+void RSGeometryGenerator::buildCylinderBottomCap(
+    float BottomRadius,
+    float TopRadius,
+    float Height,
+    UINT SliceCount,
+    UINT StackCount,
+    LAYOUT_TYPE LayoutType,
+    void *RawVertexArray,
+    std::vector<UINT> *RawIndexArray,
+    const dx::XMFLOAT4 &VertexColor) {
   switch (LayoutType) {
   case LAYOUT_TYPE::NORMAL_COLOR: {
     std::vector<vertex_type::ColorVertex> *ColorArray =

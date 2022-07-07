@@ -102,22 +102,19 @@ struct RENDER_EFFECT_CONFIG {
 
 static RENDER_EFFECT_CONFIG G_RenderEffectConfig = {};
 
-void
-setPipelineDeltaTime(float DeltaMilliSecond) {
+void setPipelineDeltaTime(float DeltaMilliSecond) {
   G_DeltaTimeInSecond = DeltaMilliSecond / 1000.f;
 }
 
-void
-setPipelineIBLTextures(ID3D11ShaderResourceView *EnvSrv,
-                       ID3D11ShaderResourceView *DiffSrv,
-                       ID3D11ShaderResourceView *SpecSrv) {
+void setPipelineIBLTextures(ID3D11ShaderResourceView *EnvSrv,
+                            ID3D11ShaderResourceView *DiffSrv,
+                            ID3D11ShaderResourceView *SpecSrv) {
   G_EnviMapSrv = EnvSrv;
   G_DiffMapSrv = DiffSrv;
   G_SpecMapSrv = SpecSrv;
 }
 
-bool
-createBasicPipeline() {
+bool createBasicPipeline() {
   {
     using namespace hyc;
     using namespace hyc::text;
@@ -532,13 +529,9 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT &Source)
 
 RSPass_MRT::~RSPass_MRT() {}
 
-RSPass_MRT *
-RSPass_MRT::clonePass() {
-  return new RSPass_MRT(*this);
-}
+RSPass_MRT *RSPass_MRT::clonePass() { return new RSPass_MRT(*this); }
 
-bool
-RSPass_MRT::initPass() {
+bool RSPass_MRT::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -566,8 +559,7 @@ RSPass_MRT::initPass() {
   return true;
 }
 
-void
-RSPass_MRT::releasePass() {
+void RSPass_MRT::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(AniVertexShader);
   RS_RELEASE(PixelShader);
@@ -585,8 +577,7 @@ RSPass_MRT::releasePass() {
   G_RSRoot->getResourceManager()->deleteResource("mrt-anisotropic");
 }
 
-void
-RSPass_MRT::execuatePass() {
+void RSPass_MRT::execuatePass() {
   ID3D11RenderTargetView *NullRtv = nullptr;
   static ID3D11RenderTargetView *MRtv[] = {GeoBufferRtv, AnisotropicRtv};
   context()->OMSetRenderTargets(2, MRtv, DepthDsv);
@@ -703,8 +694,7 @@ RSPass_MRT::execuatePass() {
   context()->OMSetRenderTargets(1, &NullRtv, nullptr);
 }
 
-bool
-RSPass_MRT::createShaders() {
+bool RSPass_MRT::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -772,8 +762,7 @@ RSPass_MRT::createShaders() {
   return true;
 }
 
-bool
-RSPass_MRT::createBuffers() {
+bool RSPass_MRT::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BDC = {};
 
@@ -807,8 +796,7 @@ RSPass_MRT::createBuffers() {
   return true;
 }
 
-bool
-RSPass_MRT::createViews() {
+bool RSPass_MRT::createViews() {
   HRESULT Hr = S_OK;
   D3D11_TEXTURE2D_DESC TexDesc = {};
   D3D11_RENDER_TARGET_VIEW_DESC RtvDesc = {};
@@ -969,8 +957,7 @@ RSPass_MRT::createViews() {
   return true;
 }
 
-bool
-RSPass_MRT::createSamplers() {
+bool RSPass_MRT::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SampDesc = {};
   ZeroMemory(&SampDesc, sizeof(SampDesc));
@@ -1054,13 +1041,9 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao &Source)
 
 RSPass_Ssao::~RSPass_Ssao() {}
 
-RSPass_Ssao *
-RSPass_Ssao::clonePass() {
-  return new RSPass_Ssao(*this);
-}
+RSPass_Ssao *RSPass_Ssao::clonePass() { return new RSPass_Ssao(*this); }
 
-bool
-RSPass_Ssao::initPass() {
+bool RSPass_Ssao::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -1117,8 +1100,7 @@ RSPass_Ssao::initPass() {
   return true;
 }
 
-void
-RSPass_Ssao::releasePass() {
+void RSPass_Ssao::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(PixelShader);
   RS_RELEASE(CompressVertexShader);
@@ -1137,8 +1119,7 @@ RSPass_Ssao::releasePass() {
   G_RSRoot->getResourceManager()->deleteResource("ssao-tex-compress-ssao");
 }
 
-void
-RSPass_Ssao::execuatePass() {
+void RSPass_Ssao::execuatePass() {
   ID3D11RenderTargetView *NullRtv = nullptr;
   ID3D11ShaderResourceView *NullSrv = nullptr;
   context()->OMSetRenderTargets(1, &RenderTargetView, nullptr);
@@ -1219,8 +1200,7 @@ RSPass_Ssao::execuatePass() {
   context()->PSSetShaderResources(3, 1, &NullSrv);
 }
 
-bool
-RSPass_Ssao::createShaders() {
+bool RSPass_Ssao::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -1289,8 +1269,7 @@ RSPass_Ssao::createShaders() {
   return true;
 }
 
-bool
-RSPass_Ssao::createBuffers() {
+bool RSPass_Ssao::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -1357,8 +1336,7 @@ RSPass_Ssao::createBuffers() {
   return true;
 }
 
-bool
-RSPass_Ssao::createTextures() {
+bool RSPass_Ssao::createTextures() {
   HRESULT Hr = S_OK;
   RS_RESOURCE_INFO Dti = {};
   D3D11_TEXTURE2D_DESC TexDesc = {};
@@ -1520,8 +1498,7 @@ RSPass_Ssao::createTextures() {
   return true;
 }
 
-bool
-RSPass_Ssao::createViews() {
+bool RSPass_Ssao::createViews() {
   RandomMapSrv =
       G_RSRoot->getResourceManager()->getResource("random-tex-ssao")->Srv;
   GeoBufferSrv =
@@ -1550,8 +1527,7 @@ RSPass_Ssao::createViews() {
   return true;
 }
 
-bool
-RSPass_Ssao::createSamplers() {
+bool RSPass_Ssao::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SamDesc = {};
   ZeroMemory(&SamDesc, sizeof(SamDesc));
@@ -1626,13 +1602,9 @@ RSPass_KBBlur::RSPass_KBBlur(const RSPass_KBBlur &Source)
 
 RSPass_KBBlur::~RSPass_KBBlur() {}
 
-RSPass_KBBlur *
-RSPass_KBBlur::clonePass() {
-  return new RSPass_KBBlur(*this);
-}
+RSPass_KBBlur *RSPass_KBBlur::clonePass() { return new RSPass_KBBlur(*this); }
 
-bool
-RSPass_KBBlur::initPass() {
+bool RSPass_KBBlur::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -1649,14 +1621,12 @@ RSPass_KBBlur::initPass() {
   return true;
 }
 
-void
-RSPass_KBBlur::releasePass() {
+void RSPass_KBBlur::releasePass() {
   RS_RELEASE(HoriBlurShader);
   RS_RELEASE(VertBlurShader);
 }
 
-void
-RSPass_KBBlur::execuatePass() {
+void RSPass_KBBlur::execuatePass() {
   ID3D11ShaderResourceView *Srv[] = {GeoBufferSrv, DepthMapSrv};
   static ID3D11UnorderedAccessView *NullUav = nullptr;
   static ID3D11ShaderResourceView *NullSrv[] = {nullptr, nullptr};
@@ -1686,8 +1656,7 @@ RSPass_KBBlur::execuatePass() {
   }
 }
 
-bool
-RSPass_KBBlur::createShaders() {
+bool RSPass_KBBlur::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -1724,8 +1693,7 @@ RSPass_KBBlur::createShaders() {
   return true;
 }
 
-bool
-RSPass_KBBlur::createViews() {
+bool RSPass_KBBlur::createViews() {
   GeoBufferSrv =
       G_RSRoot->getResourceManager()->getResource("mrt-geo-buffer")->Srv;
   DepthMapSrv = G_RSRoot->getResourceManager()->getResource("mrt-depth")->Srv;
@@ -1762,13 +1730,9 @@ RSPass_Shadow::RSPass_Shadow(const RSPass_Shadow &Source)
 
 RSPass_Shadow::~RSPass_Shadow() {}
 
-RSPass_Shadow *
-RSPass_Shadow::clonePass() {
-  return new RSPass_Shadow(*this);
-}
+RSPass_Shadow *RSPass_Shadow::clonePass() { return new RSPass_Shadow(*this); }
 
-bool
-RSPass_Shadow::initPass() {
+bool RSPass_Shadow::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -1797,8 +1761,7 @@ RSPass_Shadow::initPass() {
   return true;
 }
 
-void
-RSPass_Shadow::releasePass() {
+void RSPass_Shadow::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(AniVertexShader);
   RS_RELEASE(RasterizerState);
@@ -1814,8 +1777,7 @@ RSPass_Shadow::releasePass() {
   G_RSRoot->getResourceManager()->deleteResource("light-depth-light-dep3");
 }
 
-void
-RSPass_Shadow::execuatePass() {
+void RSPass_Shadow::execuatePass() {
   ID3D11RenderTargetView *NullRtv = nullptr;
   // STContext()->VSSetShader(mVertexShader, nullptr, 0);
   context()->PSSetShader(nullptr, nullptr, 0);
@@ -1931,8 +1893,7 @@ RSPass_Shadow::execuatePass() {
   context()->RSSetState(nullptr);
 }
 
-bool
-RSPass_Shadow::createShaders() {
+bool RSPass_Shadow::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -1970,8 +1931,7 @@ RSPass_Shadow::createShaders() {
   return true;
 }
 
-bool
-RSPass_Shadow::createStates() {
+bool RSPass_Shadow::createStates() {
   HRESULT Hr = S_OK;
   D3D11_RASTERIZER_DESC ShadowRasterDesc = {};
   ZeroMemory(&ShadowRasterDesc, sizeof(ShadowRasterDesc));
@@ -1995,8 +1955,7 @@ RSPass_Shadow::createStates() {
   return true;
 }
 
-bool
-RSPass_Shadow::createBuffers() {
+bool RSPass_Shadow::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -2030,8 +1989,7 @@ RSPass_Shadow::createBuffers() {
   return true;
 }
 
-bool
-RSPass_Shadow::createViews() {
+bool RSPass_Shadow::createViews() {
   HRESULT Hr = S_OK;
   ID3D11Texture2D *DepthTex = nullptr;
   D3D11_TEXTURE2D_DESC TexDesc = {};
@@ -2122,10 +2080,7 @@ RSPass_Shadow::createViews() {
   return true;
 }
 
-bool
-RSPass_Shadow::createSamplers() {
-  return true;
-}
+bool RSPass_Shadow::createSamplers() { return true; }
 
 RSPass_Defered::RSPass_Defered(std::string &Name,
                                PASS_TYPE Type,
@@ -2166,13 +2121,11 @@ RSPass_Defered::RSPass_Defered(const RSPass_Defered &Source)
 
 RSPass_Defered::~RSPass_Defered() {}
 
-RSPass_Defered *
-RSPass_Defered::clonePass() {
+RSPass_Defered *RSPass_Defered::clonePass() {
   return new RSPass_Defered(*this);
 }
 
-bool
-RSPass_Defered::initPass() {
+bool RSPass_Defered::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -2197,8 +2150,7 @@ RSPass_Defered::initPass() {
   return true;
 }
 
-void
-RSPass_Defered::releasePass() {
+void RSPass_Defered::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(PixelShader);
   RS_RELEASE(LinearWrapSampler);
@@ -2216,8 +2168,7 @@ RSPass_Defered::releasePass() {
   RS_RELEASE(IndexBuffer);
 }
 
-void
-RSPass_Defered::execuatePass() {
+void RSPass_Defered::execuatePass() {
   context()->OMSetRenderTargets(1, &RenderTargetView, nullptr);
   context()->RSSetViewports(1, &G_ViewPort);
   context()->ClearRenderTargetView(RenderTargetView, dx::Colors::DarkGreen);
@@ -2355,8 +2306,7 @@ RSPass_Defered::execuatePass() {
   context()->PSSetShaderResources(0, 14, Nullsrvs);
 }
 
-bool
-RSPass_Defered::createShaders() {
+bool RSPass_Defered::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -2398,8 +2348,7 @@ RSPass_Defered::createShaders() {
   return true;
 }
 
-bool
-RSPass_Defered::createBuffers() {
+bool RSPass_Defered::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -2494,8 +2443,7 @@ RSPass_Defered::createBuffers() {
   return true;
 }
 
-bool
-RSPass_Defered::createViews() {
+bool RSPass_Defered::createViews() {
   RenderTargetView = G_RSRoot->getDevices()->getHighDynamicRtv();
 
   GeoBufferSrv =
@@ -2550,8 +2498,7 @@ RSPass_Defered::createViews() {
   return true;
 }
 
-bool
-RSPass_Defered::createSamplers() {
+bool RSPass_Defered::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SampDesc = {};
   ZeroMemory(&SampDesc, sizeof(SampDesc));
@@ -2638,13 +2585,11 @@ RSPass_SkyShpere::RSPass_SkyShpere(const RSPass_SkyShpere &Source)
 
 RSPass_SkyShpere::~RSPass_SkyShpere() {}
 
-RSPass_SkyShpere *
-RSPass_SkyShpere::clonePass() {
+RSPass_SkyShpere *RSPass_SkyShpere::clonePass() {
   return new RSPass_SkyShpere(*this);
 }
 
-bool
-RSPass_SkyShpere::initPass() {
+bool RSPass_SkyShpere::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -2684,8 +2629,7 @@ RSPass_SkyShpere::initPass() {
   return true;
 }
 
-void
-RSPass_SkyShpere::releasePass() {
+void RSPass_SkyShpere::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(PixelShader);
   RS_RELEASE(RasterizerState);
@@ -2697,8 +2641,7 @@ RSPass_SkyShpere::releasePass() {
   G_RSRoot->getMeshHelper()->releaseSubMesh(SkySphereMesh);
 }
 
-void
-RSPass_SkyShpere::execuatePass() {
+void RSPass_SkyShpere::execuatePass() {
   ID3D11RenderTargetView *NullRtv = nullptr;
   context()->OMSetRenderTargets(1, &RenderTargerView, DepthStencilView);
   context()->RSSetViewports(1, &G_ViewPort);
@@ -2748,8 +2691,7 @@ RSPass_SkyShpere::execuatePass() {
   context()->OMSetDepthStencilState(nullptr, 0);
 }
 
-bool
-RSPass_SkyShpere::createShaders() {
+bool RSPass_SkyShpere::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -2788,8 +2730,7 @@ RSPass_SkyShpere::createShaders() {
   return true;
 }
 
-bool
-RSPass_SkyShpere::createStates() {
+bool RSPass_SkyShpere::createStates() {
   HRESULT Hr = S_OK;
   D3D11_RASTERIZER_DESC RasDesc = {};
   D3D11_DEPTH_STENCIL_DESC DepDesc = {};
@@ -2814,8 +2755,7 @@ RSPass_SkyShpere::createStates() {
   return true;
 }
 
-bool
-RSPass_SkyShpere::createBuffers() {
+bool RSPass_SkyShpere::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -2834,8 +2774,7 @@ RSPass_SkyShpere::createBuffers() {
   return true;
 }
 
-bool
-RSPass_SkyShpere::createViews() {
+bool RSPass_SkyShpere::createViews() {
   RenderTargerView = G_RSRoot->getDevices()->getHighDynamicRtv();
   DepthStencilView =
       G_RSRoot->getResourceManager()->getResource("mrt-depth")->Dsv;
@@ -2855,8 +2794,7 @@ RSPass_SkyShpere::createViews() {
   return true;
 }
 
-bool
-RSPass_SkyShpere::createSamplers() {
+bool RSPass_SkyShpere::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SamDesc = {};
   ZeroMemory(&SamDesc, sizeof(SamDesc));
@@ -2899,13 +2837,9 @@ RSPass_Bloom::RSPass_Bloom(const RSPass_Bloom &Source)
 
 RSPass_Bloom::~RSPass_Bloom() {}
 
-RSPass_Bloom *
-RSPass_Bloom::clonePass() {
-  return new RSPass_Bloom(*this);
-}
+RSPass_Bloom *RSPass_Bloom::clonePass() { return new RSPass_Bloom(*this); }
 
-bool
-RSPass_Bloom::initPass() {
+bool RSPass_Bloom::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -2935,8 +2869,7 @@ RSPass_Bloom::initPass() {
   return true;
 }
 
-void
-RSPass_Bloom::releasePass() {
+void RSPass_Bloom::releasePass() {
   G_RSRoot->getResourceManager()->deleteResource("bloom-light");
   G_RSRoot->getResourceManager()->deleteResource("bloom-compress-light");
 
@@ -2950,8 +2883,7 @@ RSPass_Bloom::releasePass() {
   RS_RELEASE(Sampler);
 }
 
-void
-RSPass_Bloom::execuatePass() {
+void RSPass_Bloom::execuatePass() {
   context()->OMSetRenderTargets(1, &Rtv, DepthDsv);
   context()->RSSetViewports(1, &G_ViewPort);
   context()->VSSetShader(VertexShader, nullptr, 0);
@@ -3008,8 +2940,7 @@ RSPass_Bloom::execuatePass() {
   context()->VSSetShaderResources(0, 1, NullSrv);
 }
 
-bool
-RSPass_Bloom::createShaders() {
+bool RSPass_Bloom::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -3061,8 +2992,7 @@ RSPass_Bloom::createShaders() {
   return true;
 }
 
-bool
-RSPass_Bloom::createSamplers() {
+bool RSPass_Bloom::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SamDesc = {};
   ZeroMemory(&SamDesc, sizeof(SamDesc));
@@ -3082,8 +3012,7 @@ RSPass_Bloom::createSamplers() {
   return true;
 }
 
-bool
-RSPass_Bloom::createBuffers() {
+bool RSPass_Bloom::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -3157,8 +3086,7 @@ RSPass_Bloom::createBuffers() {
   return true;
 }
 
-bool
-RSPass_Bloom::createViews() {
+bool RSPass_Bloom::createViews() {
   HRESULT Hr = S_OK;
   D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
 
@@ -3257,18 +3185,15 @@ RSPass_PriticleSetUp::RSPass_PriticleSetUp(const RSPass_PriticleSetUp &Source)
 
 RSPass_PriticleSetUp::~RSPass_PriticleSetUp() {}
 
-const RS_TILING_CONSTANT &
-RSPass_PriticleSetUp::getTilingConstantInfo() const {
+const RS_TILING_CONSTANT &RSPass_PriticleSetUp::getTilingConstantInfo() const {
   return TilingConstant;
 }
 
-RSPass_PriticleSetUp *
-RSPass_PriticleSetUp::clonePass() {
+RSPass_PriticleSetUp *RSPass_PriticleSetUp::clonePass() {
   return new RSPass_PriticleSetUp(*this);
 }
 
-bool
-RSPass_PriticleSetUp::initPass() {
+bool RSPass_PriticleSetUp::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -3421,8 +3346,7 @@ RSPass_PriticleSetUp::initPass() {
   return true;
 }
 
-void
-RSPass_PriticleSetUp::releasePass() {
+void RSPass_PriticleSetUp::releasePass() {
   auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
   ResourceManager->deleteResource(PTC_RENDER_BUFFER_NAME);
   ResourceManager->deleteResource(PTC_A_NAME);
@@ -3445,11 +3369,9 @@ RSPass_PriticleSetUp::releasePass() {
   ResourceManager->deleteResource(PTC_TIME_CONSTANT_NAME);
 }
 
-void
-RSPass_PriticleSetUp::execuatePass() {}
+void RSPass_PriticleSetUp::execuatePass() {}
 
-bool
-RSPass_PriticleSetUp::createBuffers() {
+bool RSPass_PriticleSetUp::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
   D3D11_TEXTURE2D_DESC TexDesc = {};
@@ -3633,8 +3555,7 @@ RSPass_PriticleSetUp::createBuffers() {
   return true;
 }
 
-bool
-RSPass_PriticleSetUp::createViews() {
+bool RSPass_PriticleSetUp::createViews() {
   HRESULT Hr = S_OK;
   D3D11_UNORDERED_ACCESS_VIEW_DESC UavDesc = {};
   D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
@@ -3850,13 +3771,11 @@ RSPass_PriticleEmitSimulate::RSPass_PriticleEmitSimulate(
 
 RSPass_PriticleEmitSimulate::~RSPass_PriticleEmitSimulate() {}
 
-RSPass_PriticleEmitSimulate *
-RSPass_PriticleEmitSimulate::clonePass() {
+RSPass_PriticleEmitSimulate *RSPass_PriticleEmitSimulate::clonePass() {
   return new RSPass_PriticleEmitSimulate(*this);
 }
 
-bool
-RSPass_PriticleEmitSimulate::initPass() {
+bool RSPass_PriticleEmitSimulate::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -3890,16 +3809,14 @@ RSPass_PriticleEmitSimulate::initPass() {
   return true;
 }
 
-void
-RSPass_PriticleEmitSimulate::releasePass() {
+void RSPass_PriticleEmitSimulate::releasePass() {
   RS_RELEASE(SimulateShader);
   RS_RELEASE(EmitParticleShader);
   RS_RELEASE(ResetParticlesShader);
   RS_RELEASE(InitDeadListShader);
 }
 
-void
-RSPass_PriticleEmitSimulate::execuatePass() {
+void RSPass_PriticleEmitSimulate::execuatePass() {
   if (!RSParticleContainerPtr->getAllParticleEmitters()->size()) {
     return;
   }
@@ -4065,8 +3982,7 @@ RSPass_PriticleEmitSimulate::execuatePass() {
   }
 }
 
-bool
-RSPass_PriticleEmitSimulate::createSampler() {
+bool RSPass_PriticleEmitSimulate::createSampler() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SampDesc = {};
   ZeroMemory(&SampDesc, sizeof(SampDesc));
@@ -4086,8 +4002,7 @@ RSPass_PriticleEmitSimulate::createSampler() {
   return true;
 }
 
-bool
-RSPass_PriticleEmitSimulate::createShaders() {
+bool RSPass_PriticleEmitSimulate::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -4154,8 +4069,7 @@ RSPass_PriticleEmitSimulate::createShaders() {
   return true;
 }
 
-bool
-RSPass_PriticleEmitSimulate::checkResources() {
+bool RSPass_PriticleEmitSimulate::checkResources() {
   auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
   if (!ResourceManager) {
     return false;
@@ -4285,13 +4199,11 @@ RSPass_PriticleTileRender::RSPass_PriticleTileRender(
 
 RSPass_PriticleTileRender::~RSPass_PriticleTileRender() {}
 
-RSPass_PriticleTileRender *
-RSPass_PriticleTileRender::clonePass() {
+RSPass_PriticleTileRender *RSPass_PriticleTileRender::clonePass() {
   return new RSPass_PriticleTileRender(*this);
 }
 
-bool
-RSPass_PriticleTileRender::initPass() {
+bool RSPass_PriticleTileRender::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -4324,8 +4236,7 @@ RSPass_PriticleTileRender::initPass() {
   return true;
 }
 
-void
-RSPass_PriticleTileRender::releasePass() {
+void RSPass_PriticleTileRender::releasePass() {
   RS_RELEASE(CoarseCullingShader);
   RS_RELEASE(TileCullingShader);
   RS_RELEASE(TileRenderShader);
@@ -4338,8 +4249,7 @@ RSPass_PriticleTileRender::releasePass() {
   RS_RELEASE(ParticleTex_Srv);
 }
 
-void
-RSPass_PriticleTileRender::execuatePass() {
+void RSPass_PriticleTileRender::execuatePass() {
   if (!G_RSRoot->getParticlesContainer()->getAllParticleEmitters()->size()) {
     return;
   }
@@ -4568,8 +4478,7 @@ RSPass_PriticleTileRender::execuatePass() {
   }
 }
 
-bool
-RSPass_PriticleTileRender::createShaders() {
+bool RSPass_PriticleTileRender::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -4651,8 +4560,7 @@ RSPass_PriticleTileRender::createShaders() {
   return true;
 }
 
-bool
-RSPass_PriticleTileRender::createViews() {
+bool RSPass_PriticleTileRender::createViews() {
   HRESULT Hr = S_OK;
 
   Hr = dx::CreateDDSTextureFromFile(device(),
@@ -4665,8 +4573,7 @@ RSPass_PriticleTileRender::createViews() {
   return true;
 }
 
-bool
-RSPass_PriticleTileRender::createSampler() {
+bool RSPass_PriticleTileRender::createSampler() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SampDesc = {};
   ZeroMemory(&SampDesc, sizeof(SampDesc));
@@ -4686,8 +4593,7 @@ RSPass_PriticleTileRender::createSampler() {
   return true;
 }
 
-bool
-RSPass_PriticleTileRender::createBlend() {
+bool RSPass_PriticleTileRender::createBlend() {
   HRESULT Hr = S_OK;
 
   D3D11_BLEND_DESC BldDesc = {};
@@ -4710,8 +4616,7 @@ RSPass_PriticleTileRender::createBlend() {
   return true;
 }
 
-bool
-RSPass_PriticleTileRender::checkResources() {
+bool RSPass_PriticleTileRender::checkResources() {
   auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
   if (!ResourceManager) {
     return false;
@@ -4845,13 +4750,9 @@ RSPass_Sprite::RSPass_Sprite(const RSPass_Sprite &Source)
 
 RSPass_Sprite::~RSPass_Sprite() {}
 
-RSPass_Sprite *
-RSPass_Sprite::clonePass() {
-  return new RSPass_Sprite(*this);
-}
+RSPass_Sprite *RSPass_Sprite::clonePass() { return new RSPass_Sprite(*this); }
 
-bool
-RSPass_Sprite::initPass() {
+bool RSPass_Sprite::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -4883,8 +4784,7 @@ RSPass_Sprite::initPass() {
   return true;
 }
 
-void
-RSPass_Sprite::releasePass() {
+void RSPass_Sprite::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(PixelShader);
   RS_RELEASE(DepthStencilState);
@@ -4895,8 +4795,7 @@ RSPass_Sprite::releasePass() {
   RS_RELEASE(InstanceStructedBuffer);
 }
 
-void
-RSPass_Sprite::execuatePass() {
+void RSPass_Sprite::execuatePass() {
   ID3D11RenderTargetView *NullRtv = nullptr;
   context()->OMSetRenderTargets(1, &RenderTargetView, nullptr);
   context()->RSSetViewports(1, &G_ViewPort);
@@ -4955,8 +4854,7 @@ RSPass_Sprite::execuatePass() {
   context()->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
 }
 
-bool
-RSPass_Sprite::createShaders() {
+bool RSPass_Sprite::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -4993,8 +4891,7 @@ RSPass_Sprite::createShaders() {
   return true;
 }
 
-bool
-RSPass_Sprite::createStates() {
+bool RSPass_Sprite::createStates() {
   HRESULT Hr = S_OK;
 
   D3D11_DEPTH_STENCIL_DESC DepDesc = {};
@@ -5024,8 +4921,7 @@ RSPass_Sprite::createStates() {
   return true;
 }
 
-bool
-RSPass_Sprite::createBuffers() {
+bool RSPass_Sprite::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -5051,8 +4947,7 @@ RSPass_Sprite::createBuffers() {
   return true;
 }
 
-bool
-RSPass_Sprite::createViews() {
+bool RSPass_Sprite::createViews() {
   RenderTargetView = G_RSRoot->getDevices()->getSwapChainRtv();
 
   D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
@@ -5077,8 +4972,7 @@ RSPass_Sprite::createViews() {
   return true;
 }
 
-bool
-RSPass_Sprite::createSamplers() {
+bool RSPass_Sprite::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SampDesc = {};
   ZeroMemory(&SampDesc, sizeof(SampDesc));
@@ -5124,13 +5018,11 @@ RSPass_SimpleLight::RSPass_SimpleLight(const RSPass_SimpleLight &Source)
 
 RSPass_SimpleLight::~RSPass_SimpleLight() {}
 
-RSPass_SimpleLight *
-RSPass_SimpleLight::clonePass() {
+RSPass_SimpleLight *RSPass_SimpleLight::clonePass() {
   return new RSPass_SimpleLight(*this);
 }
 
-bool
-RSPass_SimpleLight::initPass() {
+bool RSPass_SimpleLight::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -5153,8 +5045,7 @@ RSPass_SimpleLight::initPass() {
   return true;
 }
 
-void
-RSPass_SimpleLight::releasePass() {
+void RSPass_SimpleLight::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(PixelShader);
   RS_RELEASE(LinearWrapSampler);
@@ -5162,8 +5053,7 @@ RSPass_SimpleLight::releasePass() {
   RS_RELEASE(IndexBuffer);
 }
 
-void
-RSPass_SimpleLight::execuatePass() {
+void RSPass_SimpleLight::execuatePass() {
   context()->OMSetRenderTargets(1, &RenderTargetView, nullptr);
   context()->RSSetViewports(1, &G_ViewPort);
   context()->ClearRenderTargetView(RenderTargetView, dx::Colors::DarkGreen);
@@ -5193,8 +5083,7 @@ RSPass_SimpleLight::execuatePass() {
   context()->PSSetShaderResources(0, 2, NullSrv);
 }
 
-bool
-RSPass_SimpleLight::createShaders() {
+bool RSPass_SimpleLight::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -5233,8 +5122,7 @@ RSPass_SimpleLight::createShaders() {
   return true;
 }
 
-bool
-RSPass_SimpleLight::createBuffers() {
+bool RSPass_SimpleLight::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -5281,8 +5169,7 @@ RSPass_SimpleLight::createBuffers() {
   return true;
 }
 
-bool
-RSPass_SimpleLight::createViews() {
+bool RSPass_SimpleLight::createViews() {
   RenderTargetView = G_RSRoot->getDevices()->getSwapChainRtv();
 
   GeoBufferSrv =
@@ -5294,8 +5181,7 @@ RSPass_SimpleLight::createViews() {
   return true;
 }
 
-bool
-RSPass_SimpleLight::createSamplers() {
+bool RSPass_SimpleLight::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SampDesc = {};
   ZeroMemory(&SampDesc, sizeof(SampDesc));
@@ -5371,13 +5257,11 @@ RSPass_Billboard::RSPass_Billboard(const RSPass_Billboard &Source)
 
 RSPass_Billboard::~RSPass_Billboard() {}
 
-RSPass_Billboard *
-RSPass_Billboard::clonePass() {
+RSPass_Billboard *RSPass_Billboard::clonePass() {
   return new RSPass_Billboard(*this);
 }
 
-bool
-RSPass_Billboard::initPass() {
+bool RSPass_Billboard::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -5409,8 +5293,7 @@ RSPass_Billboard::initPass() {
   return true;
 }
 
-void
-RSPass_Billboard::releasePass() {
+void RSPass_Billboard::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(GeometryShader);
   RS_RELEASE(PixelShader);
@@ -5422,8 +5305,7 @@ RSPass_Billboard::releasePass() {
   RS_RELEASE(InstanceStructedBufferSrv);
 }
 
-void
-RSPass_Billboard::execuatePass() {
+void RSPass_Billboard::execuatePass() {
   context()->OMSetRenderTargets(1, &RenderTargetView, DepthStencilView);
   context()->RSSetViewports(1, &G_ViewPort);
   static float Factor[4] = {0.f, 0.f, 0.f, 0.f};
@@ -5491,8 +5373,7 @@ RSPass_Billboard::execuatePass() {
   context()->PSSetShaderResources(0, 1, NullSrv);
 }
 
-bool
-RSPass_Billboard::createShaders() {
+bool RSPass_Billboard::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -5547,8 +5428,7 @@ RSPass_Billboard::createShaders() {
   return true;
 }
 
-bool
-RSPass_Billboard::createStates() {
+bool RSPass_Billboard::createStates() {
   HRESULT Hr = S_OK;
 
   D3D11_BLEND_DESC BldDesc = {};
@@ -5570,8 +5450,7 @@ RSPass_Billboard::createStates() {
   return true;
 }
 
-bool
-RSPass_Billboard::createBuffers() {
+bool RSPass_Billboard::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -5597,8 +5476,7 @@ RSPass_Billboard::createBuffers() {
   return true;
 }
 
-bool
-RSPass_Billboard::createViews() {
+bool RSPass_Billboard::createViews() {
   RenderTargetView = G_RSRoot->getDevices()->getHighDynamicRtv();
 
   DepthStencilView =
@@ -5630,8 +5508,7 @@ RSPass_Billboard::createViews() {
   return true;
 }
 
-bool
-RSPass_Billboard::createSamplers() {
+bool RSPass_Billboard::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SamDesc = {};
   ZeroMemory(&SamDesc, sizeof(SamDesc));
@@ -5700,13 +5577,11 @@ RSPass_Tonemapping::RSPass_Tonemapping(const RSPass_Tonemapping &Source)
 
 RSPass_Tonemapping::~RSPass_Tonemapping() {}
 
-RSPass_Tonemapping *
-RSPass_Tonemapping::clonePass() {
+RSPass_Tonemapping *RSPass_Tonemapping::clonePass() {
   return new RSPass_Tonemapping(*this);
 }
 
-bool
-RSPass_Tonemapping::initPass() {
+bool RSPass_Tonemapping::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -5723,8 +5598,7 @@ RSPass_Tonemapping::initPass() {
   return true;
 }
 
-void
-RSPass_Tonemapping::releasePass() {
+void RSPass_Tonemapping::releasePass() {
   RS_RELEASE(DynamicExposureShader);
   RS_RELEASE(AverLuminShader);
   RS_RELEASE(ToneMapShader);
@@ -5736,8 +5610,7 @@ RSPass_Tonemapping::releasePass() {
   RS_RELEASE(AverageLuminUavArray[1]);
 }
 
-void
-RSPass_Tonemapping::execuatePass() {
+void RSPass_Tonemapping::execuatePass() {
   static ID3D11UnorderedAccessView *NullUav = nullptr;
   static ID3D11ShaderResourceView *NullSrv = nullptr;
 
@@ -5780,8 +5653,7 @@ RSPass_Tonemapping::execuatePass() {
   context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
 }
 
-bool
-RSPass_Tonemapping::createShaders() {
+bool RSPass_Tonemapping::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -5858,8 +5730,7 @@ RSPass_Tonemapping::createShaders() {
   return true;
 }
 
-bool
-RSPass_Tonemapping::createViews() {
+bool RSPass_Tonemapping::createViews() {
   HdrUav = G_RSRoot->getDevices()->getHighDynamicUav();
   HdrSrv = G_RSRoot->getDevices()->getHighDynamicSrv();
 
@@ -5984,13 +5855,11 @@ RSPass_BloomHdr::RSPass_BloomHdr(const RSPass_BloomHdr &Source)
 
 RSPass_BloomHdr::~RSPass_BloomHdr() {}
 
-RSPass_BloomHdr *
-RSPass_BloomHdr::clonePass() {
+RSPass_BloomHdr *RSPass_BloomHdr::clonePass() {
   return new RSPass_BloomHdr(*this);
 }
 
-bool
-RSPass_BloomHdr::initPass() {
+bool RSPass_BloomHdr::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -6013,8 +5882,7 @@ RSPass_BloomHdr::initPass() {
   return true;
 }
 
-void
-RSPass_BloomHdr::releasePass() {
+void RSPass_BloomHdr::releasePass() {
   RS_RELEASE(FilterPixelShader);
   RS_RELEASE(UpSampleShader);
   RS_RELEASE(BlurHoriShader);
@@ -6037,8 +5905,7 @@ RSPass_BloomHdr::releasePass() {
   }
 }
 
-void
-RSPass_BloomHdr::execuatePass() {
+void RSPass_BloomHdr::execuatePass() {
   static ID3D11UnorderedAccessView *NullUav = nullptr;
   static ID3D11ShaderResourceView *NullSrv = nullptr;
   UINT Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
@@ -6162,8 +6029,7 @@ RSPass_BloomHdr::execuatePass() {
   context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
 }
 
-bool
-RSPass_BloomHdr::createShaders() {
+bool RSPass_BloomHdr::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -6309,8 +6175,7 @@ RSPass_BloomHdr::createShaders() {
   return true;
 }
 
-bool
-RSPass_BloomHdr::createViews() {
+bool RSPass_BloomHdr::createViews() {
   HdrUav = G_RSRoot->getDevices()->getHighDynamicUav();
   HdrSrv = G_RSRoot->getDevices()->getHighDynamicSrv();
 
@@ -6395,8 +6260,7 @@ RSPass_BloomHdr::createViews() {
   return true;
 }
 
-bool
-RSPass_BloomHdr::createBuffers() {
+bool RSPass_BloomHdr::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -6419,8 +6283,7 @@ RSPass_BloomHdr::createBuffers() {
   return true;
 }
 
-bool
-RSPass_BloomHdr::createSampler() {
+bool RSPass_BloomHdr::createSampler() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SamDesc = {};
   ZeroMemory(&SamDesc, sizeof(SamDesc));
@@ -6463,13 +6326,11 @@ RSPass_ToSwapChain::RSPass_ToSwapChain(const RSPass_ToSwapChain &Source)
 
 RSPass_ToSwapChain::~RSPass_ToSwapChain() {}
 
-RSPass_ToSwapChain *
-RSPass_ToSwapChain::clonePass() {
+RSPass_ToSwapChain *RSPass_ToSwapChain::clonePass() {
   return new RSPass_ToSwapChain(*this);
 }
 
-bool
-RSPass_ToSwapChain::initPass() {
+bool RSPass_ToSwapChain::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -6492,8 +6353,7 @@ RSPass_ToSwapChain::initPass() {
   return true;
 }
 
-void
-RSPass_ToSwapChain::releasePass() {
+void RSPass_ToSwapChain::releasePass() {
   RS_RELEASE(VertexBuffer);
   RS_RELEASE(IndexBuffer);
   RS_RELEASE(VertexShader);
@@ -6501,8 +6361,7 @@ RSPass_ToSwapChain::releasePass() {
   RS_RELEASE(LinearWrapSampler);
 }
 
-void
-RSPass_ToSwapChain::execuatePass() {
+void RSPass_ToSwapChain::execuatePass() {
   context()->OMSetRenderTargets(1, &SwapChainRtv, nullptr);
   context()->RSSetViewports(1, &G_ViewPort);
   context()->ClearRenderTargetView(SwapChainRtv, dx::Colors::DarkGreen);
@@ -6532,8 +6391,7 @@ RSPass_ToSwapChain::execuatePass() {
   context()->PSSetShaderResources(0, 1, NullSrv);
 }
 
-bool
-RSPass_ToSwapChain::createBuffers() {
+bool RSPass_ToSwapChain::createBuffers() {
   HRESULT Hr = S_OK;
   D3D11_BUFFER_DESC BufDesc = {};
 
@@ -6580,8 +6438,7 @@ RSPass_ToSwapChain::createBuffers() {
   return true;
 }
 
-bool
-RSPass_ToSwapChain::createShaders() {
+bool RSPass_ToSwapChain::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -6620,16 +6477,14 @@ RSPass_ToSwapChain::createShaders() {
   return true;
 }
 
-bool
-RSPass_ToSwapChain::createViews() {
+bool RSPass_ToSwapChain::createViews() {
   SwapChainRtv = G_RSRoot->getDevices()->getSwapChainRtv();
   HdrSrv = G_RSRoot->getDevices()->getHighDynamicSrv();
 
   return true;
 }
 
-bool
-RSPass_ToSwapChain::createSamplers() {
+bool RSPass_ToSwapChain::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SamDesc = {};
   ZeroMemory(&SamDesc, sizeof(SamDesc));
@@ -6684,13 +6539,9 @@ RSPass_FXAA::RSPass_FXAA(const RSPass_FXAA &Source)
 
 RSPass_FXAA::~RSPass_FXAA() {}
 
-RSPass_FXAA *
-RSPass_FXAA::clonePass() {
-  return new RSPass_FXAA(*this);
-}
+RSPass_FXAA *RSPass_FXAA::clonePass() { return new RSPass_FXAA(*this); }
 
-bool
-RSPass_FXAA::initPass() {
+bool RSPass_FXAA::initPass() {
   if (HasBeenInited) {
     return true;
   }
@@ -6710,16 +6561,14 @@ RSPass_FXAA::initPass() {
   return true;
 }
 
-void
-RSPass_FXAA::releasePass() {
+void RSPass_FXAA::releasePass() {
   RS_RELEASE(FXAAShader);
   RS_RELEASE(LinearBorderSampler);
   RS_RELEASE(CopyTex);
   RS_RELEASE(CopySrv);
 }
 
-void
-RSPass_FXAA::execuatePass() {
+void RSPass_FXAA::execuatePass() {
   UINT DispatchX = G_RSRoot->getDevices()->getCurrWndWidth();
   UINT DispatchY = G_RSRoot->getDevices()->getCurrWndHeight();
   DispatchX = rs_tool::align(DispatchX, 16) / 16;
@@ -6740,8 +6589,7 @@ RSPass_FXAA::execuatePass() {
   context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
 }
 
-bool
-RSPass_FXAA::createShaders() {
+bool RSPass_FXAA::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
@@ -6777,8 +6625,7 @@ RSPass_FXAA::createShaders() {
   return true;
 }
 
-bool
-RSPass_FXAA::createViews() {
+bool RSPass_FXAA::createViews() {
   HdrUav = G_RSRoot->getDevices()->getHighDynamicUav();
 
   HRESULT Hr = S_OK;
@@ -6815,8 +6662,7 @@ RSPass_FXAA::createViews() {
   return true;
 }
 
-bool
-RSPass_FXAA::createSamplers() {
+bool RSPass_FXAA::createSamplers() {
   HRESULT Hr = S_OK;
   D3D11_SAMPLER_DESC SampDesc = {};
   ZeroMemory(&SampDesc, sizeof(SampDesc));

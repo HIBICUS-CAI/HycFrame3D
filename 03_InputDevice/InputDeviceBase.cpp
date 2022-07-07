@@ -9,11 +9,10 @@ InputDeviceBase::InputDeviceBase(INPUT_DEVICE_TYPE deviceType,
 
 InputDeviceBase::~InputDeviceBase() {}
 
-LPDIRECTINPUTDEVICE8
-InputDeviceBase::getDIDeviceHandle() { return DIDeviceHandle; }
+LPDIRECTINPUTDEVICE8 InputDeviceBase::getDIDeviceHandle() {
+  return DIDeviceHandle;
+}
 
-DWORD
-InputDeviceBase::getXIDeviceHandle() { return XIDeviceHandle; }
+DWORD InputDeviceBase::getXIDeviceHandle() { return XIDeviceHandle; }
 
-INPUT_DEVICE_TYPE
-InputDeviceBase::getInputDeviceType() { return DeviceType; }
+INPUT_DEVICE_TYPE InputDeviceBase::getInputDeviceType() { return DeviceType; }

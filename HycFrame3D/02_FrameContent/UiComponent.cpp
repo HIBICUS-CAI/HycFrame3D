@@ -7,17 +7,8 @@ UiComponent::UiComponent(const std::string &CompName, UiObject *UiOwner)
 
 UiComponent::~UiComponent() {}
 
-SceneNode &
-UiComponent::getSceneNode() const {
-  return UiOwner->getSceneNode();
-}
+SceneNode &UiComponent::getSceneNode() const { return UiOwner->getSceneNode(); }
 
-UiObject *
-UiComponent::getUiOwner() const {
-  return UiOwner;
-}
+UiObject *UiComponent::getUiOwner() const { return UiOwner; }
 
-void
-UiComponent::resetUiOwner(UiObject *Owner) {
-  UiOwner = Owner;
-}
+void UiComponent::resetUiOwner(UiObject *Owner) { UiOwner = Owner; }

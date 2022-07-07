@@ -32,54 +32,35 @@ RSTopic::RSTopic(const RSTopic &Source)
 
 RSTopic::~RSTopic() {}
 
-const std::string &
-RSTopic::getTopicName() const {
-  return TopicName;
-}
+const std::string &RSTopic::getTopicName() const { return TopicName; }
 
-void
-RSTopic::startAssembly() {
-  AssemblyFinishFlag = false;
-}
+void RSTopic::startAssembly() { AssemblyFinishFlag = false; }
 
-void
-RSTopic::finishAssembly() {
-  AssemblyFinishFlag = true;
-}
+void RSTopic::finishAssembly() { AssemblyFinishFlag = true; }
 
-void
-RSTopic::setExecuateOrder(UINT Order) {
-  ExecuateOrderInPipeline = Order;
-}
+void RSTopic::setExecuateOrder(UINT Order) { ExecuateOrderInPipeline = Order; }
 
-UINT
-RSTopic::getExecuateOrder() const {
-  return ExecuateOrderInPipeline;
-}
+UINT RSTopic::getExecuateOrder() const { return ExecuateOrderInPipeline; }
 
-void
-RSTopic::setMTContext(ID3D11DeviceContext *ContextPtr) {
+void RSTopic::setMTContext(ID3D11DeviceContext *ContextPtr) {
   MTContext = ContextPtr;
   for (auto &Pass : PassArray) {
     Pass->setMTContext(ContextPtr);
   }
 }
 
-bool
-passExecLessCompare(const RSPass_Base *A, const RSPass_Base *B) {
+bool passExecLessCompare(const RSPass_Base *A, const RSPass_Base *B) {
   return A->getExecuateOrder() < B->getExecuateOrder();
 }
 
-void
-RSTopic::insertPass(RSPass_Base *Pass) {
+void RSTopic::insertPass(RSPass_Base *Pass) {
   if (!AssemblyFinishFlag) {
     PassArray.push_back(Pass);
     std::sort(PassArray.begin(), PassArray.end(), passExecLessCompare);
   }
 }
 
-void
-RSTopic::erasePass(RSPass_Base *Pass) {
+void RSTopic::erasePass(RSPass_Base *Pass) {
   if (!AssemblyFinishFlag) {
     for (auto I = PassArray.begin(), E = PassArray.end(); I != E; I++) {
       if (*I == Pass) {
@@ -92,8 +73,7 @@ RSTopic::erasePass(RSPass_Base *Pass) {
   }
 }
 
-void
-RSTopic::erasePass(const std::string &PassName) {
+void RSTopic::erasePass(const std::string &PassName) {
   if (!AssemblyFinishFlag) {
     for (auto I = PassArray.begin(), E = PassArray.end(); I != E; I++) {
       if ((*I)->getPassName() == PassName) {
@@ -106,8 +86,7 @@ RSTopic::erasePass(const std::string &PassName) {
   }
 }
 
-bool
-RSTopic::hasPass(const std::string &PassName) {
+bool RSTopic::hasPass(const std::string &PassName) {
   for (auto &Pass : PassArray) {
     if (Pass->getPassName() == PassName) {
       return true;
@@ -117,8 +96,7 @@ RSTopic::hasPass(const std::string &PassName) {
   return false;
 }
 
-bool
-RSTopic::initAllPasses() {
+bool RSTopic::initAllPasses() {
   if (AssemblyFinishFlag) {
     for (auto &Pass : PassArray) {
       if (!Pass->initPass()) {
@@ -131,8 +109,7 @@ RSTopic::initAllPasses() {
   }
 }
 
-void
-RSTopic::execuateTopic() {
+void RSTopic::execuateTopic() {
   if (AssemblyFinishFlag) {
     for (auto &Pass : PassArray) {
       Pass->execuatePass();
@@ -140,8 +117,7 @@ RSTopic::execuateTopic() {
   }
 }
 
-void
-RSTopic::releaseTopic() {
+void RSTopic::releaseTopic() {
   if (AssemblyFinishFlag) {
     for (auto &Pass : PassArray) {
       Pass->releasePass();

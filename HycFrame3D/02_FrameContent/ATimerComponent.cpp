@@ -8,8 +8,7 @@ ATimerComponent::ATimerComponent(const std::string &CompName,
 
 ATimerComponent::~ATimerComponent() {}
 
-bool
-ATimerComponent::init() {
+bool ATimerComponent::init() {
   for (auto &T : TimerMap) {
     T.second.Time = 0.f;
   }
@@ -17,8 +16,7 @@ ATimerComponent::init() {
   return true;
 }
 
-void
-ATimerComponent::update(Timer &Timer) {
+void ATimerComponent::update(Timer &Timer) {
   float Deltatime = Timer.floatDeltaTime() / 1000.f;
   for (auto &t : TimerMap) {
     if (t.second.ActiveFlag) {
@@ -27,42 +25,34 @@ ATimerComponent::update(Timer &Timer) {
   }
 }
 
-void
-ATimerComponent::destory() {
-  TimerMap.clear();
-}
+void ATimerComponent::destory() { TimerMap.clear(); }
 
-void
-ATimerComponent::addTimer(const std::string &TimerName) {
+void ATimerComponent::addTimer(const std::string &TimerName) {
   ACTOR_TIMER T = {};
   T.Name = TimerName;
   TimerMap.insert({TimerName, T});
 }
 
-void
-ATimerComponent::startTimer(const std::string &TimerName) {
+void ATimerComponent::startTimer(const std::string &TimerName) {
   if (TimerMap.find(TimerName) != TimerMap.end()) {
     TimerMap[TimerName].ActiveFlag = true;
   }
 }
 
-void
-ATimerComponent::pauseTimer(const std::string &TimerName) {
+void ATimerComponent::pauseTimer(const std::string &TimerName) {
   if (TimerMap.find(TimerName) != TimerMap.end()) {
     TimerMap[TimerName].ActiveFlag = false;
   }
 }
 
-void
-ATimerComponent::resetTimer(const std::string &TimerName) {
+void ATimerComponent::resetTimer(const std::string &TimerName) {
   if (TimerMap.find(TimerName) != TimerMap.end()) {
     TimerMap[TimerName].ActiveFlag = false;
     TimerMap[TimerName].Time = 0.f;
   }
 }
 
-ACTOR_TIMER *
-ATimerComponent::getTimer(const std::string &TimerName) {
+ACTOR_TIMER *ATimerComponent::getTimer(const std::string &TimerName) {
   if (TimerMap.find(TimerName) != TimerMap.end()) {
     return &(TimerMap[TimerName]);
   } else {

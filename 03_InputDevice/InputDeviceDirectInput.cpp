@@ -51,16 +51,13 @@ InputDeviceDirectInput::~InputDeviceDirectInput() {
   }
 }
 
-INPUT_TYPE
-InputDeviceDirectInput::getInputType() { return INPUT_TYPE::DIRECTINPUT; }
-
-const LPVOID
-InputDeviceDirectInput::getDeviceStatus() {
-  return DeviceStatus;
+INPUT_TYPE InputDeviceDirectInput::getInputType() {
+  return INPUT_TYPE::DIRECTINPUT;
 }
 
-HRESULT
-InputDeviceDirectInput::pollDeviceStatus() {
+const LPVOID InputDeviceDirectInput::getDeviceStatus() { return DeviceStatus; }
+
+HRESULT InputDeviceDirectInput::pollDeviceStatus() {
   HRESULT Hr = S_OK;
   Hr = DIDeviceHandle->Poll();
 
@@ -139,13 +136,11 @@ InputDeviceDirectInput::pollDeviceStatus() {
   return Hr;
 }
 
-bool
-InputDeviceDirectInput::hasKeyPushedInLastFrame(UINT KeyCode) {
+bool InputDeviceDirectInput::hasKeyPushedInLastFrame(UINT KeyCode) {
   return ButtonsStatusBeforeThisPoll[KeyCode];
 }
 
-bool
-InputDeviceDirectInput::isKeyBeingPushed(UINT KeyCode) {
+bool InputDeviceDirectInput::isKeyBeingPushed(UINT KeyCode) {
   switch (getInputDeviceType()) {
   case INPUT_DEVICE_TYPE::KEYBOARD:
     if (KeyCode < 0x01 || KeyCode > 0xED) {
@@ -240,8 +235,7 @@ InputDeviceDirectInput::isKeyBeingPushed(UINT KeyCode) {
   return false;
 }
 
-LONG
-InputDeviceDirectInput::getXPositionOffset() {
+LONG InputDeviceDirectInput::getXPositionOffset() {
   LONG OffsetX = 0;
 
   switch (getInputDeviceType()) {
@@ -265,8 +259,7 @@ InputDeviceDirectInput::getXPositionOffset() {
   return OffsetX;
 }
 
-LONG
-InputDeviceDirectInput::getYPositionOffset() {
+LONG InputDeviceDirectInput::getYPositionOffset() {
   LONG OffsetY = 0;
 
   switch (getInputDeviceType()) {
@@ -290,8 +283,7 @@ InputDeviceDirectInput::getYPositionOffset() {
   return OffsetY;
 }
 
-LONG
-InputDeviceDirectInput::getZPositionOffset() {
+LONG InputDeviceDirectInput::getZPositionOffset() {
   LONG OffsetZ = 0;
 
   switch (getInputDeviceType()) {
@@ -315,8 +307,7 @@ InputDeviceDirectInput::getZPositionOffset() {
   return OffsetZ;
 }
 
-LONG
-InputDeviceDirectInput::getXRotationOffset() {
+LONG InputDeviceDirectInput::getXRotationOffset() {
   LONG OffsetX = 0;
 
   if (getInputDeviceType() != INPUT_DEVICE_TYPE::GAMEPAD) {
@@ -329,8 +320,7 @@ InputDeviceDirectInput::getXRotationOffset() {
   return OffsetX;
 }
 
-LONG
-InputDeviceDirectInput::getYRotationOffset() {
+LONG InputDeviceDirectInput::getYRotationOffset() {
   LONG OffsetY = 0;
 
   if (getInputDeviceType() != INPUT_DEVICE_TYPE::GAMEPAD) {
@@ -343,8 +333,7 @@ InputDeviceDirectInput::getYRotationOffset() {
   return OffsetY;
 }
 
-LONG
-InputDeviceDirectInput::getZRotationOffset() {
+LONG InputDeviceDirectInput::getZRotationOffset() {
   LONG OffsetZ = 0;
 
   if (getInputDeviceType() != INPUT_DEVICE_TYPE::GAMEPAD) {

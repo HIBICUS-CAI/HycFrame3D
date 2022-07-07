@@ -47,41 +47,32 @@ public:
   AssetsPool(class SceneNode &SceneNode);
   ~AssetsPool();
 
-  SUBMESH_DATA *
-  getSubMeshIfExisted(const std::string &MeshName);
+  SUBMESH_DATA *getSubMeshIfExisted(const std::string &MeshName);
 
-  SUBMESH_NAME_VEC *
-  getMeshIfExisted(const std::string &MeshName);
+  SUBMESH_NAME_VEC *getMeshIfExisted(const std::string &MeshName);
 
-  MESH_ANIMATION_DATA *
-  getAnimationIfExistedSub(const std::string &AniName);
+  MESH_ANIMATION_DATA *getAnimationIfExistedSub(const std::string &AniName);
 
-  MESH_ANIMATION_DATA *
-  getAnimationIfExisted(const std::string &AniName);
+  MESH_ANIMATION_DATA *getAnimationIfExisted(const std::string &AniName);
 
-  SOUND_HANDLE
-  getSoundIfExisted(const std::string &SoundName);
+  SOUND_HANDLE getSoundIfExisted(const std::string &SoundName);
 
-  void
-  insertNewSubMesh(const std::string &MeshName,
-                   const RS_SUBMESH_DATA &MeshData,
-                   MESH_TYPE MeshType,
-                   const SUBMESH_BONES *BonesData = nullptr,
-                   const MESH_ANIMATION_DATA *AnimationData = nullptr);
+  void insertNewSubMesh(const std::string &MeshName,
+                        const RS_SUBMESH_DATA &MeshData,
+                        MESH_TYPE MeshType,
+                        const SUBMESH_BONES *BonesData = nullptr,
+                        const MESH_ANIMATION_DATA *AnimationData = nullptr);
 
-  void
-  insertNewIndexedMesh(const std::string &MeshName,
-                       const RS_SUBMESH_DATA &MeshData,
-                       MESH_TYPE MeshType,
-                       int SubIndex,
-                       const SUBMESH_BONES *BonesData = nullptr,
-                       const MESH_ANIMATION_DATA *AnimationData = nullptr);
+  void insertNewIndexedMesh(const std::string &MeshName,
+                            const RS_SUBMESH_DATA &MeshData,
+                            MESH_TYPE MeshType,
+                            int SubIndex,
+                            const SUBMESH_BONES *BonesData = nullptr,
+                            const MESH_ANIMATION_DATA *AnimationData = nullptr);
 
-  void
-  insertNewSound(const std::string &SoundName);
+  void insertNewSound(const std::string &SoundName);
 
-  void
-  deleteAllAssets();
+  void deleteAllAssets();
 
   friend class RenderSystem;
 };

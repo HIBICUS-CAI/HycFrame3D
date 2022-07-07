@@ -29,21 +29,15 @@ public:
   PhysicsWorld(class SceneNode &SceneNode);
   ~PhysicsWorld();
 
-  void
-  createPhysicsWorld();
+  void createPhysicsWorld();
 
-  void
-  addCollisionObject(class btCollisionObject *ColliObj);
-  void
-  deleteCollisionObject(class btCollisionObject *ColliObj);
+  void addCollisionObject(class btCollisionObject *ColliObj);
+  void deleteCollisionObject(class btCollisionObject *ColliObj);
 
-  void
-  detectCollision();
+  void detectCollision();
 
-  bool
-  checkCollisionResult(const COLLIED_PAIR &Pair,
-                       CONTACT_PONT_PAIR *OutContactPair);
+  bool checkCollisionResult(const COLLIED_PAIR &Pair,
+                            CONTACT_PONT_PAIR *OutContactPair);
 
-  void
-  deletePhysicsWorld();
+  void deletePhysicsWorld();
 };

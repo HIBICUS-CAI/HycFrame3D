@@ -21,21 +21,14 @@ public:
   RSParticleEmitter(const PARTICLE_EMITTER_INFO *Info);
   ~RSParticleEmitter();
 
-  void
-  resetParticleEmitterInfo(const PARTICLE_EMITTER_INFO *Info);
+  void resetParticleEmitterInfo(const PARTICLE_EMITTER_INFO *Info);
 
-  RS_PARTICLE_EMITTER_INFO &
-  getRSParticleEmitterInfo();
+  RS_PARTICLE_EMITTER_INFO &getRSParticleEmitterInfo();
 
-  void
-  startParticleEmitter();
+  void startParticleEmitter();
+  void pauseParticleEmitter();
 
-  void
-  pauseParticleEmitter();
+  void setEmitterPosition(const DirectX::XMFLOAT3 &Position);
 
-  void
-  setEmitterPosition(const DirectX::XMFLOAT3 &Position);
-
-  static void
-  resetEmitterIndex();
+  static void resetEmitterIndex();
 };

@@ -16,10 +16,7 @@ public:
   RootSystem();
   ~RootSystem();
 
-  bool
-  startUp(HINSTANCE Instance, int CmdShow);
-  void
-  cleanAndStop();
-  void
-  runGameLoop();
+  bool startUp(HINSTANCE Instance, int CmdShow);
+  void cleanAndStop();
+  void runGameLoop();
 };

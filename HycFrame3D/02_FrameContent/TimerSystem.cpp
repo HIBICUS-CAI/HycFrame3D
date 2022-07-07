@@ -13,8 +13,7 @@ TimerSystem::TimerSystem(SystemExecutive *SysExecutive)
 
 TimerSystem::~TimerSystem() {}
 
-bool
-TimerSystem::init() {
+bool TimerSystem::init() {
 #ifdef _DEBUG
   assert(getSystemExecutive());
 #endif // _DEBUG
@@ -39,8 +38,7 @@ TimerSystem::init() {
   return true;
 }
 
-void
-TimerSystem::run(Timer &Timer) {
+void TimerSystem::run(Timer &Timer) {
   for (auto &Atmc : *ATimerArrayPtr) {
     if (Atmc.getCompStatus() == STATUS::ACTIVE) {
       Atmc.update(Timer);
@@ -54,5 +52,4 @@ TimerSystem::run(Timer &Timer) {
   }
 }
 
-void
-TimerSystem::destory() {}
+void TimerSystem::destory() {}

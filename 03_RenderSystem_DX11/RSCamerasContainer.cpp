@@ -20,8 +20,7 @@ RSCamerasContainer::RSCamerasContainer()
 
 RSCamerasContainer::~RSCamerasContainer() {}
 
-bool
-RSCamerasContainer::startUp(RSRoot_DX11 *RootPtr) {
+bool RSCamerasContainer::startUp(RSRoot_DX11 *RootPtr) {
   if (!RootPtr) {
     return false;
   }
@@ -32,8 +31,7 @@ RSCamerasContainer::startUp(RSRoot_DX11 *RootPtr) {
   return true;
 }
 
-void
-RSCamerasContainer::cleanAndStop() {
+void RSCamerasContainer::cleanAndStop() {
   for (auto &Cam : CameraMap) {
     delete Cam.second;
   }
@@ -41,9 +39,8 @@ RSCamerasContainer::cleanAndStop() {
   DeleteCriticalSection(&DataLock);
 }
 
-RSCamera *
-RSCamerasContainer::createRSCamera(const std::string &Name,
-                                   const CAM_INFO *Info) {
+RSCamera *RSCamerasContainer::createRSCamera(const std::string &Name,
+                                             const CAM_INFO *Info) {
   if (!Info) {
     return nullptr;
   }
@@ -59,8 +56,7 @@ RSCamerasContainer::createRSCamera(const std::string &Name,
   return Cam;
 }
 
-RSCamera *
-RSCamerasContainer::getRSCamera(const std::string &Name) {
+RSCamera *RSCamerasContainer::getRSCamera(const std::string &Name) {
   LOCK;
   auto Found = CameraMap.find(Name);
   if (Found != CameraMap.end()) {
@@ -73,8 +69,7 @@ RSCamerasContainer::getRSCamera(const std::string &Name) {
   }
 }
 
-RS_CAM_INFO *
-RSCamerasContainer::getRSCameraInfo(const std::string &Name) {
+RS_CAM_INFO *RSCamerasContainer::getRSCameraInfo(const std::string &Name) {
   LOCK;
   auto Found = CameraMap.find(Name);
   if (Found != CameraMap.end()) {
@@ -87,8 +82,7 @@ RSCamerasContainer::getRSCameraInfo(const std::string &Name) {
   }
 }
 
-void
-RSCamerasContainer::deleteRSCamera(const std::string &Name) {
+void RSCamerasContainer::deleteRSCamera(const std::string &Name) {
   LOCK;
   auto Found = CameraMap.find(Name);
   if (Found != CameraMap.end()) {

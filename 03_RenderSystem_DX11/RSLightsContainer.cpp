@@ -25,8 +25,7 @@ RSLightsContainer::RSLightsContainer()
 
 RSLightsContainer::~RSLightsContainer() {}
 
-bool
-RSLightsContainer::startUp(RSRoot_DX11 *RootPtr) {
+bool RSLightsContainer::startUp(RSRoot_DX11 *RootPtr) {
   if (!RootPtr) {
     return false;
   }
@@ -37,8 +36,7 @@ RSLightsContainer::startUp(RSRoot_DX11 *RootPtr) {
   return true;
 }
 
-void
-RSLightsContainer::cleanAndStop() {
+void RSLightsContainer::cleanAndStop() {
   for (auto &Light : LightsMap) {
     delete Light.second;
   }
@@ -50,15 +48,13 @@ RSLightsContainer::cleanAndStop() {
   DeleteCriticalSection(&DataLock);
 }
 
-bool
-LightLessCompare(RSLight *A, RSLight *B) {
+bool LightLessCompare(RSLight *A, RSLight *B) {
   return static_cast<UINT>(A->getRSLightType()) <
          static_cast<UINT>(B->getRSLightType());
 }
 
-RSLight *
-RSLightsContainer::createRSLight(const std::string &Name,
-                                 const LIGHT_INFO *Info) {
+RSLight *RSLightsContainer::createRSLight(const std::string &Name,
+                                          const LIGHT_INFO *Info) {
   if (!Info) {
     return nullptr;
   }
@@ -83,8 +79,7 @@ RSLightsContainer::createRSLight(const std::string &Name,
   return Light;
 }
 
-RSLight *
-RSLightsContainer::getRSLight(const std::string &Name) {
+RSLight *RSLightsContainer::getRSLight(const std::string &Name) {
   LOCK;
   auto Found = LightsMap.find(Name);
   if (Found != LightsMap.end()) {
@@ -97,8 +92,7 @@ RSLightsContainer::getRSLight(const std::string &Name) {
   }
 }
 
-RS_LIGHT_INFO *
-RSLightsContainer::getRSLightInfo(const std::string &Name) {
+RS_LIGHT_INFO *RSLightsContainer::getRSLightInfo(const std::string &Name) {
   LOCK;
   auto Found = LightsMap.find(Name);
   if (Found != LightsMap.end()) {
@@ -111,9 +105,8 @@ RSLightsContainer::getRSLightInfo(const std::string &Name) {
   }
 }
 
-void
-RSLightsContainer::deleteRSLight(const std::string &Name,
-                                 bool DeleteByFrameWorkFlag) {
+void RSLightsContainer::deleteRSLight(const std::string &Name,
+                                      bool DeleteByFrameWorkFlag) {
   LOCK;
   auto Found = LightsMap.find(Name);
   if (Found != LightsMap.end()) {
@@ -154,9 +147,8 @@ RSLightsContainer::deleteRSLight(const std::string &Name,
   UNLOCK;
 }
 
-bool
-RSLightsContainer::createLightCameraFor(const std::string &Name,
-                                        const CAM_INFO *Info) {
+bool RSLightsContainer::createLightCameraFor(const std::string &Name,
+                                             const CAM_INFO *Info) {
   LOCK;
   auto Found = LightsMap.find(Name);
   if (Found != LightsMap.end()) {
@@ -175,24 +167,20 @@ RSLightsContainer::createLightCameraFor(const std::string &Name,
   }
 }
 
-std::vector<RSLight *> *
-RSLightsContainer::getLightsArray() {
+std::vector<RSLight *> *RSLightsContainer::getLightsArray() {
   return &LightsArray;
 }
 
-std::vector<RSLight *> *
-RSLightsContainer::getShadowLightsArray() {
+std::vector<RSLight *> *RSLightsContainer::getShadowLightsArray() {
   return &ShadowLightsArray;
 }
 
-std::vector<INT> *
-RSLightsContainer::getShadowLightIndeicesArray() {
+std::vector<INT> *RSLightsContainer::getShadowLightIndeicesArray() {
   return &ShadowLightIndeicesArray;
 }
 
-void
-RSLightsContainer::insertAmbientLight(const std::string &Name,
-                                      const dx::XMFLOAT4 &Ambient) {
+void RSLightsContainer::insertAmbientLight(const std::string &Name,
+                                           const dx::XMFLOAT4 &Ambient) {
   LOCK;
   auto Found = AmbientLightsMap.find(Name);
   if (Found == AmbientLightsMap.end()) {
@@ -201,8 +189,7 @@ RSLightsContainer::insertAmbientLight(const std::string &Name,
   UNLOCK;
 }
 
-void
-RSLightsContainer::eraseAmbientLight(const std::string &Name) {
+void RSLightsContainer::eraseAmbientLight(const std::string &Name) {
   LOCK;
   auto Found = AmbientLightsMap.find(Name);
   if (Found != AmbientLightsMap.end()) {
@@ -225,23 +212,19 @@ RSLightsContainer::getAmbientLight(const std::string &Name) {
   return ambient;
 }
 
-void
-RSLightsContainer::setCurrentAmbientLight(const std::string &Name) {
+void RSLightsContainer::setCurrentAmbientLight(const std::string &Name) {
   CurrentAmbient = getAmbientLight(Name);
 }
 
-void
-RSLightsContainer::forceCurrentAmbientLight(const dx::XMFLOAT4 &Ambient) {
+void RSLightsContainer::forceCurrentAmbientLight(const dx::XMFLOAT4 &Ambient) {
   CurrentAmbient = Ambient;
 }
 
-const dx::XMFLOAT4 &
-RSLightsContainer::getCurrentAmbientLight() {
+const dx::XMFLOAT4 &RSLightsContainer::getCurrentAmbientLight() {
   return CurrentAmbient;
 }
 
-void
-RSLightsContainer::uploadLightBloomDrawCall() {
+void RSLightsContainer::uploadLightBloomDrawCall() {
   LOCK;
   for (auto &Light : LightsArray) {
     Light->uploadLightDrawCall();
@@ -249,8 +232,7 @@ RSLightsContainer::uploadLightBloomDrawCall() {
   UNLOCK;
 }
 
-void
-RSLightsContainer::createLightBloom(const std::string &Name,
-                                    const RS_SUBMESH_DATA &MeshData) {
+void RSLightsContainer::createLightBloom(const std::string &Name,
+                                         const RS_SUBMESH_DATA &MeshData) {
   getRSLight(Name)->setLightBloom(MeshData);
 }

@@ -5,15 +5,10 @@ Component::Component(const std::string &_compName)
 
 Component::~Component() {}
 
-const std::string &
-Component::getCompName() const {
-  return ComponentName;
-}
+const std::string &Component::getCompName() const { return ComponentName; }
 
-STATUS
-Component::getCompStatus() const { return ComponentStatus; }
+STATUS Component::getCompStatus() const { return ComponentStatus; }
 
-void
-Component::setCompStatus(STATUS _compStatus) {
+void Component::setCompStatus(STATUS _compStatus) {
   ComponentStatus = _compStatus;
 }

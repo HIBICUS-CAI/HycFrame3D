@@ -14,24 +14,18 @@ public:
   Object(const std::string &ObjName, class SceneNode &SceneNode);
   virtual ~Object();
 
-  const std::string &
-  getObjectName() const;
+  const std::string &getObjectName() const;
 
   STATUS
   getObjectStatus() const;
-  void
-  setObjectStatus(STATUS ObjStatus);
+  void setObjectStatus(STATUS ObjStatus);
 
-  class SceneNode &
-  getSceneNode() const;
+  class SceneNode &getSceneNode() const;
 
 public:
-  virtual bool
-  init() = 0;
-  virtual void
-  destory() = 0;
+  virtual bool init() = 0;
+  virtual void destory() = 0;
 
 protected:
-  virtual void
-  syncStatusToAllComps() = 0;
+  virtual void syncStatusToAllComps() = 0;
 };

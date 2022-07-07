@@ -11,8 +11,7 @@ public:
                      class ActorObject *ActorOwner);
   virtual ~AParticleComponent();
 
-  AParticleComponent &
-  operator=(const AParticleComponent &Source) {
+  AParticleComponent &operator=(const AParticleComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -22,23 +21,16 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  createEmitter(const struct PARTICLE_EMITTER_INFO *EmitterInfo);
-  void
-  resetEmitter(const struct PARTICLE_EMITTER_INFO *EmitterInfo);
+  void createEmitter(const struct PARTICLE_EMITTER_INFO *EmitterInfo);
+  void resetEmitter(const struct PARTICLE_EMITTER_INFO *EmitterInfo);
 
-  struct RS_PARTICLE_EMITTER_INFO &
-  getEmitterInfo();
+  struct RS_PARTICLE_EMITTER_INFO &getEmitterInfo();
 
 private:
-  void
-  syncDataFromTransform();
+  void syncDataFromTransform();
 };

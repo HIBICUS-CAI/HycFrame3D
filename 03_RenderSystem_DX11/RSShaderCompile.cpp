@@ -3,12 +3,11 @@
 #include <d3dcompiler.h>
 #include <string>
 
-HRESULT
-rs_tool::compileShaderFromFile(const WCHAR *FileName,
-                               LPCSTR EntryPoint,
-                               LPCSTR ShaderModel,
-                               ID3DBlob **OutBlob,
-                               const D3D_SHADER_MACRO *Macro) {
+HRESULT rs_tool::compileShaderFromFile(const WCHAR *FileName,
+                                       LPCSTR EntryPoint,
+                                       LPCSTR ShaderModel,
+                                       ID3DBlob **OutBlob,
+                                       const D3D_SHADER_MACRO *Macro) {
   HRESULT Hr = S_OK;
 
   DWORD ShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
@@ -37,12 +36,11 @@ rs_tool::compileShaderFromFile(const WCHAR *FileName,
   return S_OK;
 }
 
-HRESULT
-rs_tool::compileShaderFromFile(LPCSTR FileName,
-                               LPCSTR EntryPoint,
-                               LPCSTR ShaderModel,
-                               ID3DBlob **OutBlob,
-                               const D3D_SHADER_MACRO *Macro) {
+HRESULT rs_tool::compileShaderFromFile(LPCSTR FileName,
+                                       LPCSTR EntryPoint,
+                                       LPCSTR ShaderModel,
+                                       ID3DBlob **OutBlob,
+                                       const D3D_SHADER_MACRO *Macro) {
   std::string Path = std::string(FileName);
   std::wstring WPath = std::wstring(Path.begin(), Path.end());
 

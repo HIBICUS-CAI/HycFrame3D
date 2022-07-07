@@ -7,12 +7,8 @@ System::System(const std::string &SysName, SystemExecutive *SysExecutive)
 
 System::~System() {}
 
-const std::string &
-System::getSystemName() const {
-  return SystemName;
-}
+const std::string &System::getSystemName() const { return SystemName; }
 
-SystemExecutive *
-System::getSystemExecutive() const {
+SystemExecutive *System::getSystemExecutive() const {
   return SystemExecutivePtr;
 }

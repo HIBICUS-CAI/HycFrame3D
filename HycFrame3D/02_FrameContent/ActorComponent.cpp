@@ -8,17 +8,10 @@ ActorComponent::ActorComponent(const std::string &CompName,
 
 ActorComponent::~ActorComponent() {}
 
-SceneNode &
-ActorComponent::getSceneNode() const {
+SceneNode &ActorComponent::getSceneNode() const {
   return ActorOwner->getSceneNode();
 }
 
-ActorObject *
-ActorComponent::getActorOwner() const {
-  return ActorOwner;
-}
+ActorObject *ActorComponent::getActorOwner() const { return ActorOwner; }
 
-void
-ActorComponent::resetActorOwner(ActorObject *Owner) {
-  ActorOwner = Owner;
-}
+void ActorComponent::resetActorOwner(ActorObject *Owner) { ActorOwner = Owner; }

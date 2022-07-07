@@ -20,8 +20,7 @@ ButtonSystem::ButtonSystem(SystemExecutive *SysExecutive)
 
 ButtonSystem::~ButtonSystem() {}
 
-bool
-ButtonSystem::init() {
+bool ButtonSystem::init() {
   RECT WndRect = {};
   G_WndHandle = window::getWindowPtr()->getWndHandle();
   GetClientRect(G_WndHandle, &WndRect);
@@ -46,8 +45,7 @@ ButtonSystem::init() {
   return true;
 }
 
-void
-ButtonSystem::run(Timer &Timer) {
+void ButtonSystem::run(Timer &Timer) {
   POINT P = {};
   GetCursorPos(&P);
   ScreenToClient(G_WndHandle, &P);
@@ -74,5 +72,4 @@ ButtonSystem::run(Timer &Timer) {
   }
 }
 
-void
-ButtonSystem::destory() {}
+void ButtonSystem::destory() {}

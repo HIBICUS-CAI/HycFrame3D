@@ -28,8 +28,7 @@ public:
   ALightComponent(const std::string &CompName, class ActorObject *ActorOwner);
   virtual ~ALightComponent();
 
-  ALightComponent &
-  operator=(const ALightComponent &Source) {
+  ALightComponent &operator=(const ALightComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -43,29 +42,21 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  addLight(const LIGHT_INFO &LightInfo,
-           bool SetBloom,
-           bool SetCamera,
-           const CAM_INFO &CamInfo);
+  void addLight(const LIGHT_INFO &LightInfo,
+                bool SetBloom,
+                bool SetCamera,
+                const CAM_INFO &CamInfo);
 
-  void
-  resetLight(const LIGHT_INFO *LightInfo);
+  void resetLight(const LIGHT_INFO *LightInfo);
 
-  class RSLight *
-  getLightInfo();
+  class RSLight *getLightInfo();
 
 private:
-  void
-  createLight();
-  void
-  syncDataFromTransform();
+  void createLight();
+  void syncDataFromTransform();
 };

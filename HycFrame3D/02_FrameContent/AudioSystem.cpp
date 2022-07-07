@@ -15,8 +15,7 @@ AudioSystem::AudioSystem(SystemExecutive *_sysExecutive)
 
 AudioSystem::~AudioSystem() {}
 
-bool
-AudioSystem::init() {
+bool AudioSystem::init() {
   if (!soundHasInited()) {
     if (!initSound()) {
       return false;
@@ -47,8 +46,7 @@ AudioSystem::init() {
   return true;
 }
 
-void
-AudioSystem::run(Timer &Timer) {
+void AudioSystem::run(Timer &Timer) {
   for (auto &Aauc : *AAudioArrayPtr) {
     if (Aauc.getCompStatus() == STATUS::ACTIVE) {
       Aauc.update(Timer);
@@ -62,7 +60,4 @@ AudioSystem::run(Timer &Timer) {
   }
 }
 
-void
-AudioSystem::destory() {
-  uninitSound();
-}
+void AudioSystem::destory() { uninitSound(); }

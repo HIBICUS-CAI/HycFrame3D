@@ -7,8 +7,6 @@
 
 #define P_LOG debugPrintF
 
-int
-debugPrintF(int Level, const char *Format, ...);
+int debugPrintF(int Level, const char *Format, ...);
 
-int
-myPrintF(int Level, const char *Format, ...);
+int myPrintF(int Level, const char *Format, ...);

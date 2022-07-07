@@ -20,8 +20,7 @@ PhysicsWorld::PhysicsWorld(class SceneNode &SceneNode)
 
 PhysicsWorld::~PhysicsWorld() {}
 
-void
-PhysicsWorld::createPhysicsWorld() {
+void PhysicsWorld::createPhysicsWorld() {
   CollisionConfig = new btDefaultCollisionConfiguration();
   CollisionDispatcher = new btCollisionDispatcher(CollisionConfig);
   BroadphaseInterface = new btDbvtBroadphase();
@@ -35,8 +34,7 @@ PhysicsWorld::createPhysicsWorld() {
 #endif // _DEBUG
 }
 
-void
-PhysicsWorld::addCollisionObject(btCollisionObject *ColliObj) {
+void PhysicsWorld::addCollisionObject(btCollisionObject *ColliObj) {
   if (!ColliObj) {
     P_LOG(LOG_ERROR, "passing a null collision object to collision world\n");
     return;
@@ -45,8 +43,7 @@ PhysicsWorld::addCollisionObject(btCollisionObject *ColliObj) {
   CollisionWorld->addCollisionObject(ColliObj);
 }
 
-void
-PhysicsWorld::deleteCollisionObject(btCollisionObject *ColliObj) {
+void PhysicsWorld::deleteCollisionObject(btCollisionObject *ColliObj) {
   if (!ColliObj) {
     P_LOG(LOG_ERROR, "searching a null collision object in collision world\n");
     return;
@@ -55,8 +52,7 @@ PhysicsWorld::deleteCollisionObject(btCollisionObject *ColliObj) {
   CollisionWorld->removeCollisionObject(ColliObj);
 }
 
-void
-PhysicsWorld::detectCollision() {
+void PhysicsWorld::detectCollision() {
   ColliedPair.clear();
   ContactPointMap.clear();
   CollisionWorld->performDiscreteCollisionDetection();
@@ -119,17 +115,15 @@ PhysicsWorld::detectCollision() {
   }
 }
 
-void
-PhysicsWorld::deletePhysicsWorld() {
+void PhysicsWorld::deletePhysicsWorld() {
   delete CollisionWorld;
   delete BroadphaseInterface;
   delete CollisionDispatcher;
   delete CollisionConfig;
 }
 
-bool
-PhysicsWorld::checkCollisionResult(const COLLIED_PAIR &_pair,
-                                   CONTACT_PONT_PAIR *_contactPair) {
+bool PhysicsWorld::checkCollisionResult(const COLLIED_PAIR &_pair,
+                                        CONTACT_PONT_PAIR *_contactPair) {
   if (ColliedPair.find(_pair) == ColliedPair.end()) {
     return false;
   } else {

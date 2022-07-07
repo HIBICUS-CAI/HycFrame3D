@@ -11,15 +11,13 @@ InputManager::InputManager(WindowWIN32 *Wnd)
     : Instance(Wnd->getWndInstance()), WndHandle(Wnd->getWndHandle()),
       KeyBoardPtr(nullptr), MousePtr(nullptr), GamePadPtrs({nullptr}) {}
 
-HRESULT
-InputManager::createDirectInputMain() {
+HRESULT InputManager::createDirectInputMain() {
   return DirectInput8Create(GetModuleHandle(nullptr), DIRECTINPUT_VERSION,
                             IID_IDirectInput8, (VOID **)&DirectInputPtr,
                             nullptr);
 }
 
-void
-InputManager::closeDirectInputMain() {
+void InputManager::closeDirectInputMain() {
   for (int I = 0; I < MAX_INPUTDEVICE_NUM; I++) {
     if (GamePadPtrs[I] &&
         (GamePadPtrs[I]->getInputType() == INPUT_TYPE::DIRECTINPUT)) {
@@ -38,8 +36,7 @@ InputManager::closeDirectInputMain() {
   }
 }
 
-void
-InputManager::enumAllInputDevices() {
+void InputManager::enumAllInputDevices() {
   if (!DirectInputPtr) {
     return;
   }
@@ -157,8 +154,7 @@ InputManager::enumGamePadCallBack(const DIDEVICEINSTANCE *DIDeviceInst,
   return DIENUM_CONTINUE;
 }
 
-BOOL CALLBACK
-InputManager::diEnumGamePadObjCallBack(
+BOOL CALLBACK InputManager::diEnumGamePadObjCallBack(
     const DIDEVICEOBJECTINSTANCE *DIDeviceObjInst,
     VOID *ContextPtr) {
   auto GamePad = reinterpret_cast<InputDeviceBase **>(ContextPtr);
@@ -182,18 +178,11 @@ InputManager::diEnumGamePadObjCallBack(
   return DIENUM_CONTINUE;
 }
 
-InputDeviceBase *
-InputManager::getKeyBoard() {
-  return KeyBoardPtr;
-}
+InputDeviceBase *InputManager::getKeyBoard() { return KeyBoardPtr; }
 
-InputDeviceBase *
-InputManager::getMouse() {
-  return MousePtr;
-}
+InputDeviceBase *InputManager::getMouse() { return MousePtr; }
 
-InputDeviceBase *
-InputManager::getGamePadByIndex(int Index) {
+InputDeviceBase *InputManager::getGamePadByIndex(int Index) {
   if (Index >= MAX_INPUTDEVICE_NUM) {
     return nullptr;
   }
@@ -201,8 +190,7 @@ InputManager::getGamePadByIndex(int Index) {
   return GamePadPtrs[Index];
 }
 
-HRESULT
-InputManager::pollAllInputDevices() {
+HRESULT InputManager::pollAllInputDevices() {
   HRESULT Hr = S_OK;
   HRESULT FHr = S_OK;
 
@@ -230,8 +218,7 @@ InputManager::pollAllInputDevices() {
   return FHr;
 }
 
-bool
-InputManager::isThisKeyBeingPushedInSingle(UINT KeyCode) {
+bool InputManager::isThisKeyBeingPushedInSingle(UINT KeyCode) {
   bool Keyboard = false;
   bool Mouse = false;
   bool Gamepad = false;
@@ -248,8 +235,7 @@ InputManager::isThisKeyBeingPushedInSingle(UINT KeyCode) {
   return (Keyboard || Mouse || Gamepad);
 }
 
-bool
-InputManager::isThisKeyHasBeenPushedInSingle(UINT KeyCode) {
+bool InputManager::isThisKeyHasBeenPushedInSingle(UINT KeyCode) {
   bool Confirm1 = isThisKeyBeingPushedInSingle(KeyCode);
 
   if (!Confirm1) {
@@ -273,8 +259,7 @@ InputManager::isThisKeyHasBeenPushedInSingle(UINT KeyCode) {
   return (!(KConfirm2 || MConfirm2 || GConfirm2) && Confirm1);
 }
 
-MOUSE_OFFSET
-InputManager::getMouseOffset() {
+MOUSE_OFFSET InputManager::getMouseOffset() {
   MOUSE_OFFSET Mo = {};
   Mo.x = MousePtr->getXPositionOffset();
   Mo.y = MousePtr->getYPositionOffset();
@@ -282,18 +267,15 @@ InputManager::getMouseOffset() {
   return Mo;
 }
 
-bool
-InputManager::isMouseScrollingUp() {
+bool InputManager::isMouseScrollingUp() {
   return MousePtr->getZPositionOffset() > 0;
 }
 
-bool
-InputManager::isMouseScrollingDown() {
+bool InputManager::isMouseScrollingDown() {
   return MousePtr->getZPositionOffset() < 0;
 }
 
-STICK_OFFSET
-InputManager::getGamePadLeftStickOffset(int GamepadIndex) {
+STICK_OFFSET InputManager::getGamePadLeftStickOffset(int GamepadIndex) {
   STICK_OFFSET So = {};
   if (GamePadPtrs[GamepadIndex]) {
     if (GamePadPtrs[GamepadIndex]->getInputType() == INPUT_TYPE::DIRECTINPUT) {
@@ -315,8 +297,7 @@ InputManager::getGamePadLeftStickOffset(int GamepadIndex) {
   return So;
 }
 
-STICK_OFFSET
-InputManager::getGamePadRightStickOffset(int GamepadIndex) {
+STICK_OFFSET InputManager::getGamePadRightStickOffset(int GamepadIndex) {
   STICK_OFFSET So = {};
   if (GamePadPtrs[GamepadIndex]) {
     if (GamePadPtrs[GamepadIndex]->getInputType() == INPUT_TYPE::DIRECTINPUT) {
@@ -338,8 +319,7 @@ InputManager::getGamePadRightStickOffset(int GamepadIndex) {
   return So;
 }
 
-BACKSHD_OFFSET
-InputManager::getGamePadLeftBackShdBtnOffset(int GamepadIndex) {
+BACKSHD_OFFSET InputManager::getGamePadLeftBackShdBtnOffset(int GamepadIndex) {
   if (!GamePadPtrs[GamepadIndex]) {
     return 0;
   }
@@ -353,8 +333,7 @@ InputManager::getGamePadLeftBackShdBtnOffset(int GamepadIndex) {
   }
 }
 
-BACKSHD_OFFSET
-InputManager::getGamePadRightBackShdBtnOffset(int GamepadIndex) {
+BACKSHD_OFFSET InputManager::getGamePadRightBackShdBtnOffset(int GamepadIndex) {
   if (!GamePadPtrs[GamepadIndex]) {
     return 0;
   }

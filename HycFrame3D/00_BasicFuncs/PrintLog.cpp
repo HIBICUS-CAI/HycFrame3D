@@ -12,8 +12,7 @@
 #define LOG_LEVEL_FOR_SETTING (LOG_WARNING)
 // FOR SETTING LOG LEVEL ------------------------------
 
-int
-vDebugPrintF(const char *Format, va_list ArgList) {
+int vDebugPrintF(const char *Format, va_list ArgList) {
   const UINT32 MAX_CHARS = 1024;
   static char LogBuffer[MAX_CHARS];
 
@@ -24,8 +23,7 @@ vDebugPrintF(const char *Format, va_list ArgList) {
   return CharsWritten;
 }
 
-int
-debugPrintF(int Level, const char *Format, ...) {
+int debugPrintF(int Level, const char *Format, ...) {
   if (Level >= LOG_LEVEL_FOR_SETTING) {
     switch (Level) {
     case LOG_MESSAGE:
@@ -58,13 +56,11 @@ debugPrintF(int Level, const char *Format, ...) {
   }
 }
 
-int
-vMyPrintF(const char *Format, va_list ArgList) {
+int vMyPrintF(const char *Format, va_list ArgList) {
   return vprintf(Format, ArgList);
 }
 
-int
-myPrintF(int Level, const char *Format, ...) {
+int myPrintF(int Level, const char *Format, ...) {
   if (Level >= LOG_LEVEL_FOR_SETTING) {
     va_list ArgList = {};
     va_start(ArgList, Format);

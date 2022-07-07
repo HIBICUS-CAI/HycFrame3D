@@ -13,8 +13,7 @@ InteractSystem::InteractSystem(SystemExecutive *SysExecutive)
 
 InteractSystem::~InteractSystem() {}
 
-bool
-InteractSystem::init() {
+bool InteractSystem::init() {
 #ifdef _DEBUG
   assert(getSystemExecutive());
 #endif // _DEBUG
@@ -39,8 +38,7 @@ InteractSystem::init() {
   return true;
 }
 
-void
-InteractSystem::run(Timer &Timer) {
+void InteractSystem::run(Timer &Timer) {
   for (auto &Aitc : *AInterArrayPtr) {
     if (Aitc.getCompStatus() == STATUS::ACTIVE) {
       Aitc.update(Timer);
@@ -54,5 +52,4 @@ InteractSystem::run(Timer &Timer) {
   }
 }
 
-void
-InteractSystem::destory() {}
+void InteractSystem::destory() {}

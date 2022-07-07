@@ -14,57 +14,43 @@ UTransformComponent::UTransformComponent(const std::string &CompName,
 
 UTransformComponent::~UTransformComponent() {}
 
-bool
-UTransformComponent::init() {
-  return true;
-}
+bool UTransformComponent::init() { return true; }
 
-void
-UTransformComponent::update(Timer &Timer) {
-  applyProcessingData();
-}
+void UTransformComponent::update(Timer &Timer) { applyProcessingData(); }
 
-void
-UTransformComponent::destory() {}
+void UTransformComponent::destory() {}
 
-void
-UTransformComponent::setPosition(const dx::XMFLOAT3 &Pos) {
+void UTransformComponent::setPosition(const dx::XMFLOAT3 &Pos) {
   ProcessingPosition = Pos;
   PositionDirtyFlg = true;
 }
 
-void
-UTransformComponent::forcePosition(const dx::XMFLOAT3 &Pos) {
+void UTransformComponent::forcePosition(const dx::XMFLOAT3 &Pos) {
   Position = Pos;
   ProcessingPosition = Pos;
 }
 
-void
-UTransformComponent::setRotation(const dx::XMFLOAT3 &Angle) {
+void UTransformComponent::setRotation(const dx::XMFLOAT3 &Angle) {
   ProcessingRotation = Angle;
   RotationDirtyFlg = true;
 }
 
-void
-UTransformComponent::forceRotation(const dx::XMFLOAT3 &Angle) {
+void UTransformComponent::forceRotation(const dx::XMFLOAT3 &Angle) {
   Rotation = Angle;
   ProcessingRotation = Angle;
 }
 
-void
-UTransformComponent::setScaling(const dx::XMFLOAT3 &Factor) {
+void UTransformComponent::setScaling(const dx::XMFLOAT3 &Factor) {
   ProcessingScaling = Factor;
   ScalingDirtyFlg = true;
 }
 
-void
-UTransformComponent::forceScaling(const dx::XMFLOAT3 &Factor) {
+void UTransformComponent::forceScaling(const dx::XMFLOAT3 &Factor) {
   Scaling = Factor;
   ProcessingScaling = Factor;
 }
 
-void
-UTransformComponent::translate(const dx::XMFLOAT3 &DeltaPos) {
+void UTransformComponent::translate(const dx::XMFLOAT3 &DeltaPos) {
   dx::XMVECTOR Point = dx::XMLoadFloat3(&ProcessingPosition);
   dx::XMVECTOR Delta = dx::XMLoadFloat3(&DeltaPos);
   Point += Delta;
@@ -72,26 +58,22 @@ UTransformComponent::translate(const dx::XMFLOAT3 &DeltaPos) {
   PositionDirtyFlg = true;
 }
 
-void
-UTransformComponent::translateXAsix(float DeltaPosX) {
+void UTransformComponent::translateXAsix(float DeltaPosX) {
   ProcessingPosition.x += DeltaPosX;
   PositionDirtyFlg = true;
 }
 
-void
-UTransformComponent::translateYAsix(float DeltaPosY) {
+void UTransformComponent::translateYAsix(float DeltaPosY) {
   ProcessingPosition.y += DeltaPosY;
   PositionDirtyFlg = true;
 }
 
-void
-UTransformComponent::translateZAsix(float DeltaPosZ) {
+void UTransformComponent::translateZAsix(float DeltaPosZ) {
   ProcessingPosition.z += DeltaPosZ;
   PositionDirtyFlg = true;
 }
 
-void
-UTransformComponent::rotate(const dx::XMFLOAT3 &DeltaAngle) {
+void UTransformComponent::rotate(const dx::XMFLOAT3 &DeltaAngle) {
   dx::XMVECTOR Angle = dx::XMLoadFloat3(&ProcessingRotation);
   dx::XMVECTOR Delta = dx::XMLoadFloat3(&DeltaAngle);
   Angle += Delta;
@@ -99,80 +81,64 @@ UTransformComponent::rotate(const dx::XMFLOAT3 &DeltaAngle) {
   RotationDirtyFlg = true;
 }
 
-void
-UTransformComponent::rotateXAsix(float DeltaAngleX) {
+void UTransformComponent::rotateXAsix(float DeltaAngleX) {
   ProcessingRotation.x += DeltaAngleX;
   RotationDirtyFlg = true;
 }
 
-void
-UTransformComponent::rotateYAsix(float DeltaAngleY) {
+void UTransformComponent::rotateYAsix(float DeltaAngleY) {
   ProcessingRotation.y += DeltaAngleY;
   RotationDirtyFlg = true;
 }
 
-void
-UTransformComponent::rotateZAsix(float DeltaAngleZ) {
+void UTransformComponent::rotateZAsix(float DeltaAngleZ) {
   ProcessingRotation.z += DeltaAngleZ;
   RotationDirtyFlg = true;
 }
 
-void
-UTransformComponent::scale(const dx::XMFLOAT3 &Factor) {
+void UTransformComponent::scale(const dx::XMFLOAT3 &Factor) {
   ProcessingScaling = Factor;
   ScalingDirtyFlg = true;
 }
 
-void
-UTransformComponent::scaleXAsix(float FactorX) {
+void UTransformComponent::scaleXAsix(float FactorX) {
   ProcessingScaling.x = FactorX;
   ScalingDirtyFlg = true;
 }
 
-void
-UTransformComponent::scaleYAsix(float FactorY) {
+void UTransformComponent::scaleYAsix(float FactorY) {
   ProcessingScaling.y = FactorY;
   ScalingDirtyFlg = true;
 }
 
-void
-UTransformComponent::scaleZAsix(float FactorZ) {
+void UTransformComponent::scaleZAsix(float FactorZ) {
   ProcessingScaling.z = FactorZ;
   ScalingDirtyFlg = true;
 }
 
-const dx::XMFLOAT3 &
-UTransformComponent::getPosition() const {
+const dx::XMFLOAT3 &UTransformComponent::getPosition() const {
   return Position;
 }
 
-const dx::XMFLOAT3 &
-UTransformComponent::getRotation() const {
+const dx::XMFLOAT3 &UTransformComponent::getRotation() const {
   return Rotation;
 }
 
-const dx::XMFLOAT3 &
-UTransformComponent::getScaling() const {
-  return Scaling;
-}
+const dx::XMFLOAT3 &UTransformComponent::getScaling() const { return Scaling; }
 
-const dx::XMFLOAT3 &
-UTransformComponent::getProcessingPosition() const {
+const dx::XMFLOAT3 &UTransformComponent::getProcessingPosition() const {
   return ProcessingPosition;
 }
 
-const dx::XMFLOAT3 &
-UTransformComponent::getProcessingRotation() const {
+const dx::XMFLOAT3 &UTransformComponent::getProcessingRotation() const {
   return ProcessingRotation;
 }
 
-const dx::XMFLOAT3 &
-UTransformComponent::getProcessingScaling() const {
+const dx::XMFLOAT3 &UTransformComponent::getProcessingScaling() const {
   return ProcessingScaling;
 }
 
-void
-UTransformComponent::applyProcessingData() {
+void UTransformComponent::applyProcessingData() {
   if (PositionDirtyFlg) {
     Position = ProcessingPosition;
     PositionDirtyFlg = false;

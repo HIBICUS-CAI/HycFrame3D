@@ -26,42 +26,22 @@ public:
 
   ~RSTopic();
 
-  const std::string &
-  getTopicName() const;
+  const std::string &getTopicName() const;
 
-  void
-  startAssembly();
+  void startAssembly();
+  void finishAssembly();
 
-  void
-  finishAssembly();
+  void setExecuateOrder(UINT Order);
+  UINT getExecuateOrder() const;
 
-  void
-  setExecuateOrder(UINT Order);
+  void setMTContext(ID3D11DeviceContext *ContextPtr);
 
-  UINT
-  getExecuateOrder() const;
+  void insertPass(class RSPass_Base *Pass);
+  void erasePass(class RSPass_Base *Pass);
+  void erasePass(const std::string &PassName);
+  bool hasPass(const std::string &PassName);
 
-  void
-  setMTContext(ID3D11DeviceContext *ContextPtr);
-
-  void
-  insertPass(class RSPass_Base *Pass);
-
-  void
-  erasePass(class RSPass_Base *Pass);
-
-  void
-  erasePass(const std::string &PassName);
-
-  bool
-  hasPass(const std::string &PassName);
-
-  bool
-  initAllPasses();
-
-  void
-  execuateTopic();
-
-  void
-  releaseTopic();
+  bool initAllPasses();
+  void execuateTopic();
+  void releaseTopic();
 };

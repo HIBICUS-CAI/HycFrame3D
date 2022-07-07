@@ -15,8 +15,7 @@ AAnimateComponent::AAnimateComponent(const std::string &CompName,
 
 AAnimateComponent::~AAnimateComponent() {}
 
-bool
-AAnimateComponent::init() {
+bool AAnimateComponent::init() {
   auto Amc = getActorOwner()->getComponent<AMeshComponent>();
   if (!Amc) {
     return false;
@@ -102,8 +101,7 @@ AAnimateComponent::init() {
   return true;
 }
 
-void
-AAnimateComponent::update(Timer &Timer) {
+void AAnimateComponent::update(Timer &Timer) {
   if (NextAnimationName != "" && CurrentAnimationName != NextAnimationName) {
     int Index = 0;
     bool Found = false;
@@ -170,8 +168,7 @@ AAnimateComponent::update(Timer &Timer) {
   }
 }
 
-void
-AAnimateComponent::destory() {
+void AAnimateComponent::destory() {
   for (auto &SubMeshName : SubMeshNameVec) {
     SUBMESH_DATA *MeshPtr =
         getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
@@ -184,13 +181,11 @@ AAnimateComponent::destory() {
   SubMeshNameVec.clear();
 }
 
-void
-AAnimateComponent::changeAnimationTo(const std::string &AniName) {
+void AAnimateComponent::changeAnimationTo(const std::string &AniName) {
   NextAnimationName = AniName;
 }
 
-void
-AAnimateComponent::changeAnimationTo(int AniIndex) {
+void AAnimateComponent::changeAnimationTo(int AniIndex) {
   if (static_cast<size_t>(AniIndex) >= AnimationNames.size()) {
     P_LOG(LOG_ERROR, "this animation index %d is overflow\n", AniIndex);
     return;
@@ -198,22 +193,17 @@ AAnimateComponent::changeAnimationTo(int AniIndex) {
   NextAnimationName = AnimationNames[AniIndex];
 }
 
-void
-AAnimateComponent::resetTimeStamp() {
-  TotalTime = 0.f;
-}
+void AAnimateComponent::resetTimeStamp() { TotalTime = 0.f; }
 
-void
-AAnimateComponent::SetSpeedFactor(float Factor) {
+void AAnimateComponent::SetSpeedFactor(float Factor) {
   AnimationSpeedFactor = Factor;
 }
 
-void
-AAnimateComponent::processNodes(float AniTime,
-                                const MESH_NODE *Node,
-                                const dx::XMFLOAT4X4 &ParentTrans,
-                                const dx::XMFLOAT4X4 &GlbInvTrans,
-                                const ANIMATION_INFO *const AniInfo) {
+void AAnimateComponent::processNodes(float AniTime,
+                                     const MESH_NODE *Node,
+                                     const dx::XMFLOAT4X4 &ParentTrans,
+                                     const dx::XMFLOAT4X4 &GlbInvTrans,
+                                     const ANIMATION_INFO *const AniInfo) {
   const std::string &NodeName = Node->NodeName;
   dx::XMMATRIX NodeTrans = dx::XMLoadFloat4x4(&Node->ThisToParent);
   NodeTrans = dx::XMMatrixTranspose(NodeTrans);
@@ -266,10 +256,10 @@ AAnimateComponent::processNodes(float AniTime,
   }
 }
 
-void
-AAnimateComponent::interpolatePosition(dx::XMVECTOR &OutResult,
-                                       float AniTime,
-                                       const ANIMATION_CHANNEL *const AniInfo) {
+void AAnimateComponent::interpolatePosition(
+    dx::XMVECTOR &OutResult,
+    float AniTime,
+    const ANIMATION_CHANNEL *const AniInfo) {
   auto Size = AniInfo->PositionKeys.size();
   assert(Size > 0);
   if (Size == 1) {
@@ -299,10 +289,10 @@ AAnimateComponent::interpolatePosition(dx::XMVECTOR &OutResult,
   OutResult = dx::XMVectorLerp(BasePos, NextPos, Factor);
 }
 
-void
-AAnimateComponent::interpolateRotation(dx::XMVECTOR &OutResult,
-                                       float AniTime,
-                                       const ANIMATION_CHANNEL *const AniInfo) {
+void AAnimateComponent::interpolateRotation(
+    dx::XMVECTOR &OutResult,
+    float AniTime,
+    const ANIMATION_CHANNEL *const AniInfo) {
   auto Size = AniInfo->RotationKeys.size();
   assert(Size > 0);
   if (Size == 1) {
@@ -336,10 +326,10 @@ AAnimateComponent::interpolateRotation(dx::XMVECTOR &OutResult,
   OutResult = dx::XMQuaternionNormalize(OutResult);
 }
 
-void
-AAnimateComponent::interpolateScaling(dx::XMVECTOR &OuResult,
-                                      float AniTime,
-                                      const ANIMATION_CHANNEL *const AniInfo) {
+void AAnimateComponent::interpolateScaling(
+    dx::XMVECTOR &OuResult,
+    float AniTime,
+    const ANIMATION_CHANNEL *const AniInfo) {
   auto Size = AniInfo->ScalingKeys.size();
   assert(Size > 0);
   if (Size == 1) {

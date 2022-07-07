@@ -25,8 +25,7 @@ public:
                       class ActorObject *ActorOwner);
   virtual ~ACollisionComponent();
 
-  ACollisionComponent &
-  operator=(const ACollisionComponent &Source) {
+  ACollisionComponent &operator=(const ACollisionComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -37,29 +36,20 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  createCollisionShape(COLLISION_SHAPE Type, dx::XMFLOAT3 Size);
+  void createCollisionShape(COLLISION_SHAPE Type, dx::XMFLOAT3 Size);
 
-  bool
-  checkCollisionWith(const std::string &ActorName,
-                     CONTACT_PONT_PAIR *OutContactPair = nullptr);
+  bool checkCollisionWith(const std::string &ActorName,
+                          CONTACT_PONT_PAIR *OutContactPair = nullptr);
 
-  static dx::XMFLOAT3
-  calcCenterOfContact(const CONTACT_PONT_PAIR &Pair);
+  static dx::XMFLOAT3 calcCenterOfContact(const CONTACT_PONT_PAIR &Pair);
 
 private:
-  void
-  addCollisionObjectToWorld();
-  void
-  syncDataFromTransform();
-  class btCollisionObject *
-  getCollisionObject() const;
+  void addCollisionObjectToWorld();
+  void syncDataFromTransform();
+  class btCollisionObject *getCollisionObject() const;
 };

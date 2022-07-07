@@ -12,8 +12,7 @@ CollisionSystem::CollisionSystem(class SystemExecutive *SysExecutive)
 
 CollisionSystem::~CollisionSystem() {}
 
-bool
-CollisionSystem::init() {
+bool CollisionSystem::init() {
 #ifdef _DEBUG
   assert(getSystemExecutive());
 #endif // _DEBUG
@@ -32,8 +31,7 @@ CollisionSystem::init() {
   return true;
 }
 
-void
-CollisionSystem::run(Timer &Timer) {
+void CollisionSystem::run(Timer &Timer) {
   for (auto &Acc : *ACollisionArrayPtr) {
     if (Acc.getCompStatus() == STATUS::ACTIVE) {
       Acc.update(Timer);
@@ -47,5 +45,4 @@ CollisionSystem::run(Timer &Timer) {
       ->detectCollision();
 }
 
-void
-CollisionSystem::destory() {}
+void CollisionSystem::destory() {}

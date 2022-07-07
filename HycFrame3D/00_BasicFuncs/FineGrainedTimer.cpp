@@ -9,8 +9,7 @@ Timer::Timer()
 
 Timer::~Timer() {}
 
-void
-Timer::timeIn() {
+void Timer::timeIn() {
 #ifdef _DEBUG
   assert(!ActiveFlag);
   ActiveFlag = true;
@@ -22,8 +21,7 @@ Timer::timeIn() {
   Qt1 = Litmp.QuadPart;
 }
 
-void
-Timer::timeOut() {
+void Timer::timeOut() {
   QueryPerformanceCounter(&Litmp);
   Qt2 = Litmp.QuadPart;
   Dfm = 1000. * static_cast<double>(Qt2 - Qt1);
@@ -39,12 +37,6 @@ Timer::timeOut() {
 #endif // _DEBUG
 }
 
-double
-Timer::doubleDeltaTime() const {
-  return Dft;
-}
+double Timer::doubleDeltaTime() const { return Dft; }
 
-float
-Timer::floatDeltaTime() const {
-  return static_cast<float>(Dft);
-}
+float Timer::floatDeltaTime() const { return static_cast<float>(Dft); }

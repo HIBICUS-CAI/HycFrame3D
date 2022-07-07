@@ -8,8 +8,7 @@ namespace input {
 
 InputManager *G_InputManager = nullptr;
 
-bool
-startUp() {
+bool startUp() {
   G_InputManager = new InputManager(window::getWindowPtr());
   if (!G_InputManager) {
     return false;
@@ -27,8 +26,7 @@ startUp() {
   return true;
 }
 
-void
-cleanAndStop() {
+void cleanAndStop() {
   if (G_InputManager) {
     G_InputManager->closeDirectInputMain();
     delete G_InputManager;
@@ -36,13 +34,9 @@ cleanAndStop() {
   }
 }
 
-InputManager *
-getInputManagerPtr() {
-  return G_InputManager;
-}
+InputManager *getInputManagerPtr() { return G_InputManager; }
 
-bool
-pollDevices() {
+bool pollDevices() {
   HRESULT Hr = G_InputManager->pollAllInputDevices();
   if (FAILED(Hr)) {
     return false;
@@ -51,47 +45,34 @@ pollDevices() {
   return true;
 }
 
-bool
-isKeyDownInSingle(UINT KeyCode) {
+bool isKeyDownInSingle(UINT KeyCode) {
   return G_InputManager->isThisKeyBeingPushedInSingle(KeyCode);
 }
 
-bool
-isKeyPushedInSingle(UINT KeyCode) {
+bool isKeyPushedInSingle(UINT KeyCode) {
   return G_InputManager->isThisKeyHasBeenPushedInSingle(KeyCode);
 }
 
-STICK_OFFSET
-leftStickOffset(int GamepadIndex) {
+STICK_OFFSET leftStickOffset(int GamepadIndex) {
   return G_InputManager->getGamePadLeftStickOffset(GamepadIndex);
 }
 
-STICK_OFFSET
-rightStickOffset(int GamepadIndex) {
+STICK_OFFSET rightStickOffset(int GamepadIndex) {
   return G_InputManager->getGamePadRightStickOffset(GamepadIndex);
 }
 
-BACKSHD_OFFSET
-leftBackShdBtnOffset(int GamepadIndex) {
+BACKSHD_OFFSET leftBackShdBtnOffset(int GamepadIndex) {
   return G_InputManager->getGamePadLeftBackShdBtnOffset(GamepadIndex);
 }
 
-BACKSHD_OFFSET
-rightBackShdBtnOffset(int GamepadIndex) {
+BACKSHD_OFFSET rightBackShdBtnOffset(int GamepadIndex) {
   return G_InputManager->getGamePadRightBackShdBtnOffset(GamepadIndex);
 }
 
-MOUSE_OFFSET
-getMouseOffset() { return G_InputManager->getMouseOffset(); }
+MOUSE_OFFSET getMouseOffset() { return G_InputManager->getMouseOffset(); }
 
-bool
-isMouseScrollingUp() {
-  return G_InputManager->isMouseScrollingUp();
-}
+bool isMouseScrollingUp() { return G_InputManager->isMouseScrollingUp(); }
 
-bool
-isMouseScrollingDown() {
-  return G_InputManager->isMouseScrollingDown();
-}
+bool isMouseScrollingDown() { return G_InputManager->isMouseScrollingDown(); }
 
 } // namespace input

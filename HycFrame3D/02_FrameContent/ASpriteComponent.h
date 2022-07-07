@@ -27,8 +27,7 @@ public:
   ASpriteComponent(const std::string &CompName, class ActorObject *ActorOwner);
   virtual ~ASpriteComponent();
 
-  ASpriteComponent &
-  operator=(const ASpriteComponent &Source) {
+  ASpriteComponent &operator=(const ASpriteComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -49,29 +48,23 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  bool
-  createGeoPointWithTexture(class SceneNode *Scene, const std::string &TexName);
+  bool createGeoPointWithTexture(class SceneNode *Scene,
+                                 const std::string &TexName);
 
-  void
-  setSpriteProperty(const dx::XMFLOAT2 &SpriteSize,
-                    const dx::XMFLOAT4 &SpriteTexCoord,
-                    bool IsBillboard);
+  void setSpriteProperty(const dx::XMFLOAT2 &SpriteSize,
+                         const dx::XMFLOAT4 &SpriteTexCoord,
+                         bool IsBillboard);
 
-  void
-  setAnimationProperty(const dx::XMFLOAT2 &Stride,
-                       UINT MaxCut,
-                       bool RepeatFlag,
-                       float WwitchTime);
+  void setAnimationProperty(const dx::XMFLOAT2 &Stride,
+                            UINT MaxCut,
+                            bool RepeatFlag,
+                            float WwitchTime);
 
 private:
-  void
-  syncTransformDataToInstance();
+  void syncTransformDataToInstance();
 };

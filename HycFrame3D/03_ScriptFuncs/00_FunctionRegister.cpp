@@ -3,8 +3,7 @@
 #include "01_MaterialEditor.h"
 #include "SPInput.h"
 
-void
-registerAllFuncPtr(ObjectFactory *Factory) {
+void registerAllFuncPtr(ObjectFactory *Factory) {
   registerMaterialEditor(Factory);
   registerSPInput(Factory);
 }

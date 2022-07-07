@@ -21,8 +21,7 @@ InstanceSystem::InstanceSystem(SystemExecutive *SysExecutive)
 
 InstanceSystem::~InstanceSystem() {}
 
-bool
-InstanceSystem::init() {
+bool InstanceSystem::init() {
 #ifdef _DEBUG
   assert(getSystemExecutive());
 #endif // _DEBUG
@@ -85,8 +84,7 @@ InstanceSystem::init() {
   return true;
 }
 
-void
-InstanceSystem::run(Timer &Timer) {
+void InstanceSystem::run(Timer &Timer) {
   for (auto &Atc : *ATransArrayPtr) {
     if (Atc.getCompStatus() == STATUS::ACTIVE) {
       Atc.update(Timer);
@@ -136,5 +134,4 @@ InstanceSystem::run(Timer &Timer) {
   }
 }
 
-void
-InstanceSystem::destory() {}
+void InstanceSystem::destory() {}

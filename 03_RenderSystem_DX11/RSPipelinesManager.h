@@ -25,30 +25,18 @@ public:
   RSPipelinesManager();
   ~RSPipelinesManager();
 
-  bool
-  startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_DX11 *RootPtr);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
+  void addPipeline(const std::string &Name, class RSPipeline *Pipeline);
+  class RSPipeline *getPipeline(const std::string &Name);
 
-  void
-  addPipeline(const std::string &Name, class RSPipeline *Pipeline);
+  void setPipeline(const std::string &Name);
+  void setPipeline(class RSPipeline *Pipeline);
 
-  class RSPipeline *
-  getPipeline(const std::string &Name);
+  void clearCurrentPipelineState();
 
-  void
-  setPipeline(const std::string &Name);
+  void execuateCurrentPipeline();
 
-  void
-  setPipeline(class RSPipeline *Pipeline);
-
-  void
-  clearCurrentPipelineState();
-
-  void
-  execuateCurrentPipeline();
-
-  void
-  changeToNextPipeline();
+  void changeToNextPipeline();
 };

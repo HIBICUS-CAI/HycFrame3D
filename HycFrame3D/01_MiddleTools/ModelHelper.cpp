@@ -16,26 +16,23 @@
 #include <cstring>
 #include <fstream>
 
-void
-loadByBinary(const std::string &FilePath,
-             RS_SUBMESH_DATA *OutResult,
-             int SubMeshIndex,
-             SUBMESH_BONES *OutBoneData,
-             MESH_ANIMATION_DATA **OutAnimData);
-void
-loadByJson(const std::string &FilePath,
-           RS_SUBMESH_DATA *OutResult,
-           int SubMeshIndex,
-           SUBMESH_BONES *OutBoneData,
-           MESH_ANIMATION_DATA **OutAnimData);
+void loadByBinary(const std::string &FilePath,
+                  RS_SUBMESH_DATA *OutResult,
+                  int SubMeshIndex,
+                  SUBMESH_BONES *OutBoneData,
+                  MESH_ANIMATION_DATA **OutAnimData);
+void loadByJson(const std::string &FilePath,
+                RS_SUBMESH_DATA *OutResult,
+                int SubMeshIndex,
+                SUBMESH_BONES *OutBoneData,
+                MESH_ANIMATION_DATA **OutAnimData);
 
-void
-loadModelFile(const std::string &FilePath,
-              MODEL_FILE_TYPE Type,
-              int SubMeshIndex,
-              RS_SUBMESH_DATA *OutResult,
-              SUBMESH_BONES *OutBoneData,
-              MESH_ANIMATION_DATA **OutAnimData) {
+void loadModelFile(const std::string &FilePath,
+                   MODEL_FILE_TYPE Type,
+                   int SubMeshIndex,
+                   RS_SUBMESH_DATA *OutResult,
+                   SUBMESH_BONES *OutBoneData,
+                   MESH_ANIMATION_DATA **OutAnimData) {
   std::string Path = ".\\Assets\\Models\\" + FilePath;
 
   switch (Type) {
@@ -50,12 +47,11 @@ loadModelFile(const std::string &FilePath,
   }
 }
 
-void
-loadByBinary(const std::string &FilePath,
-             RS_SUBMESH_DATA *OutResult,
-             int SubMeshIndex,
-             SUBMESH_BONES *OutBoneData,
-             MESH_ANIMATION_DATA **OutAnimData) {
+void loadByBinary(const std::string &FilePath,
+                  RS_SUBMESH_DATA *OutResult,
+                  int SubMeshIndex,
+                  SUBMESH_BONES *OutBoneData,
+                  MESH_ANIMATION_DATA **OutAnimData) {
   std::ifstream InFile(FilePath, std::ios::in | std::ios::binary);
 
 #ifdef _DEBUG
@@ -435,12 +431,11 @@ loadByBinary(const std::string &FilePath,
   InFile.close();
 }
 
-void
-loadByJson(const std::string &FilePath,
-           RS_SUBMESH_DATA *OutResult,
-           int SubMeshIndex,
-           SUBMESH_BONES *OutBoneData,
-           MESH_ANIMATION_DATA **OutAnimData) {
+void loadByJson(const std::string &FilePath,
+                RS_SUBMESH_DATA *OutResult,
+                int SubMeshIndex,
+                SUBMESH_BONES *OutBoneData,
+                MESH_ANIMATION_DATA **OutAnimData) {
   std::FILE *FPtr = std::fopen(FilePath.c_str(), "rb");
   if (!FPtr) {
     P_LOG(LOG_ERROR, "cannt open file : %s\n", FilePath.c_str());
@@ -771,10 +766,9 @@ loadByJson(const std::string &FilePath,
   }
 }
 
-void
-addTextureToSubMesh(RS_SUBMESH_DATA *OutResult,
-                    const std::string &FilePath,
-                    MESH_TEXTURE_TYPE Type) {
+void addTextureToSubMesh(RS_SUBMESH_DATA *OutResult,
+                         const std::string &FilePath,
+                         MESH_TEXTURE_TYPE Type) {
   RSRoot_DX11 *Root = getRSDX11RootInstance();
 
   std::wstring WStr = L"";

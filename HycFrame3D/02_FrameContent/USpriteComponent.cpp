@@ -16,8 +16,7 @@ USpriteComponent::USpriteComponent(const std::string &CompName,
 
 USpriteComponent::~USpriteComponent() {}
 
-bool
-USpriteComponent::init() {
+bool USpriteComponent::init() {
   if (MeshesName == "") {
     P_LOG(LOG_WARNING, "this sprite hasnt been built : %s\n",
           getCompName().c_str());
@@ -27,13 +26,9 @@ USpriteComponent::init() {
   return true;
 }
 
-void
-USpriteComponent::update(Timer &Timer) {
-  syncTransformDataToInstance();
-}
+void USpriteComponent::update(Timer &Timer) { syncTransformDataToInstance(); }
 
-void
-USpriteComponent::destory() {
+void USpriteComponent::destory() {
   SUBMESH_DATA *MeshPtr =
       getUiOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           MeshesName);
@@ -42,10 +37,9 @@ USpriteComponent::destory() {
   }
 }
 
-bool
-USpriteComponent::createSpriteMesh(SceneNode *Scene,
-                                   const DirectX::XMFLOAT4 &OffsetColorSpr,
-                                   const std::string &TexName) {
+bool USpriteComponent::createSpriteMesh(SceneNode *Scene,
+                                        const DirectX::XMFLOAT4 &OffsetColorSpr,
+                                        const std::string &TexName) {
   if (!Scene) {
     return false;
   }
@@ -76,18 +70,15 @@ USpriteComponent::createSpriteMesh(SceneNode *Scene,
   return true;
 }
 
-const DirectX::XMFLOAT4 &
-USpriteComponent::getOffsetColor() const {
+const DirectX::XMFLOAT4 &USpriteComponent::getOffsetColor() const {
   return OffsetColor;
 }
 
-void
-USpriteComponent::setOffsetColor(const DirectX::XMFLOAT4 &OffsetColorSpr) {
+void USpriteComponent::setOffsetColor(const DirectX::XMFLOAT4 &OffsetColorSpr) {
   OffsetColor = OffsetColorSpr;
 }
 
-void
-USpriteComponent::syncTransformDataToInstance() {
+void USpriteComponent::syncTransformDataToInstance() {
   UTransformComponent *Utc = getUiOwner()->getComponent<UTransformComponent>();
 #ifdef _DEBUG
   assert(Utc);
@@ -119,8 +110,7 @@ USpriteComponent::syncTransformDataToInstance() {
   }
 }
 
-void
-USpriteComponent::resetTexture() {
+void USpriteComponent::resetTexture() {
   auto MeshPtr =
       getUiOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           getCompName());

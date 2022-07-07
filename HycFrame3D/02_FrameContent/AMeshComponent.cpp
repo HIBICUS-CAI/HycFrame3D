@@ -15,8 +15,7 @@ AMeshComponent::AMeshComponent(const std::string &CompName,
 
 AMeshComponent::~AMeshComponent() {}
 
-bool
-AMeshComponent::init() {
+bool AMeshComponent::init() {
   int MeshIndex = 0;
   std::vector<DirectX::XMFLOAT3> *TempOffset =
       new std::vector<DirectX::XMFLOAT3>;
@@ -56,13 +55,9 @@ AMeshComponent::init() {
   return true;
 }
 
-void
-AMeshComponent::update(Timer &Timer) {
-  syncTransformDataToInstance();
-}
+void AMeshComponent::update(Timer &Timer) { syncTransformDataToInstance(); }
 
-void
-AMeshComponent::destory() {
+void AMeshComponent::destory() {
   for (const auto &MeshName : SubMeshesNameArray) {
     SUBMESH_DATA *MeshPtr =
         getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
@@ -73,28 +68,22 @@ AMeshComponent::destory() {
   }
 }
 
-void
-AMeshComponent::addMeshInfo(const std::string &MeshName,
-                            DirectX::XMFLOAT3 Offset) {
+void AMeshComponent::addMeshInfo(const std::string &MeshName,
+                                 DirectX::XMFLOAT3 Offset) {
   MeshesNameArray.push_back(MeshName);
   OffsetPositionArray.push_back(Offset);
 }
 
-void
-AMeshComponent::setEmissiveIntensity(float Intensity) {
+void AMeshComponent::setEmissiveIntensity(float Intensity) {
   EmissiveIntensity = Intensity;
   if (EmissiveIntensity > 255.f) {
     EmissiveIntensity = 255.f;
   }
 }
 
-float
-AMeshComponent::getEmissiveIntensity() {
-  return EmissiveIntensity;
-}
+float AMeshComponent::getEmissiveIntensity() { return EmissiveIntensity; }
 
-bool
-AMeshComponent::bindInstanceToAssetsPool(const std::string &MeshName) {
+bool AMeshComponent::bindInstanceToAssetsPool(const std::string &MeshName) {
   SUBMESH_DATA *MeshPtr =
       getActorOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           MeshName);
@@ -135,8 +124,7 @@ AMeshComponent::bindInstanceToAssetsPool(const std::string &MeshName) {
   return true;
 }
 
-void
-AMeshComponent::syncTransformDataToInstance() {
+void AMeshComponent::syncTransformDataToInstance() {
   ATransformComponent *Atc =
       getActorOwner()->getComponent<ATransformComponent>();
 #ifdef _DEBUG
@@ -160,7 +148,7 @@ AMeshComponent::syncTransformDataToInstance() {
         MyRange;
     MyRange = InsMap.equal_range(getCompName());
 
-    for (auto &It = MyRange.first, End = MyRange.second; It != End; ++It) {
+    for (auto &It = MyRange.first, &End = MyRange.second; It != End; ++It) {
       auto &InsData = It->second;
       DirectX::XMFLOAT3 Delta = OffsetPositionArray[Index];
       DirectX::XMFLOAT3 World = Atc->getPosition();

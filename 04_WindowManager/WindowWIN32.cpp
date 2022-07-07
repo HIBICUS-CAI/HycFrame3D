@@ -4,13 +4,12 @@
 
 #include <string.h>
 
-HRESULT
-WindowWIN32::createWindow(const char *WndName,
-                          HINSTANCE HInstance,
-                          int CmdShow,
-                          UINT Width,
-                          UINT Height,
-                          bool AsFullScreen) {
+HRESULT WindowWIN32::createWindow(const char *WndName,
+                                  HINSTANCE HInstance,
+                                  int CmdShow,
+                                  UINT Width,
+                                  UINT Height,
+                                  bool AsFullScreen) {
   char ClassName[128] = "";
   strcpy_s(ClassName, sizeof(ClassName), WndName);
   strcat_s(ClassName, sizeof(ClassName), " CLASS");
@@ -63,8 +62,10 @@ WindowWIN32::createWindow(const char *WndName,
   return S_OK;
 }
 
-LRESULT CALLBACK
-WindowWIN32::wndProc(HWND HWnd, UINT Message, WPARAM WParam, LPARAM LParam) {
+LRESULT CALLBACK WindowWIN32::wndProc(HWND HWnd,
+                                      UINT Message,
+                                      WPARAM WParam,
+                                      LPARAM LParam) {
   PAINTSTRUCT Ps = {};
   HDC Hdc = {};
 
@@ -87,8 +88,7 @@ WindowWIN32::wndProc(HWND HWnd, UINT Message, WPARAM WParam, LPARAM LParam) {
   return 0;
 }
 
-HRESULT
-WindowWIN32::switchWindowSize() {
+HRESULT WindowWIN32::switchWindowSize() {
   if (this->FullScreenFlag) {
     HWND HDesk = GetDesktopWindow();
     RECT Rc = {};

@@ -14,8 +14,7 @@ RootSystem::RootSystem()
 
 RootSystem::~RootSystem() {}
 
-bool
-RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
+bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
   if (!window::startUp()) {
     P_LOG(LOG_ERROR, "failed to start up windows system\n");
     return false;
@@ -60,8 +59,7 @@ RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
   return true;
 }
 
-void
-RootSystem::cleanAndStop() {
+void RootSystem::cleanAndStop() {
   SceneManagerPtr->cleanAndStop();
   ObjectFactoryPtr->cleanAndStop();
   SystemExecutivePtr->cleanAndStop();
@@ -76,8 +74,7 @@ RootSystem::cleanAndStop() {
   window::cleanAndStop();
 }
 
-void
-RootSystem::runGameLoop() {
+void RootSystem::runGameLoop() {
   MSG Msg = {0};
   while (WM_QUIT != Msg.message) {
     if (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE)) {

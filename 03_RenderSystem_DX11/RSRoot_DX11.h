@@ -11,8 +11,7 @@
 
 #include "RSCommon.h"
 
-class RSRoot_DX11 *
-getRSDX11RootInstance();
+class RSRoot_DX11 *getRSDX11RootInstance();
 
 class RSRoot_DX11 {
 private:
@@ -30,36 +29,16 @@ public:
   RSRoot_DX11();
   ~RSRoot_DX11();
 
-  bool
-  startUp(HWND WndHandle);
+  bool startUp(HWND WndHandle);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
-
-  class RSDevices *
-  getDevices() const;
-
-  class RSPipelinesManager *
-  getPipelinesManager() const;
-
-  class RSDrawCallsPool *
-  getDrawCallsPool() const;
-
-  class RSResourceManager *
-  getResourceManager() const;
-
-  class RSStaticResources *
-  getStaticResources() const;
-
-  class RSCamerasContainer *
-  getCamerasContainer() const;
-
-  class RSLightsContainer *
-  getLightsContainer() const;
-
-  class RSParticlesContainer *
-  getParticlesContainer() const;
-
-  class RSMeshHelper *
-  getMeshHelper() const;
+  class RSDevices *getDevices() const;
+  class RSPipelinesManager *getPipelinesManager() const;
+  class RSDrawCallsPool *getDrawCallsPool() const;
+  class RSResourceManager *getResourceManager() const;
+  class RSStaticResources *getStaticResources() const;
+  class RSCamerasContainer *getCamerasContainer() const;
+  class RSLightsContainer *getLightsContainer() const;
+  class RSParticlesContainer *getParticlesContainer() const;
+  class RSMeshHelper *getMeshHelper() const;
 };

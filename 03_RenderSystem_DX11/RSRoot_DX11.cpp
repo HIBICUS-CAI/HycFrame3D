@@ -27,8 +27,7 @@
 
 static RSRoot_DX11 *G_RSRoot_DX11_Instance = nullptr;
 
-RSRoot_DX11 *
-getRSDX11RootInstance() {
+RSRoot_DX11 *getRSDX11RootInstance() {
   if (!G_RSRoot_DX11_Instance) {
     assert(false && "rs_root_dx11_hasnt_been_built");
   }
@@ -44,8 +43,7 @@ RSRoot_DX11::RSRoot_DX11()
 
 RSRoot_DX11::~RSRoot_DX11() {}
 
-bool
-RSRoot_DX11::startUp(HWND WndHandle) {
+bool RSRoot_DX11::startUp(HWND WndHandle) {
   DevicesPtr = new RSDevices();
   if (!DevicesPtr->startUp(this, WndHandle)) {
     return false;
@@ -100,8 +98,7 @@ RSRoot_DX11::startUp(HWND WndHandle) {
   return true;
 }
 
-void
-RSRoot_DX11::cleanAndStop() {
+void RSRoot_DX11::cleanAndStop() {
   if (PipelinesManagerPtr) {
     PipelinesManagerPtr->cleanAndStop();
     delete PipelinesManagerPtr;
@@ -157,47 +154,34 @@ RSRoot_DX11::cleanAndStop() {
   }
 }
 
-RSDevices *
-RSRoot_DX11::getDevices() const {
-  return DevicesPtr;
-}
+RSDevices *RSRoot_DX11::getDevices() const { return DevicesPtr; }
 
-RSPipelinesManager *
-RSRoot_DX11::getPipelinesManager() const {
+RSPipelinesManager *RSRoot_DX11::getPipelinesManager() const {
   return PipelinesManagerPtr;
 }
 
-RSDrawCallsPool *
-RSRoot_DX11::getDrawCallsPool() const {
+RSDrawCallsPool *RSRoot_DX11::getDrawCallsPool() const {
   return DrawCallsPoolPtr;
 }
 
-RSResourceManager *
-RSRoot_DX11::getResourceManager() const {
+RSResourceManager *RSRoot_DX11::getResourceManager() const {
   return ResourceManagerPtr;
 }
 
-RSStaticResources *
-RSRoot_DX11::getStaticResources() const {
+RSStaticResources *RSRoot_DX11::getStaticResources() const {
   return StaticResourcesPtr;
 }
 
-RSCamerasContainer *
-RSRoot_DX11::getCamerasContainer() const {
+RSCamerasContainer *RSRoot_DX11::getCamerasContainer() const {
   return CamerasContainerPtr;
 }
 
-RSLightsContainer *
-RSRoot_DX11::getLightsContainer() const {
+RSLightsContainer *RSRoot_DX11::getLightsContainer() const {
   return LightsContainerPtr;
 }
 
-RSParticlesContainer *
-RSRoot_DX11::getParticlesContainer() const {
+RSParticlesContainer *RSRoot_DX11::getParticlesContainer() const {
   return ParticlesContainerPtr;
 }
 
-RSMeshHelper *
-RSRoot_DX11::getMeshHelper() const {
-  return MeshHelperPtr;
-}
+RSMeshHelper *RSRoot_DX11::getMeshHelper() const { return MeshHelperPtr; }

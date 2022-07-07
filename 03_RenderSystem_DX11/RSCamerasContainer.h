@@ -25,21 +25,12 @@ public:
   RSCamerasContainer();
   ~RSCamerasContainer();
 
-  bool
-  startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_DX11 *RootPtr);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
+  class RSCamera *createRSCamera(const std::string &Name, const CAM_INFO *Info);
 
-  class RSCamera *
-  createRSCamera(const std::string &Name, const CAM_INFO *Info);
-
-  class RSCamera *
-  getRSCamera(const std::string &Name);
-
-  RS_CAM_INFO *
-  getRSCameraInfo(const std::string &Name);
-
-  void
-  deleteRSCamera(const std::string &Name);
+  class RSCamera *getRSCamera(const std::string &Name);
+  RS_CAM_INFO *getRSCameraInfo(const std::string &Name);
+  void deleteRSCamera(const std::string &Name);
 };

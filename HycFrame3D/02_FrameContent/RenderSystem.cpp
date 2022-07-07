@@ -25,8 +25,7 @@ RenderSystem::RenderSystem(SystemExecutive *SysExecutive)
 
 RenderSystem::~RenderSystem() {}
 
-bool
-RenderSystem::init() {
+bool RenderSystem::init() {
   if (!RenderSystemRoot) {
     RenderSystemRoot = new RSRoot_DX11();
     if (!RenderSystemRoot->startUp(window::getWindowPtr()->getWndHandle())) {
@@ -85,8 +84,7 @@ RenderSystem::init() {
   return true;
 }
 
-void
-RenderSystem::run(Timer &Timer) {
+void RenderSystem::run(Timer &Timer) {
   RenderSystemRoot = getRSDX11RootInstance();
 #ifdef _DEBUG
   assert(RenderSystemRoot);
@@ -175,8 +173,7 @@ RenderSystem::run(Timer &Timer) {
   RenderSystemRoot->getDrawCallsPool()->clearAllDrawCalls();
 }
 
-void
-RenderSystem::destory() {
+void RenderSystem::destory() {
   RenderSystemRoot->cleanAndStop();
   delete RenderSystemRoot;
 }

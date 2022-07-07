@@ -9,8 +9,7 @@ UiObject::UiObject(const std::string &UiName, SceneNode &SceneNode)
 
 UiObject::~UiObject() {}
 
-void
-UiObject::addUComponent(COMP_TYPE CompType) {
+void UiObject::addUComponent(COMP_TYPE CompType) {
   std::string CompName = getObjectName();
 
   switch (CompType) {
@@ -45,8 +44,7 @@ UiObject::addUComponent(COMP_TYPE CompType) {
   UiCompMap.insert({CompType, CompName});
 }
 
-bool
-UiObject::init() {
+bool UiObject::init() {
   auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : UiCompMap) {
@@ -66,8 +64,7 @@ UiObject::init() {
   return true;
 }
 
-void
-UiObject::destory() {
+void UiObject::destory() {
   auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : UiCompMap) {
@@ -84,8 +81,7 @@ UiObject::destory() {
   UiCompMap.clear();
 }
 
-void
-UiObject::syncStatusToAllComps() {
+void UiObject::syncStatusToAllComps() {
   auto CompContainer = getSceneNode().getComponentContainer();
 
   for (auto &CompInfo : UiCompMap) {

@@ -16,8 +16,7 @@ RSDrawCallsPool::RSDrawCallsPool()
 
 RSDrawCallsPool::~RSDrawCallsPool() {}
 
-bool
-RSDrawCallsPool::startUp(RSRoot_DX11 *RootPtr) {
+bool RSDrawCallsPool::startUp(RSRoot_DX11 *RootPtr) {
   if (!RootPtr) {
     return false;
   }
@@ -27,26 +26,22 @@ RSDrawCallsPool::startUp(RSRoot_DX11 *RootPtr) {
   return true;
 }
 
-void
-RSDrawCallsPool::cleanAndStop() {
+void RSDrawCallsPool::cleanAndStop() {
   for (auto &Pipe : DrawCallsPipeArray) {
     Pipe.Data.clear();
   }
 }
 
-void
-RSDrawCallsPool::addDrawCallToPipe(DRAWCALL_TYPE Type,
-                                   const RS_DRAWCALL_DATA &DrawCall) {
+void RSDrawCallsPool::addDrawCallToPipe(DRAWCALL_TYPE Type,
+                                        const RS_DRAWCALL_DATA &DrawCall) {
   DrawCallsPipeArray[static_cast<size_t>(Type)].Data.emplace_back(DrawCall);
 }
 
-RSDrawCallsPipe *
-RSDrawCallsPool::getDrawCallsPipe(DRAWCALL_TYPE Type) {
+RSDrawCallsPipe *RSDrawCallsPool::getDrawCallsPipe(DRAWCALL_TYPE Type) {
   return &DrawCallsPipeArray[static_cast<size_t>(Type)];
 }
 
-void
-RSDrawCallsPool::clearAllDrawCalls() {
+void RSDrawCallsPool::clearAllDrawCalls() {
   for (auto &Pipe : DrawCallsPipeArray) {
     Pipe.Data.clear();
   }

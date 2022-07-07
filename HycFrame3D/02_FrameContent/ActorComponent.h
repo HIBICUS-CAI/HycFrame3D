@@ -10,8 +10,7 @@ public:
   ActorComponent(const std::string &CompName, class ActorObject *ActorOwner);
   virtual ~ActorComponent();
 
-  ActorComponent &
-  operator=(const ActorComponent &Source) {
+  ActorComponent &operator=(const ActorComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -20,22 +19,13 @@ public:
     return *this;
   }
 
-  class SceneNode &
-  getSceneNode() const;
+  class SceneNode &getSceneNode() const;
+  class ActorObject *getActorOwner() const;
 
-  class ActorObject *
-  getActorOwner() const;
-
-  void
-  resetActorOwner(class ActorObject *Owner);
+  void resetActorOwner(class ActorObject *Owner);
 
 public:
-  virtual bool
-  init() = 0;
-
-  virtual void
-  update(Timer &Timer) = 0;
-
-  virtual void
-  destory() = 0;
+  virtual bool init() = 0;
+  virtual void update(Timer &Timer) = 0;
+  virtual void destory() = 0;
 };

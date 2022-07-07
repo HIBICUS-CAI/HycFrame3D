@@ -14,57 +14,43 @@ ATransformComponent::ATransformComponent(const std::string &CompName,
 
 ATransformComponent::~ATransformComponent() {}
 
-bool
-ATransformComponent::init() {
-  return true;
-}
+bool ATransformComponent::init() { return true; }
 
-void
-ATransformComponent::update(Timer &Timer) {
-  applyProcessingData();
-}
+void ATransformComponent::update(Timer &Timer) { applyProcessingData(); }
 
-void
-ATransformComponent::destory() {}
+void ATransformComponent::destory() {}
 
-void
-ATransformComponent::setPosition(const dx::XMFLOAT3 &Pos) {
+void ATransformComponent::setPosition(const dx::XMFLOAT3 &Pos) {
   ProcessingPosition = Pos;
   PositionDirtyFlag = true;
 }
 
-void
-ATransformComponent::forcePosition(const dx::XMFLOAT3 &Pos) {
+void ATransformComponent::forcePosition(const dx::XMFLOAT3 &Pos) {
   Position = Pos;
   ProcessingPosition = Pos;
 }
 
-void
-ATransformComponent::setRotation(const dx::XMFLOAT3 &Angle) {
+void ATransformComponent::setRotation(const dx::XMFLOAT3 &Angle) {
   ProcessingRotation = Angle;
   RotationDirtyFlag = true;
 }
 
-void
-ATransformComponent::forceRotation(const dx::XMFLOAT3 &Angle) {
+void ATransformComponent::forceRotation(const dx::XMFLOAT3 &Angle) {
   Rotation = Angle;
   ProcessingRotation = Angle;
 }
 
-void
-ATransformComponent::setScaling(const dx::XMFLOAT3 &Factor) {
+void ATransformComponent::setScaling(const dx::XMFLOAT3 &Factor) {
   ProcessingScaling = Factor;
   ScalingDirtyFlag = true;
 }
 
-void
-ATransformComponent::forceScaling(const dx::XMFLOAT3 &Factor) {
+void ATransformComponent::forceScaling(const dx::XMFLOAT3 &Factor) {
   Scaling = Factor;
   ProcessingScaling = Factor;
 }
 
-void
-ATransformComponent::translate(const dx::XMFLOAT3 &DeltaPos) {
+void ATransformComponent::translate(const dx::XMFLOAT3 &DeltaPos) {
   dx::XMVECTOR Point = dx::XMLoadFloat3(&ProcessingPosition);
   dx::XMVECTOR Delta = dx::XMLoadFloat3(&DeltaPos);
   Point += Delta;
@@ -72,26 +58,22 @@ ATransformComponent::translate(const dx::XMFLOAT3 &DeltaPos) {
   PositionDirtyFlag = true;
 }
 
-void
-ATransformComponent::translateXAsix(float DeltaPosX) {
+void ATransformComponent::translateXAsix(float DeltaPosX) {
   ProcessingPosition.x += DeltaPosX;
   PositionDirtyFlag = true;
 }
 
-void
-ATransformComponent::translateYAsix(float DeltaPosY) {
+void ATransformComponent::translateYAsix(float DeltaPosY) {
   ProcessingPosition.y += DeltaPosY;
   PositionDirtyFlag = true;
 }
 
-void
-ATransformComponent::translateZAsix(float DeltaPosZ) {
+void ATransformComponent::translateZAsix(float DeltaPosZ) {
   ProcessingPosition.z += DeltaPosZ;
   PositionDirtyFlag = true;
 }
 
-void
-ATransformComponent::rotate(const dx::XMFLOAT3 &DeltaAngle) {
+void ATransformComponent::rotate(const dx::XMFLOAT3 &DeltaAngle) {
   dx::XMVECTOR Angle = dx::XMLoadFloat3(&ProcessingRotation);
   dx::XMVECTOR Delta = dx::XMLoadFloat3(&DeltaAngle);
   Angle += Delta;
@@ -99,98 +81,79 @@ ATransformComponent::rotate(const dx::XMFLOAT3 &DeltaAngle) {
   RotationDirtyFlag = true;
 }
 
-void
-ATransformComponent::rotateXAsix(float DeltaAngleX) {
+void ATransformComponent::rotateXAsix(float DeltaAngleX) {
   ProcessingRotation.x += DeltaAngleX;
   RotationDirtyFlag = true;
 }
 
-void
-ATransformComponent::rotateYAsix(float DeltaAngleY) {
+void ATransformComponent::rotateYAsix(float DeltaAngleY) {
   ProcessingRotation.y += DeltaAngleY;
   RotationDirtyFlag = true;
 }
 
-void
-ATransformComponent::rotateZAsix(float DeltaAngleZ) {
+void ATransformComponent::rotateZAsix(float DeltaAngleZ) {
   ProcessingRotation.z += DeltaAngleZ;
   RotationDirtyFlag = true;
 }
 
-void
-ATransformComponent::scale(const dx::XMFLOAT3 &Factor) {
+void ATransformComponent::scale(const dx::XMFLOAT3 &Factor) {
   ProcessingScaling = Factor;
   ScalingDirtyFlag = true;
 }
 
-void
-ATransformComponent::scaleXAsix(float FactorX) {
+void ATransformComponent::scaleXAsix(float FactorX) {
   ProcessingScaling.x = FactorX;
   ScalingDirtyFlag = true;
 }
 
-void
-ATransformComponent::scaleYAsix(float FactorY) {
+void ATransformComponent::scaleYAsix(float FactorY) {
   ProcessingScaling.y = FactorY;
   ScalingDirtyFlag = true;
 }
 
-void
-ATransformComponent::scaleZAsix(float FactorZ) {
+void ATransformComponent::scaleZAsix(float FactorZ) {
   ProcessingScaling.z = FactorZ;
   ScalingDirtyFlag = true;
 }
 
-void
-ATransformComponent::rollBackPosition() {
+void ATransformComponent::rollBackPosition() {
   ProcessingPosition = Position;
   PositionDirtyFlag = false;
 }
 
-void
-ATransformComponent::rollBackRotation() {
+void ATransformComponent::rollBackRotation() {
   ProcessingRotation = Rotation;
   RotationDirtyFlag = false;
 }
 
-void
-ATransformComponent::rollBackScaling() {
+void ATransformComponent::rollBackScaling() {
   ProcessingScaling = Scaling;
   ScalingDirtyFlag = false;
 }
 
-const dx::XMFLOAT3 &
-ATransformComponent::getPosition() const {
+const dx::XMFLOAT3 &ATransformComponent::getPosition() const {
   return Position;
 }
 
-const dx::XMFLOAT3 &
-ATransformComponent::getRotation() const {
+const dx::XMFLOAT3 &ATransformComponent::getRotation() const {
   return Rotation;
 }
 
-const dx::XMFLOAT3 &
-ATransformComponent::getScaling() const {
-  return Scaling;
-}
+const dx::XMFLOAT3 &ATransformComponent::getScaling() const { return Scaling; }
 
-const dx::XMFLOAT3 &
-ATransformComponent::getProcessingPosition() const {
+const dx::XMFLOAT3 &ATransformComponent::getProcessingPosition() const {
   return ProcessingPosition;
 }
 
-const dx::XMFLOAT3 &
-ATransformComponent::getProcessingRotation() const {
+const dx::XMFLOAT3 &ATransformComponent::getProcessingRotation() const {
   return ProcessingRotation;
 }
 
-const dx::XMFLOAT3 &
-ATransformComponent::getProcessingScaling() const {
+const dx::XMFLOAT3 &ATransformComponent::getProcessingScaling() const {
   return ProcessingScaling;
 }
 
-void
-ATransformComponent::applyProcessingData() {
+void ATransformComponent::applyProcessingData() {
   if (PositionDirtyFlag) {
     Position = ProcessingPosition;
     PositionDirtyFlag = false;
@@ -206,47 +169,38 @@ ATransformComponent::applyProcessingData() {
   }
 }
 
-void
-ATransformComponent::rollBackPositionX() {
+void ATransformComponent::rollBackPositionX() {
   ProcessingPosition.x = Position.x;
 }
 
-void
-ATransformComponent::rollBackPositionY() {
+void ATransformComponent::rollBackPositionY() {
   ProcessingPosition.y = Position.y;
 }
 
-void
-ATransformComponent::rollBackPositionZ() {
+void ATransformComponent::rollBackPositionZ() {
   ProcessingPosition.z = Position.z;
 }
 
-void
-ATransformComponent::rollBackRotationX() {
+void ATransformComponent::rollBackRotationX() {
   ProcessingRotation.x = Rotation.x;
 }
 
-void
-ATransformComponent::rollBackRotationY() {
+void ATransformComponent::rollBackRotationY() {
   ProcessingRotation.y = Rotation.y;
 }
 
-void
-ATransformComponent::rollBackRotationZ() {
+void ATransformComponent::rollBackRotationZ() {
   ProcessingRotation.z = Rotation.z;
 }
 
-void
-ATransformComponent::rollBackScalingX() {
+void ATransformComponent::rollBackScalingX() {
   ProcessingScaling.x = Scaling.x;
 }
 
-void
-ATransformComponent::rollBackScalingY() {
+void ATransformComponent::rollBackScalingY() {
   ProcessingScaling.y = Scaling.y;
 }
 
-void
-ATransformComponent::rollBackScalingZ() {
+void ATransformComponent::rollBackScalingZ() {
   ProcessingScaling.z = Scaling.z;
 }

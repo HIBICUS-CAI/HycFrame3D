@@ -24,8 +24,7 @@ ACollisionComponent::ACollisionComponent(const std::string &CompName,
 
 ACollisionComponent::~ACollisionComponent() {}
 
-bool
-ACollisionComponent::init() {
+bool ACollisionComponent::init() {
   if (!CollisionObject || !CollisionShape) {
     P_LOG(LOG_ERROR, "invalid collision object in %s\n", getCompName().c_str());
     return false;
@@ -36,22 +35,18 @@ ACollisionComponent::init() {
   return true;
 }
 
-void
-ACollisionComponent::update(Timer &Timer) {
-  syncDataFromTransform();
-}
+void ACollisionComponent::update(Timer &Timer) { syncDataFromTransform(); }
 
-void
-ACollisionComponent::destory() {
+void ACollisionComponent::destory() {
   getActorOwner()->getSceneNode().getPhysicsWorld()->deleteCollisionObject(
       CollisionObject);
   delete CollisionObject;
   delete CollisionShape;
 }
 
-bool
-ACollisionComponent::checkCollisionWith(const std::string &ActorName,
-                                        CONTACT_PONT_PAIR *OutContactPair) {
+bool ACollisionComponent::checkCollisionWith(
+    const std::string &ActorName,
+    CONTACT_PONT_PAIR *OutContactPair) {
   auto Actor = getActorOwner()->getSceneNode().getActorObject(ActorName);
   if (!Actor) {
     P_LOG(LOG_ERROR, "doesnt exist a actor name : %s\n", ActorName.c_str());
@@ -78,9 +73,8 @@ ACollisionComponent::checkCollisionWith(const std::string &ActorName,
       ->checkCollisionResult(Pair, OutContactPair);
 }
 
-void
-ACollisionComponent::createCollisionShape(COLLISION_SHAPE Type,
-                                          DirectX::XMFLOAT3 Size) {
+void ACollisionComponent::createCollisionShape(COLLISION_SHAPE Type,
+                                               dx::XMFLOAT3 Size) {
   switch (Type) {
   case COLLISION_SHAPE::BOX:
     CollisionShape = new btBoxShape({Size.x / 2.f, Size.y / 2.f, Size.z / 2.f});
@@ -97,22 +91,20 @@ ACollisionComponent::createCollisionShape(COLLISION_SHAPE Type,
   CollisionObject->setCollisionShape(CollisionShape);
 }
 
-void
-ACollisionComponent::addCollisionObjectToWorld() {
+void ACollisionComponent::addCollisionObjectToWorld() {
   getActorOwner()->getSceneNode().getPhysicsWorld()->addCollisionObject(
       CollisionObject);
 }
 
-void
-ACollisionComponent::syncDataFromTransform() {
+void ACollisionComponent::syncDataFromTransform() {
   ATransformComponent *Atc =
       getActorOwner()->getComponent<ATransformComponent>();
 #ifdef _DEBUG
   assert(Atc);
 #endif // _DEBUG
 
-  DirectX::XMFLOAT3 World = Atc->getProcessingPosition();
-  DirectX::XMFLOAT3 Angle = Atc->getProcessingRotation();
+  dx::XMFLOAT3 World = Atc->getProcessingPosition();
+  dx::XMFLOAT3 Angle = Atc->getProcessingRotation();
 
   btTransform Trans = {};
   Trans.setIdentity();
@@ -121,18 +113,17 @@ ACollisionComponent::syncDataFromTransform() {
   CollisionObject->setWorldTransform(Trans);
 }
 
-btCollisionObject *
-ACollisionComponent::getCollisionObject() const {
+btCollisionObject *ACollisionComponent::getCollisionObject() const {
   return CollisionObject;
 }
 
-DirectX::XMFLOAT3
+dx::XMFLOAT3
 ACollisionComponent::calcCenterOfContact(const CONTACT_PONT_PAIR &Pair) {
-  DirectX::XMFLOAT3 Center = {};
-  DirectX::XMVECTOR ContactA = DirectX::XMLoadFloat3(&Pair.first);
-  DirectX::XMVECTOR ContactB = DirectX::XMLoadFloat3(&Pair.second);
-  DirectX::XMVECTOR CenterV = {};
+  dx::XMFLOAT3 Center = {};
+  dx::XMVECTOR ContactA = dx::XMLoadFloat3(&Pair.first);
+  dx::XMVECTOR ContactB = dx::XMLoadFloat3(&Pair.second);
+  dx::XMVECTOR CenterV = {};
   CenterV = (ContactA + ContactB) / 2.f;
-  DirectX::XMStoreFloat3(&Center, CenterV);
+  dx::XMStoreFloat3(&Center, CenterV);
   return Center;
 }

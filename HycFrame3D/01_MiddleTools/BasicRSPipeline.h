@@ -5,8 +5,7 @@
 #include <array>
 #include <vector>
 
-bool
-createBasicPipeline();
+bool createBasicPipeline();
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
@@ -198,27 +197,19 @@ public:
   virtual ~RSPass_MRT();
 
 public:
-  virtual RSPass_MRT *
-  clonePass() override;
+  virtual RSPass_MRT *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createBuffers();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createShaders();
+  bool createBuffers();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_Ssao : public RSPass_Base {
@@ -250,29 +241,20 @@ public:
   virtual ~RSPass_Ssao();
 
 public:
-  virtual RSPass_Ssao *
-  clonePass() override;
+  virtual RSPass_Ssao *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createBuffers();
-  bool
-  createTextures();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createShaders();
+  bool createBuffers();
+  bool createTextures();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_KBBlur : public RSPass_Base {
@@ -289,23 +271,17 @@ public:
   virtual ~RSPass_KBBlur();
 
 public:
-  virtual RSPass_KBBlur *
-  clonePass() override;
+  virtual RSPass_KBBlur *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createViews();
+  bool createShaders();
+  bool createViews();
 };
 
 class RSPass_Shadow : public RSPass_Base {
@@ -329,29 +305,20 @@ public:
   virtual ~RSPass_Shadow();
 
 public:
-  virtual RSPass_Shadow *
-  clonePass() override;
+  virtual RSPass_Shadow *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createStates();
-  bool
-  createBuffers();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createShaders();
+  bool createStates();
+  bool createBuffers();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_Defered : public RSPass_Base {
@@ -386,27 +353,19 @@ public:
   virtual ~RSPass_Defered();
 
 public:
-  virtual RSPass_Defered *
-  clonePass() override;
+  virtual RSPass_Defered *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createBuffers();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createShaders();
+  bool createBuffers();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_SkyShpere : public RSPass_Base {
@@ -429,29 +388,20 @@ public:
   virtual ~RSPass_SkyShpere();
 
 public:
-  virtual RSPass_SkyShpere *
-  clonePass() override;
+  virtual RSPass_SkyShpere *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createStates();
-  bool
-  createBuffers();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createShaders();
+  bool createStates();
+  bool createBuffers();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_Bloom : public RSPass_Base {
@@ -477,27 +427,19 @@ public:
   virtual ~RSPass_Bloom();
 
 public:
-  virtual RSPass_Bloom *
-  clonePass() override;
+  virtual RSPass_Bloom *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createBuffers();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createShaders();
+  bool createBuffers();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_PriticleSetUp : public RSPass_Base {
@@ -565,27 +507,20 @@ public:
   RSPass_PriticleSetUp(const RSPass_PriticleSetUp &Source);
   virtual ~RSPass_PriticleSetUp();
 
-  const RS_TILING_CONSTANT &
-  getTilingConstantInfo() const;
+  const RS_TILING_CONSTANT &getTilingConstantInfo() const;
 
 public:
-  virtual RSPass_PriticleSetUp *
-  clonePass() override;
+  virtual RSPass_PriticleSetUp *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createBuffers();
-  bool
-  createViews();
+  bool createBuffers();
+  bool createViews();
 };
 
 class RSPass_PriticleEmitSimulate : public RSPass_Base {
@@ -624,25 +559,18 @@ public:
   virtual ~RSPass_PriticleEmitSimulate();
 
 public:
-  virtual RSPass_PriticleEmitSimulate *
-  clonePass() override;
+  virtual RSPass_PriticleEmitSimulate *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createSampler();
-  bool
-  checkResources();
+  bool createShaders();
+  bool createSampler();
+  bool checkResources();
 };
 
 class RSPass_PriticleTileRender : public RSPass_Base {
@@ -686,29 +614,20 @@ public:
   virtual ~RSPass_PriticleTileRender();
 
 public:
-  virtual RSPass_PriticleTileRender *
-  clonePass() override;
+  virtual RSPass_PriticleTileRender *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createViews();
-  bool
-  createSampler();
-  bool
-  createBlend();
-  bool
-  checkResources();
+  bool createShaders();
+  bool createViews();
+  bool createSampler();
+  bool createBlend();
+  bool checkResources();
 };
 
 class RSPass_Sprite : public RSPass_Base {
@@ -733,29 +652,20 @@ public:
   virtual ~RSPass_Sprite();
 
 public:
-  virtual RSPass_Sprite *
-  clonePass() override;
+  virtual RSPass_Sprite *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createStates();
-  bool
-  createBuffers();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createShaders();
+  bool createStates();
+  bool createBuffers();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_SimpleLight : public RSPass_Base {
@@ -777,27 +687,19 @@ public:
   virtual ~RSPass_SimpleLight();
 
 public:
-  virtual RSPass_SimpleLight *
-  clonePass() override;
+  virtual RSPass_SimpleLight *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createBuffers();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createShaders();
+  bool createBuffers();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_Billboard : public RSPass_Base {
@@ -824,29 +726,20 @@ public:
   virtual ~RSPass_Billboard();
 
 public:
-  virtual RSPass_Billboard *
-  clonePass() override;
+  virtual RSPass_Billboard *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createStates();
-  bool
-  createShaders();
-  bool
-  createBuffers();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createStates();
+  bool createShaders();
+  bool createBuffers();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_Tonemapping : public RSPass_Base {
@@ -868,23 +761,17 @@ public:
   virtual ~RSPass_Tonemapping();
 
 public:
-  virtual RSPass_Tonemapping *
-  clonePass() override;
+  virtual RSPass_Tonemapping *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createViews();
+  bool createShaders();
+  bool createViews();
 };
 
 class RSPass_BloomHdr : public RSPass_Base {
@@ -914,27 +801,19 @@ public:
   virtual ~RSPass_BloomHdr();
 
 public:
-  virtual RSPass_BloomHdr *
-  clonePass() override;
+  virtual RSPass_BloomHdr *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createViews();
-  bool
-  createBuffers();
-  bool
-  createSampler();
+  bool createShaders();
+  bool createViews();
+  bool createBuffers();
+  bool createSampler();
 };
 
 class RSPass_FXAA : public RSPass_Base {
@@ -951,25 +830,18 @@ public:
   virtual ~RSPass_FXAA();
 
 public:
-  virtual RSPass_FXAA *
-  clonePass() override;
+  virtual RSPass_FXAA *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createShaders();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createShaders();
+  bool createViews();
+  bool createSamplers();
 };
 
 class RSPass_ToSwapChain : public RSPass_Base {
@@ -990,33 +862,23 @@ public:
   virtual ~RSPass_ToSwapChain();
 
 public:
-  virtual RSPass_ToSwapChain *
-  clonePass() override;
+  virtual RSPass_ToSwapChain *clonePass() override;
 
-  virtual bool
-  initPass() override;
+  virtual bool initPass() override;
 
-  virtual void
-  releasePass() override;
+  virtual void releasePass() override;
 
-  virtual void
-  execuatePass() override;
+  virtual void execuatePass() override;
 
 private:
-  bool
-  createBuffers();
-  bool
-  createShaders();
-  bool
-  createViews();
-  bool
-  createSamplers();
+  bool createBuffers();
+  bool createShaders();
+  bool createViews();
+  bool createSamplers();
 };
 
-void
-setPipelineDeltaTime(float DeltaMilliSecond);
+void setPipelineDeltaTime(float DeltaMilliSecond);
 
-void
-setPipelineIBLTextures(ID3D11ShaderResourceView *EnvSrv,
-                       ID3D11ShaderResourceView *DiffSrv,
-                       ID3D11ShaderResourceView *SpecSrv);
+void setPipelineIBLTextures(ID3D11ShaderResourceView *EnvSrv,
+                            ID3D11ShaderResourceView *DiffSrv,
+                            ID3D11ShaderResourceView *SpecSrv);

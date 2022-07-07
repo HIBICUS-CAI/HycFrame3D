@@ -12,8 +12,7 @@ public:
   UInputComponent(const std::string &CompName, class UiObject *UiOwner);
   virtual ~UInputComponent();
 
-  UInputComponent &
-  operator=(const UInputComponent &Source) {
+  UInputComponent &operator=(const UInputComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -23,21 +22,14 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  void
-  setInputFunction(UiInputProcessFuncType FuncPtr);
-  void
-  clearInputFunction();
+  void setInputFunction(UiInputProcessFuncType FuncPtr);
+  void clearInputFunction();
 
-  class ActorObject *
-  getActorObject(const std::string &ActorName);
-  class UiObject *
-  getUiObject(const std::string &UiName);
+  class ActorObject *getActorObject(const std::string &ActorName);
+  class UiObject *getUiObject(const std::string &UiName);
 };

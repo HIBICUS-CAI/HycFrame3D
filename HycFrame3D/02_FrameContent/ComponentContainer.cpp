@@ -52,8 +52,7 @@ ComponentContainer::ComponentContainer(SceneNode &SceneNode)
 
 ComponentContainer::~ComponentContainer() {}
 
-Component *
-ComponentContainer::getComponent(const std::string &CompName) {
+Component *ComponentContainer::getComponent(const std::string &CompName) {
   if (CompMap.find(CompName) != CompMap.end()) {
     return CompMap[CompName];
   } else {
@@ -62,8 +61,7 @@ ComponentContainer::getComponent(const std::string &CompName) {
   }
 }
 
-void
-ComponentContainer::addComponent(COMP_TYPE Type, const Component &Comp) {
+void ComponentContainer::addComponent(COMP_TYPE Type, const Component &Comp) {
   if (InsertFlag[static_cast<size_t>(Type)].empty()) {
     switch (Type) {
     case COMP_TYPE::A_TRANSFORM:
@@ -287,9 +285,8 @@ ComponentContainer::addComponent(COMP_TYPE Type, const Component &Comp) {
   }
 }
 
-void
-ComponentContainer::deleteComponent(COMP_TYPE Type,
-                                    const std::string &CompName) {
+void ComponentContainer::deleteComponent(COMP_TYPE Type,
+                                         const std::string &CompName) {
   auto Found = CompMap.find(CompName);
   if (Found == CompMap.end()) {
     P_LOG(LOG_WARNING, "cannot find component name : %s\n", CompName.c_str());
@@ -424,8 +421,7 @@ ComponentContainer::deleteComponent(COMP_TYPE Type,
   InsertFlag[static_cast<size_t>(Type)].push(Offset);
 }
 
-void
-ComponentContainer::deleteAllComponent() {
+void ComponentContainer::deleteAllComponent() {
   ATransformCompVector.clear();
   AInputCompVector.clear();
   AInteractCompVector.clear();
@@ -453,8 +449,7 @@ ComponentContainer::deleteAllComponent() {
   }
 }
 
-void *
-ComponentContainer::getCompVecPtr(COMP_TYPE Type) {
+void *ComponentContainer::getCompVecPtr(COMP_TYPE Type) {
   switch (Type) {
   case COMP_TYPE::A_TRANSFORM:
     return static_cast<void *>(&ATransformCompVector);

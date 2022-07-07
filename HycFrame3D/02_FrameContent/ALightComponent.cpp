@@ -20,8 +20,7 @@ ALightComponent::ALightComponent(const std::string &CompName,
 
 ALightComponent::~ALightComponent() {}
 
-bool
-ALightComponent::init() {
+bool ALightComponent::init() {
   if (!CanCreateLight) {
     return false;
   }
@@ -35,18 +34,13 @@ ALightComponent::init() {
   }
 }
 
-void
-ALightComponent::update(Timer &Timer) {
-  syncDataFromTransform();
-}
+void ALightComponent::update(Timer &Timer) { syncDataFromTransform(); }
 
-void
-ALightComponent::destory() {
+void ALightComponent::destory() {
   getRSDX11RootInstance()->getLightsContainer()->deleteRSLight(LightName, true);
 }
 
-void
-ALightComponent::createLight() {
+void ALightComponent::createLight() {
   LightName = getCompName();
   RSLightPtr = getRSDX11RootInstance()->getLightsContainer()->createRSLight(
       LightName, &LightInfoForInit);
@@ -84,18 +78,13 @@ ALightComponent::createLight() {
   }
 }
 
-void
-ALightComponent::resetLight(const LIGHT_INFO *LightInfo) {
+void ALightComponent::resetLight(const LIGHT_INFO *LightInfo) {
   RSLightPtr->resetRSLight(LightInfo);
 }
 
-RSLight *
-ALightComponent::getLightInfo() {
-  return RSLightPtr;
-}
+RSLight *ALightComponent::getLightInfo() { return RSLightPtr; }
 
-void
-ALightComponent::syncDataFromTransform() {
+void ALightComponent::syncDataFromTransform() {
   ATransformComponent *Atc =
       getActorOwner()->getComponent<ATransformComponent>();
 #ifdef _DEBUG
@@ -119,11 +108,10 @@ ALightComponent::syncDataFromTransform() {
   }
 }
 
-void
-ALightComponent::addLight(const LIGHT_INFO &LightInfo,
-                          bool SetBloom,
-                          bool SetCamera,
-                          const CAM_INFO &CamInfo) {
+void ALightComponent::addLight(const LIGHT_INFO &LightInfo,
+                               bool SetBloom,
+                               bool SetCamera,
+                               const CAM_INFO &CamInfo) {
   LightInfoForInit = LightInfo;
   LightCamInfoForInit = CamInfo;
   IsBloom = SetBloom;

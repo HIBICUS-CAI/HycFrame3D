@@ -10,8 +10,7 @@ AAudioComponent::AAudioComponent(const std::string &CompName,
 
 AAudioComponent::~AAudioComponent() {}
 
-bool
-AAudioComponent::init() {
+bool AAudioComponent::init() {
   if (AudioMap.size()) {
     return true;
   } else {
@@ -19,16 +18,11 @@ AAudioComponent::init() {
   }
 }
 
-void
-AAudioComponent::update(Timer &Timer) {}
+void AAudioComponent::update(Timer &Timer) {}
 
-void
-AAudioComponent::destory() {
-  AudioMap.clear();
-}
+void AAudioComponent::destory() { AudioMap.clear(); }
 
-void
-AAudioComponent::addAudio(const std::string &AudioName, SceneNode &Scene) {
+void AAudioComponent::addAudio(const std::string &AudioName, SceneNode &Scene) {
   SOUND_HANDLE Audio = Scene.getAssetsPool()->getSoundIfExisted(AudioName);
 #ifdef _DEBUG
   assert(Audio);
@@ -36,24 +30,16 @@ AAudioComponent::addAudio(const std::string &AudioName, SceneNode &Scene) {
   AudioMap.insert({AudioName, Audio});
 }
 
-void
-AAudioComponent::playBgm(const std::string &BgmName, float Volume) {
+void AAudioComponent::playBgm(const std::string &BgmName, float Volume) {
   setVolume(BgmName, Volume);
   playBGM(BgmName);
 }
 
-void
-AAudioComponent::playSe(const std::string &SeName, float Volume) {
+void AAudioComponent::playSe(const std::string &SeName, float Volume) {
   setVolume(SeName, Volume);
   playSE(SeName);
 }
 
-void
-AAudioComponent::stopBgm() {
-  stopBGM();
-}
+void AAudioComponent::stopBgm() { stopBGM(); }
 
-void
-AAudioComponent::stopBgm(const std::string &BgmName) {
-  stopBGM(BgmName);
-}
+void AAudioComponent::stopBgm(const std::string &BgmName) { stopBGM(BgmName); }

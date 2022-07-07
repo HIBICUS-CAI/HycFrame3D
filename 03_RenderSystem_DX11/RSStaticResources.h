@@ -43,77 +43,33 @@ public:
   RSStaticResources();
   ~RSStaticResources();
 
-  bool
-  startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_DX11 *RootPtr);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
-
-  ID3D11VertexShader *
-  getStaticVertexShader(const std::string &ShaderName);
-
-  ID3D11GeometryShader *
-  getStaticGeometryShader(const std::string &ShaderName);
-
-  ID3D11PixelShader *
-  getStaticPixelShader(const std::string &ShaderName);
-
-  ID3D11ComputeShader *
-  getStaticComputeShader(const std::string &ShaderName);
-
-  ID3D11RasterizerState *
-  getStaticRasterizerState(const std::string &StateName);
-
+  ID3D11VertexShader *getStaticVertexShader(const std::string &ShaderName);
+  ID3D11GeometryShader *getStaticGeometryShader(const std::string &ShaderName);
+  ID3D11PixelShader *getStaticPixelShader(const std::string &ShaderName);
+  ID3D11ComputeShader *getStaticComputeShader(const std::string &ShaderName);
+  ID3D11RasterizerState *getStaticRasterizerState(const std::string &StateName);
   ID3D11DepthStencilState *
   getStaticDepthStencilState(const std::string &StateName);
-
-  ID3D11BlendState *
-  getStaticBlendState(const std::string &StateName);
-
-  ID3D11SamplerState *
-  getStaticSampler(const std::string &SamplerName);
-
-  ID3D11InputLayout *
-  getStaticInputLayout(const std::string &LayoutName);
-
+  ID3D11BlendState *getStaticBlendState(const std::string &StateName);
+  ID3D11SamplerState *getStaticSampler(const std::string &SamplerName);
+  ID3D11InputLayout *getStaticInputLayout(const std::string &LayoutName);
   const class RSPipeline *const
   getStaticPipeline(const std::string &PipelineName);
+  const class RSTopic *const getStaticTopic(const std::string &TopicName);
+  UINT getStaticMaterialIndex(const std::string &MaterialName);
+  RS_MATERIAL_DATA *getMaterialDataPtrForTest() { return &MaterialVector[0]; }
+  ID3D11ShaderResourceView *getMaterialSrv() { return MaterialBufferSrv; }
 
-  const class RSTopic *const
-  getStaticTopic(const std::string &TopicName);
-
-  UINT
-  getStaticMaterialIndex(const std::string &MaterialName);
-
-  RS_MATERIAL_DATA *
-  getMaterialDataPtrForTest() {
-    return &MaterialVector[0];
-  }
-
-  void
-  remapMaterialData();
-
-  ID3D11ShaderResourceView *
-  getMaterialSrv() {
-    return MaterialBufferSrv;
-  }
+  void remapMaterialData();
 
 private:
-  bool
-  compileStaticShaders();
-
-  bool
-  buildStaticStates();
-
-  bool
-  buildStaticInputLayouts();
-
-  bool
-  buildStaticTopics();
-
-  bool
-  buildStaticPipelines();
-
-  bool
-  buildStaticMaterials();
+  bool compileStaticShaders();
+  bool buildStaticStates();
+  bool buildStaticInputLayouts();
+  bool buildStaticTopics();
+  bool buildStaticPipelines();
+  bool buildStaticMaterials();
 };

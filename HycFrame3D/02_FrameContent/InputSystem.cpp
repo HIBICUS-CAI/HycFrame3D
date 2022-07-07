@@ -16,8 +16,7 @@ InputSystem::InputSystem(SystemExecutive *SysExecutive)
 
 InputSystem::~InputSystem() {}
 
-bool
-InputSystem::init() {
+bool InputSystem::init() {
 #ifdef _DEBUG
   assert(getSystemExecutive());
 #endif // _DEBUG
@@ -42,8 +41,7 @@ InputSystem::init() {
   return true;
 }
 
-void
-InputSystem::run(Timer &Timer) {
+void InputSystem::run(Timer &Timer) {
   input::pollDevices();
 
   bool Up = input::isKeyPushedInSingle(KB_UP);
@@ -81,5 +79,4 @@ InputSystem::run(Timer &Timer) {
   // TEMP----------------------------------
 }
 
-void
-InputSystem::destory() {}
+void InputSystem::destory() {}

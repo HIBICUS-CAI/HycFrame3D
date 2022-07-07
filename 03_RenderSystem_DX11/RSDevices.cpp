@@ -29,8 +29,7 @@ RSDevices::RSDevices()
 
 RSDevices::~RSDevices() {}
 
-bool
-RSDevices::startUp(RSRoot_DX11 *RootPtr, HWND WndHandle) {
+bool RSDevices::startUp(RSRoot_DX11 *RootPtr, HWND WndHandle) {
   if (!RootPtr) {
     return false;
   }
@@ -100,8 +99,7 @@ RSDevices::startUp(RSRoot_DX11 *RootPtr, HWND WndHandle) {
   return true;
 }
 
-void
-RSDevices::cleanAndStop() {
+void RSDevices::cleanAndStop() {
   if (DX11ImmediateContext) {
     DX11ImmediateContext->ClearState();
   }
@@ -129,13 +127,9 @@ RSDevices::cleanAndStop() {
   SAFE_RELEASE(DX11Device);
 }
 
-void
-RSDevices::presentSwapChain() {
-  DXGISwapChain->Present(0, 0);
-}
+void RSDevices::presentSwapChain() { DXGISwapChain->Present(0, 0); }
 
-bool
-RSDevices::createDevices(HWND WndHandle, UINT Width, UINT Height) {
+bool RSDevices::createDevices(HWND WndHandle, UINT Width, UINT Height) {
   HRESULT Hr = S_OK;
 
   UINT DeviceCreateFlag = 0;
@@ -311,8 +305,7 @@ RSDevices::createDevices(HWND WndHandle, UINT Width, UINT Height) {
   return true;
 }
 
-bool
-RSDevices::createHighDynamicTexture(UINT Width, UINT Height) {
+bool RSDevices::createHighDynamicTexture(UINT Width, UINT Height) {
   HRESULT Hr = S_OK;
   D3D11_TEXTURE2D_DESC TexDesc = {};
   D3D11_RENDER_TARGET_VIEW_DESC RtvDesc = {};
@@ -362,27 +355,18 @@ RSDevices::createHighDynamicTexture(UINT Width, UINT Height) {
   return true;
 }
 
-void
-RSDevices::applyViewPort() {
+void RSDevices::applyViewPort() {
   DX11ImmediateContext->RSSetViewports(1, &FullWindowViewPort);
 }
 
-bool
-RSDevices::getConcurrentCreateSupport() const {
+bool RSDevices::getConcurrentCreateSupport() const {
   return ConcurrentCreateSupportFlag;
 }
 
-bool
-RSDevices::getCommandListSupport() const {
+bool RSDevices::getCommandListSupport() const {
   return CommandListSupportFlag && (!RenderDeivceConfig.ForceSingleThreadFlag);
 }
 
-UINT
-RSDevices::getCurrWndWidth() const {
-  return WndWidth;
-}
+UINT RSDevices::getCurrWndWidth() const { return WndWidth; }
 
-UINT
-RSDevices::getCurrWndHeight() const {
-  return WndHeight;
-}
+UINT RSDevices::getCurrWndHeight() const { return WndHeight; }

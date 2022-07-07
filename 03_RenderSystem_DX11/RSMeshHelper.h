@@ -22,41 +22,27 @@ public:
   RSMeshHelper();
   ~RSMeshHelper();
 
-  bool
-  startUp(class RSRoot_DX11 *RootPtr, class RSResourceManager *ResManagerPtr);
+  bool startUp(class RSRoot_DX11 *RootPtr,
+               class RSResourceManager *ResManagerPtr);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
+  void processSubMesh(RS_SUBMESH_DATA *OutResult,
+                      const SUBMESH_INFO *Info,
+                      LAYOUT_TYPE LayoutType);
 
-  void
-  processSubMesh(RS_SUBMESH_DATA *OutResult,
-                 const SUBMESH_INFO *Info,
-                 LAYOUT_TYPE LayoutType);
+  void releaseSubMesh(RS_SUBMESH_DATA &MeshData);
 
-  void
-  releaseSubMesh(RS_SUBMESH_DATA &MeshData);
-
-  class RSGeometryGenerator *
-  getGeoGenerator();
+  class RSGeometryGenerator *getGeoGenerator();
 
 private:
-  ID3D11InputLayout *
-  refStaticInputLayout(LAYOUT_TYPE LayoutType);
-
-  ID3D11Buffer *
-  createIndexBuffer(const std::vector<UINT> *const IndicesArray);
-
-  ID3D11Buffer *
-  createVertexBuffer(const void *const ConstRawVerticesPtr,
-                     LAYOUT_TYPE LayoutType);
-
-  void
-  createTexSrv(RS_SUBMESH_DATA *OutResult,
-               const std::vector<std::string> *const Textures);
-
-  void
-  createSubMeshMaterial(RS_SUBMESH_DATA *OutResult,
-                        const MATERIAL_INFO *const Info);
+  ID3D11InputLayout *refStaticInputLayout(LAYOUT_TYPE LayoutType);
+  ID3D11Buffer *createIndexBuffer(const std::vector<UINT> *const IndicesArray);
+  ID3D11Buffer *createVertexBuffer(const void *const ConstRawVerticesPtr,
+                                   LAYOUT_TYPE LayoutType);
+  void createTexSrv(RS_SUBMESH_DATA *OutResult,
+                    const std::vector<std::string> *const Textures);
+  void createSubMeshMaterial(RS_SUBMESH_DATA *OutResult,
+                             const MATERIAL_INFO *const Info);
 };
 
 class RSGeometryGenerator {
@@ -69,24 +55,24 @@ public:
   RSGeometryGenerator(class RSRoot_DX11 *RootPtr);
   ~RSGeometryGenerator();
 
-  RS_SUBMESH_DATA
-  createBox(float Width,
-            float Height,
-            float Depth,
-            UINT DivideNumber,
-            LAYOUT_TYPE LayoutType,
-            bool EnabledVertexColorFlag = true,
-            const dx::XMFLOAT4 &VertexColor = {1.f, 1.f, 1.f, 1.f},
-            const std::string &TextureName = "");
+  RS_SUBMESH_DATA createBox(float Width,
+                            float Height,
+                            float Depth,
+                            UINT DivideNumber,
+                            LAYOUT_TYPE LayoutType,
+                            bool EnabledVertexColorFlag = true,
+                            const dx::XMFLOAT4 &VertexColor = {1.f, 1.f, 1.f,
+                                                               1.f},
+                            const std::string &TextureName = "");
 
-  RS_SUBMESH_DATA
-  createSphere(float Radius,
-               UINT SliceCount,
-               UINT StackCount,
-               LAYOUT_TYPE LayoutType,
-               bool EnabledVertexColorFlag = true,
-               const dx::XMFLOAT4 &VertexColor = {1.f, 1.f, 1.f, 1.f},
-               const std::string &TextureName = "");
+  RS_SUBMESH_DATA createSphere(float Radius,
+                               UINT SliceCount,
+                               UINT StackCount,
+                               LAYOUT_TYPE LayoutType,
+                               bool EnabledVertexColorFlag = true,
+                               const dx::XMFLOAT4 &VertexColor = {1.f, 1.f, 1.f,
+                                                                  1.f},
+                               const std::string &TextureName = "");
 
   RS_SUBMESH_DATA
   createGeometrySphere(float Radius,
@@ -96,40 +82,38 @@ public:
                        const dx::XMFLOAT4 &VertexColor = {1.f, 1.f, 1.f, 1.f},
                        const std::string &TextureName = "");
 
-  RS_SUBMESH_DATA
-  createCylinder(float BottomRadius,
-                 float TopRadius,
-                 float Height,
-                 UINT SliceCount,
-                 UINT StackCount,
-                 LAYOUT_TYPE LayoutType,
-                 bool EnabledVertexColorFlag = true,
-                 const dx::XMFLOAT4 &VertexColor = {1.f, 1.f, 1.f, 1.f},
-                 const std::string &TextureName = "");
+  RS_SUBMESH_DATA createCylinder(float BottomRadius,
+                                 float TopRadius,
+                                 float Height,
+                                 UINT SliceCount,
+                                 UINT StackCount,
+                                 LAYOUT_TYPE LayoutType,
+                                 bool EnabledVertexColorFlag = true,
+                                 const dx::XMFLOAT4 &VertexColor = {1.f, 1.f,
+                                                                    1.f, 1.f},
+                                 const std::string &TextureName = "");
 
-  RS_SUBMESH_DATA
-  createGrid(float Width,
-             float Depth,
-             UINT RowCount,
-             UINT ColCount,
-             LAYOUT_TYPE LayoutType,
-             bool EnabledVertexColorFlag = true,
-             const dx::XMFLOAT4 &VertexColor = {1.f, 1.f, 1.f, 1.f},
-             const std::string &TextureName = "");
+  RS_SUBMESH_DATA createGrid(float Width,
+                             float Depth,
+                             UINT RowCount,
+                             UINT ColCount,
+                             LAYOUT_TYPE LayoutType,
+                             bool EnabledVertexColorFlag = true,
+                             const dx::XMFLOAT4 &VertexColor = {1.f, 1.f, 1.f,
+                                                                1.f},
+                             const std::string &TextureName = "");
 
-  RS_SUBMESH_DATA
-  createSpriteRect(LAYOUT_TYPE LayoutType,
-                   const std::string &TexturePath = "");
+  RS_SUBMESH_DATA createSpriteRect(LAYOUT_TYPE LayoutType,
+                                   const std::string &TexturePath = "");
 
   RS_SUBMESH_DATA
   createPointWithTexture(LAYOUT_TYPE LayoutType,
                          const std::string &TextureName = "");
 
 private:
-  void
-  processSubDivide(LAYOUT_TYPE LayoutType,
-                   void *RawVertexArray,
-                   std::vector<UINT> *RawIndexArray);
+  void processSubDivide(LAYOUT_TYPE LayoutType,
+                        void *RawVertexArray,
+                        std::vector<UINT> *RawIndexArray);
 
   vertex_type::BasicVertex
   createBasicMidPoint(const vertex_type::BasicVertex &V0,
@@ -143,25 +127,23 @@ private:
   createColorMidPoint(const vertex_type::ColorVertex &V0,
                       const vertex_type::ColorVertex &V1);
 
-  void
-  buildCylinderTopCap(float BottomRadius,
-                      float TopRadius,
-                      float Height,
-                      UINT SliceCount,
-                      UINT StackCount,
-                      LAYOUT_TYPE LayoutType,
-                      void *RawVertexArray,
-                      std::vector<UINT> *RawIndexArray,
-                      const dx::XMFLOAT4 &VertexColor);
+  void buildCylinderTopCap(float BottomRadius,
+                           float TopRadius,
+                           float Height,
+                           UINT SliceCount,
+                           UINT StackCount,
+                           LAYOUT_TYPE LayoutType,
+                           void *RawVertexArray,
+                           std::vector<UINT> *RawIndexArray,
+                           const dx::XMFLOAT4 &VertexColor);
 
-  void
-  buildCylinderBottomCap(float BottomRadius,
-                         float TopRadius,
-                         float Height,
-                         UINT SliceCount,
-                         UINT StackCount,
-                         LAYOUT_TYPE LayoutType,
-                         void *RawVertexArray,
-                         std::vector<UINT> *RawIndexArray,
-                         const dx::XMFLOAT4 &VertexColor);
+  void buildCylinderBottomCap(float BottomRadius,
+                              float TopRadius,
+                              float Height,
+                              UINT SliceCount,
+                              UINT StackCount,
+                              LAYOUT_TYPE LayoutType,
+                              void *RawVertexArray,
+                              std::vector<UINT> *RawIndexArray,
+                              const dx::XMFLOAT4 &VertexColor);
 };

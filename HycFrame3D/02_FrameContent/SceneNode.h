@@ -29,52 +29,32 @@ public:
   SceneNode(const std::string &SceneName, class SceneManager *SceneManager);
   ~SceneNode();
 
-  void
-  releaseScene();
+  void releaseScene();
 
-  const std::string &
-  getSceneNodeName() const;
-  class SceneManager *
-  getSceneManager() const;
+  const std::string &getSceneNodeName() const;
+  class SceneManager *getSceneManager() const;
 
-  void
-  setCurrentAmbientFactor(const dx::XMFLOAT4 &_ambientColor);
-  const dx::XMFLOAT4 &
-  getCurrentAmbientFactor();
+  void setCurrentAmbientFactor(const dx::XMFLOAT4 &_ambientColor);
+  const dx::XMFLOAT4 &getCurrentAmbientFactor();
 
-  void
-  loadIBLTexture(const std::string &Env,
-                 const std::string &Diff,
-                 const std::string &Spec);
-  struct ID3D11ShaderResourceView *
-  getIBLEnvironment();
-  struct ID3D11ShaderResourceView *
-  getIBLDiffuse();
-  struct ID3D11ShaderResourceView *
-  getIBLSpecular();
+  void loadIBLTexture(const std::string &Env,
+                      const std::string &Diff,
+                      const std::string &Spec);
+  struct ID3D11ShaderResourceView *getIBLEnvironment();
+  struct ID3D11ShaderResourceView *getIBLDiffuse();
+  struct ID3D11ShaderResourceView *getIBLSpecular();
 
-  class RSCamera *
-  getMainCamera();
+  class RSCamera *getMainCamera();
 
-  class ActorObject *
-  getActorObject(const std::string &ActorName);
-  void
-  addActorObject(const class ActorObject &NewActor);
-  void
-  deleteActorObject(const std::string &ActorName);
-  class UiObject *
-  getUiObject(const std::string &UiName);
-  void
-  addUiObject(const class UiObject &NewUi);
-  void
-  deleteUiObject(const std::string &UiName);
+  class ActorObject *getActorObject(const std::string &ActorName);
+  void addActorObject(const class ActorObject &NewActor);
+  void deleteActorObject(const std::string &ActorName);
+  class UiObject *getUiObject(const std::string &UiName);
+  void addUiObject(const class UiObject &NewUi);
+  void deleteUiObject(const std::string &UiName);
 
-  class AssetsPool *
-  getAssetsPool() const;
-  class PhysicsWorld *
-  getPhysicsWorld() const;
-  class ObjectContainer *
-  getObjectContainer() const;
-  class ComponentContainer *
-  getComponentContainer() const;
+  class AssetsPool *getAssetsPool() const;
+  class PhysicsWorld *getPhysicsWorld() const;
+  class ObjectContainer *getObjectContainer() const;
+  class ComponentContainer *getComponentContainer() const;
 };

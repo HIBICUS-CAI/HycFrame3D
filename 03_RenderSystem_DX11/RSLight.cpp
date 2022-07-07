@@ -30,16 +30,12 @@ RSLight::RSLight(const LIGHT_INFO *Info)
 
 RSLight::~RSLight() {}
 
-RS_LIGHT_INFO *
-RSLight::getRSLightInfo() {
-  return &RSLightInfo;
-}
+RS_LIGHT_INFO *RSLight::getRSLightInfo() { return &RSLightInfo; }
 
 LIGHT_TYPE
 RSLight::getRSLightType() { return LightType; }
 
-void
-RSLight::resetRSLight(const LIGHT_INFO *Info) {
+void RSLight::resetRSLight(const LIGHT_INFO *Info) {
   LightType = Info->Type;
   setRSLightIntensity(Info->Intensity);
   setRSLightAlbedo(Info->Albedo);
@@ -49,20 +45,17 @@ RSLight::resetRSLight(const LIGHT_INFO *Info) {
   setRSLightSpotPower(Info->SpotPower);
 }
 
-void
-RSLight::setRSLightAlbedo(const dx::XMFLOAT3 &Albedo) {
+void RSLight::setRSLightAlbedo(const dx::XMFLOAT3 &Albedo) {
   LightAlbedo = Albedo;
   RSLightInfo.Albedo = Albedo;
 }
 
-void
-RSLight::setRSLightDirection(const dx::XMFLOAT3 &Direction) {
+void RSLight::setRSLightDirection(const dx::XMFLOAT3 &Direction) {
   LightDirection = Direction;
   RSLightInfo.Direction = Direction;
 }
 
-void
-RSLight::setRSLightPosition(const dx::XMFLOAT3 &Position) {
+void RSLight::setRSLightPosition(const dx::XMFLOAT3 &Position) {
   LightPosition = Position;
   RSLightInfo.Position = Position;
 
@@ -77,30 +70,26 @@ RSLight::setRSLightPosition(const dx::XMFLOAT3 &Position) {
   }
 }
 
-void
-RSLight::setRSLightFallOff(float Start, float End) {
+void RSLight::setRSLightFallOff(float Start, float End) {
   LightFallOffStart = Start;
   LightFallOffEnd = End;
   RSLightInfo.FalloffStart = Start;
   RSLightInfo.FalloffEnd = End;
 }
 
-void
-RSLight::setRSLightSpotPower(float SpotPower) {
+void RSLight::setRSLightSpotPower(float SpotPower) {
   LightSpotPower = SpotPower;
   RSLightInfo.SpotPower = SpotPower;
 }
 
-void
-RSLight::setRSLightIntensity(float Luminance) {
+void RSLight::setRSLightIntensity(float Luminance) {
   LightIntensity = Luminance;
   RSLightInfo.Intensity = Luminance;
 }
 
-RSCamera *
-RSLight::createLightCamera(const std::string &LightName,
-                           const CAM_INFO *Info,
-                           RSCamerasContainer *CameraContainer) {
+RSCamera *RSLight::createLightCamera(const std::string &LightName,
+                                     const CAM_INFO *Info,
+                                     RSCamerasContainer *CameraContainer) {
   if (!Info || !CameraContainer) {
     return nullptr;
   }
@@ -111,13 +100,9 @@ RSLight::createLightCamera(const std::string &LightName,
   return RSLightCamera;
 }
 
-RSCamera *
-RSLight::getRSLightCamera() {
-  return RSLightCamera;
-}
+RSCamera *RSLight::getRSLightCamera() { return RSLightCamera; }
 
-void
-RSLight::setLightBloom(const RS_SUBMESH_DATA &MeshData) {
+void RSLight::setLightBloom(const RS_SUBMESH_DATA &MeshData) {
   BloomLightFlag = true;
   BloomMeshData = MeshData;
   BloomInstanceData.resize(1);
@@ -138,8 +123,7 @@ RSLight::setLightBloom(const RS_SUBMESH_DATA &MeshData) {
   BloomDrawCallData.MeshData.TopologyType = BloomMeshData.TopologyType;
 }
 
-void
-RSLight::updateBloomColor() {
+void RSLight::updateBloomColor() {
   if (BloomLightFlag) {
     BloomInstanceData[0].CustomizedData1.x = LightAlbedo.x;
     BloomInstanceData[0].CustomizedData1.y = LightAlbedo.y;
@@ -148,23 +132,20 @@ RSLight::updateBloomColor() {
   }
 }
 
-void
-RSLight::uploadLightDrawCall() {
+void RSLight::uploadLightDrawCall() {
   static auto DrawCallPool = getRSDX11RootInstance()->getDrawCallsPool();
   if (BloomLightFlag) {
     DrawCallPool->addDrawCallToPipe(DRAWCALL_TYPE::LIGHT, BloomDrawCallData);
   }
 }
 
-void
-RSLight::releaseLightBloom(bool DeleteByFrameworkFlag) {
+void RSLight::releaseLightBloom(bool DeleteByFrameworkFlag) {
   if (BloomLightFlag && !DeleteByFrameworkFlag) {
     getRSDX11RootInstance()->getMeshHelper()->releaseSubMesh(BloomMeshData);
   }
 }
 
-dx::XMFLOAT4X4 *
-RSLight::getLightWorldMat() {
+dx::XMFLOAT4X4 *RSLight::getLightWorldMat() {
   if (!BloomInstanceData.size()) {
     return nullptr;
   }

@@ -21,13 +21,9 @@ UAnimateComponent::UAnimateComponent(const std::string &CompName,
 
 UAnimateComponent::~UAnimateComponent() {}
 
-bool
-UAnimateComponent::init() {
-  return true;
-}
+bool UAnimateComponent::init() { return true; }
 
-void
-UAnimateComponent::update(Timer &Timer) {
+void UAnimateComponent::update(Timer &Timer) {
   if (AnimateChangedFlg) {
     AnimateChangedFlg = false;
     resetCurrentAnimate();
@@ -51,8 +47,7 @@ UAnimateComponent::update(Timer &Timer) {
   }
 }
 
-void
-UAnimateComponent::destory() {
+void UAnimateComponent::destory() {
   CurrentAnimate = nullptr;
   for (const auto &Ani : AnimateMap) {
     delete Ani.second;
@@ -61,13 +56,12 @@ UAnimateComponent::destory() {
   AnimateMap.clear();
 }
 
-bool
-UAnimateComponent::loadAnimate(const std::string &AniName,
-                               const std::string &AniPath,
-                               const DirectX::XMFLOAT2 &Stride,
-                               UINT MaxCount,
-                               bool RepeatFlg,
-                               float SwitchTime) {
+bool UAnimateComponent::loadAnimate(const std::string &AniName,
+                                    const std::string &AniPath,
+                                    const DirectX::XMFLOAT2 &Stride,
+                                    UINT MaxCount,
+                                    bool RepeatFlg,
+                                    float SwitchTime) {
   std::wstring TexPathWStr = L"";
   HRESULT Hr = S_OK;
   ID3D11ShaderResourceView *Srv = nullptr;
@@ -113,8 +107,7 @@ UAnimateComponent::loadAnimate(const std::string &AniName,
   return true;
 }
 
-void
-UAnimateComponent::deleteAnimate(const std::string &AniName) {
+void UAnimateComponent::deleteAnimate(const std::string &AniName) {
   auto Found = AnimateMap.find(AniName);
   if (Found != AnimateMap.end()) {
     if (CurrentAnimate == Found->second) {
@@ -126,21 +119,18 @@ UAnimateComponent::deleteAnimate(const std::string &AniName) {
   }
 }
 
-void
-UAnimateComponent::resetCurrentAnimate() {
+void UAnimateComponent::resetCurrentAnimate() {
   CurrentAnimateCut = 0;
   TimeCounter = 0.f;
 }
 
-void
-UAnimateComponent::clearCurrentAnimate() {
+void UAnimateComponent::clearCurrentAnimate() {
   CurrentAnimate = nullptr;
   CurrentAnimateCut = 0;
   TimeCounter = 0.f;
 }
 
-void
-UAnimateComponent::changeAnimateTo(const std::string &AniName) {
+void UAnimateComponent::changeAnimateTo(const std::string &AniName) {
   if (AnimateMap.find(AniName) == AnimateMap.end()) {
     P_LOG(LOG_ERROR, "cannot find this animation : %s\n", AniName.c_str());
     return;
@@ -150,8 +140,7 @@ UAnimateComponent::changeAnimateTo(const std::string &AniName) {
   AnimateChangedFlg = true;
 }
 
-void
-UAnimateComponent::syncAniInfoToSprite() {
+void UAnimateComponent::syncAniInfoToSprite() {
   auto MeshPtr =
       getUiOwner()->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
           getUiOwner()->getComponent<USpriteComponent>()->getCompName());

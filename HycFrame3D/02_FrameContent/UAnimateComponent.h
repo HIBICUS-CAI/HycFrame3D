@@ -25,8 +25,7 @@ public:
   UAnimateComponent(const std::string &CompName, class UiObject *UiOwner);
   virtual ~UAnimateComponent();
 
-  UAnimateComponent &
-  operator=(const UAnimateComponent &Source) {
+  UAnimateComponent &operator=(const UAnimateComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -40,33 +39,24 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  bool
-  loadAnimate(const std::string &AniName,
-              const std::string &AniPath,
-              const DirectX::XMFLOAT2 &Stride,
-              UINT MaxCount,
-              bool RepeatFlg,
-              float SwitchTime);
-  void
-  deleteAnimate(const std::string &AniName);
+  bool loadAnimate(const std::string &AniName,
+                   const std::string &AniPath,
+                   const DirectX::XMFLOAT2 &Stride,
+                   UINT MaxCount,
+                   bool RepeatFlg,
+                   float SwitchTime);
+  void deleteAnimate(const std::string &AniName);
 
-  void
-  resetCurrentAnimate();
-  void
-  clearCurrentAnimate();
+  void resetCurrentAnimate();
+  void clearCurrentAnimate();
 
-  void
-  changeAnimateTo(const std::string &AniName);
+  void changeAnimateTo(const std::string &AniName);
 
 private:
-  void
-  syncAniInfoToSprite();
+  void syncAniInfoToSprite();
 };

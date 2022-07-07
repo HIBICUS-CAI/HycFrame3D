@@ -9,8 +9,7 @@ AInputComponent::AInputComponent(const std::string &CompName,
 
 AInputComponent::~AInputComponent() {}
 
-bool
-AInputComponent::init() {
+bool AInputComponent::init() {
   if (!InputPrecessFunctionPtr) {
     P_LOG(LOG_ERROR, "there's still no input func in : %s\n",
           getCompName().c_str());
@@ -19,35 +18,29 @@ AInputComponent::init() {
   return true;
 }
 
-void
-AInputComponent::update(Timer &Timer) {
+void AInputComponent::update(Timer &Timer) {
   if (InputPrecessFunctionPtr) {
     InputPrecessFunctionPtr(this, Timer);
   }
 }
 
-void
-AInputComponent::destory() {}
+void AInputComponent::destory() {}
 
-void
-AInputComponent::setInputFunction(ActorInputProcessFuncType FuncPtr) {
+void AInputComponent::setInputFunction(ActorInputProcessFuncType FuncPtr) {
 #ifdef _DEBUG
   assert(FuncPtr);
 #endif // _DEBUG
   InputPrecessFunctionPtr = FuncPtr;
 }
 
-void
-AInputComponent::clearInputFunction() {
+void AInputComponent::clearInputFunction() {
   InputPrecessFunctionPtr = nullptr;
 }
 
-ActorObject *
-AInputComponent::getActorObject(const std::string &ActorName) {
+ActorObject *AInputComponent::getActorObject(const std::string &ActorName) {
   return getSceneNode().getActorObject(ActorName);
 }
 
-UiObject *
-AInputComponent::getUiObject(const std::string &UiName) {
+UiObject *AInputComponent::getUiObject(const std::string &UiName) {
   return getSceneNode().getUiObject(UiName);
 }

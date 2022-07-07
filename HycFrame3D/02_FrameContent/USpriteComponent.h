@@ -17,8 +17,7 @@ public:
   USpriteComponent(const std::string &CompName, class UiObject *UiOwner);
   virtual ~USpriteComponent();
 
-  USpriteComponent &
-  operator=(const USpriteComponent &Source) {
+  USpriteComponent &operator=(const USpriteComponent &Source) {
     if (this == &Source) {
       return *this;
     }
@@ -30,28 +29,20 @@ public:
   }
 
 public:
-  virtual bool
-  init();
-  virtual void
-  update(Timer &Timer);
-  virtual void
-  destory();
+  virtual bool init();
+  virtual void update(Timer &Timer);
+  virtual void destory();
 
 public:
-  bool
-  createSpriteMesh(class SceneNode *Scene,
-                   const DirectX::XMFLOAT4 &OffsetColorSprite,
-                   const std::string &TexName);
+  bool createSpriteMesh(class SceneNode *Scene,
+                        const DirectX::XMFLOAT4 &OffsetColorSprite,
+                        const std::string &TexName);
 
-  const DirectX::XMFLOAT4 &
-  getOffsetColor() const;
-  void
-  setOffsetColor(const DirectX::XMFLOAT4 &OffsetColorSprite);
+  const DirectX::XMFLOAT4 &getOffsetColor() const;
+  void setOffsetColor(const DirectX::XMFLOAT4 &OffsetColorSprite);
 
-  void
-  resetTexture();
+  void resetTexture();
 
 private:
-  void
-  syncTransformDataToInstance();
+  void syncTransformDataToInstance();
 };

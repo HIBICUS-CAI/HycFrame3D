@@ -24,18 +24,12 @@ public:
   RSDrawCallsPool();
   ~RSDrawCallsPool();
 
-  bool
-  startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_DX11 *RootPtr);
+  void cleanAndStop();
 
-  void
-  cleanAndStop();
+  void addDrawCallToPipe(DRAWCALL_TYPE Type, const RS_DRAWCALL_DATA &DrawCall);
 
-  void
-  addDrawCallToPipe(DRAWCALL_TYPE Type, const RS_DRAWCALL_DATA &DrawCall);
+  RSDrawCallsPipe *getDrawCallsPipe(DRAWCALL_TYPE Type);
 
-  RSDrawCallsPipe *
-  getDrawCallsPipe(DRAWCALL_TYPE Type);
-
-  void
-  clearAllDrawCalls();
+  void clearAllDrawCalls();
 };

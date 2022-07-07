@@ -10,8 +10,7 @@ UInteractComponent::UInteractComponent(const std::string &CompName,
 
 UInteractComponent::~UInteractComponent() {}
 
-bool
-UInteractComponent::init() {
+bool UInteractComponent::init() {
   if (InitProcessFunctionPtr) {
     return InitProcessFunctionPtr(this);
   } else {
@@ -19,38 +18,34 @@ UInteractComponent::init() {
   }
 }
 
-void
-UInteractComponent::update(Timer &timer) {
+void UInteractComponent::update(Timer &timer) {
   if (UpdateProcessFunctionPtr) {
     return UpdateProcessFunctionPtr(this, timer);
   }
 }
 
-void
-UInteractComponent::destory() {
+void UInteractComponent::destory() {
   if (DestoryProcessFunctionPtr) {
     return DestoryProcessFunctionPtr(this);
   }
 }
 
-void
-UInteractComponent::setInitFunction(UiInteractInitFuncType InitFuncPtr) {
+void UInteractComponent::setInitFunction(UiInteractInitFuncType InitFuncPtr) {
 #ifdef _DEBUG
   assert(InitFuncPtr);
 #endif // _DEBUG
   InitProcessFunctionPtr = InitFuncPtr;
 }
 
-void
-UInteractComponent::setUpdateFunction(UiInteractUpdateFuncType UpdateFuncPtr) {
+void UInteractComponent::setUpdateFunction(
+    UiInteractUpdateFuncType UpdateFuncPtr) {
 #ifdef _DEBUG
   assert(UpdateFuncPtr);
 #endif // _DEBUG
   UpdateProcessFunctionPtr = UpdateFuncPtr;
 }
 
-void
-UInteractComponent::setDestoryFunction(
+void UInteractComponent::setDestoryFunction(
     UiInteractDestoryFuncType DestoryFuncPtr) {
 #ifdef _DEBUG
   assert(DestoryFuncPtr);
@@ -58,27 +53,22 @@ UInteractComponent::setDestoryFunction(
   DestoryProcessFunctionPtr = DestoryFuncPtr;
 }
 
-void
-UInteractComponent::clearInitFunction() {
+void UInteractComponent::clearInitFunction() {
   InitProcessFunctionPtr = nullptr;
 }
 
-void
-UInteractComponent::clearUpdateFunction() {
+void UInteractComponent::clearUpdateFunction() {
   UpdateProcessFunctionPtr = nullptr;
 }
 
-void
-UInteractComponent::clearDestoryFunction() {
+void UInteractComponent::clearDestoryFunction() {
   DestoryProcessFunctionPtr = nullptr;
 }
 
-ActorObject *
-UInteractComponent::getActorObject(const std::string &ActorName) {
+ActorObject *UInteractComponent::getActorObject(const std::string &ActorName) {
   return getSceneNode().getActorObject(ActorName);
 }
 
-UiObject *
-UInteractComponent::getUiObject(const std::string &UiName) {
+UiObject *UInteractComponent::getUiObject(const std::string &UiName) {
   return getSceneNode().getUiObject(UiName);
 }

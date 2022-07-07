@@ -16,15 +16,11 @@ public:
   Timer();
   ~Timer();
 
-  void
-  timeIn();
+  void timeIn();
 
-  void
-  timeOut();
+  void timeOut();
 
-  double
-  doubleDeltaTime() const;
+  double doubleDeltaTime() const;
 
-  float
-  floatDeltaTime() const;
+  float floatDeltaTime() const;
 };

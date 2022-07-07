@@ -14,10 +14,9 @@ namespace text {
 
 using TomlNode = toml::value;
 
-inline bool
-loadTomlAndParse(TomlNode &OutRoot,
-                 const std::string &Path,
-                 std::string &OutErrorMessage) {
+inline bool loadTomlAndParse(TomlNode &OutRoot,
+                             const std::string &Path,
+                             std::string &OutErrorMessage) {
   bool Result = true;
 
   try {
@@ -36,10 +35,9 @@ loadTomlAndParse(TomlNode &OutRoot,
   return Result;
 }
 
-inline bool
-loadTomlAndParse(TomlNode &OutRoot,
-                 cstring CPath,
-                 std::string &OutErrorMessage) {
+inline bool loadTomlAndParse(TomlNode &OutRoot,
+                             cstring CPath,
+                             std::string &OutErrorMessage) {
   bool Result = true;
 
   try {
@@ -58,10 +56,9 @@ loadTomlAndParse(TomlNode &OutRoot,
   return Result;
 }
 
-inline bool
-getNextTomlNode(const TomlNode &From,
-                const std::string &To,
-                TomlNode &OutNode) {
+inline bool getNextTomlNode(const TomlNode &From,
+                            const std::string &To,
+                            TomlNode &OutNode) {
   bool Exist = From.contains(To);
   if (!Exist) {
     return false;
@@ -102,8 +99,7 @@ getTomlNode(const TomlNode &From, const std::string &To, TomlNode &OutNode) {
   return true;
 }
 
-inline bool
-getTomlNode(const TomlNode &From, cstring To, TomlNode &OutNode) {
+inline bool getTomlNode(const TomlNode &From, cstring To, TomlNode &OutNode) {
   std::vector<std::string> Paths = {};
   hyc::string::split(To, '.', Paths);
 
@@ -123,8 +119,7 @@ getTomlNode(const TomlNode &From, cstring To, TomlNode &OutNode) {
 }
 
 template <typename T>
-T
-getAs(const TomlNode &Node) {
+T getAs(const TomlNode &Node) {
   return toml::get<T>(Node);
 }
 

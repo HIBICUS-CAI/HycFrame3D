@@ -5,18 +5,16 @@
 
 namespace rs_tool {
 
-HRESULT
-compileShaderFromFile(const WCHAR *FileName,
-                      LPCSTR EntryPoint,
-                      LPCSTR ShaderModel,
-                      ID3DBlob **OutBlob,
-                      const D3D_SHADER_MACRO *macro = nullptr);
+HRESULT compileShaderFromFile(const WCHAR *FileName,
+                              LPCSTR EntryPoint,
+                              LPCSTR ShaderModel,
+                              ID3DBlob **OutBlob,
+                              const D3D_SHADER_MACRO *macro = nullptr);
 
-HRESULT
-compileShaderFromFile(LPCSTR FileName,
-                      LPCSTR EntryPoint,
-                      LPCSTR ShaderModel,
-                      ID3DBlob **OutBlob,
-                      const D3D_SHADER_MACRO *Macro = nullptr);
+HRESULT compileShaderFromFile(LPCSTR FileName,
+                              LPCSTR EntryPoint,
+                              LPCSTR ShaderModel,
+                              ID3DBlob **OutBlob,
+                              const D3D_SHADER_MACRO *Macro = nullptr);
 
 } // namespace rs_tool

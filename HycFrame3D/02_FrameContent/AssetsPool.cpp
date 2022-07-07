@@ -16,8 +16,7 @@ AssetsPool::AssetsPool(SceneNode &SceneNode)
 
 AssetsPool::~AssetsPool() {}
 
-SUBMESH_DATA *
-AssetsPool::getSubMeshIfExisted(const std::string &MeshName) {
+SUBMESH_DATA *AssetsPool::getSubMeshIfExisted(const std::string &MeshName) {
   auto Found = SubMeshPool.find(MeshName);
   if (Found != SubMeshPool.end()) {
     return &(Found->second);
@@ -27,8 +26,7 @@ AssetsPool::getSubMeshIfExisted(const std::string &MeshName) {
   }
 }
 
-SUBMESH_NAME_VEC *
-AssetsPool::getMeshIfExisted(const std::string &MeshName) {
+SUBMESH_NAME_VEC *AssetsPool::getMeshIfExisted(const std::string &MeshName) {
   auto Found = MeshPool.find(MeshName);
   if (Found != MeshPool.end()) {
     return &(Found->second);
@@ -67,8 +65,7 @@ AssetsPool::getAnimationIfExisted(const std::string &AniName) {
   }
 }
 
-SOUND_HANDLE
-AssetsPool::getSoundIfExisted(const std::string &SoundName) {
+SOUND_HANDLE AssetsPool::getSoundIfExisted(const std::string &SoundName) {
   auto Found = SoundPool.find(SoundName);
   if (Found != SoundPool.end()) {
     return Found->second;
@@ -78,12 +75,11 @@ AssetsPool::getSoundIfExisted(const std::string &SoundName) {
   }
 }
 
-void
-AssetsPool::insertNewSubMesh(const std::string &MeshName,
-                             const RS_SUBMESH_DATA &MeshData,
-                             MESH_TYPE MeshType,
-                             const SUBMESH_BONES *BonesData,
-                             const MESH_ANIMATION_DATA *AnimationData) {
+void AssetsPool::insertNewSubMesh(const std::string &MeshName,
+                                  const RS_SUBMESH_DATA &MeshData,
+                                  MESH_TYPE MeshType,
+                                  const SUBMESH_BONES *BonesData,
+                                  const MESH_ANIMATION_DATA *AnimationData) {
   SUBMESH_DATA SD = {};
   SubMeshPool.insert({MeshName, SD});
   SubMeshPool[MeshName].MeshData = MeshData;
@@ -99,13 +95,13 @@ AssetsPool::insertNewSubMesh(const std::string &MeshName,
   }
 }
 
-void
-AssetsPool::insertNewIndexedMesh(const std::string &MeshName,
-                                 const RS_SUBMESH_DATA &MeshData,
-                                 MESH_TYPE MeshType,
-                                 int SubIndex,
-                                 const SUBMESH_BONES *BonesData,
-                                 const MESH_ANIMATION_DATA *AnimationData) {
+void AssetsPool::insertNewIndexedMesh(
+    const std::string &MeshName,
+    const RS_SUBMESH_DATA &MeshData,
+    MESH_TYPE MeshType,
+    int SubIndex,
+    const SUBMESH_BONES *BonesData,
+    const MESH_ANIMATION_DATA *AnimationData) {
   std::string SubMeshName = MeshName + std::to_string(SubIndex);
   MeshPool[MeshName].emplace_back(SubMeshName);
   SubMeshToMesh[SubMeshName] = MeshName;
@@ -130,8 +126,7 @@ AssetsPool::insertNewIndexedMesh(const std::string &MeshName,
   }
 }
 
-void
-AssetsPool::insertNewSound(const std::string &SoundName) {
+void AssetsPool::insertNewSound(const std::string &SoundName) {
   SOUND_HANDLE Sound = getSoundHandle(SoundName);
 #ifdef _DEBUG
   assert(Sound);
@@ -139,8 +134,7 @@ AssetsPool::insertNewSound(const std::string &SoundName) {
   SoundPool.insert({SoundName, Sound});
 }
 
-void
-AssetsPool::deleteAllAssets() {
+void AssetsPool::deleteAllAssets() {
   for (auto &SubMeshData : SubMeshPool) {
     if (SubMeshData.first.find("-sprite") != std::string::npos) {
       continue;

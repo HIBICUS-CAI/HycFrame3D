@@ -16,30 +16,23 @@ public:
 
   ~WindowWIN32() {}
 
-  HRESULT
-  createWindow(const char *WndName,
-               HINSTANCE HInstance,
-               int CmdShow,
-               UINT Width,
-               UINT Height,
-               bool AsFullScreen);
+  HRESULT createWindow(const char *WndName,
+                       HINSTANCE HInstance,
+                       int CmdShow,
+                       UINT Width,
+                       UINT Height,
+                       bool AsFullScreen);
 
-  static LRESULT CALLBACK
-  wndProc(HWND HWnd, UINT Message, WPARAM WParam, LPARAM LParam);
+  static LRESULT CALLBACK wndProc(HWND HWnd,
+                                  UINT Message,
+                                  WPARAM WParam,
+                                  LPARAM LParam);
 
-  HRESULT
-  switchWindowSize();
+  HRESULT switchWindowSize();
 
-  HINSTANCE
-  getWndInstance() const { return Instance; }
+  HINSTANCE getWndInstance() const { return Instance; }
 
-  HWND
-  getWndHandle() const {
-    return WndHandle;
-  }
+  HWND getWndHandle() const { return WndHandle; }
 
-  bool
-  isFullScreen() const {
-    return FullScreenFlag;
-  }
+  bool isFullScreen() const { return FullScreenFlag; }
 };

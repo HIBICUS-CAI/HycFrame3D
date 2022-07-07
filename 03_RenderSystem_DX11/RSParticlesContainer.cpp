@@ -20,8 +20,7 @@ RSParticlesContainer::RSParticlesContainer()
 
 RSParticlesContainer::~RSParticlesContainer() {}
 
-bool
-RSParticlesContainer::startUp(RSRoot_DX11 *RootPtr) {
+bool RSParticlesContainer::startUp(RSRoot_DX11 *RootPtr) {
   if (!RootPtr) {
     return false;
   }
@@ -34,32 +33,23 @@ RSParticlesContainer::startUp(RSRoot_DX11 *RootPtr) {
   return true;
 }
 
-void
-RSParticlesContainer::cleanAndStop() {
+void RSParticlesContainer::cleanAndStop() {
   ParticleEmitterMap.clear();
   ParticleEmitterArray.clear();
 
   DeleteCriticalSection(&DataLock);
 }
 
-bool
-RSParticlesContainer::getResetFlg() {
-  return ResetFlag;
-}
+bool RSParticlesContainer::getResetFlg() { return ResetFlag; }
 
-void
-RSParticlesContainer::resetRSParticleSystem() {
+void RSParticlesContainer::resetRSParticleSystem() {
   RSParticleEmitter::resetEmitterIndex();
   ResetFlag = true;
 }
 
-void
-RSParticlesContainer::finishResetRSParticleSystem() {
-  ResetFlag = false;
-}
+void RSParticlesContainer::finishResetRSParticleSystem() { ResetFlag = false; }
 
-RSParticleEmitter *
-RSParticlesContainer::createRSParticleEmitter(
+RSParticleEmitter *RSParticlesContainer::createRSParticleEmitter(
     const std::string &Name,
     const PARTICLE_EMITTER_INFO *Info) {
   auto Size = ParticleEmitterArray.size();
@@ -73,8 +63,7 @@ RSParticlesContainer::createRSParticleEmitter(
   return Emitter;
 }
 
-void
-RSParticlesContainer::deleteRSParticleEmitter(const std::string &Name) {
+void RSParticlesContainer::deleteRSParticleEmitter(const std::string &Name) {
   LOCK;
   auto Found = ParticleEmitterMap.find(Name);
   if (Found != ParticleEmitterMap.end()) {
@@ -111,8 +100,7 @@ RSParticlesContainer::getAllParticleEmitters() {
   return &ParticleEmitterArray;
 }
 
-void
-RSParticlesContainer::startRSParticleEmitter(const std::string &Name) {
+void RSParticlesContainer::startRSParticleEmitter(const std::string &Name) {
   LOCK;
   auto Found = ParticleEmitterMap.find(Name);
   if (Found != ParticleEmitterMap.end()) {
@@ -121,8 +109,7 @@ RSParticlesContainer::startRSParticleEmitter(const std::string &Name) {
   UNLOCK;
 }
 
-void
-RSParticlesContainer::pauseRSParticleEmitter(const std::string &Name) {
+void RSParticlesContainer::pauseRSParticleEmitter(const std::string &Name) {
   LOCK;
   auto Found = ParticleEmitterMap.find(Name);
   if (Found != ParticleEmitterMap.end()) {
