@@ -84,7 +84,7 @@ bool InstanceSystem::init() {
   return true;
 }
 
-void InstanceSystem::run(Timer &Timer) {
+void InstanceSystem::run(const Timer &Timer) {
   for (auto &Atc : *ATransArrayPtr) {
     if (Atc.getCompStatus() == STATUS::ACTIVE) {
       Atc.update(Timer);

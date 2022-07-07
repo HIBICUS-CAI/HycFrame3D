@@ -87,7 +87,7 @@ void SystemExecutive::cleanAndStop() {
   SystemsArray.clear();
 }
 
-void SystemExecutive::runAllSystems(Timer &Timer) {
+void SystemExecutive::runAllSystems(const Timer &Timer) {
   checkCurrentScene();
 
   CurrentSceneNode->getObjectContainer()->deleteAllDeadObjects();

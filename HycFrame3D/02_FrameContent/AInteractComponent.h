@@ -4,7 +4,7 @@
 
 using ActorInteractInitFuncType = bool (*)(class AInteractComponent *);
 using ActorInteractUpdateFuncType = void (*)(class AInteractComponent *,
-                                             Timer &);
+                                             const Timer &);
 using ActorInteractDestoryFuncType = void (*)(class AInteractComponent *);
 
 class AInteractComponent : public ActorComponent {
@@ -31,7 +31,7 @@ public:
 
 public:
   virtual bool init();
-  virtual void update(Timer &Timer);
+  virtual void update(const Timer &Timer);
   virtual void destory();
 
 public:

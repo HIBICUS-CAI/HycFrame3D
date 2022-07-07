@@ -2,7 +2,7 @@
 
 #include "UiComponent.h"
 
-using UiInputProcessFuncType = void (*)(class UInputComponent *, Timer &);
+using UiInputProcessFuncType = void (*)(class UInputComponent *, const Timer &);
 
 class UInputComponent : public UiComponent {
 private:
@@ -23,7 +23,7 @@ public:
 
 public:
   virtual bool init();
-  virtual void update(Timer &Timer);
+  virtual void update(const Timer &Timer);
   virtual void destory();
 
 public:

@@ -5,28 +5,28 @@
 
 void registerSPInput(ObjectFactory *Factory);
 
-void testASpInput(AInputComponent *, Timer &);
+void testASpInput(AInputComponent *, const Timer &);
 
 bool testASpInit(AInteractComponent *);
-void testASpUpdate(AInteractComponent *, Timer &);
+void testASpUpdate(AInteractComponent *, const Timer &);
 void testASpDestory(AInteractComponent *);
 
-void testUSpInput(UInputComponent *, Timer &);
-void testUSpBtnInput(UInputComponent *, Timer &);
+void testUSpInput(UInputComponent *, const Timer &);
+void testUSpBtnInput(UInputComponent *, const Timer &);
 
 bool testUSpInit(UInteractComponent *);
-void testUSpUpdate(UInteractComponent *, Timer &);
+void testUSpUpdate(UInteractComponent *, const Timer &);
 void testUSpDestory(UInteractComponent *);
 
-void tempToTitle(AInputComponent *, Timer &);
-void tempToSelect(AInputComponent *, Timer &);
-void tempToRun(AInputComponent *, Timer &);
-void tempToResult(AInputComponent *, Timer &);
+void tempToTitle(AInputComponent *, const Timer &);
+void tempToSelect(AInputComponent *, const Timer &);
+void tempToRun(AInputComponent *, const Timer &);
+void tempToResult(AInputComponent *, const Timer &);
 
 bool aniInit(AInteractComponent *);
-void aniUpdate(AInteractComponent *, Timer &);
+void aniUpdate(AInteractComponent *, const Timer &);
 void aniDestory(AInteractComponent *);
 
 bool bbInit(AInteractComponent *);
-void bbUpdate(AInteractComponent *, Timer &);
+void bbUpdate(AInteractComponent *, const Timer &);
 void bbDestory(AInteractComponent *);

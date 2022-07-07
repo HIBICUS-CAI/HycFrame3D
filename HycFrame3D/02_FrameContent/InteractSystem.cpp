@@ -38,7 +38,7 @@ bool InteractSystem::init() {
   return true;
 }
 
-void InteractSystem::run(Timer &Timer) {
+void InteractSystem::run(const Timer &Timer) {
   for (auto &Aitc : *AInterArrayPtr) {
     if (Aitc.getCompStatus() == STATUS::ACTIVE) {
       Aitc.update(Timer);

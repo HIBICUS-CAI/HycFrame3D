@@ -17,7 +17,7 @@ public:
 
   bool startUp(class SceneManager *SceneManager);
   void cleanAndStop();
-  void runAllSystems(Timer &Timer);
+  void runAllSystems(const Timer &Timer);
 
   class SceneManager *getSceneManager() const;
 

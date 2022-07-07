@@ -84,7 +84,7 @@ bool RenderSystem::init() {
   return true;
 }
 
-void RenderSystem::run(Timer &Timer) {
+void RenderSystem::run(const Timer &Timer) {
   RenderSystemRoot = getRSDX11RootInstance();
 #ifdef _DEBUG
   assert(RenderSystemRoot);

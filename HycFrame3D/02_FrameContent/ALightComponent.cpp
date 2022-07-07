@@ -34,7 +34,7 @@ bool ALightComponent::init() {
   }
 }
 
-void ALightComponent::update(Timer &Timer) { syncDataFromTransform(); }
+void ALightComponent::update(const Timer &Timer) { syncDataFromTransform(); }
 
 void ALightComponent::destory() {
   getRSDX11RootInstance()->getLightsContainer()->deleteRSLight(LightName, true);

@@ -2,7 +2,8 @@
 
 #include "ActorComponent.h"
 
-using ActorInputProcessFuncType = void (*)(class AInputComponent *, Timer &);
+using ActorInputProcessFuncType = void (*)(class AInputComponent *,
+                                           const Timer &);
 
 class AInputComponent : public ActorComponent {
 private:
@@ -23,7 +24,7 @@ public:
 
 public:
   virtual bool init();
-  virtual void update(Timer &Timer);
+  virtual void update(const Timer &Timer);
   virtual void destory();
 
 public:

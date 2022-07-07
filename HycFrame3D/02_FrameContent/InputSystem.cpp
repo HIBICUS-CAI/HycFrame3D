@@ -41,7 +41,7 @@ bool InputSystem::init() {
   return true;
 }
 
-void InputSystem::run(Timer &Timer) {
+void InputSystem::run(const Timer &Timer) {
   input::pollDevices();
 
   bool Up = input::isKeyPushedInSingle(KB_UP);

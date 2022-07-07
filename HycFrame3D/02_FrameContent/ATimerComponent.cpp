@@ -16,7 +16,7 @@ bool ATimerComponent::init() {
   return true;
 }
 
-void ATimerComponent::update(Timer &Timer) {
+void ATimerComponent::update(const Timer &Timer) {
   float Deltatime = Timer.floatDeltaTime() / 1000.f;
   for (auto &t : TimerMap) {
     if (t.second.ActiveFlag) {

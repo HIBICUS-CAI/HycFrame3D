@@ -55,7 +55,7 @@ bool AMeshComponent::init() {
   return true;
 }
 
-void AMeshComponent::update(Timer &Timer) { syncTransformDataToInstance(); }
+void AMeshComponent::update(const Timer &Timer) { syncTransformDataToInstance(); }
 
 void AMeshComponent::destory() {
   for (const auto &MeshName : SubMeshesNameArray) {

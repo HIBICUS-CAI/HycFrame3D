@@ -18,7 +18,7 @@ bool AInteractComponent::init() {
   }
 }
 
-void AInteractComponent::update(Timer &Timer) {
+void AInteractComponent::update(const Timer &Timer) {
   if (UpdateProcessFunctionPtr) {
     return UpdateProcessFunctionPtr(this, Timer);
   }

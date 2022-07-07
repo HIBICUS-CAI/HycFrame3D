@@ -20,7 +20,7 @@ ASpriteComponent::~ASpriteComponent() {}
 
 bool ASpriteComponent::init() { return true; }
 
-void ASpriteComponent::update(Timer &Timer) {
+void ASpriteComponent::update(const Timer &Timer) {
   if (EnabledAnimationFlag && TimeCounter > SwitchTime) {
     TimeCounter = 0.f;
     ++CurrentAnimateCut;

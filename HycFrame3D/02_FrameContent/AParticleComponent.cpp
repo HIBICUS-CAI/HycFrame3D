@@ -23,7 +23,7 @@ bool AParticleComponent::init() {
   }
 }
 
-void AParticleComponent::update(Timer &Timer) { syncDataFromTransform(); }
+void AParticleComponent::update(const Timer &Timer) { syncDataFromTransform(); }
 
 void AParticleComponent::destory() {
   getRSDX11RootInstance()->getParticlesContainer()->deleteRSParticleEmitter(

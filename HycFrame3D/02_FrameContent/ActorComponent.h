@@ -26,6 +26,6 @@ public:
 
 public:
   virtual bool init() = 0;
-  virtual void update(Timer &Timer) = 0;
+  virtual void update(const Timer &Timer) = 0;
   virtual void destory() = 0;
 };

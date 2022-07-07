@@ -16,7 +16,7 @@ ATransformComponent::~ATransformComponent() {}
 
 bool ATransformComponent::init() { return true; }
 
-void ATransformComponent::update(Timer &Timer) { applyProcessingData(); }
+void ATransformComponent::update(const Timer &Timer) { applyProcessingData(); }
 
 void ATransformComponent::destory() {}
 

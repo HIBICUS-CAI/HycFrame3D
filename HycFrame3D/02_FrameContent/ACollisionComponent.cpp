@@ -35,7 +35,7 @@ bool ACollisionComponent::init() {
   return true;
 }
 
-void ACollisionComponent::update(Timer &Timer) { syncDataFromTransform(); }
+void ACollisionComponent::update(const Timer &Timer) { syncDataFromTransform(); }
 
 void ACollisionComponent::destory() {
   getActorOwner()->getSceneNode().getPhysicsWorld()->deleteCollisionObject(

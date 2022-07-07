@@ -17,7 +17,7 @@ bool UAudioComponent::init() {
   }
 }
 
-void UAudioComponent::update(Timer &Timer) {}
+void UAudioComponent::update(const Timer &Timer) {}
 
 void UAudioComponent::destory() { mAudioMap.clear(); }
 

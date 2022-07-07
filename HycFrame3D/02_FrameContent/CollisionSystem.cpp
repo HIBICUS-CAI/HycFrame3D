@@ -31,7 +31,7 @@ bool CollisionSystem::init() {
   return true;
 }
 
-void CollisionSystem::run(Timer &Timer) {
+void CollisionSystem::run(const Timer &Timer) {
   for (auto &Acc : *ACollisionArrayPtr) {
     if (Acc.getCompStatus() == STATUS::ACTIVE) {
       Acc.update(Timer);

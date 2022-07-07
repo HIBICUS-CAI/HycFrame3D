@@ -5,7 +5,7 @@
 
 void registerMaterialEditor(ObjectFactory *Factory);
 
-void matEditorInput(AInputComponent *, Timer &);
+void matEditorInput(AInputComponent *, const Timer &);
 bool matEditorInit(AInteractComponent *);
-void matEditorUpdate(AInteractComponent *, Timer &);
+void matEditorUpdate(AInteractComponent *, const Timer &);
 void matEditorDestory(AInteractComponent *);

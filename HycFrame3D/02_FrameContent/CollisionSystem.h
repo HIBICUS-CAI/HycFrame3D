@@ -14,6 +14,6 @@ public:
 
 public:
   virtual bool init();
-  virtual void run(Timer &Timer);
+  virtual void run(const Timer &Timer);
   virtual void destory();
 };

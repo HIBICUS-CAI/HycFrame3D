@@ -3,7 +3,8 @@
 #include "UiComponent.h"
 
 using UiInteractInitFuncType = bool (*)(class UInteractComponent *);
-using UiInteractUpdateFuncType = void (*)(class UInteractComponent *, Timer &);
+using UiInteractUpdateFuncType = void (*)(class UInteractComponent *,
+                                          const Timer &);
 using UiInteractDestoryFuncType = void (*)(class UInteractComponent *);
 
 class UInteractComponent : public UiComponent {
@@ -29,7 +30,7 @@ public:
 
 public:
   virtual bool init();
-  virtual void update(Timer &Timer);
+  virtual void update(const Timer &Timer);
   virtual void destory();
 
 public:

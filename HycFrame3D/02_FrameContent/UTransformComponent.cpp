@@ -16,7 +16,7 @@ UTransformComponent::~UTransformComponent() {}
 
 bool UTransformComponent::init() { return true; }
 
-void UTransformComponent::update(Timer &Timer) { applyProcessingData(); }
+void UTransformComponent::update(const Timer &Timer) { applyProcessingData(); }
 
 void UTransformComponent::destory() {}
 

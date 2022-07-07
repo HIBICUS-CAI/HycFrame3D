@@ -18,6 +18,6 @@ public:
 
 public:
   virtual bool init() = 0;
-  virtual void run(Timer &Timer) = 0;
+  virtual void run(const Timer &Timer) = 0;
   virtual void destory() = 0;
 };

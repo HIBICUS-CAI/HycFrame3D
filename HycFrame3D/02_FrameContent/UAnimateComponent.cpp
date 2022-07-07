@@ -23,7 +23,7 @@ UAnimateComponent::~UAnimateComponent() {}
 
 bool UAnimateComponent::init() { return true; }
 
-void UAnimateComponent::update(Timer &Timer) {
+void UAnimateComponent::update(const Timer &Timer) {
   if (AnimateChangedFlg) {
     AnimateChangedFlg = false;
     resetCurrentAnimate();

@@ -60,7 +60,7 @@ void OutputThisMaterialInfo() {
   P_LOG(LOG_DEBUG, "%s", MatInfo.c_str());
 }
 
-void matEditorInput(AInputComponent *Aic, Timer &Timer) {
+void matEditorInput(AInputComponent *Aic, const Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_F5)) {
     Aic->getSceneNode().getSceneManager()->loadSceneNode("material-scene",
                                                          "material-scene.json");
@@ -286,7 +286,7 @@ bool matEditorInit(AInteractComponent *Aitc) {
   return true;
 }
 
-void matEditorUpdate(AInteractComponent *Aitc, Timer &Timer) {}
+void matEditorUpdate(AInteractComponent *Aitc, const Timer &Timer) {}
 
 void matEditorDestory(AInteractComponent *Aitc) {
   G_PointLightAtc = nullptr;

@@ -46,7 +46,7 @@ bool AudioSystem::init() {
   return true;
 }
 
-void AudioSystem::run(Timer &Timer) {
+void AudioSystem::run(const Timer &Timer) {
   for (auto &Aauc : *AAudioArrayPtr) {
     if (Aauc.getCompStatus() == STATUS::ACTIVE) {
       Aauc.update(Timer);

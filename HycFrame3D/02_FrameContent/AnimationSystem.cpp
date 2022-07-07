@@ -31,7 +31,7 @@ bool AnimationSystem::init() {
   return true;
 }
 
-void AnimationSystem::run(Timer &Timer) {
+void AnimationSystem::run(const Timer &Timer) {
   for (auto &Aac : *AAnimateArrayPtr) {
     if (Aac.getCompStatus() == STATUS::ACTIVE) {
       Aac.update(Timer);

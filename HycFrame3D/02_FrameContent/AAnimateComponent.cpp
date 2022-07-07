@@ -101,7 +101,7 @@ bool AAnimateComponent::init() {
   return true;
 }
 
-void AAnimateComponent::update(Timer &Timer) {
+void AAnimateComponent::update(const Timer &Timer) {
   if (NextAnimationName != "" && CurrentAnimationName != NextAnimationName) {
     int Index = 0;
     bool Found = false;

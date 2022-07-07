@@ -84,7 +84,7 @@ bool UButtonComponent::init() {
   return true;
 }
 
-void UButtonComponent::update(Timer &Timer) {
+void UButtonComponent::update(const Timer &Timer) {
   if (!G_CanThisFrameProcessSelect && !G_ShouleUseMouseSelect) {
     G_CanThisFrameProcessSelect = true;
   }

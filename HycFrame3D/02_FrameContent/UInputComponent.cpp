@@ -17,7 +17,7 @@ bool UInputComponent::init() {
   return true;
 }
 
-void UInputComponent::update(Timer &Timer) {
+void UInputComponent::update(const Timer &Timer) {
   if (InputPrecessFunctionPtr) {
     InputPrecessFunctionPtr(this, Timer);
   }

@@ -43,7 +43,7 @@ public:
 
 public:
   virtual bool init();
-  virtual void update(Timer &Timer);
+  virtual void update(const Timer &Timer);
   virtual void destory();
 
 public:

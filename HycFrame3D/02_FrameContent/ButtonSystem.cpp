@@ -45,7 +45,7 @@ bool ButtonSystem::init() {
   return true;
 }
 
-void ButtonSystem::run(Timer &Timer) {
+void ButtonSystem::run(const Timer &Timer) {
   POINT P = {};
   GetCursorPos(&P);
   ScreenToClient(G_WndHandle, &P);

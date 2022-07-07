@@ -26,7 +26,7 @@ bool USpriteComponent::init() {
   return true;
 }
 
-void USpriteComponent::update(Timer &Timer) { syncTransformDataToInstance(); }
+void USpriteComponent::update(const Timer &Timer) { syncTransformDataToInstance(); }
 
 void USpriteComponent::destory() {
   SUBMESH_DATA *MeshPtr =

@@ -38,7 +38,7 @@ bool TimerSystem::init() {
   return true;
 }
 
-void TimerSystem::run(Timer &Timer) {
+void TimerSystem::run(const Timer &Timer) {
   for (auto &Atmc : *ATimerArrayPtr) {
     if (Atmc.getCompStatus() == STATUS::ACTIVE) {
       Atmc.update(Timer);

@@ -18,7 +18,7 @@ bool AAudioComponent::init() {
   }
 }
 
-void AAudioComponent::update(Timer &Timer) {}
+void AAudioComponent::update(const Timer &Timer) {}
 
 void AAudioComponent::destory() { AudioMap.clear(); }
 
