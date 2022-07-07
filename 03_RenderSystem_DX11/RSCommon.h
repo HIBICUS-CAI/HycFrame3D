@@ -20,8 +20,10 @@ namespace dx = DirectX;
 
 enum class PASS_TYPE { RENDER, COMPUTE };
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
+#endif // __clang__
 
 constexpr UINT RS_INVALID_ORDER = 0;
 
@@ -31,7 +33,9 @@ constexpr UINT MAX_LIGHT_SIZE = MAX_STRUCTURED_BUFFER_SIZE;
 constexpr UINT MAX_PARTICLE_EMITTER_SIZE = MAX_STRUCTURED_BUFFER_SIZE;
 constexpr UINT MAX_SHADOW_SIZE = 4;
 
+#if __clang__
 #pragma clang diagnostic pop
+#endif // __clang__
 
 enum class LAYOUT_TYPE {
   NORMAL_COLOR,

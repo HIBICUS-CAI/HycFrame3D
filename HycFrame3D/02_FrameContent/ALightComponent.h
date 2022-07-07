@@ -6,12 +6,16 @@
 
 #include <DirectXMath.h>
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
+#endif // __clang__
 
 constexpr auto BOX_BLOOM_MESH_NAME = "box-bloom-mesh";
 
+#if __clang__
 #pragma clang diagnostic pop
+#endif // __clang__
 
 class ALightComponent : public ActorComponent {
 private:

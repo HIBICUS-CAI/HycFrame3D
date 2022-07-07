@@ -1,7 +1,11 @@
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpragma-once-outside-header"
+#endif // __clang__
 #pragma once
+#if __clang__
 #pragma clang diagnostic pop
+#endif // __clang__
 
 namespace hyc {
 
@@ -18,8 +22,10 @@ using uint = uint32;
 
 using cstring = const char *;
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
+#endif // __clang__
 
 constexpr auto INT8_MIN_VALUE = -127I8 - 1;
 constexpr auto INT16_MIN_VALUE = -32767I16 - 1;
@@ -34,6 +40,8 @@ constexpr auto UINT16_MAX_VALUE = 0xFFFFUI16;
 constexpr auto UINT32_MAX_VALUE = 0xFFFFFFFFUI32;
 constexpr auto UINT64_MAX_VALUE = 0xFFFFFFFFFFFFFFFFUI64;
 
+#if __clang__
 #pragma clang diagnostic pop
+#endif // __clang__
 
 } // namespace hyc

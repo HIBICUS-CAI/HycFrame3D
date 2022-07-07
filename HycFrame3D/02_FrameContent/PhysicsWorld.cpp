@@ -1,13 +1,17 @@
 #define BT_NO_SIMD_OPERATOR_OVERLOADS
 
 #include "PhysicsWorld.h"
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmicrosoft-include"
 #pragma clang diagnostic ignored "-Wunused-but-set-variable"
 #pragma clang diagnostic ignored "-Wreorder-ctor"
 #pragma clang diagnostic ignored "-Wbraced-scalar-init"
+#endif // __clang__
 #include "bullet/btBulletCollisionCommon.h"
+#if __clang__
 #pragma clang diagnostic pop
+#endif // __clang__
 
 using namespace dx;
 

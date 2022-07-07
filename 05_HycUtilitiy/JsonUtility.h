@@ -1,17 +1,25 @@
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpragma-once-outside-header"
+#endif // __clang__
 #pragma once
+#if __clang__
 #pragma clang diagnostic pop
+#endif // __clang__
 
 #include "HycType.h"
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
+#endif // __clang__
 #include <rapidjson\document.h>
 #include <rapidjson\filereadstream.h>
 #include <rapidjson\istreamwrapper.h>
 #include <rapidjson\pointer.h>
+#if __clang__
 #pragma clang diagnostic pop
+#endif // __clang__
 
 #include <fstream>
 #include <string>

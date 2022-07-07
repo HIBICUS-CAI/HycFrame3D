@@ -4,8 +4,10 @@
 
 #include <array>
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
+#endif // __clang__
 
 constexpr auto SELECTED_BTN_SPRITE_NAME = "selected-button-falg";
 constexpr auto NULL_BTN = "null-btn";
@@ -15,7 +17,9 @@ constexpr UINT BTN_DOWN = 1;
 constexpr UINT BTN_LEFT = 2;
 constexpr UINT BTN_RIGHT = 3;
 
+#if __clang__
 #pragma clang diagnostic pop
+#endif // __clang__
 
 class UButtonComponent : public UiComponent {
 private:

@@ -2184,7 +2184,7 @@ void RSPass_Defered::execuatePass() {
   Ambient *AmbData = static_cast<Ambient *>(Msr.pData);
   dx::XMFLOAT4 AmbientL =
       getRSDX11RootInstance()->getLightsContainer()->getCurrentAmbientLight();
-  AmbData[0].Ambient = AmbientL;
+  AmbData[0].AmbientV = AmbientL;
   context()->Unmap(AmbientStructedBuffer, 0);
 
   static auto Lights = G_RSRoot->getLightsContainer()->getLightsArray();

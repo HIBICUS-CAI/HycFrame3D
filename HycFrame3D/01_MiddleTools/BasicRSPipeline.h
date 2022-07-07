@@ -7,8 +7,10 @@
 
 bool createBasicPipeline();
 
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-variable"
+#endif // __clang__
 
 constexpr auto PTC_RENDER_BUFFER_NAME = "particle-render-buffer";
 constexpr auto PTC_A_NAME = "particle-part-a";
@@ -40,7 +42,9 @@ constexpr UINT PTC_TILE_X_SIZE = 32;
 constexpr UINT PTC_TILE_Y_SIZE = 32;
 constexpr UINT PTC_COARSE_CULLING_THREADS = 256;
 
+#if __clang__
 #pragma clang diagnostic pop
+#endif // __clang__
 
 struct BLM_BLUR_INFO {
   UINT TexWidth = 0;
@@ -128,7 +132,7 @@ struct ViewProjCamUpPos {
 };
 
 struct Ambient {
-  dx::XMFLOAT4 Ambient = {};
+  dx::XMFLOAT4 AmbientV = {};
 };
 
 struct LightInfo {
