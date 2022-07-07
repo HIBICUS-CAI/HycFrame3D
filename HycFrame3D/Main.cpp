@@ -1,20 +1,17 @@
 #include "RootSystem.h"
 
-static RootSystem g_RootSystem = {};
+int
+WinMain(_In_ HINSTANCE Instance,
+        _In_opt_ HINSTANCE PrevInstance,
+        _In_ LPSTR CmdLine,
+        _In_ int CmdShow) {
+  RootSystem root;
 
-int WinMain(
-    _In_ HINSTANCE hInstance,
-    _In_opt_ HINSTANCE hPrevInstance,
-    _In_ LPSTR szCmdLine,
-    _In_ int iCmdShow
-)
-{
-    if (g_RootSystem.startUp(hInstance, iCmdShow))
-    {
-        g_RootSystem.runGameLoop();
-    }
+  if (root.startUp(Instance, CmdShow)) {
+    root.runGameLoop();
+  }
 
-    g_RootSystem.cleanAndStop();
+  root.cleanAndStop();
 
-    return 0;
+  return 0;
 }
