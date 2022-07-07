@@ -1,9 +1,9 @@
 # Format Style Options - Created with Clang Power Tools
 ---
 Language: Cpp
+BasedOnStyle: LLVM
 AllowAllParametersOfDeclarationOnNextLine: false
 AlwaysBreakTemplateDeclarations: Yes
-AlwaysBreakAfterReturnType: All
-BasedOnStyle: LLVM
+AlwaysBreakAfterReturnType: None
 BinPackParameters: false
 ...
