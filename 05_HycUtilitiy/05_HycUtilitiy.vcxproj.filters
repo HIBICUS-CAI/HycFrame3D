@@ -39,5 +39,11 @@
     <ClInclude Include="StringUtility.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="TcpUtility.h">
+      <Filter>SocketAndNetwork</Filter>
+    </ClInclude>
+    <ClInclude Include="MacroUtility.h">
+      <Filter>TypeDef</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

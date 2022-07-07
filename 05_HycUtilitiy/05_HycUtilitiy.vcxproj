@@ -311,8 +311,10 @@
     <ClInclude Include="HycType.h" />
     <ClInclude Include="HycUtility.h" />
     <ClInclude Include="JsonUtility.h" />
+    <ClInclude Include="MacroUtility.h" />
     <ClInclude Include="StdStringUtility.h" />
     <ClInclude Include="StringUtility.h" />
+    <ClInclude Include="TcpUtility.h" />
     <ClInclude Include="TextUtility.h" />
     <ClInclude Include="TomlUtility.h" />
   </ItemGroup>
