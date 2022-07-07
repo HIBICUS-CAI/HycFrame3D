@@ -252,6 +252,11 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\05_HycUtilitiy\05_HycUtilitiy.vcxproj">
+      <Project>{f7acb549-cf30-484c-a54d-fbbd6671f404}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
