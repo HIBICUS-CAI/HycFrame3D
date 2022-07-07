@@ -1,83 +1,78 @@
 #include "ButtonSystem.h"
-#include "SystemExecutive.h"
+
+#include "ComponentContainer.h"
 #include "SceneManager.h"
 #include "SceneNode.h"
-#include "ComponentContainer.h"
+#include "SystemExecutive.h"
 #include "UButtonComponent.h"
-#include "WM_Interface.h"
-#include "ID_Interface.h"
 
-static HWND g_WndHandle = {};
-static float g_WndWidth = 0.f;
-static float g_WndHeight = 0.f;
-static const float g_ScreenWidth = 1280.f;
-static const float g_ScreenHeight = 720.f;
+#include <ID_Interface.h>
+#include <WM_Interface.h>
 
-ButtonSystem::ButtonSystem(SystemExecutive* _sysExecutive) :
-    System("button-system", _sysExecutive),
-    mUBtnVecPtr(nullptr)
-{
+static HWND G_WndHandle = {};
+static float G_WndWidth = 0.f;
+static float G_WndHeight = 0.f;
+static const float G_ScreenWidth = 1280.f;
+static const float G_ScreenHeight = 720.f;
 
-}
+ButtonSystem::ButtonSystem(SystemExecutive *SysExecutive)
+    : System("button-system", SysExecutive), UBtnArrayPtr(nullptr) {}
 
-ButtonSystem::~ButtonSystem()
-{
+ButtonSystem::~ButtonSystem() {}
 
-}
-
-bool ButtonSystem::Init()
-{
-    RECT wndRect = {};
-    g_WndHandle = window::getWindowPtr()->getWndHandle();
-    GetClientRect(g_WndHandle, &wndRect);
-    g_WndWidth = (float)(wndRect.right - wndRect.left);
-    g_WndHeight = (float)(wndRect.bottom - wndRect.top);
+bool
+ButtonSystem::init() {
+  RECT WndRect = {};
+  G_WndHandle = window::getWindowPtr()->getWndHandle();
+  GetClientRect(G_WndHandle, &WndRect);
+  G_WndWidth = static_cast<float>(WndRect.right - WndRect.left);
+  G_WndHeight = static_cast<float>(WndRect.bottom - WndRect.top);
 
 #ifdef _DEBUG
-    assert(GetSystemExecutive());
+  assert(getSystemExecutive());
 #endif // _DEBUG
 
-    mUBtnVecPtr = (std::vector<UButtonComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::U_BUTTON);
+  UBtnArrayPtr = static_cast<std::vector<UButtonComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::U_BUTTON));
 
-    if (!(mUBtnVecPtr)) { return false; }
+  if (!(UBtnArrayPtr)) {
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
-void ButtonSystem::Run(Timer& _timer)
-{
-    POINT p = {};
-    GetCursorPos(&p);
-    ScreenToClient(g_WndHandle, &p);
-    float cursorX = ((float)(p.x) / g_WndWidth - 0.5f) * g_ScreenWidth;
-    float cursorY = -((float)(p.y) / g_WndHeight - 0.5f) * g_ScreenHeight;
+void
+ButtonSystem::run(Timer &Timer) {
+  POINT P = {};
+  GetCursorPos(&P);
+  ScreenToClient(G_WndHandle, &P);
+  float CursorX = (static_cast<float>(P.x) / G_WndWidth - 0.5f) * G_ScreenWidth;
+  float CursorY =
+      -(static_cast<float>(P.y) / G_WndHeight - 0.5f) * G_ScreenHeight;
 #ifdef _DEBUG
-    cursorX = (cursorX < -g_ScreenWidth / 2.f) ?
-        -g_ScreenWidth / 2.f : cursorX;
-    cursorX = (cursorX > g_ScreenWidth / 2.f) ?
-        g_ScreenWidth / 2.f : cursorX;
-    cursorY = (cursorY < -g_ScreenHeight / 2.f) ?
-        -g_ScreenHeight / 2.f : cursorY;
-    cursorY = (cursorY > g_ScreenHeight / 2.f) ?
-        g_ScreenHeight / 2.f : cursorY;
+  CursorX = (CursorX < -G_ScreenWidth / 2.f) ? -G_ScreenWidth / 2.f : CursorX;
+  CursorX = (CursorX > G_ScreenWidth / 2.f) ? G_ScreenWidth / 2.f : CursorX;
+  CursorY = (CursorY < -G_ScreenHeight / 2.f) ? -G_ScreenHeight / 2.f : CursorY;
+  CursorY = (CursorY > G_ScreenHeight / 2.f) ? G_ScreenHeight / 2.f : CursorY;
 #endif // _DEBUG
-    UButtonComponent::setScreenSpaceCursorPos(cursorX, cursorY);
+  UButtonComponent::setScreenSpaceCursorPos(CursorX, CursorY);
 
-    auto mouseOffset = input::getMouseOffset();
-    if (mouseOffset.x || mouseOffset.y)
-    {
-        UButtonComponent::setShouldUseMouse(true);
-    }
+  auto MouseOffset = input::getMouseOffset();
+  if (MouseOffset.x || MouseOffset.y) {
+    UButtonComponent::setShouldUseMouse(true);
+  }
 
-    for (auto& ubc : *mUBtnVecPtr)
-    {
-        if (ubc.getCompStatus() == STATUS::ACTIVE) { ubc.update(_timer); }
+  for (auto &Ubc : *UBtnArrayPtr) {
+    if (Ubc.getCompStatus() == STATUS::ACTIVE) {
+      Ubc.update(Timer);
     }
+  }
 }
 
-void ButtonSystem::Destory()
-{
-
-}
+void
+ButtonSystem::destory() {}

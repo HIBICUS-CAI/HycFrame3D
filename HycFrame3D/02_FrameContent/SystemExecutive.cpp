@@ -1,109 +1,132 @@
 #include "SystemExecutive.h"
-#include "SceneNode.h"
-#include "SceneManager.h"
-#include "ObjectContainer.h"
-#include "System.h"
+
+#include "AnimationSystem.h"
+#include "AudioSystem.h"
+#include "ButtonSystem.h"
+#include "CollisionSystem.h"
 #include "InputSystem.h"
-#include "RenderSystem.h"
 #include "InstanceSystem.h"
 #include "InteractSystem.h"
-#include "CollisionSystem.h"
-#include "AudioSystem.h"
+#include "ObjectContainer.h"
+#include "RenderSystem.h"
+#include "SceneManager.h"
+#include "SceneNode.h"
+#include "System.h"
 #include "TimerSystem.h"
-#include "ButtonSystem.h"
-#include "AnimationSystem.h"
 
-SystemExecutive::SystemExecutive() :
-    mSceneManagerPtr(nullptr),
-    mCurrentSceneNode(nullptr),
-    mSystemsVec({}) {}
+SystemExecutive::SystemExecutive()
+    : SceneManagerPtr(nullptr), CurrentSceneNode(nullptr), SystemsArray({}) {}
 
 SystemExecutive::~SystemExecutive() {}
 
-bool SystemExecutive::StartUp(SceneManager* _sceneManager)
-{
-    if (!_sceneManager)
-    {
-        P_LOG(LOG_ERROR, "invalid scene manager pointer\n");
-        return false;
-    }
+bool
+SystemExecutive::startUp(SceneManager *SceneManager) {
+  if (!SceneManager) {
+    P_LOG(LOG_ERROR, "invalid scene manager pointer\n");
+    return false;
+  }
 
-    mSceneManagerPtr = _sceneManager;
-    mCurrentSceneNode = _sceneManager->getCurrentSceneNode();
+  SceneManagerPtr = SceneManager;
+  CurrentSceneNode = SceneManager->getCurrentSceneNode();
 
-    System* sys = nullptr;
+  System *Sys = nullptr;
 
-    sys = new InputSystem(this); if (!sys) { return false; }
-    mSystemsVec.push_back(sys);
-    sys = new CollisionSystem(this); if (!sys) { return false; }
-    mSystemsVec.push_back(sys);
-    sys = new ButtonSystem(this); if (!sys) { return false; }
-    mSystemsVec.push_back(sys);
-    sys = new InteractSystem(this); if (!sys) { return false; }
-    mSystemsVec.push_back(sys);
-    sys = new InstanceSystem(this); if (!sys) { return false; }
-    mSystemsVec.push_back(sys);
-    sys = new TimerSystem(this); if (!sys) { return false; }
-    mSystemsVec.push_back(sys);
-    sys = new AudioSystem(this); if (!sys) { return false; }
-    mSystemsVec.push_back(sys);
-    sys = new AnimationSystem(this); if (!sys) { return false; }
-    mSystemsVec.push_back(sys);
-    sys = new RenderSystem(this); if (!sys) { return false; }
-    mSystemsVec.push_back(sys);
+  Sys = new InputSystem(this);
+  if (!Sys) {
+    return false;
+  }
+  SystemsArray.push_back(Sys);
+  Sys = new CollisionSystem(this);
+  if (!Sys) {
+    return false;
+  }
+  SystemsArray.push_back(Sys);
+  Sys = new ButtonSystem(this);
+  if (!Sys) {
+    return false;
+  }
+  SystemsArray.push_back(Sys);
+  Sys = new InteractSystem(this);
+  if (!Sys) {
+    return false;
+  }
+  SystemsArray.push_back(Sys);
+  Sys = new InstanceSystem(this);
+  if (!Sys) {
+    return false;
+  }
+  SystemsArray.push_back(Sys);
+  Sys = new TimerSystem(this);
+  if (!Sys) {
+    return false;
+  }
+  SystemsArray.push_back(Sys);
+  Sys = new AudioSystem(this);
+  if (!Sys) {
+    return false;
+  }
+  SystemsArray.push_back(Sys);
+  Sys = new AnimationSystem(this);
+  if (!Sys) {
+    return false;
+  }
+  SystemsArray.push_back(Sys);
+  Sys = new RenderSystem(this);
+  if (!Sys) {
+    return false;
+  }
+  SystemsArray.push_back(Sys);
 
-    return InitAllSystem();
+  return initAllSystem();
 }
 
-void SystemExecutive::CleanAndStop()
-{
-    for (auto& sys : mSystemsVec)
-    {
-        sys->Destory();
-        delete sys;
-    }
-    mSystemsVec.clear();
+void
+SystemExecutive::cleanAndStop() {
+  for (auto &Sys : SystemsArray) {
+    Sys->destory();
+    delete Sys;
+  }
+  SystemsArray.clear();
 }
 
-void SystemExecutive::RunAllSystems(Timer& _timer)
-{
-    CheckCurrentScene();
+void
+SystemExecutive::runAllSystems(Timer &Timer) {
+  checkCurrentScene();
 
-    mCurrentSceneNode->getObjectContainer()->deleteAllDeadObjects();
-    mCurrentSceneNode->getObjectContainer()->initAllNewObjects();
+  CurrentSceneNode->getObjectContainer()->deleteAllDeadObjects();
+  CurrentSceneNode->getObjectContainer()->initAllNewObjects();
 
-    for (auto& sys : mSystemsVec)
-    {
-        sys->Run(_timer);
-    }
+  for (const auto &Sys : SystemsArray) {
+    Sys->run(Timer);
+  }
 }
 
-SceneManager* SystemExecutive::GetSceneManager() const
-{
+SceneManager *
+SystemExecutive::getSceneManager() const {
 #ifdef _DEBUG
-    assert(mSceneManagerPtr);
+  assert(SceneManagerPtr);
 #endif // _DEBUG
-    return mSceneManagerPtr;
+  return SceneManagerPtr;
 }
 
-bool SystemExecutive::InitAllSystem()
-{
-    for (auto& sys : mSystemsVec)
-    {
-        if (!sys->Init()) { return false; }
+bool
+SystemExecutive::initAllSystem() {
+  for (auto &Sys : SystemsArray) {
+    if (!Sys->init()) {
+      return false;
     }
-    return true;
+  }
+  return true;
 }
 
-void SystemExecutive::CheckCurrentScene()
-{
-    if (mSceneManagerPtr->getSceneSwitchFlg())
-    {
-        mCurrentSceneNode = mSceneManagerPtr->getCurrentSceneNode();
-        bool next_scene_init = InitAllSystem();
+void
+SystemExecutive::checkCurrentScene() {
+  if (SceneManagerPtr->getSceneSwitchFlg()) {
+    CurrentSceneNode = SceneManagerPtr->getCurrentSceneNode();
+    bool Result = initAllSystem();
 #ifdef _DEBUG
-        assert(next_scene_init);
+    assert(Result && "init all system failed");
 #endif // _DEBUG
-        (void)next_scene_init;
-    }
+    (void)Result;
+  }
 }

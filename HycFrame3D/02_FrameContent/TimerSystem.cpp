@@ -1,55 +1,58 @@
 #include "TimerSystem.h"
-#include "SystemExecutive.h"
+
+#include "ATimerComponent.h"
+#include "ComponentContainer.h"
 #include "SceneManager.h"
 #include "SceneNode.h"
-#include "ComponentContainer.h"
-#include "ATimerComponent.h"
+#include "SystemExecutive.h"
 #include "UTimerComponent.h"
 
-TimerSystem::TimerSystem(SystemExecutive* _sysExecutive) :
-    System("timer-system", _sysExecutive),
-    mATimerVecPtr(nullptr), mUTimerVecPtr(nullptr)
-{
+TimerSystem::TimerSystem(SystemExecutive *SysExecutive)
+    : System("timer-system", SysExecutive), ATimerArrayPtr(nullptr),
+      UTimerArrayPtr(nullptr) {}
 
-}
+TimerSystem::~TimerSystem() {}
 
-TimerSystem::~TimerSystem()
-{
-
-}
-
-bool TimerSystem::Init()
-{
+bool
+TimerSystem::init() {
 #ifdef _DEBUG
-    assert(GetSystemExecutive());
+  assert(getSystemExecutive());
 #endif // _DEBUG
 
-    mATimerVecPtr = (std::vector<ATimerComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::A_TIMER);
-    mUTimerVecPtr = (std::vector<UTimerComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::U_TIMER);
+  ATimerArrayPtr = static_cast<std::vector<ATimerComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::A_TIMER));
+  UTimerArrayPtr = static_cast<std::vector<UTimerComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::U_TIMER));
 
-    if (!(mATimerVecPtr && mUTimerVecPtr)) { return false; }
+  if (!(ATimerArrayPtr && UTimerArrayPtr)) {
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
-void TimerSystem::Run(Timer& _timer)
-{
-    for (auto& atmc : *mATimerVecPtr)
-    {
-        if (atmc.getCompStatus() == STATUS::ACTIVE) { atmc.update(_timer); }
+void
+TimerSystem::run(Timer &Timer) {
+  for (auto &Atmc : *ATimerArrayPtr) {
+    if (Atmc.getCompStatus() == STATUS::ACTIVE) {
+      Atmc.update(Timer);
     }
+  }
 
-    for (auto& utmc : *mUTimerVecPtr)
-    {
-        if (utmc.getCompStatus() == STATUS::ACTIVE) { utmc.update(_timer); }
+  for (auto &Utmc : *UTimerArrayPtr) {
+    if (Utmc.getCompStatus() == STATUS::ACTIVE) {
+      Utmc.update(Timer);
     }
+  }
 }
 
-void TimerSystem::Destory()
-{
-
-}
+void
+TimerSystem::destory() {}

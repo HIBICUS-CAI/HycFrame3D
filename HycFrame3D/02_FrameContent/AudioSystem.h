@@ -1,20 +1,23 @@
 #pragma once
 
 #include "System.h"
+
 #include <vector>
 
-class AudioSystem :public System
-{
-public:
-    AudioSystem(class SystemExecutive* _sysExecutive);
-    virtual ~AudioSystem();
-
-public:
-    virtual bool Init();
-    virtual void Run(Timer& _timer);
-    virtual void Destory();
-
+class AudioSystem : public System {
 private:
-    std::vector<class AAudioComponent>* mAAudioVecPtr;
-    std::vector<class UAudioComponent>* mUAudioVecPtr;
+  std::vector<class AAudioComponent> *AAudioArrayPtr;
+  std::vector<class UAudioComponent> *UAudioArrayPtr;
+
+public:
+  AudioSystem(class SystemExecutive *SysExecutive);
+  virtual ~AudioSystem();
+
+public:
+  virtual bool
+  init();
+  virtual void
+  run(Timer &Timer);
+  virtual void
+  destory();
 };

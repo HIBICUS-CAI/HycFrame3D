@@ -1,55 +1,58 @@
 #include "InteractSystem.h"
-#include "SystemExecutive.h"
+
+#include "AInteractComponent.h"
+#include "ComponentContainer.h"
 #include "SceneManager.h"
 #include "SceneNode.h"
-#include "ComponentContainer.h"
-#include "AInteractComponent.h"
+#include "SystemExecutive.h"
 #include "UInteractComponent.h"
 
-InteractSystem::InteractSystem(SystemExecutive* _sysExecutive) :
-    System("interact-system", _sysExecutive),
-    mAInterVecPtr(nullptr), mUInterVecPtr(nullptr)
-{
+InteractSystem::InteractSystem(SystemExecutive *SysExecutive)
+    : System("interact-system", SysExecutive), AInterArrayPtr(nullptr),
+      UInterArrayPtr(nullptr) {}
 
-}
+InteractSystem::~InteractSystem() {}
 
-InteractSystem::~InteractSystem()
-{
-
-}
-
-bool InteractSystem::Init()
-{
+bool
+InteractSystem::init() {
 #ifdef _DEBUG
-    assert(GetSystemExecutive());
+  assert(getSystemExecutive());
 #endif // _DEBUG
 
-    mAInterVecPtr = (std::vector<AInteractComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::A_INTERACT);
-    mUInterVecPtr = (std::vector<UInteractComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::U_INTERACT);
+  AInterArrayPtr = static_cast<std::vector<AInteractComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::A_INTERACT));
+  UInterArrayPtr = static_cast<std::vector<UInteractComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::U_INTERACT));
 
-    if (!(mAInterVecPtr && mUInterVecPtr)) { return false; }
+  if (!(AInterArrayPtr && UInterArrayPtr)) {
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
-void InteractSystem::Run(Timer& _timer)
-{
-    for (auto& aitc : *mAInterVecPtr)
-    {
-        if (aitc.getCompStatus() == STATUS::ACTIVE) { aitc.update(_timer); }
+void
+InteractSystem::run(Timer &Timer) {
+  for (auto &Aitc : *AInterArrayPtr) {
+    if (Aitc.getCompStatus() == STATUS::ACTIVE) {
+      Aitc.update(Timer);
     }
+  }
 
-    for (auto& uitc : *mUInterVecPtr)
-    {
-        if (uitc.getCompStatus() == STATUS::ACTIVE) { uitc.update(_timer); }
+  for (auto &Uitc : *UInterArrayPtr) {
+    if (Uitc.getCompStatus() == STATUS::ACTIVE) {
+      Uitc.update(Timer);
     }
+  }
 }
 
-void InteractSystem::Destory()
-{
-
-}
+void
+InteractSystem::destory() {}

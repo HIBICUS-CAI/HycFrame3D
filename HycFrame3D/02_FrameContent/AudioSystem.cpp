@@ -1,59 +1,68 @@
 #include "AudioSystem.h"
-#include "SystemExecutive.h"
-#include "SceneManager.h"
-#include "SceneNode.h"
+
+#include "AAudioComponent.h"
 #include "AssetsPool.h"
 #include "ComponentContainer.h"
+#include "SceneManager.h"
+#include "SceneNode.h"
 #include "SoundHelper.h"
-#include "AAudioComponent.h"
+#include "SystemExecutive.h"
 #include "UAudioComponent.h"
 
-AudioSystem::AudioSystem(SystemExecutive* _sysExecutive) :
-    System("audio-system", _sysExecutive),
-    mAAudioVecPtr(nullptr), mUAudioVecPtr(nullptr)
-{
+AudioSystem::AudioSystem(SystemExecutive *_sysExecutive)
+    : System("audio-system", _sysExecutive), AAudioArrayPtr(nullptr),
+      UAudioArrayPtr(nullptr) {}
 
-}
+AudioSystem::~AudioSystem() {}
 
-AudioSystem::~AudioSystem()
-{
-
-}
-
-bool AudioSystem::Init()
-{
-    if (!soundHasInited()) { if (!initSound()) { return false; } }
+bool
+AudioSystem::init() {
+  if (!soundHasInited()) {
+    if (!initSound()) {
+      return false;
+    }
+  }
 
 #ifdef _DEBUG
-    assert(GetSystemExecutive());
+  assert(getSystemExecutive());
 #endif // _DEBUG
 
-    mAAudioVecPtr = (std::vector<AAudioComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::A_AUDIO);
-    mUAudioVecPtr = (std::vector<UAudioComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::U_AUDIO);
+  AAudioArrayPtr = static_cast<std::vector<AAudioComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::A_AUDIO));
+  UAudioArrayPtr = static_cast<std::vector<UAudioComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::U_AUDIO));
 
-    if (!(mAAudioVecPtr && mUAudioVecPtr)) { return false; }
+  if (!(AAudioArrayPtr && UAudioArrayPtr)) {
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
-void AudioSystem::Run(Timer& _timer)
-{
-    for (auto& aac : *mAAudioVecPtr)
-    {
-        if (aac.getCompStatus() == STATUS::ACTIVE) { aac.update(_timer); }
+void
+AudioSystem::run(Timer &Timer) {
+  for (auto &Aauc : *AAudioArrayPtr) {
+    if (Aauc.getCompStatus() == STATUS::ACTIVE) {
+      Aauc.update(Timer);
     }
+  }
 
-    for (auto& uac : *mUAudioVecPtr)
-    {
-        if (uac.getCompStatus() == STATUS::ACTIVE) { uac.update(_timer); }
+  for (auto &Uauc : *UAudioArrayPtr) {
+    if (Uauc.getCompStatus() == STATUS::ACTIVE) {
+      Uauc.update(Timer);
     }
+  }
 }
 
-void AudioSystem::Destory()
-{
-    uninitSound();
+void
+AudioSystem::destory() {
+  uninitSound();
 }

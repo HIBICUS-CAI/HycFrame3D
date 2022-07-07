@@ -1,23 +1,28 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
+
 #include <string>
 
-class System
-{
-public:
-    System(std::string _sysName, class SystemExecutive* _sysExecutive);
-    virtual ~System();
-
-    const std::string& GetSystemName() const;
-    class SystemExecutive* GetSystemExecutive() const;
-
-public:
-    virtual bool Init() = 0;
-    virtual void Run(Timer& _timer) = 0;
-    virtual void Destory() = 0;
-
+class System {
 private:
-    const std::string mSystemName;
-    class SystemExecutive* mSystemExecutivePtr;
+  const std::string SystemName;
+  class SystemExecutive *SystemExecutivePtr;
+
+public:
+  System(const std::string &SysName, class SystemExecutive *SysExecutive);
+  virtual ~System();
+
+  const std::string &
+  getSystemName() const;
+  class SystemExecutive *
+  getSystemExecutive() const;
+
+public:
+  virtual bool
+  init() = 0;
+  virtual void
+  run(Timer &Timer) = 0;
+  virtual void
+  destory() = 0;
 };

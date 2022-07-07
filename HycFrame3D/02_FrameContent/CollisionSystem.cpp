@@ -1,50 +1,51 @@
 #include "CollisionSystem.h"
-#include "SystemExecutive.h"
-#include "SceneManager.h"
-#include "SceneNode.h"
+
+#include "ACollisionComponent.h"
 #include "ComponentContainer.h"
 #include "PhysicsWorld.h"
-#include "ACollisionComponent.h"
+#include "SceneManager.h"
+#include "SceneNode.h"
+#include "SystemExecutive.h"
 
-CollisionSystem::CollisionSystem(class SystemExecutive* _sysExecutive) :
-    System("collision-system", _sysExecutive),
-    mACollisionVecPtr(nullptr)
-{
+CollisionSystem::CollisionSystem(class SystemExecutive *SysExecutive)
+    : System("collision-system", SysExecutive), ACollisionArrayPtr(nullptr) {}
 
-}
+CollisionSystem::~CollisionSystem() {}
 
-CollisionSystem::~CollisionSystem()
-{
-
-}
-
-bool CollisionSystem::Init()
-{
+bool
+CollisionSystem::init() {
 #ifdef _DEBUG
-    assert(GetSystemExecutive());
+  assert(getSystemExecutive());
 #endif // _DEBUG
 
-    mACollisionVecPtr = (std::vector<ACollisionComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::A_COLLISION);
+  ACollisionArrayPtr = static_cast<std::vector<ACollisionComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::A_COLLISION));
 
-    if (!(mACollisionVecPtr)) { return false; }
+  if (!(ACollisionArrayPtr)) {
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
-void CollisionSystem::Run(Timer& _timer)
-{
-    for (auto& acc : *mACollisionVecPtr)
-    {
-        if (acc.getCompStatus() == STATUS::ACTIVE) { acc.update(_timer); }
+void
+CollisionSystem::run(Timer &Timer) {
+  for (auto &Acc : *ACollisionArrayPtr) {
+    if (Acc.getCompStatus() == STATUS::ACTIVE) {
+      Acc.update(Timer);
     }
+  }
 
-    GetSystemExecutive()->GetSceneManager()->getCurrentSceneNode()->
-        getPhysicsWorld()->detectCollision();
+  getSystemExecutive()
+      ->getSceneManager()
+      ->getCurrentSceneNode()
+      ->getPhysicsWorld()
+      ->detectCollision();
 }
 
-void CollisionSystem::Destory()
-{
-
-}
+void
+CollisionSystem::destory() {}

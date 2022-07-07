@@ -1,27 +1,33 @@
 #pragma once
 
 #include "Hyc3DCommon.h"
+
 #include <vector>
 
-class SystemExecutive
-{
+class SystemExecutive {
+private:
+  class SceneManager *SceneManagerPtr;
+  class SceneNode *CurrentSceneNode;
+
+  std::vector<class System *> SystemsArray;
+
 public:
-    SystemExecutive();
-    ~SystemExecutive();
+  SystemExecutive();
+  ~SystemExecutive();
 
-    bool StartUp(class SceneManager* _sceneManager);
-    void CleanAndStop();
-    void RunAllSystems(Timer& _timer);
+  bool
+  startUp(class SceneManager *SceneManager);
+  void
+  cleanAndStop();
+  void
+  runAllSystems(Timer &Timer);
 
-    class SceneManager* GetSceneManager() const;
+  class SceneManager *
+  getSceneManager() const;
 
 private:
-    bool InitAllSystem();
-    void CheckCurrentScene();
-
-private:
-    class SceneManager* mSceneManagerPtr;
-    class SceneNode* mCurrentSceneNode;
-
-    std::vector<class System*> mSystemsVec;
+  bool
+  initAllSystem();
+  void
+  checkCurrentScene();
 };

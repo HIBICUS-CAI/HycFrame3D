@@ -1,19 +1,22 @@
 #pragma once
 
 #include "System.h"
+
 #include <vector>
 
-class AnimationSystem :public System
-{
-public:
-    AnimationSystem(class SystemExecutive* _sysExecutive);
-    virtual ~AnimationSystem();
-
-public:
-    virtual bool Init();
-    virtual void Run(Timer& _timer);
-    virtual void Destory();
-
+class AnimationSystem : public System {
 private:
-    std::vector<class AAnimateComponent>* mAAnimateVecPtr;
+  std::vector<class AAnimateComponent> *AAnimateArrayPtr;
+
+public:
+  AnimationSystem(class SystemExecutive *SysExecutive);
+  virtual ~AnimationSystem();
+
+public:
+  virtual bool
+  init();
+  virtual void
+  run(Timer &Timer);
+  virtual void
+  destory();
 };

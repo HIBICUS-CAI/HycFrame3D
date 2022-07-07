@@ -1,19 +1,22 @@
 #pragma once
 
 #include "System.h"
+
 #include <vector>
 
-class CollisionSystem :public System
-{
-public:
-    CollisionSystem(class SystemExecutive* _sysExecutive);
-    virtual ~CollisionSystem();
-
-public:
-    virtual bool Init();
-    virtual void Run(Timer& _timer);
-    virtual void Destory();
-
+class CollisionSystem : public System {
 private:
-    std::vector<class ACollisionComponent>* mACollisionVecPtr;
+  std::vector<class ACollisionComponent> *ACollisionArrayPtr;
+
+public:
+  CollisionSystem(class SystemExecutive *SysExecutive);
+  virtual ~CollisionSystem();
+
+public:
+  virtual bool
+  init();
+  virtual void
+  run(Timer &Timer);
+  virtual void
+  destory();
 };

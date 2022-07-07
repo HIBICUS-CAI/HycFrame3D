@@ -44,7 +44,7 @@ RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
     P_LOG(LOG_ERROR, "cannot init scene manager correctly\n");
     return false;
   }
-  if (!SystemExecutivePtr->StartUp(SceneManagerPtr)) {
+  if (!SystemExecutivePtr->startUp(SceneManagerPtr)) {
     P_LOG(LOG_ERROR, "cannot init system executive correctly\n");
     return false;
   }
@@ -64,7 +64,7 @@ void
 RootSystem::cleanAndStop() {
   SceneManagerPtr->cleanAndStop();
   ObjectFactoryPtr->cleanAndStop();
-  SystemExecutivePtr->CleanAndStop();
+  SystemExecutivePtr->cleanAndStop();
   delete SceneManagerPtr;
   SceneManagerPtr = nullptr;
   delete ObjectFactoryPtr;
@@ -87,7 +87,7 @@ RootSystem::runGameLoop() {
       Timer.timeIn();
 
       SceneManagerPtr->checkLoadStatus();
-      SystemExecutivePtr->RunAllSystems(Timer);
+      SystemExecutivePtr->runAllSystems(Timer);
 
       Timer.timeOut();
     }

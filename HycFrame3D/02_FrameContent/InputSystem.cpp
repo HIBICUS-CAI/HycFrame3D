@@ -1,86 +1,85 @@
 #include "InputSystem.h"
-#include "SystemExecutive.h"
-#include "ID_Interface.h"
+
+#include "AInputComponent.h"
+#include "ComponentContainer.h"
 #include "SceneManager.h"
 #include "SceneNode.h"
-#include "ComponentContainer.h"
-#include "AInputComponent.h"
-#include "UInputComponent.h"
+#include "SystemExecutive.h"
 #include "UButtonComponent.h"
+#include "UInputComponent.h"
 
-InputSystem::InputSystem(SystemExecutive* _sysExecutive) :
-    System("input-system", _sysExecutive),
-    mAInputVecPtr(nullptr), mUInputVecPtr(nullptr)
-{
+#include <ID_Interface.h>
 
-}
+InputSystem::InputSystem(SystemExecutive *SysExecutive)
+    : System("input-system", SysExecutive), AInputArrayPtr(nullptr),
+      UInputArrayPtr(nullptr) {}
 
-InputSystem::~InputSystem()
-{
+InputSystem::~InputSystem() {}
 
-}
-
-bool InputSystem::Init()
-{
+bool
+InputSystem::init() {
 #ifdef _DEBUG
-    assert(GetSystemExecutive());
+  assert(getSystemExecutive());
 #endif // _DEBUG
 
-    mAInputVecPtr = (std::vector<AInputComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::A_INPUT);
-    mUInputVecPtr = (std::vector<UInputComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::U_INPUT);
+  AInputArrayPtr = static_cast<std::vector<AInputComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::A_INPUT));
+  UInputArrayPtr = static_cast<std::vector<UInputComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::U_INPUT));
 
-    if (!(mAInputVecPtr && mUInputVecPtr)) { return false; }
+  if (!(AInputArrayPtr && UInputArrayPtr)) {
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
-void InputSystem::Run(Timer& _timer)
-{
-    input::pollDevices();
+void
+InputSystem::run(Timer &Timer) {
+  input::pollDevices();
 
-    bool up = input::isKeyPushedInSingle(KB_UP);
-    bool down = input::isKeyPushedInSingle(KB_DOWN);
-    bool left = input::isKeyPushedInSingle(KB_LEFT);
-    bool right = input::isKeyPushedInSingle(KB_RIGHT);
-    bool gp_up = input::isKeyPushedInSingle(GP_UPDIRBTN);
-    bool gp_down = input::isKeyPushedInSingle(GP_DOWNDIRBTN);
-    bool gp_left = input::isKeyPushedInSingle(GP_LEFTDIRBTN);
-    bool gp_right = input::isKeyPushedInSingle(GP_RIGHTDIRBTN);
-    bool click = input::isKeyPushedInSingle(M_LEFTBTN);
-    if (up || down || left || right ||
-        gp_up || gp_down || gp_left || gp_right)
-    {
-        UButtonComponent::setShouldUseMouse(false);
-    }
-    else if (click)
-    {
-        UButtonComponent::setShouldUseMouse(true);
-    }
+  bool Up = input::isKeyPushedInSingle(KB_UP);
+  bool Down = input::isKeyPushedInSingle(KB_DOWN);
+  bool Left = input::isKeyPushedInSingle(KB_LEFT);
+  bool Right = input::isKeyPushedInSingle(KB_RIGHT);
+  bool GpUp = input::isKeyPushedInSingle(GP_UPDIRBTN);
+  bool GpDown = input::isKeyPushedInSingle(GP_DOWNDIRBTN);
+  bool GpLeft = input::isKeyPushedInSingle(GP_LEFTDIRBTN);
+  bool GpRight = input::isKeyPushedInSingle(GP_RIGHTDIRBTN);
+  bool Click = input::isKeyPushedInSingle(M_LEFTBTN);
+  if (Up || Down || Left || Right || GpUp || GpDown || GpLeft || GpRight) {
+    UButtonComponent::setShouldUseMouse(false);
+  } else if (Click) {
+    UButtonComponent::setShouldUseMouse(true);
+  }
 
-    for (auto& aic : *mAInputVecPtr)
-    {
-        if (aic.getCompStatus() == STATUS::ACTIVE) { aic.update(_timer); }
+  for (auto &Aic : *AInputArrayPtr) {
+    if (Aic.getCompStatus() == STATUS::ACTIVE) {
+      Aic.update(Timer);
     }
+  }
 
-    for (auto& uic : *mUInputVecPtr)
-    {
-        if (uic.getCompStatus() == STATUS::ACTIVE) { uic.update(_timer); }
+  for (auto &Uic : *UInputArrayPtr) {
+    if (Uic.getCompStatus() == STATUS::ACTIVE) {
+      Uic.update(Timer);
     }
+  }
 
-    // TEMP----------------------------------
-    if (input::isKeyDownInSingle(KB_RALT) &&
-        input::isKeyDownInSingle(KB_BACKSPACE))
-    {
-        PostQuitMessage(0);
-    }
-    // TEMP----------------------------------
+  // TEMP----------------------------------
+  if (input::isKeyDownInSingle(KB_RALT) &&
+      input::isKeyDownInSingle(KB_BACKSPACE)) {
+    PostQuitMessage(0);
+  }
+  // TEMP----------------------------------
 }
 
-void InputSystem::Destory()
-{
-
-}
+void
+InputSystem::destory() {}

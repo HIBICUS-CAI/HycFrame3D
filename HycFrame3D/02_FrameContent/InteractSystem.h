@@ -1,20 +1,23 @@
 #pragma once
 
 #include "System.h"
+
 #include <vector>
 
-class InteractSystem :public System
-{
-public:
-    InteractSystem(class SystemExecutive* _sysExecutive);
-    virtual ~InteractSystem();
-
-public:
-    virtual bool Init();
-    virtual void Run(Timer& _timer);
-    virtual void Destory();
-
+class InteractSystem : public System {
 private:
-    std::vector<class AInteractComponent>* mAInterVecPtr;
-    std::vector<class UInteractComponent>* mUInterVecPtr;
+  std::vector<class AInteractComponent> *AInterArrayPtr;
+  std::vector<class UInteractComponent> *UInterArrayPtr;
+
+public:
+  InteractSystem(class SystemExecutive *SysExecutive);
+  virtual ~InteractSystem();
+
+public:
+  virtual bool
+  init();
+  virtual void
+  run(Timer &Timer);
+  virtual void
+  destory();
 };

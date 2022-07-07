@@ -1,23 +1,26 @@
 #pragma once
 
 #include "System.h"
+
 #include <vector>
 
-class RenderSystem :public System
-{
-public:
-    RenderSystem(class SystemExecutive* _sysExecutive);
-    virtual ~RenderSystem();
-
-public:
-    virtual bool Init();
-    virtual void Run(Timer& _timer);
-    virtual void Destory();
-
+class RenderSystem : public System {
 private:
-    class RSRoot_DX11* mRenderSystemRoot;
-    class AssetsPool* mAssetsPool;
-    struct ID3D11ShaderResourceView* mEnvTex;
-    struct ID3D11ShaderResourceView* mDiffTex;
-    struct ID3D11ShaderResourceView* mSpecTex;
+  class RSRoot_DX11 *RenderSystemRoot;
+  class AssetsPool *AssetsPool;
+  struct ID3D11ShaderResourceView *IblEnvTex;
+  struct ID3D11ShaderResourceView *IblDiffTex;
+  struct ID3D11ShaderResourceView *IblSpecTex;
+
+public:
+  RenderSystem(class SystemExecutive *SysExecutive);
+  virtual ~RenderSystem();
+
+public:
+  virtual bool
+  init();
+  virtual void
+  run(Timer &Timer);
+  virtual void
+  destory();
 };

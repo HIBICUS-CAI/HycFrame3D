@@ -1,26 +1,29 @@
 #pragma once
 
 #include "System.h"
+
 #include <vector>
 
-class InstanceSystem :public System
-{
-public:
-    InstanceSystem(class SystemExecutive* _sysExecutive);
-    virtual ~InstanceSystem();
-
-public:
-    virtual bool Init();
-    virtual void Run(Timer& _timer);
-    virtual void Destory();
-
+class InstanceSystem : public System {
 private:
-    std::vector<class ATransformComponent>* mATransVecPtr;
-    std::vector<class UTransformComponent>* mUTransVecPtr;
-    std::vector<class AMeshComponent>* mAMeshVecPtr;
-    std::vector<class ALightComponent>* mALightVecPtr;
-    std::vector<class AParticleComponent>* mAParitcleVecPtr;
-    std::vector<class ASpriteComponent>* mASpriteVecPtr;
-    std::vector<class USpriteComponent>* mUSpriteVecPtr;
-    std::vector<class UAnimateComponent>* mUAnimateVecPtr;
+  std::vector<class ATransformComponent> *ATransArrayPtr;
+  std::vector<class UTransformComponent> *UTransArrayPtr;
+  std::vector<class AMeshComponent> *AMeshArrayPtr;
+  std::vector<class ALightComponent> *ALightArrayPtr;
+  std::vector<class AParticleComponent> *AParitcleArrayPtr;
+  std::vector<class ASpriteComponent> *ASpriteArrayPtr;
+  std::vector<class USpriteComponent> *USpriteArrayPtr;
+  std::vector<class UAnimateComponent> *UAnimateArrayPtr;
+
+public:
+  InstanceSystem(class SystemExecutive *SysExecutive);
+  virtual ~InstanceSystem();
+
+public:
+  virtual bool
+  init();
+  virtual void
+  run(Timer &Timer);
+  virtual void
+  destory();
 };

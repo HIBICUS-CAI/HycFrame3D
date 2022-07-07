@@ -1,47 +1,45 @@
 #include "AnimationSystem.h"
-#include "SystemExecutive.h"
-#include "SceneManager.h"
-#include "SceneNode.h"
+
+#include "AAnimateComponent.h"
 #include "AssetsPool.h"
 #include "ComponentContainer.h"
-#include "AAnimateComponent.h"
+#include "SceneManager.h"
+#include "SceneNode.h"
+#include "SystemExecutive.h"
 
-AnimationSystem::AnimationSystem(SystemExecutive* _sysExecutive) :
-    System("animation-system", _sysExecutive),
-    mAAnimateVecPtr(nullptr)
-{
+AnimationSystem::AnimationSystem(SystemExecutive *SysExecutive)
+    : System("animation-system", SysExecutive), AAnimateArrayPtr(nullptr) {}
 
-}
+AnimationSystem::~AnimationSystem() {}
 
-AnimationSystem::~AnimationSystem()
-{
-
-}
-
-bool AnimationSystem::Init()
-{
+bool
+AnimationSystem::init() {
 #ifdef _DEBUG
-    assert(GetSystemExecutive());
+  assert(getSystemExecutive());
 #endif // _DEBUG
 
-    mAAnimateVecPtr = (std::vector<AAnimateComponent>*)GetSystemExecutive()->
-        GetSceneManager()->getCurrentSceneNode()->
-        getComponentContainer()->getCompVecPtr(COMP_TYPE::A_ANIMATE);
+  AAnimateArrayPtr = static_cast<std::vector<AAnimateComponent> *>(
+      getSystemExecutive()
+          ->getSceneManager()
+          ->getCurrentSceneNode()
+          ->getComponentContainer()
+          ->getCompVecPtr(COMP_TYPE::A_ANIMATE));
 
-    if (!mAAnimateVecPtr) { return false; }
+  if (!AAnimateArrayPtr) {
+    return false;
+  }
 
-    return true;
+  return true;
 }
 
-void AnimationSystem::Run(Timer& _timer)
-{
-    for (auto& aanc : *mAAnimateVecPtr)
-    {
-        if (aanc.getCompStatus() == STATUS::ACTIVE) { aanc.update(_timer); }
+void
+AnimationSystem::run(Timer &Timer) {
+  for (auto &Aac : *AAnimateArrayPtr) {
+    if (Aac.getCompStatus() == STATUS::ACTIVE) {
+      Aac.update(Timer);
     }
+  }
 }
 
-void AnimationSystem::Destory()
-{
-
-}
+void
+AnimationSystem::destory() {}

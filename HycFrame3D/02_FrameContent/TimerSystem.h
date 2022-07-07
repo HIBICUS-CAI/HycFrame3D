@@ -1,20 +1,23 @@
 #pragma once
 
 #include "System.h"
+
 #include <vector>
 
-class TimerSystem :public System
-{
-public:
-    TimerSystem(class SystemExecutive* _sysExecutive);
-    virtual ~TimerSystem();
-
-public:
-    virtual bool Init();
-    virtual void Run(Timer& _timer);
-    virtual void Destory();
-
+class TimerSystem : public System {
 private:
-    std::vector<class ATimerComponent>* mATimerVecPtr;
-    std::vector<class UTimerComponent>* mUTimerVecPtr;
+  std::vector<class ATimerComponent> *ATimerArrayPtr;
+  std::vector<class UTimerComponent> *UTimerArrayPtr;
+
+public:
+  TimerSystem(class SystemExecutive *SysExecutive);
+  virtual ~TimerSystem();
+
+public:
+  virtual bool
+  init();
+  virtual void
+  run(Timer &Timer);
+  virtual void
+  destory();
 };
