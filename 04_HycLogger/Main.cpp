@@ -13,8 +13,8 @@ int main() {
   FontInfo.dwFontSize.Y = 24;
   FontInfo.FontWeight = 400;
   FontInfo.FontFamily = TMPF_TRUETYPE;
-  std::wcscpy(FontInfo.FaceName, L"Ubuntu");
-  SetConsoleOutputCP(437);
+  std::wcscpy(FontInfo.FaceName, L"Courier New");
+  SetConsoleOutputCP(GetACP());
   if (!SetCurrentConsoleFontEx(ConsoleHandle, FALSE, &FontInfo)) {
     std::printf("Failed to change the font: %d\n",
                 static_cast<int>(GetLastError()));
