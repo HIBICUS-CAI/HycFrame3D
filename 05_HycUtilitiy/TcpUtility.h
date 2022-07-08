@@ -26,7 +26,7 @@
 
 #define TCP_RECV(_SOCKET_PTR, _START_POS, _HAS_READ, _NEED_SIZE)               \
   while (_HAS_READ < _NEED_SIZE) {                                             \
-    _HAS_READ += _SOCKET_PTR->tcpReceive(                                      \
+    _HAS_READ += _SOCKET_PTR->receive(                                         \
         _START_POS + _HAS_READ, _NEED_SIZE - static_cast<size_t>(_HAS_READ));  \
   }
 
@@ -134,8 +134,8 @@ std::string SocketAddress::toString() const {
   InetNtopA(AddrPtr->sin_family, const_cast<in_addr *>(&AddrPtr->sin_addr),
             Temp, sizeof(Temp));
 
-  ::std::sprintf(Result, "%s:%d", Temp, ntohs(AddrPtr->sin_port));
-  return ::std::string(Result);
+  std::sprintf(Result, "%s:%d", Temp, ntohs(AddrPtr->sin_port));
+  return std::string(Result);
 }
 
 uint32_t &SocketAddress::getIP4Ref() {
@@ -220,8 +220,8 @@ public:
     }
   }
 
-  int tcpConnect(const SocketAddress &Addr) {
-    int Err = connect(RawSocket, &Addr.SocketAddressData, Addr.getSize());
+  int connect(const SocketAddress &Addr) {
+    int Err = ::connect(RawSocket, &Addr.SocketAddressData, Addr.getSize());
 
     if (Err < 0) {
       generateErrorInfo("tcpConnect");
@@ -231,8 +231,8 @@ public:
     return NO_ERROR;
   }
 
-  int tcpBind(const SocketAddress &Addr) {
-    int Err = bind(RawSocket, &Addr.SocketAddressData, Addr.getSize());
+  int bind(const SocketAddress &Addr) {
+    int Err = ::bind(RawSocket, &Addr.SocketAddressData, Addr.getSize());
 
     if (Err != 0) {
       generateErrorInfo("tcpBind");
@@ -242,8 +242,8 @@ public:
     return NO_ERROR;
   }
 
-  int tcpListen(int BackLog = 32) {
-    int err = listen(RawSocket, BackLog);
+  int listen(int BackLog = 32) {
+    int err = ::listen(RawSocket, BackLog);
 
     if (err < 0) {
       generateErrorInfo("tcpListen");
@@ -253,9 +253,9 @@ public:
     return NO_ERROR;
   }
 
-  TcpSocketPtr tcpAccept(SocketAddress &From) {
+  TcpSocketPtr accept(SocketAddress &From) {
     socklen_t Length = From.getSize();
-    SOCKET NewSocket = accept(RawSocket, &From.SocketAddressData, &Length);
+    SOCKET NewSocket = ::accept(RawSocket, &From.SocketAddressData, &Length);
 
     if (NewSocket != INVALID_SOCKET) {
       return TcpSocketPtr(new TcpSocket(NewSocket));
@@ -265,9 +265,9 @@ public:
     }
   }
 
-  int32_t tcpSend(const void *Data, size_t Size) {
-    int BytesSentCount = send(RawSocket, static_cast<const char *>(Data),
-                              static_cast<int>(Size), 0);
+  int32_t send(const void *Data, size_t Size) {
+    int BytesSentCount = ::send(RawSocket, static_cast<const char *>(Data),
+                                static_cast<int>(Size), 0);
 
     if (BytesSentCount < 0) {
       generateErrorInfo("tcpSend");
@@ -277,7 +277,15 @@ public:
     return BytesSentCount;
   }
 
-  int32_t tcpReceive(void *Buffer, size_t Size) {
+  template <typename T>
+  int32_t sendAs(const T &Data) {
+    const void *DataPtr = &Data;
+    int DataSize = sizeof(T);
+
+    return send(DataPtr, DataSize);
+  }
+
+  int32_t receive(void *Buffer, size_t Size) {
     int BytesReceivedCount =
         recv(RawSocket, static_cast<char *>(Buffer), static_cast<int>(Size), 0);
 
@@ -287,6 +295,14 @@ public:
     }
 
     return BytesReceivedCount;
+  }
+
+  template <typename T>
+  int32_t receiveAs(T &OutData) {
+    auto DataSize = sizeof(T);
+    auto Received = receive(&OutData, DataSize);
+    TCP_RECV(this, &OutData, Received, DataSize);
+    return Received;
   }
 };
 

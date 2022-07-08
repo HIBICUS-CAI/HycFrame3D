@@ -23,7 +23,7 @@ bool ConnectManager::init() {
 
   SocketPtr = hyc::tcp::TcpSocket::create(hyc::tcp::ADDRFAM::INET);
   ConnectAddress = hyc::tcp::createIPv4FromString("127.0.0.1:32580");
-  int ConnectError = SocketPtr.get()->tcpConnect(*ConnectAddress);
+  int ConnectError = SocketPtr.get()->connect(*ConnectAddress);
   Result = ConnectError ? false : true;
 
   return Result;
@@ -33,15 +33,16 @@ void ConnectManager::update() {
   static int FrameCount = 0;
   std::string SendStr = "game frame : " + std::to_string(FrameCount++);
   int SendSize = static_cast<int>(SendStr.size());
-  SocketPtr->tcpSend(&SendSize, 4);
-  SocketPtr->tcpSend(SendStr.c_str(), SendStr.size());
+  SocketPtr->send(&SendSize, 4);
+  SocketPtr->send(SendStr.c_str(), SendStr.size());
 }
 
 void ConnectManager::cleanAndStop() {
   std::string SendStr = "Stop Logger";
   int SendSize = static_cast<int>(SendStr.size());
-  SocketPtr->tcpSend(&SendSize, 4);
-  SocketPtr->tcpSend(SendStr.c_str(), SendStr.size());
+  //SocketPtr->send(&SendSize, 4);
+  SocketPtr->sendAs<int>(SendSize);
+  SocketPtr->send(SendStr.c_str(), SendStr.size());
   WaitForSingleObject(LoggerProcessInfo.hProcess, INFINITE);
   CloseHandle(LoggerProcessInfo.hProcess);
   CloseHandle(LoggerProcessInfo.hThread);

@@ -8,19 +8,18 @@ int main() {
   {
     auto SocketPtr = hyc::tcp::TcpSocket::create(hyc::tcp::ADDRFAM::INET);
     auto ListenAddressPtr = hyc::tcp::createIPv4FromString("127.0.0.1:32580");
-    SocketPtr->tcpBind(*ListenAddressPtr);
-    SocketPtr->tcpListen();
+    SocketPtr->bind(*ListenAddressPtr);
+    SocketPtr->listen();
     hyc::tcp::SocketAddress Addr = {};
-    auto AcceptedSocketPtr = SocketPtr->tcpAccept(Addr);
+    auto AcceptedSocketPtr = SocketPtr->accept(Addr);
 
     while (true) {
       char Buffer[512] = "\0";
       ZeroMemory(&Buffer, sizeof(Buffer));
-      int HasRead = AcceptedSocketPtr->tcpReceive(Buffer, 4);
-      TCP_RECV(AcceptedSocketPtr, Buffer, HasRead, 4);
-      int StrLen = *(reinterpret_cast<int *>(Buffer));
+      int StrLen = 0;
+      AcceptedSocketPtr->receiveAs<int>(StrLen);
       ZeroMemory(&Buffer, sizeof(Buffer));
-      HasRead = AcceptedSocketPtr->tcpReceive(Buffer, StrLen);
+      int HasRead = AcceptedSocketPtr->receive(Buffer, StrLen);
       TCP_RECV(AcceptedSocketPtr, Buffer, HasRead, StrLen);
       if (!std::strcmp(Buffer, "Stop Logger")) {
         break;
