@@ -43,6 +43,9 @@
     <Filter Include="02_FrameContent\Container">
       <UniqueIdentifier>{031dfb84-2f4d-458d-8195-f6927e11c371}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02_FrameContent\Connection">
+      <UniqueIdentifier>{3dd8bf9a-0827-49b1-a4b5-30c6f8702c27}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -201,6 +204,9 @@
     </ClCompile>
     <ClCompile Include="03_ScriptFuncs\01_MaterialEditor.cpp">
       <Filter>03_ScriptFuncs</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\ConnectManager.cpp">
+      <Filter>02_FrameContent\Connection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -375,5 +381,11 @@
     <ClInclude Include="02_FrameContent\ComponentGetter.h">
       <Filter>02_FrameContent\Container</Filter>
     </ClInclude>
+    <ClInclude Include="02_FrameContent\ConnectManager.h">
+      <Filter>02_FrameContent\Connection</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
 </Project>

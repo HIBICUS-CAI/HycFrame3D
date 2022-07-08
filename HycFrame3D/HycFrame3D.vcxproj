@@ -319,6 +319,7 @@
     <ClCompile Include="02_FrameContent\CollisionSystem.cpp" />
     <ClCompile Include="02_FrameContent\Component.cpp" />
     <ClCompile Include="02_FrameContent\ComponentContainer.cpp" />
+    <ClCompile Include="02_FrameContent\ConnectManager.cpp" />
     <ClCompile Include="02_FrameContent\InputSystem.cpp" />
     <ClCompile Include="02_FrameContent\InstanceSystem.cpp" />
     <ClCompile Include="02_FrameContent\InteractSystem.cpp" />
@@ -376,6 +377,7 @@
     <ClInclude Include="02_FrameContent\Component.h" />
     <ClInclude Include="02_FrameContent\ComponentContainer.h" />
     <ClInclude Include="02_FrameContent\ComponentGetter.h" />
+    <ClInclude Include="02_FrameContent\ConnectManager.h" />
     <ClInclude Include="02_FrameContent\FuncPtrAdapter.h" />
     <ClInclude Include="02_FrameContent\Hyc3DCommon.h" />
     <ClInclude Include="02_FrameContent\InputSystem.h" />
@@ -423,6 +425,9 @@
     <ProjectReference Include="..\05_HycUtilitiy\05_HycUtilitiy.vcxproj">
       <Project>{f7acb549-cf30-484c-a54d-fbbd6671f404}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

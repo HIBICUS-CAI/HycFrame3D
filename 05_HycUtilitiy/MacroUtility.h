@@ -7,29 +7,32 @@
 #pragma clang diagnostic pop
 #endif // __clang__
 
+#include <memory>
+
 #define DEFINE_SINGLETON(_TYPE)                                                \
 private:                                                                       \
-  using self_type = _TYPE;                                                     \
-  using unique_ptr = std::unique_ptr<self_type>;                               \
+  using SelfType = _TYPE;                                                      \
+  using UniquePtr = std::unique_ptr<SelfType>;                                 \
                                                                                \
 public:                                                                        \
-  using singleton = const unique_ptr &;                                        \
-  static singleton Instance() { return Ref(); }                                \
-  static void Create() {                                                       \
-    if (!Ref())                                                                \
-      Ref() = MakeUnique();                                                    \
+  using Singleton = const UniquePtr &;                                         \
+  static Singleton instance() { return ref(); }                                \
+  static void create() {                                                       \
+    if (!ref())                                                                \
+      ref() = makeUnique();                                                    \
   }                                                                            \
-  static void Destroy() { Ref().reset(); }                                     \
+  static void terminate() { ref().reset(); }                                   \
                                                                                \
 private:                                                                       \
   template <typename... Args>                                                  \
-  static unique_ptr MakeUnique(Args &&..._args) {                              \
-    struct temp : self_type {                                                  \
-      temp() : self_type() {}                                                  \
+  static UniquePtr makeUnique(Args &&..._args) {                               \
+    struct Temp : SelfType {                                                   \
+      Temp() : SelfType() {}                                                   \
     };                                                                         \
-    return std::move(unique_ptr(new temp(std::forward<Args>(_args)...)));      \
+    auto TempPtr = UniquePtr(new Temp(std::forward<Args>(_args)...));          \
+    return std::move(TempPtr);                                                 \
   }                                                                            \
-  static unique_ptr &Ref() {                                                   \
-    static unique_ptr p = MakeUnique();                                        \
+  static UniquePtr &ref() {                                                    \
+    static UniquePtr p = makeUnique();                                         \
     return p;                                                                  \
   }

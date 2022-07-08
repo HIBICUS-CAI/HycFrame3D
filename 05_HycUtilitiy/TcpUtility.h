@@ -30,6 +30,7 @@
         _START_POS + _HAS_READ, _NEED_SIZE - static_cast<size_t>(_HAS_READ));  \
   }
 
+namespace hyc {
 namespace tcp {
 
 enum class ADDRFAM { INET = AF_INET, INET6 = AF_INET6 };
@@ -290,11 +291,12 @@ public:
 };
 
 } // namespace tcp
+} // namespace hyc
 
 namespace std {
 template <>
-struct hash<tcp::SocketAddress> {
-  size_t operator()(const tcp::SocketAddress &Address) const {
+struct hash<hyc::tcp::SocketAddress> {
+  size_t operator()(const hyc::tcp::SocketAddress &Address) const {
     return Address.getHash();
   }
 };

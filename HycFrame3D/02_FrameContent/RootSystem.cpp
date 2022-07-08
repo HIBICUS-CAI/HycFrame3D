@@ -1,5 +1,6 @@
 #include "Hyc3DCommon.h"
 
+#include "ConnectManager.h"
 #include "ObjectFactory.h"
 #include "RootSystem.h"
 #include "SceneManager.h"
@@ -56,10 +57,15 @@ bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
     return false;
   }
 
+  ConnectManager::create();
+  ConnectManager::instance().get()->init();
+
   return true;
 }
 
 void RootSystem::cleanAndStop() {
+  ConnectManager::instance().get()->cleanAndStop();
+  ConnectManager::instance().get()->terminate();
   SceneManagerPtr->cleanAndStop();
   ObjectFactoryPtr->cleanAndStop();
   SystemExecutivePtr->cleanAndStop();
