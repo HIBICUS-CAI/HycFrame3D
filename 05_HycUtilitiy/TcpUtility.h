@@ -34,69 +34,66 @@ namespace tcp {
 
 enum class ADDRFAM { INET = AF_INET, INET6 = AF_INET6 };
 
-int getWsaError() { return WSAGetLastError(); }
+inline int getWsaError() { return WSAGetLastError(); }
 
-void generateErrorInfo(::std::string &InOutBaseErrorMessage) {
+inline void generateErrorInfo(const std::string &CallStack) {
   void *Message = nullptr;
   DWORD ErrorNum = getWsaError();
-  std::string OriginCallStack = InOutBaseErrorMessage;
 
   FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                      FORMAT_MESSAGE_IGNORE_INSERTS,
                  NULL, ErrorNum, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                  reinterpret_cast<char *>(&Message), 0, NULL);
 
-  InOutBaseErrorMessage = std::to_string(ErrorNum) + " : ";
-  InOutBaseErrorMessage += std::string(static_cast<char *>(Message)) + " - ";
-  InOutBaseErrorMessage += OriginCallStack;
+  std::string ErrorMessage = std::to_string(ErrorNum) + " : ";
+  ErrorMessage += std::string(static_cast<char *>(Message)) + " - ";
+  ErrorMessage += CallStack;
+  MessageBoxA(NULL, ErrorMessage.c_str(), "Tcp Error", MB_ABORTRETRYIGNORE);
 }
 
-bool sockSysStartUp(std::string *OutError = nullptr) {
+inline bool sockSysStartUp() {
   WSADATA WsaData = {};
   int Res = WSAStartup(MAKEWORD(2, 2), &WsaData);
   if (Res != NO_ERROR) {
-    if (OutError) {
-      *OutError = "Socket Starting Up";
-      generateErrorInfo(*OutError);
-    }
+    generateErrorInfo("sockSysStartUp::WSAStartUp");
     return false;
   } else {
     return true;
   }
 }
 
-void sockSysTerminate() { WSACleanup(); }
+inline void sockSysTerminate() { WSACleanup(); }
 
 class SocketAddress {
 private:
   sockaddr SocketAddressData;
 
 public:
-  SocketAddress(uint32_t Address, uint16_t Port);
+  inline SocketAddress(uint32_t Address, uint16_t Port);
 
-  SocketAddress(const sockaddr &Source);
+  inline SocketAddress(const sockaddr &Source);
 
-  SocketAddress();
+  inline SocketAddress();
 
-  bool operator==(const SocketAddress &Another) const;
+  inline bool operator==(const SocketAddress &Another) const;
 
-  size_t getHash() const;
+  inline size_t getHash() const;
 
-  uint32_t getSize() const;
+  inline uint32_t getSize() const;
 
-  ::std::string toString() const;
+  inline std::string toString() const;
 
 private:
   friend class TcpSocket;
   friend class UdpSocket;
 
-  uint32_t &getIP4Ref();
+  inline uint32_t &getIP4Ref();
 
-  const uint32_t &getIP4Ref() const;
+  inline const uint32_t &getIP4Ref() const;
 
-  sockaddr_in *getAsSockAddrIn();
+  inline sockaddr_in *getAsSockAddrIn();
 
-  const sockaddr_in *getAsSockAddrIn() const;
+  inline const sockaddr_in *getAsSockAddrIn() const;
 };
 
 SocketAddress::SocketAddress(uint32_t Address, uint16_t Port) {
@@ -130,7 +127,7 @@ size_t SocketAddress::getHash() const {
 
 uint32_t SocketAddress::getSize() const { return sizeof(sockaddr); }
 
-::std::string SocketAddress::toString() const {
+std::string SocketAddress::toString() const {
   const sockaddr_in *AddrPtr = getAsSockAddrIn();
   char Temp[128] = "", Result[128] = "";
   InetNtopA(AddrPtr->sin_family, const_cast<in_addr *>(&AddrPtr->sin_addr),
@@ -160,8 +157,7 @@ const sockaddr_in *SocketAddress::getAsSockAddrIn() const {
 
 using SocketAddressPtr = std::shared_ptr<class SocketAddress>;
 
-SocketAddressPtr createIPv4FromString(const std::string AddrInfo,
-                                      std::string &ErrorMessage) {
+inline SocketAddressPtr createIPv4FromString(const std::string AddrInfo) {
   auto Pos = AddrInfo.find_last_of(':');
   std::string Host, Service;
   if (Pos != std::string::npos) {
@@ -178,8 +174,7 @@ SocketAddressPtr createIPv4FromString(const std::string AddrInfo,
   addrinfo *Result;
   int Error = getaddrinfo(Host.c_str(), Service.c_str(), &Hint, &Result);
   if (Error != 0) {
-    ErrorMessage = "createIPv4FromString";
-    generateErrorInfo(ErrorMessage);
+    generateErrorInfo("createIPv4FromString");
     if (Result) {
       freeaddrinfo(Result);
     }
@@ -219,12 +214,7 @@ public:
     if (S != INVALID_SOCKET) {
       return TcpSocketPtr(new TcpSocket(S));
     } else {
-      std::string Error = "createTcpSocket";
-      generateErrorInfo(Error);
-#ifdef _DEBUG
-      assert(false);
-#endif // _DEBUG
-      (void)Error;
+      generateErrorInfo("createTcpSocket");
       return nullptr;
     }
   }
@@ -233,12 +223,7 @@ public:
     int Err = connect(RawSocket, &Addr.SocketAddressData, Addr.getSize());
 
     if (Err < 0) {
-      std::string Error = "tcpConnect";
-      generateErrorInfo(Error);
-#ifdef _DEBUG
-      assert(false);
-#endif // _DEBUG
-      (void)Error;
+      generateErrorInfo("tcpConnect");
       return -getWsaError();
     }
 
@@ -249,12 +234,7 @@ public:
     int Err = bind(RawSocket, &Addr.SocketAddressData, Addr.getSize());
 
     if (Err != 0) {
-      std::string Error = "tcpBind";
-      generateErrorInfo(Error);
-#ifdef _DEBUG
-      assert(false);
-#endif // _DEBUG
-      (void)Error;
+      generateErrorInfo("tcpBind");
       return getWsaError();
     }
 
@@ -265,12 +245,7 @@ public:
     int err = listen(RawSocket, BackLog);
 
     if (err < 0) {
-      std::string Error = "tcpListen";
-      generateErrorInfo(Error);
-#ifdef _DEBUG
-      assert(false);
-#endif // _DEBUG
-      (void)Error;
+      generateErrorInfo("tcpListen");
       return getWsaError();
     }
 
@@ -284,12 +259,7 @@ public:
     if (NewSocket != INVALID_SOCKET) {
       return TcpSocketPtr(new TcpSocket(NewSocket));
     } else {
-      std::string Error = "tcpAccept";
-      generateErrorInfo(Error);
-#ifdef _DEBUG
-      assert(false);
-#endif // _DEBUG
-      (void)Error;
+      generateErrorInfo("tcpAccept");
       return nullptr;
     }
   }
@@ -299,12 +269,7 @@ public:
                               static_cast<int>(Size), 0);
 
     if (BytesSentCount < 0) {
-      std::string Error = "tcpSend";
-      generateErrorInfo(Error);
-#ifdef _DEBUG
-      assert(false);
-#endif // _DEBUG
-      (void)Error;
+      generateErrorInfo("tcpSend");
       return -getWsaError();
     }
 
@@ -316,12 +281,7 @@ public:
         recv(RawSocket, static_cast<char *>(Buffer), static_cast<int>(Size), 0);
 
     if (BytesReceivedCount < 0) {
-      std::string Error = "tcpReceive";
-      generateErrorInfo(Error);
-#ifdef _DEBUG
-      assert(false);
-#endif // _DEBUG
-      (void)Error;
+      generateErrorInfo("tcpReceive");
       return -getWsaError();
     }
 
