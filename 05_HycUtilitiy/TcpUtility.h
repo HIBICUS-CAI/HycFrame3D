@@ -50,6 +50,7 @@ inline void generateErrorInfo(const std::string &CallStack) {
   ErrorMessage += std::string(static_cast<char *>(Message)) + " - ";
   ErrorMessage += CallStack;
   MessageBoxA(NULL, ErrorMessage.c_str(), "Tcp Error", MB_ABORTRETRYIGNORE);
+  exit(-1);
 }
 
 inline bool sockSysStartUp() {
@@ -285,6 +286,16 @@ public:
     return send(DataPtr, DataSize);
   }
 
+  template <>
+  int32_t sendAs<std::string>(const std::string &Data) {
+    auto StrSize = Data.size();
+    auto SentSize = sendAs<int>(static_cast<int>(StrSize));
+    const void *DataPtr = Data.c_str();
+    SentSize += send(DataPtr, StrSize);
+
+    return SentSize;
+  }
+
   int32_t receive(void *Buffer, size_t Size) {
     int BytesReceivedCount =
         recv(RawSocket, static_cast<char *>(Buffer), static_cast<int>(Size), 0);
@@ -303,6 +314,19 @@ public:
     auto Received = receive(&OutData, DataSize);
     TCP_RECV(this, &OutData, Received, DataSize);
     return Received;
+  }
+
+  template <>
+  int32_t receiveAs<std::string>(std::string &OutData) {
+    int StrSize = 0;
+    auto LenReceived = receiveAs<int>(StrSize);
+    TCP_RECV(this, &StrSize, LenReceived, sizeof(int));
+    auto DataSize = static_cast<size_t>(StrSize);
+    OutData.resize(DataSize);
+    char *DataBuffer = const_cast<char *>(OutData.data());
+    auto StrReceived = receive(DataBuffer, DataSize);
+    TCP_RECV(this, DataBuffer, StrReceived, DataSize);
+    return LenReceived + StrReceived;
   }
 };
 

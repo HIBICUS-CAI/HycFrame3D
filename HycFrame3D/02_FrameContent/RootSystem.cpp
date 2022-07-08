@@ -16,6 +16,11 @@ RootSystem::RootSystem()
 RootSystem::~RootSystem() {}
 
 bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
+  ConnectManager::create();
+  if (!ConnectManager::instance()->init()) {
+    return false;
+  }
+
   if (!window::startUp()) {
     P_LOG(LOG_ERROR, "failed to start up windows system\n");
     return false;
@@ -57,17 +62,10 @@ bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
     return false;
   }
 
-  ConnectManager::create();
-  if (!ConnectManager::instance()->init()) {
-    return false;
-  }
-
   return true;
 }
 
 void RootSystem::cleanAndStop() {
-  ConnectManager::instance()->cleanAndStop();
-  ConnectManager::instance()->terminate();
   SceneManagerPtr->cleanAndStop();
   ObjectFactoryPtr->cleanAndStop();
   SystemExecutivePtr->cleanAndStop();
@@ -80,6 +78,9 @@ void RootSystem::cleanAndStop() {
 
   input::cleanAndStop();
   window::cleanAndStop();
+
+  ConnectManager::instance()->cleanAndStop();
+  ConnectManager::instance()->terminate();
 }
 
 void RootSystem::runGameLoop() {

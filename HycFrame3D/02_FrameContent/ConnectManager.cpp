@@ -31,18 +31,12 @@ bool ConnectManager::init() {
 
 void ConnectManager::update() {
   static int FrameCount = 0;
-  std::string SendStr = "game frame : " + std::to_string(FrameCount++);
-  int SendSize = static_cast<int>(SendStr.size());
-  SocketPtr->send(&SendSize, 4);
-  SocketPtr->send(SendStr.c_str(), SendStr.size());
+  SocketPtr->sendAs<std::string>("game frame : " +
+                                 std::to_string(FrameCount++));
 }
 
 void ConnectManager::cleanAndStop() {
-  std::string SendStr = "Stop Logger";
-  int SendSize = static_cast<int>(SendStr.size());
-  //SocketPtr->send(&SendSize, 4);
-  SocketPtr->sendAs<int>(SendSize);
-  SocketPtr->send(SendStr.c_str(), SendStr.size());
+  SocketPtr->sendAs<std::string>("/STOP_LOGGER");
   WaitForSingleObject(LoggerProcessInfo.hProcess, INFINITE);
   CloseHandle(LoggerProcessInfo.hProcess);
   CloseHandle(LoggerProcessInfo.hThread);
