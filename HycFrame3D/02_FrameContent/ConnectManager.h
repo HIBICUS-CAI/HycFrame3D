@@ -15,6 +15,7 @@ class ConnectManager {
 private:
   hyc::tcp::TcpSocketPtr SocketPtr = {};
   hyc::tcp::SocketAddressPtr ConnectAddress = {};
+  PROCESS_INFORMATION LoggerProcessInfo = {};
 
 public:
   bool init();

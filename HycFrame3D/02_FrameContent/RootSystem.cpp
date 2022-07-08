@@ -58,14 +58,16 @@ bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
   }
 
   ConnectManager::create();
-  ConnectManager::instance().get()->init();
+  if (!ConnectManager::instance()->init()) {
+    return false;
+  }
 
   return true;
 }
 
 void RootSystem::cleanAndStop() {
-  ConnectManager::instance().get()->cleanAndStop();
-  ConnectManager::instance().get()->terminate();
+  ConnectManager::instance()->cleanAndStop();
+  ConnectManager::instance()->terminate();
   SceneManagerPtr->cleanAndStop();
   ObjectFactoryPtr->cleanAndStop();
   SystemExecutivePtr->cleanAndStop();
@@ -91,6 +93,7 @@ void RootSystem::runGameLoop() {
 
       SceneManagerPtr->checkLoadStatus();
       SystemExecutivePtr->runAllSystems(Timer);
+      ConnectManager::instance()->update();
 
       Timer.timeOut();
     }
