@@ -86,7 +86,7 @@ getNextTomlNode(const TomlNode &From, cstring To, TomlNode &OutNode) {
 inline bool
 getTomlNode(const TomlNode &From, const std::string &To, TomlNode &OutNode) {
   std::vector<std::string> Paths = {};
-  hyc::string::split(To, '.', Paths);
+  hyc::str::split(To, '.', Paths);
 
   TomlNode Now = From;
   TomlNode Next = {};
@@ -105,7 +105,7 @@ getTomlNode(const TomlNode &From, const std::string &To, TomlNode &OutNode) {
 
 inline bool getTomlNode(const TomlNode &From, cstring To, TomlNode &OutNode) {
   std::vector<std::string> Paths = {};
-  hyc::string::split(To, '.', Paths);
+  hyc::str::split(To, '.', Paths);
 
   TomlNode Now = From;
   TomlNode Next = {};

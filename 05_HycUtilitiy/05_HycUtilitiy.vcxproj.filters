@@ -45,5 +45,8 @@
     <ClInclude Include="MacroUtility.h">
       <Filter>TypeDef</Filter>
     </ClInclude>
+    <ClInclude Include="FormatUtility.h">
+      <Filter>StringAbout</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

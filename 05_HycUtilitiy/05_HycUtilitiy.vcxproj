@@ -254,6 +254,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FormatUtility.h" />
     <ClInclude Include="HycType.h" />
     <ClInclude Include="HycUtility.h" />
     <ClInclude Include="JsonUtility.h" />

@@ -13,7 +13,7 @@
 #include <vector>
 
 namespace hyc {
-namespace string {
+namespace str {
 
 inline void split(const std::string &Source,
                   char Symbol,
@@ -90,5 +90,5 @@ split(cstring Source, cstring Symbol, std::vector<std::string> &OutResult) {
   }
 }
 
-} // namespace string
+} // namespace str
 } // namespace hyc
