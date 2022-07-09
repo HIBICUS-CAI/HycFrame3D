@@ -39,23 +39,23 @@ static SUBMESH_DATA *G_MatBallMesh = nullptr;
 void OutputThisMaterialInfo() {
   std::string MatInfo = "Material Info\n";
   MatInfo += "===============================\n";
-  MatInfo += "FresnelR0 :\t\t" + std::to_string(G_Material->FresnelR0.x);
-  MatInfo += ", " + std::to_string(G_Material->FresnelR0.y);
-  MatInfo += ", " + std::to_string(G_Material->FresnelR0.z);
+  MatInfo += "FresnelR0 :\t\t" + hyc::str::toString(G_Material->FresnelR0.x);
+  MatInfo += ", " + hyc::str::toString(G_Material->FresnelR0.y);
+  MatInfo += ", " + hyc::str::toString(G_Material->FresnelR0.z);
   MatInfo += "\n";
-  MatInfo += "SubSurface :\t" + std::to_string(G_Material->SubSurface) + ", \t";
-  MatInfo += "Metallic :\t\t\t" + std::to_string(G_Material->Metallic) + "\n";
-  MatInfo += "Specular :\t\t" + std::to_string(G_Material->Specular) + ", \t";
+  MatInfo += "SubSurface :\t" + hyc::str::toString(G_Material->SubSurface) + ", \t";
+  MatInfo += "Metallic :\t\t\t" + hyc::str::toString(G_Material->Metallic) + "\n";
+  MatInfo += "Specular :\t\t" + hyc::str::toString(G_Material->Specular) + ", \t";
   MatInfo +=
-      "SpecularTint :\t\t" + std::to_string(G_Material->SpecularTint) + "\n";
-  MatInfo += "Roughness :\t\t" + std::to_string(G_Material->Roughness) + ", \t";
+      "SpecularTint :\t\t" + hyc::str::toString(G_Material->SpecularTint) + "\n";
+  MatInfo += "Roughness :\t\t" + hyc::str::toString(G_Material->Roughness) + ", \t";
   MatInfo +=
-      "Anisotropic :\t\t" + std::to_string(G_Material->Anisotropic) + "\n";
-  MatInfo += "Sheen :\t\t\t" + std::to_string(G_Material->Sheen) + ", \t";
-  MatInfo += "SheenTint :\t\t\t" + std::to_string(G_Material->SheenTint) + "\n";
-  MatInfo += "Clearcoat :\t\t" + std::to_string(G_Material->Clearcoat) + ", \t";
+      "Anisotropic :\t\t" + hyc::str::toString(G_Material->Anisotropic) + "\n";
+  MatInfo += "Sheen :\t\t\t" + hyc::str::toString(G_Material->Sheen) + ", \t";
+  MatInfo += "SheenTint :\t\t\t" + hyc::str::toString(G_Material->SheenTint) + "\n";
+  MatInfo += "Clearcoat :\t\t" + hyc::str::toString(G_Material->Clearcoat) + ", \t";
   MatInfo +=
-      "ClearcoatGloss :\t" + std::to_string(G_Material->ClearcoatGloss) + "\n";
+      "ClearcoatGloss :\t" + hyc::str::toString(G_Material->ClearcoatGloss) + "\n";
   MatInfo += "===============================\n";
   P_LOG(LOG_DEBUG, "%s", MatInfo.c_str());
 }

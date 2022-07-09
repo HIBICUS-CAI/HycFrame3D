@@ -24,6 +24,7 @@
 #include "SceneManager.h"
 #include "SceneNode.h"
 
+#include <FormatUtility.h>
 #include <ID_Interface.h>
 #include <RSCamera.h>
 #include <RSCamerasContainer.h>

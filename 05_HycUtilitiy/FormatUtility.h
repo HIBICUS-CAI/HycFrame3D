@@ -19,14 +19,15 @@ namespace str {
 template <typename... T>
 using FormatString = fmt::format_string<T...>;
 
-using FormatArgs = fmt::dynamic_format_arg_store<fmt::format_context>;
+using FormatArgs = fmt::format_args;
 
 template <typename... T>
 std::string sFormat(FormatString<T...> Fmt, T &&...Args) {
   return fmt::format(Fmt, Args...);
 }
 
-std::string vFormat(const std::string &FormatTemplate, const FormatArgs &Args) {
+inline std::string vFormat(const std::string &FormatTemplate,
+                           const FormatArgs &Args) {
   return fmt::vformat(FormatTemplate, Args);
 }
 

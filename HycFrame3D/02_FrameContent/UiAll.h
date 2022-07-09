@@ -21,4 +21,5 @@
 #include "UTransformComponent.h"
 #include "UiObject.h"
 
+#include <FormatUtility.h>
 #include <ID_Interface.h>

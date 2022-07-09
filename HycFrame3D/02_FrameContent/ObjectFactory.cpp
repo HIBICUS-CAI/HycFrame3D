@@ -6,6 +6,7 @@
 #include "SoundHelper.h"
 #include "UiAll.h"
 
+#include <FormatUtility.h>
 #include <RSMeshHelper.h>
 #include <RSRoot_DX11.h>
 #include <RSStaticResources.h>
@@ -106,12 +107,13 @@ SceneNode *ObjectFactory::createSceneNode(const std::string &Name,
 
   if (SceneConfig.HasMember("actor") && !SceneConfig["actor"].IsNull()) {
     for (unsigned int I = 0, E = SceneConfig["actor"].Size(); I < E; I++) {
-      createActorObject(NewNode, SceneConfig, "/actor/" + std::to_string(I));
+      createActorObject(NewNode, SceneConfig,
+                        "/actor/" + hyc::str::toString(I));
     }
   }
   if (SceneConfig.HasMember("ui") && !SceneConfig["ui"].IsNull()) {
     for (unsigned int I = 0, E = SceneConfig["ui"].Size(); I < E; I++) {
-      createUiObject(NewNode, SceneConfig, "/ui/" + std::to_string(I));
+      createUiObject(NewNode, SceneConfig, "/ui/" + hyc::str::toString(I));
     }
   }
 
@@ -144,7 +146,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
       LoadMode = "";
       MeshData = {};
 
-      JsonPath = "/model-assets/" + std::to_string(I);
+      JsonPath = "/model-assets/" + hyc::str::toString(I);
 
       MeshName = getJsonNode(Json, JsonPath + "/mesh-name")->GetString();
 
@@ -346,11 +348,11 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
   JsonNode AudioRoot = getJsonNode(Json, "/audio-assets");
   if (AudioRoot && AudioRoot->Size()) {
     for (UINT I = 0, E = AudioRoot->Size(); I < E; I++) {
-      JsonNode Audio = getJsonNode(Json, "/audio-assets/" + std::to_string(I) +
-                                             "/audio-name");
+      JsonNode Audio = getJsonNode(
+          Json, "/audio-assets/" + hyc::str::toString(I) + "/audio-name");
       std::string Name = Audio->GetString();
-      Audio = getJsonNode(Json,
-                          "/audio-assets/" + std::to_string(I) + "/audio-file");
+      Audio = getJsonNode(Json, "/audio-assets/" + hyc::str::toString(I) +
+                                    "/audio-file");
       std::string File = Audio->GetString();
       loadSound(Name, File);
       Scene->getAssetsPool()->insertNewSound(Name);
@@ -383,7 +385,7 @@ void ObjectFactory::createActorObject(SceneNode *Scene,
   JsonNode CompsRoot = getJsonNode(Json, JsonPath + "/components");
   if (CompsRoot) {
     for (UINT I = 0, E = CompsRoot->Size(); I < E; I++) {
-      std::string CompPath = JsonPath + "/components/" + std::to_string(I);
+      std::string CompPath = JsonPath + "/components/" + hyc::str::toString(I);
       createActorComp(Scene, &Actor, Json, CompPath);
     }
   }
@@ -416,7 +418,7 @@ void ObjectFactory::createUiObject(SceneNode *Scene,
   JsonNode CompsRoot = getJsonNode(Json, JsonPath + "/components");
   if (CompsRoot) {
     for (UINT I = 0, E = CompsRoot->Size(); I < E; I++) {
-      std::string CompPath = JsonPath + "/components/" + std::to_string(I);
+      std::string CompPath = JsonPath + "/components/" + hyc::str::toString(I);
       createUiComp(Scene, &Ui, Json, CompPath);
     }
   }
@@ -438,15 +440,15 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     float Ang[3] = {0.f};
     float Sca[3] = {0.f};
     for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
-      Pos[I] = getJsonNode(Json,
-                           JsonPath + "/atc-init-position/" + std::to_string(I))
+      Pos[I] = getJsonNode(Json, JsonPath + "/atc-init-position/" +
+                                     hyc::str::toString(I))
                    ->GetFloat();
-      Ang[I] =
-          getJsonNode(Json, JsonPath + "/atc-init-angle/" + std::to_string(I))
-              ->GetFloat();
-      Sca[I] =
-          getJsonNode(Json, JsonPath + "/atc-init-scale/" + std::to_string(I))
-              ->GetFloat();
+      Ang[I] = getJsonNode(Json, JsonPath + "/atc-init-angle/" +
+                                     hyc::str::toString(I))
+                   ->GetFloat();
+      Sca[I] = getJsonNode(Json, JsonPath + "/atc-init-scale/" +
+                                     hyc::str::toString(I))
+                   ->GetFloat();
     }
     Atc.forcePosition({Pos[0], Pos[1], Pos[2]});
     Atc.forceRotation({Ang[0], Ang[1], Ang[2]});
@@ -509,7 +511,7 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     UINT TimerSize = getJsonNode(Json, JsonPath + "/atmc-timers")->Size();
     for (UINT I = 0; I < TimerSize; I++) {
       std::string TimerName =
-          getJsonNode(Json, JsonPath + "/atmc-timers/" + std::to_string(I))
+          getJsonNode(Json, JsonPath + "/atmc-timers/" + hyc::str::toString(I))
               ->GetString();
       Atmc.addTimer(TimerName);
     }
@@ -527,7 +529,7 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     float Value[3] = {0.f};
     for (UINT I = 0; I < ValueSize; I++) {
       Value[I] = getJsonNode(Json, JsonPath + "/acc-collision-size/" +
-                                       std::to_string(I))
+                                       hyc::str::toString(I))
                      ->GetFloat();
     }
     COLLISION_SHAPE Shape = COLLISION_SHAPE::SIZE;
@@ -551,22 +553,24 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     UINT MeshSize = getJsonNode(Json, JsonPath + "/amc-meshes")->Size();
     for (UINT I = 0; I < MeshSize; I++) {
       std::string MeshName =
-          getJsonNode(Json, JsonPath + "/amc-meshes/" + std::to_string(I) +
+          getJsonNode(Json, JsonPath + "/amc-meshes/" + hyc::str::toString(I) +
                                 "/mesh-name")
               ->GetString();
-      JsonNode OffsetNode = getJsonNode(
-          Json, JsonPath + "/amc-meshes/" + std::to_string(I) + "/mesh-offset");
+      JsonNode OffsetNode =
+          getJsonNode(Json, JsonPath + "/amc-meshes/" + hyc::str::toString(I) +
+                                "/mesh-offset");
       dx::XMFLOAT3 Offset = {0.f, 0.f, 0.f};
       if (OffsetNode && !OffsetNode->IsNull()) {
-        Offset = {getJsonNode(Json, JsonPath + "/amc-meshes/" +
-                                        std::to_string(I) + "/mesh-offset/0")
-                      ->GetFloat(),
-                  getJsonNode(Json, JsonPath + "/amc-meshes/" +
-                                        std::to_string(I) + "/mesh-offset/1")
-                      ->GetFloat(),
-                  getJsonNode(Json, JsonPath + "/amc-meshes/" +
-                                        std::to_string(I) + "/mesh-offset/2")
-                      ->GetFloat()};
+        Offset = {
+            getJsonNode(Json, JsonPath + "/amc-meshes/" +
+                                  hyc::str::toString(I) + "/mesh-offset/0")
+                ->GetFloat(),
+            getJsonNode(Json, JsonPath + "/amc-meshes/" +
+                                  hyc::str::toString(I) + "/mesh-offset/1")
+                ->GetFloat(),
+            getJsonNode(Json, JsonPath + "/amc-meshes/" +
+                                  hyc::str::toString(I) + "/mesh-offset/2")
+                ->GetFloat()};
       }
       Amc.addMeshInfo(MeshName, Offset);
     }
@@ -649,7 +653,7 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     UINT AudioSize = getJsonNode(Json, JsonPath + "/aauc-sounds")->Size();
     for (UINT I = 0; I < AudioSize; I++) {
       std::string SoundName =
-          getJsonNode(Json, JsonPath + "/aauc-sounds/" + std::to_string(I))
+          getJsonNode(Json, JsonPath + "/aauc-sounds/" + hyc::str::toString(I))
               ->GetString();
       Aauc.addAudio(SoundName, *Scene);
     }
@@ -806,15 +810,15 @@ void ObjectFactory::createUiComp(SceneNode *Scene,
     float Ang[3] = {0.f};
     float Sca[3] = {0.f};
     for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
-      Pos[I] = getJsonNode(Json,
-                           JsonPath + "/utc-init-position/" + std::to_string(I))
+      Pos[I] = getJsonNode(Json, JsonPath + "/utc-init-position/" +
+                                     hyc::str::toString(I))
                    ->GetFloat();
-      Ang[I] =
-          getJsonNode(Json, JsonPath + "/utc-init-angle/" + std::to_string(I))
-              ->GetFloat();
-      Sca[I] =
-          getJsonNode(Json, JsonPath + "/utc-init-scale/" + std::to_string(I))
-              ->GetFloat();
+      Ang[I] = getJsonNode(Json, JsonPath + "/utc-init-angle/" +
+                                     hyc::str::toString(I))
+                   ->GetFloat();
+      Sca[I] = getJsonNode(Json, JsonPath + "/utc-init-scale/" +
+                                     hyc::str::toString(I))
+                   ->GetFloat();
     }
     Utc.forcePosition({Pos[0], Pos[1], Pos[2]});
     Utc.forceRotation({Ang[0], Ang[1], Ang[2]});
@@ -877,7 +881,7 @@ void ObjectFactory::createUiComp(SceneNode *Scene,
     UINT TimerSize = getJsonNode(Json, JsonPath + "/utmc-timers")->Size();
     for (UINT I = 0; I < TimerSize; I++) {
       std::string TimerName =
-          getJsonNode(Json, JsonPath + "/utmc-timers/" + std::to_string(I))
+          getJsonNode(Json, JsonPath + "/utmc-timers/" + hyc::str::toString(I))
               ->GetString();
       Utmc.addTimer(TimerName);
     }
@@ -891,7 +895,7 @@ void ObjectFactory::createUiComp(SceneNode *Scene,
     UINT AudioSize = getJsonNode(Json, JsonPath + "/uauc-sounds")->Size();
     for (UINT i = 0; i < AudioSize; i++) {
       std::string SoundName =
-          getJsonNode(Json, JsonPath + "/uauc-sounds/" + std::to_string(i))
+          getJsonNode(Json, JsonPath + "/uauc-sounds/" + hyc::str::toString(i))
               ->GetString();
       Uauc.addAudio(SoundName, *Scene);
     }
@@ -921,7 +925,7 @@ void ObjectFactory::createUiComp(SceneNode *Scene,
     UINT AniSize = getJsonNode(Json, JsonPath + "/uac-animates")->Size();
     std::string AniArrayPath = JsonPath + "/uac-animates/";
     for (UINT I = 0; I < AniSize; I++) {
-      AniArrayPath = JsonPath + "/uac-animates/" + std::to_string(I);
+      AniArrayPath = JsonPath + "/uac-animates/" + hyc::str::toString(I);
 
       std::string AniName =
           getJsonNode(Json, AniArrayPath + "/name")->GetString();

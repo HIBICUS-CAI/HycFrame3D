@@ -7,6 +7,8 @@
 #pragma clang diagnostic pop
 #endif // __clang__
 
+#include "FormatUtility.h"
+
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
@@ -46,9 +48,9 @@ inline void generateErrorInfo(const std::string &CallStack) {
                  NULL, ErrorNum, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                  reinterpret_cast<char *>(&Message), 0, NULL);
 
-  std::string ErrorMessage = std::to_string(ErrorNum) + " : ";
-  ErrorMessage += std::string(static_cast<char *>(Message)) + " - ";
-  ErrorMessage += CallStack;
+  std::string ErrorMessage =
+      str::sFormat("{} : {} - {}", ErrorNum,
+                   std::string(static_cast<char *>(Message)), CallStack);
   MessageBoxA(NULL, ErrorMessage.c_str(), "Tcp Error", MB_ABORTRETRYIGNORE);
   exit(-1);
 }

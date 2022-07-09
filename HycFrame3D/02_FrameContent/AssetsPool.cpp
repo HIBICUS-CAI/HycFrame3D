@@ -3,6 +3,7 @@
 #include "ALightComponent.h"
 #include "UButtonComponent.h"
 
+#include <FormatUtility.h>
 #include <RSMeshHelper.h>
 #include <RSRoot_DX11.h>
 
@@ -102,7 +103,7 @@ void AssetsPool::insertNewIndexedMesh(
     int SubIndex,
     const SUBMESH_BONES *BonesData,
     const MESH_ANIMATION_DATA *AnimationData) {
-  std::string SubMeshName = MeshName + std::to_string(SubIndex);
+  std::string SubMeshName = hyc::str::sFormat("{}{}", MeshName, SubIndex);
   MeshPool[MeshName].emplace_back(SubMeshName);
   SubMeshToMesh[SubMeshName] = MeshName;
 

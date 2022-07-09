@@ -1,5 +1,7 @@
 #include "ConnectManager.h"
 
+#include <FormatUtility.h>
+
 bool ConnectManager::init() {
   bool Result = hyc::tcp::sockSysStartUp();
   if (!Result) {
@@ -31,8 +33,8 @@ bool ConnectManager::init() {
 
 void ConnectManager::update() {
   static int FrameCount = 0;
-  SocketPtr->sendAs<std::string>("game frame : " +
-                                 std::to_string(FrameCount++));
+  SocketPtr->sendAs<std::string>(
+      hyc::str::sFormat("game frame : {}", FrameCount++));
 }
 
 void ConnectManager::cleanAndStop() {

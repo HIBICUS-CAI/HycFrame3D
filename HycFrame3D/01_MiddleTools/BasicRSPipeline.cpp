@@ -1,6 +1,7 @@
 #include "BasicRSPipeline.h"
 
 #include <DDSTextureLoader11.h>
+#include <FormatUtility.h>
 #include <RSCamera.h>
 #include <RSCamerasContainer.h>
 #include <RSDevices.h>
@@ -22,10 +23,11 @@
 #include <WICTextureLoader11.h>
 #include <WM_Interface.h>
 
-#include <DirectXColors.h>
-#include <DirectXPackedVector.h>
+#include <algorithm>
 #include <cstdlib>
 #include <ctime>
+#include <directxcolors.h>
+#include <directxpackedvector.h>
 #include <string>
 #include <vector>
 
@@ -2328,7 +2330,7 @@ bool RSPass_Defered::createShaders() {
 
   std::string ModelName = G_RenderEffectConfig.LightModel;
   std::transform(ModelName.begin(), ModelName.end(), ModelName.begin(),
-                 std::toupper);
+                 static_cast<int (*)(int)>(std::toupper));
   D3D_SHADER_MACRO Macro[] = {{ModelName.c_str(), "1"}, {nullptr, nullptr}};
   Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\defered_pixel.hlsl",
                                       "main", "ps_5_0", &ShaderBlob, Macro);
@@ -2960,7 +2962,7 @@ bool RSPass_Bloom::createShaders() {
   }
 
   const std::string PixelFactor =
-      std::to_string(G_RenderEffectConfig.BloomLightPixelFactor);
+      hyc::str::sFormat("{:+f}f", G_RenderEffectConfig.BloomLightPixelFactor);
   if (G_RenderEffectConfig.BloomOff) {
     D3D_SHADER_MACRO Macro[] = {{"PIXEL_FACTOR", PixelFactor.c_str()},
                                 {nullptr, nullptr}};
@@ -5674,13 +5676,13 @@ bool RSPass_Tonemapping::createShaders() {
   }
 
   std::string TransSpdStr =
-      "(" + std::to_string(G_RenderEffectConfig.ExpoTransSpeed) + "f)";
+      hyc::str::sFormat("({:+f}f)", G_RenderEffectConfig.ExpoTransSpeed);
   std::string ExpoMinStr =
-      "(" + std::to_string(G_RenderEffectConfig.ExpoMin) + "f)";
+      hyc::str::sFormat("({:+f}f)", G_RenderEffectConfig.ExpoMin);
   std::string ExpoMaxStr =
-      "(" + std::to_string(G_RenderEffectConfig.ExpoMax) + "f)";
+      hyc::str::sFormat("({:+f}f)", G_RenderEffectConfig.ExpoMax);
   std::string InvFactorStr =
-      "(" + std::to_string(G_RenderEffectConfig.ExpoInvFactor) + "f)";
+      hyc::str::sFormat("({:+f}f)", G_RenderEffectConfig.ExpoInvFactor);
   D3D_SHADER_MACRO ExpoMacro[] = {{"TRANS_SPEED", TransSpdStr.c_str()},
                                   {"EXPO_MIN", ExpoMinStr.c_str()},
                                   {"EXPO_MAX", ExpoMaxStr.c_str()},
@@ -5707,7 +5709,7 @@ bool RSPass_Tonemapping::createShaders() {
   if (!G_RenderEffectConfig.DynamicExpoOff) {
     Macro[0] = {"DYNAMIC_EXPOSURE", "1"};
   } else {
-    StaticV += std::to_string(G_RenderEffectConfig.StaticExpo);
+    StaticV += hyc::str::toString(G_RenderEffectConfig.StaticExpo);
     StaticV += "f)";
     Macro[0] = {"STATIC_EXPOSURE", StaticV.c_str()};
   }
@@ -6034,7 +6036,7 @@ bool RSPass_BloomHdr::createShaders() {
   HRESULT Hr = S_OK;
 
   const std::string PickMinValue =
-      std::to_string(G_RenderEffectConfig.BloomMinValue);
+      hyc::str::sFormat("{:+f}f", G_RenderEffectConfig.BloomMinValue);
   D3D_SHADER_MACRO PickMacro[] = {{"MIN_VALUE", PickMinValue.c_str()},
                                   {nullptr, nullptr}};
   Hr = rs_tool::compileShaderFromFile(
@@ -6064,11 +6066,11 @@ bool RSPass_BloomHdr::createShaders() {
     std::vector<float> WEights = {};
     rs_tool::calcGaussWeight1D(Kernel, Sigma, WEights);
 
-    KernelSize = std::to_string(Kernel);
-    KernelHalf = std::to_string(Half);
+    KernelSize = hyc::str::toString(Kernel);
+    KernelHalf = hyc::str::toString(Half);
     WeightArray = "static const float gBlurWeight[] = {";
     for (const auto &W : WEights) {
-      WeightArray += std::to_string(W) + "f,";
+      WeightArray += hyc::str::sFormat("{:+f}f,", W);
     }
     WeightArray += "}";
   }
@@ -6593,15 +6595,14 @@ bool RSPass_FXAA::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
-  std::string ThreshouldStr = "(";
-  std::string MinThreshouldStr = "(";
-  std::string SearchStepStr = "(";
-  std::string BorderGuessStr = "(";
-  ThreshouldStr += std::to_string(G_RenderEffectConfig.FXAAThreshould) + "f)";
-  MinThreshouldStr +=
-      std::to_string(G_RenderEffectConfig.FXAAMinThreshould) + "f)";
-  SearchStepStr += std::to_string(G_RenderEffectConfig.FXAASearchStep) + ")";
-  BorderGuessStr += std::to_string(G_RenderEffectConfig.FXAAGuess) + ")";
+  std::string ThreshouldStr =
+      hyc::str::sFormat("({:+f}f)", G_RenderEffectConfig.FXAAThreshould);
+  std::string MinThreshouldStr =
+      hyc::str::sFormat("({:+f}f)", G_RenderEffectConfig.FXAAMinThreshould);
+  std::string SearchStepStr =
+      hyc::str::sFormat("({})", G_RenderEffectConfig.FXAASearchStep);
+  std::string BorderGuessStr =
+      hyc::str::sFormat("({})", G_RenderEffectConfig.FXAAGuess);
   D3D_SHADER_MACRO Macro[] = {{"EDGE_THRESHOLD", ThreshouldStr.c_str()},
                               {"MIN_EDGE_THRESHOLD", MinThreshouldStr.c_str()},
                               {"EDGE_SEARCH_STEP", SearchStepStr.c_str()},
