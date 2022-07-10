@@ -319,7 +319,8 @@
     <ClCompile Include="02_FrameContent\CollisionSystem.cpp" />
     <ClCompile Include="02_FrameContent\Component.cpp" />
     <ClCompile Include="02_FrameContent\ComponentContainer.cpp" />
-    <ClCompile Include="02_FrameContent\ConnectManager.cpp" />
+    <ClCompile Include="02_FrameContent\ConnectionManager.cpp" />
+    <ClCompile Include="02_FrameContent\TcpLoggerConnection.cpp" />
     <ClCompile Include="02_FrameContent\InputSystem.cpp" />
     <ClCompile Include="02_FrameContent\InstanceSystem.cpp" />
     <ClCompile Include="02_FrameContent\InteractSystem.cpp" />
@@ -377,7 +378,9 @@
     <ClInclude Include="02_FrameContent\Component.h" />
     <ClInclude Include="02_FrameContent\ComponentContainer.h" />
     <ClInclude Include="02_FrameContent\ComponentGetter.h" />
-    <ClInclude Include="02_FrameContent\ConnectManager.h" />
+    <ClInclude Include="02_FrameContent\ConnectionManager.h" />
+    <ClInclude Include="02_FrameContent\TcpConnectionInterface.h" />
+    <ClInclude Include="02_FrameContent\TcpLoggerConnection.h" />
     <ClInclude Include="02_FrameContent\FuncPtrAdapter.h" />
     <ClInclude Include="02_FrameContent\Hyc3DCommon.h" />
     <ClInclude Include="02_FrameContent\InputSystem.h" />

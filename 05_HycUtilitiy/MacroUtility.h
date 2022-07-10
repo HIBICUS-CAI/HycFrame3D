@@ -17,11 +17,11 @@ private:                                                                       \
 public:                                                                        \
   using Singleton = const UniquePtr &;                                         \
   static Singleton instance() { return ref(); }                                \
-  static void create() {                                                       \
+  static void createInstance() {                                               \
     if (!ref())                                                                \
       ref() = makeUnique();                                                    \
   }                                                                            \
-  static void terminate() { ref().reset(); }                                   \
+  static void destoryInstance() { ref().reset(); }                             \
                                                                                \
 private:                                                                       \
   template <typename... Args>                                                  \

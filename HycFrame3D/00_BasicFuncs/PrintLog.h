@@ -1,5 +1,9 @@
 #pragma once
 
+#include "TcpLoggerConnection.h"
+
+#include <FormatUtility.h>
+
 #define LOG_MESSAGE (0)
 #define LOG_WARNING (1)
 #define LOG_DEBUG (2)
@@ -10,3 +14,6 @@
 int debugPrintF(int Level, const char *Format, ...);
 
 int myPrintF(int Level, const char *Format, ...);
+
+#define P_LOG1(...)                                                            \
+  TcpLoggerConnection::insertNewLogMessage(hyc::str::sFormat(__VA_ARGS__))

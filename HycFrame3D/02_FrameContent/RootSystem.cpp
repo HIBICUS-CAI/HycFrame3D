@@ -1,6 +1,6 @@
 #include "Hyc3DCommon.h"
 
-#include "ConnectManager.h"
+#include "ConnectionManager.h"
 #include "ObjectFactory.h"
 #include "RootSystem.h"
 #include "SceneManager.h"
@@ -16,8 +16,8 @@ RootSystem::RootSystem()
 RootSystem::~RootSystem() {}
 
 bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
-  ConnectManager::create();
-  if (!ConnectManager::instance()->init()) {
+  ConnectionManager::createInstance();
+  if (!ConnectionManager::instance()->initConnections()) {
     return false;
   }
 
@@ -79,8 +79,8 @@ void RootSystem::cleanAndStop() {
   input::cleanAndStop();
   window::cleanAndStop();
 
-  ConnectManager::instance()->cleanAndStop();
-  ConnectManager::instance()->terminate();
+  ConnectionManager::instance()->terminateConnections();
+  ConnectionManager::instance()->destoryInstance();
 }
 
 void RootSystem::runGameLoop() {
@@ -94,7 +94,7 @@ void RootSystem::runGameLoop() {
 
       SceneManagerPtr->checkLoadStatus();
       SystemExecutivePtr->runAllSystems(Timer);
-      ConnectManager::instance()->update();
+      ConnectionManager::instance()->executeConnections();
 
       Timer.timeOut();
     }

@@ -205,7 +205,10 @@
     <ClCompile Include="03_ScriptFuncs\01_MaterialEditor.cpp">
       <Filter>03_ScriptFuncs</Filter>
     </ClCompile>
-    <ClCompile Include="02_FrameContent\ConnectManager.cpp">
+    <ClCompile Include="02_FrameContent\ConnectionManager.cpp">
+      <Filter>02_FrameContent\Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="02_FrameContent\TcpLoggerConnection.cpp">
       <Filter>02_FrameContent\Connection</Filter>
     </ClCompile>
   </ItemGroup>
@@ -381,7 +384,13 @@
     <ClInclude Include="02_FrameContent\ComponentGetter.h">
       <Filter>02_FrameContent\Container</Filter>
     </ClInclude>
-    <ClInclude Include="02_FrameContent\ConnectManager.h">
+    <ClInclude Include="02_FrameContent\ConnectionManager.h">
+      <Filter>02_FrameContent\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\TcpConnectionInterface.h">
+      <Filter>02_FrameContent\Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="02_FrameContent\TcpLoggerConnection.h">
       <Filter>02_FrameContent\Connection</Filter>
     </ClInclude>
   </ItemGroup>
