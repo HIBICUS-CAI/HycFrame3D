@@ -9,8 +9,8 @@
 #pragma clang diagnostic ignored "-Wunused-variable"
 #endif // __clang__
 
-constexpr auto LOG_MESSAGE = (0);
-constexpr auto LOG_DEBUG = (1);
+constexpr auto LOG_DEBUG = (0);
+constexpr auto LOG_MESSAGE = (1);
 constexpr auto LOG_WARNING = (2);
 constexpr auto LOG_ERROR = (3);
 

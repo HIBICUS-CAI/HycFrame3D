@@ -1,0 +1,7 @@
+[logger]
+# type : uint, valid range : [0, 3]
+# 0 : LOG_DEBUG
+# 1 : LOG_MESSAGE
+# 2 : LOG_WARNING
+# 3 : LOG_ERROR
+output-level = 0

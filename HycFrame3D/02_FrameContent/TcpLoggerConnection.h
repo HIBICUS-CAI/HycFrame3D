@@ -9,6 +9,7 @@
 
 class TcpLoggerConnection : public TcpConnectionInterface {
 private:
+  bool LoggerEnabledFlag;
   hyc::tcp::TcpSocketPtr SocketPtr;
   hyc::tcp::SocketAddressPtr ConnectAddress;
   PROCESS_INFORMATION LoggerProcessInfo;
