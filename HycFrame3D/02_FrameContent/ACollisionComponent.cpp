@@ -30,7 +30,7 @@ ACollisionComponent::~ACollisionComponent() {}
 
 bool ACollisionComponent::init() {
   if (!CollisionObject || !CollisionShape) {
-    P_LOG(LOG_ERROR, "invalid collision object in %s\n", getCompName().c_str());
+    P_LOG(LOG_ERROR, "invalid collision object in {}", getCompName());
     return false;
   }
 
@@ -55,14 +55,14 @@ bool ACollisionComponent::checkCollisionWith(
     CONTACT_PONT_PAIR *OutContactPair) {
   auto Actor = getActorOwner()->getSceneNode().getActorObject(ActorName);
   if (!Actor) {
-    P_LOG(LOG_ERROR, "doesnt exist a actor name : %s\n", ActorName.c_str());
+    P_LOG(LOG_MESSAGE, "doesnt exist a actor name : {}", ActorName);
     return false;
   }
 
   auto Acc = Actor->getComponent<ACollisionComponent>();
   if (!Acc) {
-    P_LOG(LOG_ERROR, "doesnt exist a collision comp in actor name : %s\n",
-          ActorName.c_str());
+    P_LOG(LOG_WARNING, "doesnt exist a collision comp in actor name : {}",
+          ActorName);
     return false;
   }
 

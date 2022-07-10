@@ -121,12 +121,12 @@ bool initSound() {
 
   Hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to init com library in sound\n");
+    P_LOG(LOG_ERROR, "failed to init com library in sound");
   }
 
   Hr = XAudio2Create(&G_XAudio2, 0);
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to create xaudio2 object\n");
+    P_LOG(LOG_ERROR, "failed to create xaudio2 object");
 
     CoUninitialize();
 
@@ -135,7 +135,7 @@ bool initSound() {
 
   Hr = G_XAudio2->CreateMasteringVoice(&G_MasteringVoice);
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to create master voice object\n");
+    P_LOG(LOG_ERROR, "failed to create master voice object");
 
     if (G_XAudio2) {
       G_XAudio2->Release();
@@ -212,12 +212,12 @@ void loadSound(const std::string &Name, LOAD_HANDLE Path) {
   FileHandle = CreateFile(Path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
                           OPEN_EXISTING, 0, NULL);
   if (FileHandle == INVALID_HANDLE_VALUE) {
-    P_LOG(LOG_ERROR, "failed to create sound handle\n");
+    P_LOG(LOG_ERROR, "failed to create sound handle");
     return;
   }
   if (SetFilePointer(FileHandle, 0, NULL, FILE_BEGIN) ==
       INVALID_SET_FILE_POINTER) {
-    P_LOG(LOG_ERROR, "failed to check sound handle by SetFilePointer\n");
+    P_LOG(LOG_ERROR, "failed to check sound handle by SetFilePointer");
     return;
   }
 
@@ -225,34 +225,34 @@ void loadSound(const std::string &Name, LOAD_HANDLE Path) {
 
   Hr = CheckChunk(FileHandle, 'FFIR', &DWChunkSize, &DWChunkPosition);
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to check wav sound CheckChunk\n");
+    P_LOG(LOG_ERROR, "failed to check wav sound CheckChunk");
     return;
   }
   Hr = ReadChunkData(FileHandle, &DWFiletype, sizeof(DWORD), DWChunkPosition);
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to check wav sound by ReadChunkData\n");
+    P_LOG(LOG_ERROR, "failed to check wav sound by ReadChunkData");
     return;
   }
   if (DWFiletype != static_cast<DWORD>('EVAW')) {
-    P_LOG(LOG_ERROR, "failed to check wav sound by DWFiletype\n");
+    P_LOG(LOG_ERROR, "failed to check wav sound by DWFiletype");
     return;
   }
 
   Hr = CheckChunk(FileHandle, ' tmf', &DWChunkSize, &DWChunkPosition);
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to check wav Format by CheckChunk\n");
+    P_LOG(LOG_ERROR, "failed to check wav Format by CheckChunk");
     return;
   }
   Hr = ReadChunkData(FileHandle, &WFX, DWChunkSize, DWChunkPosition);
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to check wav Format by ReadChunkData\n");
+    P_LOG(LOG_ERROR, "failed to check wav Format by ReadChunkData");
     return;
   }
 
   DWORD Size = 0;
   Hr = CheckChunk(FileHandle, 'atad', &Size, &DWChunkPosition);
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to read wav file by CheckChunk\n");
+    P_LOG(LOG_ERROR, "failed to read wav file by CheckChunk");
     return;
   }
   LOCK;
@@ -261,7 +261,7 @@ void loadSound(const std::string &Name, LOAD_HANDLE Path) {
   BYTE *DataPtr = new BYTE[Size];
   Hr = ReadChunkData(FileHandle, DataPtr, Size, DWChunkPosition);
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to read wav file by ReadChunkData\n");
+    P_LOG(LOG_ERROR, "failed to read wav file by ReadChunkData");
     delete[] DataPtr;
     LOCK;
     G_SoundLengthPool.erase(Name);
@@ -275,7 +275,7 @@ void loadSound(const std::string &Name, LOAD_HANDLE Path) {
   SOUND_HANDLE SoundHandle = nullptr;
   Hr = G_XAudio2->CreateSourceVoice(&SoundHandle, &(WFX.Format));
   if (FAILED(Hr)) {
-    P_LOG(LOG_ERROR, "failed to create source wav file\n");
+    P_LOG(LOG_ERROR, "failed to create source wav file");
     LOCK;
     G_SoundLengthPool.erase(Name);
     delete[] DataPtr;
@@ -293,8 +293,7 @@ void playBGM(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ %s ]\n",
-          SoundName.c_str());
+    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ {} ]", SoundName);
     return;
   }
   UNLOCK;
@@ -325,8 +324,7 @@ void stopBGM(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    P_LOG(LOG_ERROR, "you haven't loaded this Sound : [ %s ]\n",
-          SoundName.c_str());
+    P_LOG(LOG_ERROR, "you haven't loaded this Sound : [ {} ]", SoundName);
     return;
   }
   UNLOCK;
@@ -358,8 +356,7 @@ void setVolume(const std::string &SoundName, float Volume) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    P_LOG(LOG_ERROR, "you haven't loaded this Sound : [ %s ]\n",
-          SoundName.c_str());
+    P_LOG(LOG_ERROR, "you haven't loaded this Sound : [ {} ]", SoundName);
     return;
   }
   auto Sound = G_SoundPool[SoundName];
@@ -371,8 +368,7 @@ void playSE(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ %s ]\n",
-          SoundName.c_str());
+    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ {} ]", SoundName);
     return;
   }
   auto SoundSize = G_SoundLengthPool[SoundName];
@@ -403,8 +399,7 @@ SOUND_HANDLE getSoundHandle(const std::string &SoundName) {
   LOCK;
   if (G_SoundPool.find(SoundName) == G_SoundPool.end()) {
     UNLOCK;
-    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ %s ]\n",
-          SoundName.c_str());
+    P_LOG(LOG_ERROR, "you haven't loaded this sound : [ {} ]", SoundName);
     return nullptr;
   }
   SOUND_HANDLE Handle = G_SoundPool[SoundName];

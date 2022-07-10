@@ -16,8 +16,7 @@ ActorObject *ObjectContainer::getActorObject(const std::string &ActorName) {
   if (Found != ActorObjectMap.end()) {
     return &(Found->second);
   } else {
-    P_LOG(LOG_WARNING, "cannot find actor object name : %s\n",
-          ActorName.c_str());
+    P_LOG(LOG_MESSAGE, "cannot find actor object name : {}", ActorName);
     return nullptr;
   }
 }
@@ -32,8 +31,7 @@ void ObjectContainer::deleteActorObject(const std::string &ActorName) {
     DeadActorObjectArray.emplace_back(Found->second);
     ActorObjectMap.erase(ActorName);
   } else {
-    P_LOG(LOG_WARNING, "cannot find actor object name : %s\n",
-          ActorName.c_str());
+    P_LOG(LOG_MESSAGE, "cannot find actor object name : {}", ActorName);
   }
 }
 
@@ -42,7 +40,7 @@ UiObject *ObjectContainer::getUiObject(const std::string &UiName) {
   if (Found != UiObjectMap.end()) {
     return &(Found->second);
   } else {
-    P_LOG(LOG_WARNING, "cannot find ui object name : %s\n", UiName.c_str());
+    P_LOG(LOG_MESSAGE, "cannot find ui object name : {}", UiName);
     return nullptr;
   }
 }
@@ -57,7 +55,7 @@ void ObjectContainer::deleteUiObject(const std::string &UiName) {
     DeadUiObjectArray.emplace_back(Found->second);
     UiObjectMap.erase(UiName);
   } else {
-    P_LOG(LOG_WARNING, "cannot find ui object name : %s\n", UiName.c_str());
+    P_LOG(LOG_MESSAGE, "cannot find ui object name : {}", UiName);
   }
 }
 

@@ -43,8 +43,7 @@ bool AAnimateComponent::init() {
     assert(SubMesh);
 #endif // _DEBUG
     if (!SubMesh->MeshData.AnimationFlag) {
-      P_LOG(LOG_ERROR, "this mesh doesn't have animation info : %s\n",
-            MeshName.c_str());
+      P_LOG(LOG_ERROR, "this mesh doesn't have animation info : {}", MeshName);
       return false;
     }
     SubMesh->BonesMap.insert({getCompName(), SubMesh->OriginBoneData});
@@ -86,8 +85,8 @@ bool AAnimateComponent::init() {
       ++Index;
     }
     if (!Found) {
-      P_LOG(LOG_ERROR, "this animation name %s doesn't exist\n",
-            NextAnimationName.c_str());
+      P_LOG(LOG_WARNING, "this animation name {} doesn't exist",
+            NextAnimationName);
       NextAnimationName = "";
       return false;
     } else {
@@ -113,8 +112,8 @@ void AAnimateComponent::update(const Timer &Timer) {
       ++Index;
     }
     if (!Found) {
-      P_LOG(LOG_ERROR, "this animation name %s doesn't exist\n",
-            NextAnimationName.c_str());
+      P_LOG(LOG_WARNING, "this animation name {} doesn't exist",
+            NextAnimationName);
       NextAnimationName = "";
     } else {
       CurrentAnimationName = NextAnimationName;
@@ -187,7 +186,7 @@ void AAnimateComponent::changeAnimationTo(const std::string &AniName) {
 
 void AAnimateComponent::changeAnimationTo(int AniIndex) {
   if (static_cast<size_t>(AniIndex) >= AnimationNames.size()) {
-    P_LOG(LOG_ERROR, "this animation index %d is overflow\n", AniIndex);
+    P_LOG(LOG_WARNING, "this animation index {} is overflow", AniIndex);
     return;
   }
   NextAnimationName = AnimationNames[AniIndex];

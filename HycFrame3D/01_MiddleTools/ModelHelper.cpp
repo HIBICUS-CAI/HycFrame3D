@@ -436,7 +436,7 @@ void loadByJson(const std::string &FilePath,
                 MESH_ANIMATION_DATA **OutAnimData) {
   std::FILE *FPtr = std::fopen(FilePath.c_str(), "rb");
   if (!FPtr) {
-    P_LOG(LOG_ERROR, "cannt open file : %s\n", FilePath.c_str());
+    P_LOG(LOG_ERROR, "cannt open file : {}", FilePath);
   }
   char *ReadBuf = new char[65536];
 #ifdef _DEBUG
@@ -447,7 +447,7 @@ void loadByJson(const std::string &FilePath,
   rapidjson::Document Doc = {};
   Doc.ParseStream(ReadStream);
   if (Doc.HasParseError()) {
-    P_LOG(LOG_ERROR, "json error code : %d\n", Doc.GetParseError());
+    P_LOG(LOG_ERROR, "json error code : {}", Doc.GetParseError());
 #ifdef _DEBUG
     assert(false && "json file invalid");
 #endif // _DEBUG
@@ -790,7 +790,7 @@ void addTextureToSubMesh(RS_SUBMESH_DATA *OutResult,
       Name = FilePath;
       Root->getResourceManager()->addMeshSrv(Name, Srv);
     } else {
-      assert(false && "texture load fail");
+      P_LOG(LOG_ERROR, "failed to load texture : {}", FilePath);
     }
   } else {
     Hr = dx::CreateWICTextureFromFile(Root->getDevices()->getDevice(),
@@ -799,7 +799,7 @@ void addTextureToSubMesh(RS_SUBMESH_DATA *OutResult,
       Name = FilePath;
       Root->getResourceManager()->addMeshSrv(Name, Srv);
     } else {
-      assert(false && "texture load fail");
+      P_LOG(LOG_ERROR, "failed to load texture : {}", FilePath);
     }
   }
 

@@ -56,7 +56,7 @@ Component *ComponentContainer::getComponent(const std::string &CompName) {
   if (CompMap.find(CompName) != CompMap.end()) {
     return CompMap[CompName];
   } else {
-    P_LOG(LOG_WARNING, "cannot find component name : %s\n", CompName.c_str());
+    P_LOG(LOG_WARNING, "cannot find component name : {}", CompName);
     return nullptr;
   }
 }
@@ -289,7 +289,7 @@ void ComponentContainer::deleteComponent(COMP_TYPE Type,
                                          const std::string &CompName) {
   auto Found = CompMap.find(CompName);
   if (Found == CompMap.end()) {
-    P_LOG(LOG_WARNING, "cannot find component name : %s\n", CompName.c_str());
+    P_LOG(LOG_WARNING, "cannot find component name : {}", CompName);
     return;
   }
 

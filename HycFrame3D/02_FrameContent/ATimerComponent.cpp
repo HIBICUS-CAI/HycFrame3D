@@ -56,7 +56,7 @@ ACTOR_TIMER *ATimerComponent::getTimer(const std::string &TimerName) {
   if (TimerMap.find(TimerName) != TimerMap.end()) {
     return &(TimerMap[TimerName]);
   } else {
-    P_LOG(LOG_WARNING, "this timer doesnt exist : %s\n", TimerName.c_str());
+    P_LOG(LOG_WARNING, "this timer doesnt exist : {}", TimerName);
     return nullptr;
   }
 }

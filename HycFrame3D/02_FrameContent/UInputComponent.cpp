@@ -10,8 +10,7 @@ UInputComponent::~UInputComponent() {}
 
 bool UInputComponent::init() {
   if (!InputPrecessFunctionPtr) {
-    P_LOG(LOG_ERROR, "there's still no input func in : %s\n",
-          getCompName().c_str());
+    P_LOG(LOG_WARNING, "there's still no input func in : {}", getCompName());
   }
 
   return true;

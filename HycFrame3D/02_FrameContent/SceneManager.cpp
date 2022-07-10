@@ -17,7 +17,7 @@ SceneManager::~SceneManager() {}
 
 bool SceneManager::startUp(ObjectFactory *ObjectFactory) {
   if (!ObjectFactory) {
-    P_LOG(LOG_ERROR, "invalid object factory pointer\n");
+    P_LOG(LOG_ERROR, "invalid object factory pointer");
     return false;
   }
 
@@ -26,7 +26,7 @@ bool SceneManager::startUp(ObjectFactory *ObjectFactory) {
   LoadingScenePtr = new SceneNode("temp-loading-scene", this);
 
   if (!LoadingScenePtr) {
-    P_LOG(LOG_ERROR, "fail to create temp loading scene\n");
+    P_LOG(LOG_ERROR, "fail to create temp loading scene");
     return false;
   }
 
@@ -39,7 +39,7 @@ bool SceneManager::deferedStartUp() {
   LoadingScenePtr->releaseScene();
   delete LoadingScenePtr;
   if (!loadLoadingScene()) {
-    P_LOG(LOG_ERROR, "failed to load loading scene\n");
+    P_LOG(LOG_ERROR, "failed to load loading scene");
     return false;
   }
 
@@ -50,8 +50,7 @@ bool SceneManager::deferedStartUp() {
   if (!loadTomlAndParse(EntryInfo,
                         ".\\Assets\\Configs\\scene-entry-config.toml",
                         ErrorMess)) {
-    P_LOG(LOG_ERROR, "failed to parse entry scene config : %s\n",
-          ErrorMess.c_str());
+    P_LOG(LOG_ERROR, "failed to parse entry scene config : {}", ErrorMess);
     return false;
   }
 

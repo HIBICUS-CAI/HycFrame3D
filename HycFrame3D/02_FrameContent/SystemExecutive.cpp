@@ -21,7 +21,7 @@ SystemExecutive::~SystemExecutive() {}
 
 bool SystemExecutive::startUp(SceneManager *SceneManager) {
   if (!SceneManager) {
-    P_LOG(LOG_ERROR, "invalid scene manager pointer\n");
+    P_LOG(LOG_ERROR, "invalid scene manager pointer");
     return false;
   }
 

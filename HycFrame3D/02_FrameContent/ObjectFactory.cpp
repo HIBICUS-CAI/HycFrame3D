@@ -25,7 +25,7 @@ ObjectFactory::~ObjectFactory() {}
 
 bool ObjectFactory::startUp(SceneManager *SceneManager) {
   if (!SceneManager) {
-    P_LOG(LOG_ERROR, "invalid scene manager pointer\n");
+    P_LOG(LOG_ERROR, "invalid scene manager pointer");
     return false;
   }
 
@@ -42,16 +42,16 @@ SceneNode *ObjectFactory::createSceneNode(const std::string &Name,
                                           const std::string &Path) {
   SceneNode *NewNode = new SceneNode(Name, SceneManagerPtr);
   if (!NewNode) {
-    P_LOG(LOG_ERROR, "failed to alloc a scene node memory name : %s , %s\n",
-          Name.c_str(), Path.c_str());
+    P_LOG(LOG_ERROR, "failed to alloc a scene node memory name : {} , {}", Name,
+          Path);
     return nullptr;
   }
 
   JsonFile SceneConfig = {};
   if (!loadJsonAndParse(SceneConfig, Path)) {
     P_LOG(LOG_ERROR,
-          "failed to parse scene config name %s with error code : %d\n",
-          Path.c_str(), getJsonParseError(SceneConfig));
+          "failed to parse scene config name {} with error code : {}", Path,
+          getJsonParseError(SceneConfig));
     delete NewNode;
     return nullptr;
   }
@@ -59,9 +59,9 @@ SceneNode *ObjectFactory::createSceneNode(const std::string &Name,
   {
     std::string SceneName = SceneConfig["scene-name"].GetString();
     if (SceneName != Name) {
-      P_LOG(LOG_ERROR, "the scene's name in json file %s \
-                doesn't pair with what has passed\n",
-            Path.c_str());
+      P_LOG(LOG_ERROR, "the scene's name in json file {} \
+                doesn't pair with what has passed",
+            Path);
       delete NewNode;
       return nullptr;
     }
@@ -69,9 +69,9 @@ SceneNode *ObjectFactory::createSceneNode(const std::string &Name,
 
   if (SceneConfig["ambient-factor"].IsNull() ||
       SceneConfig["ambient-factor"].Size() != 4) {
-    P_LOG(LOG_ERROR, "the scene's name in json file %s \
-                doesn't has an ambient light data\n",
-          Path.c_str());
+    P_LOG(LOG_ERROR, "the scene's name in json file {} \
+                doesn't has an ambient light data",
+          Path);
     delete NewNode;
     return nullptr;
   }
@@ -168,8 +168,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
         MatInfo.MinorMaterialID = StaticResPtr->getStaticMaterialIndex(MinName);
         MatInfo.InterpolateFactor = FactorNode->GetFloat();
       } else {
-        P_LOG(LOG_ERROR, "mesh %s doesnt have material info\n",
-              MeshName.c_str());
+        P_LOG(LOG_ERROR, "mesh {} doesnt have material info", MeshName);
       }
 
       JsonNode DiffuseNode = getJsonNode(Json, JsonPath + "/force-diffuse");
@@ -215,7 +214,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
         } else if (FileType == "json") {
           Type = MODEL_FILE_TYPE::JSON;
         } else {
-          P_LOG(LOG_ERROR, "invlaid model file type : %s\n", FileType.c_str());
+          P_LOG(LOG_ERROR, "invlaid model file type : {}", FileType);
           return;
         }
         loadModelFile(FileName, Type, SubIndex, &MeshData, &BonesData,
@@ -309,7 +308,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
                            getJsonNode(Json, JsonPath + "/load-info/g-tex-file")
                                ->GetString());
       } else {
-        P_LOG(LOG_ERROR, "invlaid model load mode : %s\n", LoadMode.c_str());
+        P_LOG(LOG_ERROR, "invlaid model load mode : {}", LoadMode);
         return;
       }
 
@@ -333,8 +332,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
       }
 
       if (!MeshData.Textures.size()) {
-        P_LOG(LOG_ERROR, "invlaid model without diffuse : %s\n",
-              MeshName.c_str());
+        P_LOG(LOG_ERROR, "invlaid model without diffuse : {}", MeshName);
         getRSDX11RootInstance()->getMeshHelper()->releaseSubMesh(MeshData);
         return;
       }
@@ -365,7 +363,7 @@ void ObjectFactory::createActorObject(SceneNode *Scene,
                                       const std::string &JsonPath) {
   JsonNode ActorRoot = getJsonNode(Json, JsonPath);
   if (!ActorRoot) {
-    P_LOG(LOG_ERROR, "failed to get actor root node : %s\n", JsonPath.c_str());
+    P_LOG(LOG_ERROR, "failed to get actor root node : {}", JsonPath);
     return;
   }
 
@@ -375,7 +373,7 @@ void ObjectFactory::createActorObject(SceneNode *Scene,
     if (ActorNameNode && ActorNameNode->IsString()) {
       ActorName = ActorNameNode->GetString();
     } else {
-      P_LOG(LOG_ERROR, "invalid actor name in : %s\n", JsonPath.c_str());
+      P_LOG(LOG_ERROR, "invalid actor name in : {}", JsonPath);
       return;
     }
   }
@@ -398,7 +396,7 @@ void ObjectFactory::createUiObject(SceneNode *Scene,
                                    const std::string &JsonPath) {
   JsonNode UiRoot = getJsonNode(Json, JsonPath);
   if (!UiRoot) {
-    P_LOG(LOG_ERROR, "failed to get ui root node : %s\n", JsonPath.c_str());
+    P_LOG(LOG_ERROR, "failed to get ui root node : {}", JsonPath);
     return;
   }
 
@@ -408,7 +406,7 @@ void ObjectFactory::createUiObject(SceneNode *Scene,
     if (UiNameNode && UiNameNode->IsString()) {
       UiName = UiNameNode->GetString();
     } else {
-      P_LOG(LOG_ERROR, "invalid ui name in : %s\n", JsonPath.c_str());
+      P_LOG(LOG_ERROR, "invalid ui name in : {}", JsonPath);
       return;
     }
   }
@@ -464,7 +462,7 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
         getJsonNode(Json, JsonPath + "/aic-func-name")->GetString();
     auto Found = ActorInputFuncPtrMap.find(InputFuncName);
     if (Found == ActorInputFuncPtrMap.end()) {
-      P_LOG(LOG_ERROR, "invlaid input func name : %s\n", InputFuncName.c_str());
+      P_LOG(LOG_ERROR, "invlaid input func name : {}", InputFuncName);
       return;
     }
     Aic.setInputFunction(Found->second);
@@ -483,21 +481,19 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
         getJsonNode(Json, JsonPath + "/aitc-destory-func-name")->GetString();
     auto FoundInit = ActorInteractInitFuncPtrMap.find(InitFuncName);
     if (FoundInit == ActorInteractInitFuncPtrMap.end()) {
-      P_LOG(LOG_ERROR, "invlaid init func name : %s\n", InitFuncName.c_str());
+      P_LOG(LOG_ERROR, "invlaid init func name : {}", InitFuncName);
       return;
     }
     Aitc.setInitFunction(FoundInit->second);
     auto FoundUpdate = ActorInteractUpdateFuncPtrMap.find(UpdateFuncName);
     if (FoundUpdate == ActorInteractUpdateFuncPtrMap.end()) {
-      P_LOG(LOG_ERROR, "invlaid update func name : %s\n",
-            UpdateFuncName.c_str());
+      P_LOG(LOG_ERROR, "invlaid update func name : {}", UpdateFuncName);
       return;
     }
     Aitc.setUpdateFunction(FoundUpdate->second);
     auto FoundDestory = ActorInteractDestoryFuncPtrMap.find(DestoryFuncName);
     if (FoundDestory == ActorInteractDestoryFuncPtrMap.end()) {
-      P_LOG(LOG_ERROR, "invlaid destory func name : %s\n",
-            DestoryFuncName.c_str());
+      P_LOG(LOG_ERROR, "invlaid destory func name : {}", DestoryFuncName);
       return;
     }
     Aitc.setDestoryFunction(FoundDestory->second);
@@ -538,8 +534,7 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     } else if (ShapeType == "box") {
       Shape = COLLISION_SHAPE::BOX;
     } else {
-      P_LOG(LOG_ERROR, "invlaid collision shape name : %s\n",
-            ShapeType.c_str());
+      P_LOG(LOG_ERROR, "invlaid collision shape name : {}", ShapeType);
       return;
     }
     Acc.createCollisionShape(Shape, {Value[0], Value[1], Value[2]});
@@ -597,7 +592,7 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     } else if (LightTypeStr == "spot") {
       LightType = LIGHT_TYPE::SPOT;
     } else {
-      P_LOG(LOG_ERROR, "invlaid light type : %s\n", LightTypeStr.c_str());
+      P_LOG(LOG_ERROR, "invlaid light type : {}", LightTypeStr);
       return;
     }
 
@@ -672,8 +667,7 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     } else if (PtcTexName == "smoke") {
       PtcTex = PARTICLE_TEXTURE::WHITE_SMOKE;
     } else {
-      P_LOG(LOG_ERROR, "invlaid particle texture type : %s\n",
-            PtcTexName.c_str());
+      P_LOG(LOG_ERROR, "invlaid particle texture type : {}", PtcTexName);
       return;
     }
 
@@ -791,7 +785,7 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     Actor->addAComponent(Type);
     Scene->getComponentContainer()->addComponent(Type, Asc);
   } else {
-    P_LOG(LOG_ERROR, "invlaid comp type : %s\n", CompType.c_str());
+    P_LOG(LOG_ERROR, "invlaid comp type : {}", CompType);
     return;
   }
 }
@@ -834,7 +828,7 @@ void ObjectFactory::createUiComp(SceneNode *Scene,
         getJsonNode(Json, JsonPath + "/uic-func-name")->GetString();
     auto Found = UiInputFuncPtrMap.find(InputFuncName);
     if (Found == UiInputFuncPtrMap.end()) {
-      P_LOG(LOG_ERROR, "invlaid input func name : %s\n", InputFuncName.c_str());
+      P_LOG(LOG_ERROR, "invlaid input func name : {}", InputFuncName);
       return;
     }
     Uic.setInputFunction(Found->second);
@@ -853,21 +847,19 @@ void ObjectFactory::createUiComp(SceneNode *Scene,
         getJsonNode(Json, JsonPath + "/uitc-destory-func-name")->GetString();
     auto FoundInit = UiInteractInitFuncPtrMap.find(InitFuncName);
     if (FoundInit == UiInteractInitFuncPtrMap.end()) {
-      P_LOG(LOG_ERROR, "invlaid init func name : %s\n", InitFuncName.c_str());
+      P_LOG(LOG_ERROR, "invlaid init func name : {}", InitFuncName);
       return;
     }
     Uitc.setInitFunction(FoundInit->second);
     auto FoundUpdate = UiInteractUpdateFuncPtrMap.find(UpdateFuncName);
     if (FoundUpdate == UiInteractUpdateFuncPtrMap.end()) {
-      P_LOG(LOG_ERROR, "invlaid update func name : %s\n",
-            UpdateFuncName.c_str());
+      P_LOG(LOG_ERROR, "invlaid update func name : {}", UpdateFuncName);
       return;
     }
     Uitc.setUpdateFunction(FoundUpdate->second);
     auto FoundDestory = UiInteractDestoryFuncPtrMap.find(DestoryFuncName);
     if (FoundDestory == UiInteractDestoryFuncPtrMap.end()) {
-      P_LOG(LOG_ERROR, "invlaid destory func name : %s\n",
-            DestoryFuncName.c_str());
+      P_LOG(LOG_ERROR, "invlaid destory func name : {}", DestoryFuncName);
       return;
     }
     Uitc.setDestoryFunction(FoundDestory->second);
@@ -979,7 +971,7 @@ void ObjectFactory::createUiComp(SceneNode *Scene,
     Ui->addUComponent(Type);
     Scene->getComponentContainer()->addComponent(Type, Ubc);
   } else {
-    P_LOG(LOG_ERROR, "invlaid comp type : %s\n", CompType.c_str());
+    P_LOG(LOG_ERROR, "invlaid comp type : {}", CompType);
     return;
   }
 }

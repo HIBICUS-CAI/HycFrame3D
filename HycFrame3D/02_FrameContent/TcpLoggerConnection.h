@@ -13,13 +13,17 @@ private:
   hyc::tcp::SocketAddressPtr ConnectAddress;
   PROCESS_INFORMATION LoggerProcessInfo;
 
-  static std::list<std::string> LogInfoList;
+  struct LOG {
+    int LogLevel;
+    std::string LogMessage;
+  };
+  static std::list<LOG> LogInfoList;
 
 public:
   TcpLoggerConnection();
   virtual ~TcpLoggerConnection();
 
-  static inline void insertNewLogMessage(const std::string &LogMessage);
+  static void insertNewLogMessage(int LogLevel, const std::string &LogMessage);
 
 public:
   virtual bool createConnection();

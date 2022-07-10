@@ -22,7 +22,7 @@ bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
   }
 
   if (!window::startUp()) {
-    P_LOG(LOG_ERROR, "failed to start up windows system\n");
+    P_LOG(LOG_ERROR, "failed to start up windows system");
     return false;
   }
   if (!window::createWindow("a game wnd dont know how to name",
@@ -32,11 +32,11 @@ bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
                             Instance, CmdShow, 1280, 720, true))
 #endif // _DEBUG
   {
-    P_LOG(LOG_ERROR, "failed to create window\n");
+    P_LOG(LOG_ERROR, "failed to create window");
     return false;
   }
   if (!input::startUp()) {
-    P_LOG(LOG_ERROR, "failed to start up input system\n");
+    P_LOG(LOG_ERROR, "failed to start up input system");
     return false;
   }
 
@@ -46,19 +46,19 @@ bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
   assert(SceneManagerPtr && ObjectFactoryPtr && SystemExecutivePtr);
 
   if (!SceneManagerPtr->startUp(ObjectFactoryPtr)) {
-    P_LOG(LOG_ERROR, "cannot init scene manager correctly\n");
+    P_LOG(LOG_ERROR, "cannot init scene manager correctly");
     return false;
   }
   if (!SystemExecutivePtr->startUp(SceneManagerPtr)) {
-    P_LOG(LOG_ERROR, "cannot init system executive correctly\n");
+    P_LOG(LOG_ERROR, "cannot init system executive correctly");
     return false;
   }
   if (!ObjectFactoryPtr->startUp(SceneManagerPtr)) {
-    P_LOG(LOG_ERROR, "cannot init object factory correctly\n");
+    P_LOG(LOG_ERROR, "cannot init object factory correctly");
     return false;
   }
   if (!SceneManagerPtr->deferedStartUp()) {
-    P_LOG(LOG_ERROR, "cannot parse entry scene correctly\n");
+    P_LOG(LOG_ERROR, "cannot parse entry scene correctly");
     return false;
   }
 

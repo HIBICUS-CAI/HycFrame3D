@@ -41,7 +41,7 @@ void testASpInput(AInputComponent *Aic, const Timer &Timer) {
   }
 
   if (input::isKeyPushedInSingle(KB_RETURN)) {
-    P_LOG(LOG_DEBUG, "to test2\n");
+    P_LOG(LOG_DEBUG, "to test2");
     Aic->getSceneNode().getSceneManager()->loadSceneNode("sample2-scene",
                                                          "sample2-scene.json");
   }
@@ -80,7 +80,7 @@ void testASpInput(AInputComponent *Aic, const Timer &Timer) {
 }
 
 bool testASpInit(AInteractComponent *Aitc) {
-  P_LOG(LOG_DEBUG, "a sp init\n");
+  P_LOG(LOG_DEBUG, "a sp init");
 
   Aitc->getActorOwner()->getComponent<ATimerComponent>()->startTimer("timer1");
 
@@ -94,12 +94,12 @@ void testASpUpdate(AInteractComponent *Aitc, const Timer &Timer) {
     Aitc->getActorObject("sp-point-light-actor")
         ->getComponent<ATransformComponent>()
         ->rollBackPosition();
-    P_LOG(LOG_DEBUG, "a : %f, %f, %f ; b : %f, %f, %f\n", Contact.first.x,
-          Contact.first.y, Contact.first.z, Contact.second.x, Contact.second.y,
-          Contact.second.z);
+    P_LOG(LOG_DEBUG, "a : {:+f}, {:+f}, {:+f} ; b : {:+f}, {:+f}, {:+f}",
+          Contact.first.x, Contact.first.y, Contact.first.z, Contact.second.x,
+          Contact.second.y, Contact.second.z);
     auto Center = ACollisionComponent::calcCenterOfContact(Contact);
-    P_LOG(LOG_DEBUG, "center of contact : %f, %f, %f\n", Center.x, Center.y,
-          Center.z);
+    P_LOG(LOG_DEBUG, "center of contact : {:+f}, {:+f}, {:+f}", Center.x,
+          Center.y, Center.z);
   }
 
   Aitc->getActorObject("sp-particle-actor")
@@ -113,7 +113,7 @@ void testASpUpdate(AInteractComponent *Aitc, const Timer &Timer) {
 }
 
 void testASpDestory(AInteractComponent *Aitc) {
-  P_LOG(LOG_DEBUG, "a sp destory\n");
+  P_LOG(LOG_DEBUG, "a sp destory");
 }
 
 void testUSpInput(UInputComponent *Uic, const Timer &Timer) {
@@ -153,7 +153,7 @@ void testUSpInput(UInputComponent *Uic, const Timer &Timer) {
   }
 
   if (input::isKeyPushedInSingle(KB_RETURN)) {
-    P_LOG(LOG_DEBUG, "to test1\n");
+    P_LOG(LOG_DEBUG, "to test1");
     Uic->getSceneNode().getSceneManager()->loadSceneNode("sample1-scene",
                                                          "sample1-scene.json");
   }
@@ -179,25 +179,24 @@ void testUSpBtnInput(UInputComponent *Uic, const Timer &Timer) {
   }
 
   if (Ubc->isCursorOnBtn() && input::isKeyPushedInSingle(M_LEFTBTN)) {
-    P_LOG(LOG_DEBUG, "this btn has been click : %s\n",
-          Ubc->getCompName().c_str());
+    P_LOG(LOG_DEBUG, "this btn has been click : {}", Ubc->getCompName());
   }
 }
 
 bool testUSpInit(UInteractComponent *Uitc) {
-  P_LOG(LOG_DEBUG, "u sp init\n");
+  P_LOG(LOG_DEBUG, "u sp init");
   return true;
 }
 
 void testUSpUpdate(UInteractComponent *Uitc, const Timer &Timer) {}
 
 void testUSpDestory(UInteractComponent *_uitc) {
-  P_LOG(LOG_DEBUG, "u sp destory\n");
+  P_LOG(LOG_DEBUG, "u sp destory");
 }
 
 void tempToTitle(AInputComponent *Aic, const Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_RCONTROL)) {
-    P_LOG(LOG_DEBUG, "to title\n");
+    P_LOG(LOG_DEBUG, "to title");
     Aic->getSceneNode().getSceneManager()->loadSceneNode("title-scene",
                                                          "title-scene.json");
   }
@@ -205,7 +204,7 @@ void tempToTitle(AInputComponent *Aic, const Timer &Timer) {
 
 void tempToSelect(AInputComponent *Aic, const Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_RCONTROL)) {
-    P_LOG(LOG_DEBUG, "to select\n");
+    P_LOG(LOG_DEBUG, "to select");
     Aic->getSceneNode().getSceneManager()->loadSceneNode("select-scene",
                                                          "select-scene.json");
   }
@@ -213,7 +212,7 @@ void tempToSelect(AInputComponent *Aic, const Timer &Timer) {
 
 void tempToRun(AInputComponent *Aic, const Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_RCONTROL)) {
-    P_LOG(LOG_DEBUG, "to run\n");
+    P_LOG(LOG_DEBUG, "to run");
     Aic->getSceneNode().getSceneManager()->loadSceneNode("run-scene",
                                                          "run-scene.json");
   }
@@ -221,7 +220,7 @@ void tempToRun(AInputComponent *Aic, const Timer &Timer) {
 
 void tempToResult(AInputComponent *Aic, const Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_RCONTROL)) {
-    P_LOG(LOG_DEBUG, "to result\n");
+    P_LOG(LOG_DEBUG, "to result");
     Aic->getSceneNode().getSceneManager()->loadSceneNode("result-scene",
                                                          "result-scene.json");
   }
@@ -231,7 +230,7 @@ static float G_AniSpdFactor = 50.f;
 static AAnimateComponent *G_Aanc = nullptr;
 
 bool aniInit(AInteractComponent *Aitc) {
-  P_LOG(LOG_DEBUG, "animate init\n");
+  P_LOG(LOG_DEBUG, "animate init");
 
   G_Aanc = Aitc->getActorOwner()->getComponent<AAnimateComponent>();
   if (!G_Aanc) {
@@ -265,7 +264,7 @@ void aniUpdate(AInteractComponent *Aitc, const Timer &Timer) {
 }
 
 void aniDestory(AInteractComponent *Aitc) {
-  P_LOG(LOG_DEBUG, "animate destory\n");
+  P_LOG(LOG_DEBUG, "animate destory");
   G_Aanc = nullptr;
 }
 

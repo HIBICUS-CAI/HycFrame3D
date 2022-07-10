@@ -40,7 +40,7 @@ void PhysicsWorld::createPhysicsWorld() {
 
 void PhysicsWorld::addCollisionObject(btCollisionObject *ColliObj) {
   if (!ColliObj) {
-    P_LOG(LOG_ERROR, "passing a null collision object to collision world\n");
+    P_LOG(LOG_ERROR, "passing a null collision object to collision world");
     return;
   }
 
@@ -49,7 +49,7 @@ void PhysicsWorld::addCollisionObject(btCollisionObject *ColliObj) {
 
 void PhysicsWorld::deleteCollisionObject(btCollisionObject *ColliObj) {
   if (!ColliObj) {
-    P_LOG(LOG_ERROR, "searching a null collision object in collision world\n");
+    P_LOG(LOG_ERROR, "searching a null collision object in collision world");
     return;
   }
 

@@ -54,8 +54,7 @@ bool UButtonComponent::init() {
       if (!loadTomlAndParse(BtnFlgConfig,
                             ".\\Assets\\Configs\\selected-flag-config.toml",
                             ErrorMess)) {
-        P_LOG(LOG_ERROR, "failed to parse btn flag config : %s\n",
-              ErrorMess.c_str());
+        P_LOG(LOG_ERROR, "failed to parse btn flag config : {}", ErrorMess);
         return false;
       }
       G_SelectFlagTexture =
@@ -240,15 +239,15 @@ UButtonComponent *UButtonComponent::getUpBtn() {
   auto Ui =
       getUiOwner()->getSceneNode().getUiObject(SurroundBtnObjectNames[BTN_UP]);
   if (!Ui) {
-    P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
-          SurroundBtnObjectNames[BTN_UP].c_str());
+    P_LOG(LOG_WARNING, "this ui obj doesnt exist : {}",
+          SurroundBtnObjectNames[BTN_UP]);
     return nullptr;
   }
 
   auto Ubc = Ui->getComponent<UButtonComponent>();
   if (!Ubc) {
-    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
-          SurroundBtnObjectNames[BTN_UP].c_str());
+    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : {}",
+          SurroundBtnObjectNames[BTN_UP]);
     return nullptr;
   } else {
     return Ubc;
@@ -259,15 +258,15 @@ UButtonComponent *UButtonComponent::getDownBtn() {
   auto Ui = getUiOwner()->getSceneNode().getUiObject(
       SurroundBtnObjectNames[BTN_DOWN]);
   if (!Ui) {
-    P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
-          SurroundBtnObjectNames[BTN_DOWN].c_str());
+    P_LOG(LOG_WARNING, "this ui obj doesnt exist : {}",
+          SurroundBtnObjectNames[BTN_DOWN]);
     return nullptr;
   }
 
   auto Ubc = Ui->getComponent<UButtonComponent>();
   if (!Ubc) {
-    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
-          SurroundBtnObjectNames[BTN_DOWN].c_str());
+    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : {}",
+          SurroundBtnObjectNames[BTN_DOWN]);
     return nullptr;
   } else {
     return Ubc;
@@ -278,15 +277,15 @@ UButtonComponent *UButtonComponent::getLeftBtn() {
   auto Ui = getUiOwner()->getSceneNode().getUiObject(
       SurroundBtnObjectNames[BTN_LEFT]);
   if (!Ui) {
-    P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
-          SurroundBtnObjectNames[BTN_LEFT].c_str());
+    P_LOG(LOG_WARNING, "this ui obj doesnt exist : {}",
+          SurroundBtnObjectNames[BTN_LEFT]);
     return nullptr;
   }
 
   auto Ubc = Ui->getComponent<UButtonComponent>();
   if (!Ubc) {
-    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
-          SurroundBtnObjectNames[BTN_LEFT].c_str());
+    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : {}",
+          SurroundBtnObjectNames[BTN_LEFT]);
     return nullptr;
   } else {
     return Ubc;
@@ -297,15 +296,15 @@ UButtonComponent *UButtonComponent::getRightBtn() {
   auto Ui = getUiOwner()->getSceneNode().getUiObject(
       SurroundBtnObjectNames[BTN_RIGHT]);
   if (!Ui) {
-    P_LOG(LOG_WARNING, "this ui obj doesnt exist : %s\n",
-          SurroundBtnObjectNames[BTN_RIGHT].c_str());
+    P_LOG(LOG_WARNING, "this ui obj doesnt exist : {}",
+          SurroundBtnObjectNames[BTN_RIGHT]);
     return nullptr;
   }
 
   auto Ubc = Ui->getComponent<UButtonComponent>();
   if (!Ubc) {
-    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : %s\n",
-          SurroundBtnObjectNames[BTN_RIGHT].c_str());
+    P_LOG(LOG_WARNING, "this ui obj doesnt have a btn comp : {}",
+          SurroundBtnObjectNames[BTN_RIGHT]);
     return nullptr;
   } else {
     return Ubc;

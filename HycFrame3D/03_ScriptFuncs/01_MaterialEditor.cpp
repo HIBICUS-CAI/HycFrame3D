@@ -43,21 +43,27 @@ void OutputThisMaterialInfo() {
   MatInfo += ", " + hyc::str::toString(G_Material->FresnelR0.y);
   MatInfo += ", " + hyc::str::toString(G_Material->FresnelR0.z);
   MatInfo += "\n";
-  MatInfo += "SubSurface :\t" + hyc::str::toString(G_Material->SubSurface) + ", \t";
-  MatInfo += "Metallic :\t\t\t" + hyc::str::toString(G_Material->Metallic) + "\n";
-  MatInfo += "Specular :\t\t" + hyc::str::toString(G_Material->Specular) + ", \t";
   MatInfo +=
-      "SpecularTint :\t\t" + hyc::str::toString(G_Material->SpecularTint) + "\n";
-  MatInfo += "Roughness :\t\t" + hyc::str::toString(G_Material->Roughness) + ", \t";
+      "SubSurface :\t" + hyc::str::toString(G_Material->SubSurface) + ", \t";
+  MatInfo +=
+      "Metallic :\t\t\t" + hyc::str::toString(G_Material->Metallic) + "\n";
+  MatInfo +=
+      "Specular :\t\t" + hyc::str::toString(G_Material->Specular) + ", \t";
+  MatInfo += "SpecularTint :\t\t" +
+             hyc::str::toString(G_Material->SpecularTint) + "\n";
+  MatInfo +=
+      "Roughness :\t\t" + hyc::str::toString(G_Material->Roughness) + ", \t";
   MatInfo +=
       "Anisotropic :\t\t" + hyc::str::toString(G_Material->Anisotropic) + "\n";
   MatInfo += "Sheen :\t\t\t" + hyc::str::toString(G_Material->Sheen) + ", \t";
-  MatInfo += "SheenTint :\t\t\t" + hyc::str::toString(G_Material->SheenTint) + "\n";
-  MatInfo += "Clearcoat :\t\t" + hyc::str::toString(G_Material->Clearcoat) + ", \t";
   MatInfo +=
-      "ClearcoatGloss :\t" + hyc::str::toString(G_Material->ClearcoatGloss) + "\n";
-  MatInfo += "===============================\n";
-  P_LOG(LOG_DEBUG, "%s", MatInfo.c_str());
+      "SheenTint :\t\t\t" + hyc::str::toString(G_Material->SheenTint) + "\n";
+  MatInfo +=
+      "Clearcoat :\t\t" + hyc::str::toString(G_Material->Clearcoat) + ", \t";
+  MatInfo += "ClearcoatGloss :\t" +
+             hyc::str::toString(G_Material->ClearcoatGloss) + "\n";
+  MatInfo += "===============================";
+  P_LOG(LOG_DEBUG, "{}", MatInfo);
 }
 
 void matEditorInput(AInputComponent *Aic, const Timer &Timer) {
@@ -112,70 +118,70 @@ void matEditorInput(AInputComponent *Aic, const Timer &Timer) {
     Check = static_cast<UINT>(MAT_TYPE::SUBSURFACE);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing subsurface\n");
+      P_LOG(LOG_DEBUG, "editing subsurface");
       break;
     }
   case MAT_TYPE::METALLIC:
     Check = static_cast<UINT>(MAT_TYPE::METALLIC);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing metallic\n");
+      P_LOG(LOG_DEBUG, "editing metallic");
       break;
     }
   case MAT_TYPE::SPECULAR:
     Check = static_cast<UINT>(MAT_TYPE::SPECULAR);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing specular\n");
+      P_LOG(LOG_DEBUG, "editing specular");
       break;
     }
   case MAT_TYPE::SPECULARTINT:
     Check = static_cast<UINT>(MAT_TYPE::SPECULARTINT);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing specular tint\n");
+      P_LOG(LOG_DEBUG, "editing specular tint");
       break;
     }
   case MAT_TYPE::ROUGHNESS:
     Check = static_cast<UINT>(MAT_TYPE::ROUGHNESS);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing roughness\n");
+      P_LOG(LOG_DEBUG, "editing roughness");
       break;
     }
   case MAT_TYPE::ANISOTROPIC:
     Check = static_cast<UINT>(MAT_TYPE::ANISOTROPIC);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing anisotropic\n");
+      P_LOG(LOG_DEBUG, "editing anisotropic");
       break;
     }
   case MAT_TYPE::SHEEN:
     Check = static_cast<UINT>(MAT_TYPE::SHEEN);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing sheen\n");
+      P_LOG(LOG_DEBUG, "editing sheen");
       break;
     }
   case MAT_TYPE::SHEENTINT:
     Check = static_cast<UINT>(MAT_TYPE::SHEENTINT);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing sheen tint\n");
+      P_LOG(LOG_DEBUG, "editing sheen tint");
       break;
     }
   case MAT_TYPE::CLEARCOAT:
     Check = static_cast<UINT>(MAT_TYPE::CLEARCOAT);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing clearcoat\n");
+      P_LOG(LOG_DEBUG, "editing clearcoat");
       break;
     }
   case MAT_TYPE::CLEARCOATGLOSS:
     Check = static_cast<UINT>(MAT_TYPE::CLEARCOATGLOSS);
     if (input::isKeyPushedInSingle(Check)) {
       G_EditingMatTerm = static_cast<MAT_TYPE>(Check);
-      P_LOG(LOG_DEBUG, "editing clearcoat gloss\n");
+      P_LOG(LOG_DEBUG, "editing clearcoat gloss");
       break;
     }
   }
@@ -244,7 +250,7 @@ void matEditorInput(AInputComponent *Aic, const Timer &Timer) {
     }
   }
   if (input::isKeyPushedInSingle(KB_SLASH)) {
-    P_LOG(LOG_DEBUG, "current material factor : %f\n", Factor);
+    P_LOG(LOG_DEBUG, "current material factor : {}", Factor);
   }
 
   if (input::isKeyPushedInSingle(KB_RETURN)) {

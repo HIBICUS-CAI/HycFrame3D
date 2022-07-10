@@ -18,15 +18,16 @@ USpriteComponent::~USpriteComponent() {}
 
 bool USpriteComponent::init() {
   if (MeshesName == "") {
-    P_LOG(LOG_WARNING, "this sprite hasnt been built : %s\n",
-          getCompName().c_str());
+    P_LOG(LOG_MESSAGE, "this sprite hasnt been built : {}", getCompName());
     return false;
   }
 
   return true;
 }
 
-void USpriteComponent::update(const Timer &Timer) { syncTransformDataToInstance(); }
+void USpriteComponent::update(const Timer &Timer) {
+  syncTransformDataToInstance();
+}
 
 void USpriteComponent::destory() {
   SUBMESH_DATA *MeshPtr =

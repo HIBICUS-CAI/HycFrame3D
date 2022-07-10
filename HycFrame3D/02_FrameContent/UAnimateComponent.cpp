@@ -80,7 +80,7 @@ bool UAnimateComponent::loadAnimate(const std::string &AniName,
     if (SUCCEEDED(Hr)) {
       getRSDX11RootInstance()->getResourceManager()->addMeshSrv(AniPath, Srv);
     } else {
-      P_LOG(LOG_ERROR, "fail to load texture : %s\n", AniPath.c_str());
+      P_LOG(LOG_ERROR, "fail to load texture : {}", AniPath);
       return false;
     }
   } else {
@@ -90,7 +90,7 @@ bool UAnimateComponent::loadAnimate(const std::string &AniName,
     if (SUCCEEDED(Hr)) {
       getRSDX11RootInstance()->getResourceManager()->addMeshSrv(AniPath, Srv);
     } else {
-      P_LOG(LOG_ERROR, "fail to load texture : %s\n", AniPath.c_str());
+      P_LOG(LOG_ERROR, "fail to load texture : {}", AniPath);
       return false;
     }
   }
@@ -115,7 +115,7 @@ void UAnimateComponent::deleteAnimate(const std::string &AniName) {
     }
     delete Found->second;
   } else {
-    P_LOG(LOG_ERROR, "this animate doesnt exist : %s\n", AniName.c_str());
+    P_LOG(LOG_WARNING, "this animate doesnt exist : {}", AniName);
   }
 }
 
@@ -132,7 +132,7 @@ void UAnimateComponent::clearCurrentAnimate() {
 
 void UAnimateComponent::changeAnimateTo(const std::string &AniName) {
   if (AnimateMap.find(AniName) == AnimateMap.end()) {
-    P_LOG(LOG_ERROR, "cannot find this animation : %s\n", AniName.c_str());
+    P_LOG(LOG_WARNING, "cannot find this animation : {}", AniName);
     return;
   }
 

@@ -22,7 +22,7 @@ SUBMESH_DATA *AssetsPool::getSubMeshIfExisted(const std::string &MeshName) {
   if (Found != SubMeshPool.end()) {
     return &(Found->second);
   } else {
-    P_LOG(LOG_WARNING, "this mesh doesnt exist : %s\n", MeshName.c_str());
+    P_LOG(LOG_WARNING, "this mesh doesnt exist : {}", MeshName);
     return nullptr;
   }
 }
@@ -32,7 +32,7 @@ SUBMESH_NAME_VEC *AssetsPool::getMeshIfExisted(const std::string &MeshName) {
   if (Found != MeshPool.end()) {
     return &(Found->second);
   } else {
-    P_LOG(LOG_WARNING, "this mesh doesnt exist : %s\n", MeshName.c_str());
+    P_LOG(LOG_WARNING, "this mesh doesnt exist : {}", MeshName);
     return nullptr;
   }
 }
@@ -45,12 +45,11 @@ AssetsPool::getAnimationIfExistedSub(const std::string &AniName) {
     if (AniFound != MeshAnimationsPool.end()) {
       return AniFound->second;
     } else {
-      P_LOG(LOG_WARNING, "cannot found this animation : %s\n", AniName.c_str());
+      P_LOG(LOG_WARNING, "cannot found this animation : {}", AniName);
       return nullptr;
     }
   } else {
-    P_LOG(LOG_WARNING, "cannot found this animation's main mesh : %s\n",
-          AniName.c_str());
+    P_LOG(LOG_WARNING, "cannot found this animation's main mesh : {}", AniName);
     return nullptr;
   }
 }
@@ -61,7 +60,7 @@ AssetsPool::getAnimationIfExisted(const std::string &AniName) {
   if (AniFound != MeshAnimationsPool.end()) {
     return AniFound->second;
   } else {
-    P_LOG(LOG_WARNING, "cannot found this animation : %s\n", AniName.c_str());
+    P_LOG(LOG_WARNING, "cannot found this animation : {}", AniName);
     return nullptr;
   }
 }
@@ -71,7 +70,7 @@ SOUND_HANDLE AssetsPool::getSoundIfExisted(const std::string &SoundName) {
   if (Found != SoundPool.end()) {
     return Found->second;
   } else {
-    P_LOG(LOG_WARNING, "this sound doesnt exist : %s\n", SoundName.c_str());
+    P_LOG(LOG_WARNING, "this sound doesnt exist : {}", SoundName);
     return nullptr;
   }
 }

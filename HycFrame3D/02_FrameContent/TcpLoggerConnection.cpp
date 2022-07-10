@@ -7,7 +7,7 @@
 namespace tcp = hyc::tcp;
 namespace str = hyc::str;
 
-std::list<std::string> TcpLoggerConnection::LogInfoList = {};
+std::list<TcpLoggerConnection::LOG> TcpLoggerConnection::LogInfoList = {};
 
 TcpLoggerConnection::TcpLoggerConnection()
     : TcpConnectionInterface(), SocketPtr({}), ConnectAddress({}),
@@ -15,8 +15,9 @@ TcpLoggerConnection::TcpLoggerConnection()
 
 TcpLoggerConnection::~TcpLoggerConnection() {}
 
-void TcpLoggerConnection::insertNewLogMessage(const std::string &LogMessage) {
-  LogInfoList.push_back(LogMessage);
+void TcpLoggerConnection::insertNewLogMessage(int LogLevel,
+                                              const std::string &LogMessage) {
+  LogInfoList.push_back({LogLevel, LogMessage});
 }
 
 bool TcpLoggerConnection::createConnection() {
@@ -52,10 +53,8 @@ void TcpLoggerConnection::terminateConnection() {
 }
 
 void TcpLoggerConnection::executeConnection() {
-  static int FrameCount = 0;
-  P_LOG1("game frame by new P_LOG : {}", FrameCount++);
   for (const auto &LogMessage : LogInfoList) {
-    SocketPtr->sendAs<std::string>(LogMessage);
+    SocketPtr->sendAs<std::string>(LogMessage.LogMessage);
   }
   LogInfoList.clear();
 }

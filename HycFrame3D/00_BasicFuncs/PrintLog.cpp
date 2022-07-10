@@ -9,7 +9,7 @@
 #include <windows.h>
 
 // FOR SETTING LOG LEVEL ------------------------------
-#define LOG_LEVEL_FOR_SETTING (LOG_WARNING)
+#define LOG_LEVEL_FOR_SETTING (LOG_DEBUG)
 // FOR SETTING LOG LEVEL ------------------------------
 
 int vDebugPrintF(const char *Format, va_list ArgList) {
