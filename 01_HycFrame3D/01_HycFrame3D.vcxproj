@@ -38,7 +38,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{c4e60687-e6d7-4a41-b72a-62735260bc85}</ProjectGuid>
-    <RootNamespace>HycFrame3D</RootNamespace>
+    <RootNamespace>My01HycFrame3D</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

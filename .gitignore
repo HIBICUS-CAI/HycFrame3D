@@ -362,5 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-HycFrame3D/RenderSystem_StaticResources/
-HycFrame3D/Assets/Configs/AutoCreated_AdapterInfoInSystem.txt
+01_HycFrame3D/RenderSystem_StaticResources/
+01_HycFrame3D/Assets/Configs/AutoCreated_AdapterInfoInSystem.txt

@@ -310,7 +310,7 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)HycFrame3D\RenderSystem_StaticResources\</Command>
+      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)01_HycFrame3D\RenderSystem_StaticResources\</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugMSVC|x64'">
@@ -335,7 +335,7 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)HycFrame3D\RenderSystem_StaticResources\</Command>
+      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)01_HycFrame3D\RenderSystem_StaticResources\</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -365,7 +365,7 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)HycFrame3D\RenderSystem_StaticResources\</Command>
+      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)01_HycFrame3D\RenderSystem_StaticResources\</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseMSVC|x64'">
@@ -394,7 +394,7 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <PreBuildEvent>
-      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)HycFrame3D\RenderSystem_StaticResources\</Command>
+      <Command>xcopy /e /r /y $(ProjectDir)StaticResources $(SolutionDir)01_HycFrame3D\RenderSystem_StaticResources\</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
