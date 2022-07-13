@@ -31,6 +31,9 @@ void registerSPInput(ObjectFactory *Factory) {
   Factory->getAInitMapPtr().insert({FUNC_NAME(bbInit), bbInit});
   Factory->getAUpdateMapPtr().insert({FUNC_NAME(bbUpdate), bbUpdate});
   Factory->getADestoryMapPtr().insert({FUNC_NAME(bbDestory), bbDestory});
+  Factory->getAInitMapPtr().insert({FUNC_NAME(grInit), grInit});
+  Factory->getAUpdateMapPtr().insert({FUNC_NAME(grUpdate), grUpdate});
+  Factory->getADestoryMapPtr().insert({FUNC_NAME(grDestory), grDestory});
 }
 
 void testASpInput(AInputComponent *Aic, const Timer &Timer) {
@@ -46,26 +49,6 @@ void testASpInput(AInputComponent *Aic, const Timer &Timer) {
                                                          "sample2-scene.json");
   }
 
-  if (input::isKeyDownInSingle(KB_W)) {
-    Aic->getActorObject("sp-point-light-actor")
-        ->getComponent<ATransformComponent>()
-        ->translateZAsix(0.1f * Timer.floatDeltaTime());
-  }
-  if (input::isKeyDownInSingle(KB_A)) {
-    Aic->getActorObject("sp-point-light-actor")
-        ->getComponent<ATransformComponent>()
-        ->translateXAsix(-0.1f * Timer.floatDeltaTime());
-  }
-  if (input::isKeyDownInSingle(KB_S)) {
-    Aic->getActorObject("sp-point-light-actor")
-        ->getComponent<ATransformComponent>()
-        ->translateZAsix(-0.1f * Timer.floatDeltaTime());
-  }
-  if (input::isKeyDownInSingle(KB_D)) {
-    Aic->getActorObject("sp-point-light-actor")
-        ->getComponent<ATransformComponent>()
-        ->translateXAsix(0.1f * Timer.floatDeltaTime());
-  }
   if (input::isKeyPushedInSingle(KB_P)) {
     static bool Simp = true;
     if (Simp) {
@@ -290,3 +273,57 @@ void bbUpdate(AInteractComponent *Aitc, const Timer &Timer) {
 }
 
 void bbDestory(AInteractComponent *Aitc) { G_BBAtc = nullptr; }
+
+dx::XMFLOAT3 calcFerguson(dx::XMFLOAT3 XStart,
+                          dx::XMFLOAT3 XEnd,
+                          dx::XMFLOAT3 VStart,
+                          dx::XMFLOAT3 VEnd,
+                          float T) {
+  using namespace dx;
+  XMVECTOR X0 = XMLoadFloat3(&XStart);
+  XMVECTOR X1 = XMLoadFloat3(&XEnd);
+  XMVECTOR V0 = XMLoadFloat3(&VStart);
+  XMVECTOR V1 = XMLoadFloat3(&VEnd);
+  float H0 = (T - 1.f) * (T - 1.f) * (2.f * T + 1.f);
+  float H1 = (1.f - T) * (1.f - T) * T;
+  float H2 = (T - 1.f) * T * T;
+  float H3 = T * T * (3.f - 2.f * T);
+
+  XMFLOAT3 Result = {};
+  XMStoreFloat3(&Result, X0 * H0 + V0 * H1 + V1 * H2 + X1 * H3);
+  return Result;
+}
+
+static float Time = 0.f;
+
+bool grInit(AInteractComponent *Aitc) {
+  Time = 0.f;
+  return true;
+}
+
+void grUpdate(AInteractComponent *Aitc, const Timer &Timer) {
+  static const int SIZE = 5;
+  static const float TIMEMAX = static_cast<float>(SIZE - 1);
+  static const dx::XMFLOAT3 X[SIZE] = {{-35.f, 0.f, 50.f},
+                                       {0.f, 0.f, 85.f},
+                                       {35.f, 0.f, 50.f},
+                                       {00.f, 0.f, 15.f},
+                                       {-35.f, 0.f, 50.f}};
+  static const dx::XMFLOAT3 V[SIZE] = {{-30.f, 15.f, -30.f},
+                                       {-30.f, -15.f, 30.f},
+                                       {30.f, 15.f, 30.f},
+                                       {30.f, -15.f, -30.f},
+                                       {-30.f, 15.f, -30.f}};
+  float Speed = Timer.floatDeltaTime() / 1500.f;
+
+  if ((Time += Speed) >= TIMEMAX) {
+    Time = 0.f;
+  }
+  int Index0 = static_cast<int>(Time), Index1 = Index0 + 1;
+  float T = Time - static_cast<float>(Index0);
+
+  auto Atc = Aitc->getActorOwner()->getComponent<ATransformComponent>();
+  Atc->setPosition(calcFerguson(X[Index0], X[Index1], V[Index0], V[Index1], T));
+}
+
+void grDestory(AInteractComponent *Aitc) {}

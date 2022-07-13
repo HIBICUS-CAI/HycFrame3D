@@ -30,3 +30,7 @@ void aniDestory(AInteractComponent *);
 bool bbInit(AInteractComponent *);
 void bbUpdate(AInteractComponent *, const Timer &);
 void bbDestory(AInteractComponent *);
+
+bool grInit(AInteractComponent *);
+void grUpdate(AInteractComponent *, const Timer &);
+void grDestory(AInteractComponent *);

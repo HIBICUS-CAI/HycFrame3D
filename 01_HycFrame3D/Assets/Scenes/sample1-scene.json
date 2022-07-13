@@ -227,9 +227,6 @@
                     "type": "mesh",
                     "amc-meshes": [
                         {
-                            "mesh-name": "tile-box"
-                        },
-                        {
                             "mesh-name": "sand-grid",
                             "mesh-offset": [
                                 0.0,
@@ -374,6 +371,12 @@
                         3.0,
                         3.0
                     ]
+                },
+                {
+                    "type": "interact",
+                    "aitc-init-func-name": "grInit",
+                    "aitc-update-func-name": "grUpdate",
+                    "aitc-destory-func-name": "grDestory"
                 }
             ]
         },
@@ -441,18 +444,81 @@
             ]
         },
         {
-            "actor-name": "sp-rex-actor",
+            "actor-name": "sp-smoke-particle-actor",
             "components": [
                 {
                     "type": "transform",
                     "atc-init-position": [
                         0.0,
+                        -15.0,
+                        50.0
+                    ],
+                    "atc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "atc-init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "apc-emit-per-second": 20.0,
+                    "apc-velocity": [
+                        0.0,
+                        1.0,
+                        0.0
+                    ],
+                    "apc-pos-variance": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ],
+                    "apc-vel-variance": 1.0,
+                    "apc-acceleration": [
+                        0.0,
+                        0.98,
+                        0.0
+                    ],
+                    "apc-particle-mass": 1.0,
+                    "apc-life-span": 30.0,
+                    "apc-start-end-size": [
+                        2.0,
+                        5.0
+                    ],
+                    "apc-start-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "apc-end-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "apc-streak-flag": false,
+                    "apc-texture-name": "smoke"
+                }
+            ]
+        },
+        {
+            "actor-name": "sp-rex-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "atc-init-position": [
+                        -20.0,
                         -20.0,
                         60.0
                     ],
                     "atc-init-angle": [
                         0.0,
-                        0.0,
+                        -2.27,
                         0.0
                     ],
                     "atc-init-scale": [
@@ -471,14 +537,8 @@
                 },
                 {
                     "type": "animate",
-                    "aac-init-animation": "run",
+                    "aac-init-animation": "idle",
                     "aac-speed-factor": 50.0
-                },
-                {
-                    "type": "interact",
-                    "aitc-init-func-name": "aniInit",
-                    "aitc-update-func-name": "aniUpdate",
-                    "aitc-destory-func-name": "aniDestory"
                 }
             ]
         },
@@ -494,7 +554,7 @@
                     ],
                     "atc-init-angle": [
                         0.0,
-                        0.0,
+                        2.27,
                         0.0
                     ],
                     "atc-init-scale": [
@@ -513,97 +573,8 @@
                 },
                 {
                     "type": "animate",
-                    "aac-init-animation": "bite",
+                    "aac-init-animation": "idle",
                     "aac-speed-factor": 50.0
-                }
-            ]
-        },
-        {
-            "actor-name": "sp-fenghuang-actor",
-            "components": [
-                {
-                    "type": "transform",
-                    "atc-init-position": [
-                        0.0,
-                        5.0,
-                        50.0
-                    ],
-                    "atc-init-angle": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "atc-init-scale": [
-                        0.02,
-                        0.02,
-                        0.02
-                    ]
-                },
-                {
-                    "type": "mesh",
-                    "amc-meshes": [
-                        {
-                            "mesh-name": "fenghuang"
-                        }
-                    ],
-                    "amc-emissive-intensity": 3.0
-                },
-                {
-                    "type": "animate",
-                    "aac-init-animation": "Take 001",
-                    "aac-speed-factor": 1.0
-                }
-            ]
-        },
-        {
-            "actor-name": "sp-bill-board-actor",
-            "components": [
-                {
-                    "type": "transform",
-                    "atc-init-position": [
-                        15.0,
-                        -7.0,
-                        30.0
-                    ],
-                    "atc-init-angle": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "atc-init-scale": [
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                },
-                {
-                    "type": "sprite",
-                    "asc-texture": "runman.png",
-                    "asc-billboard": true,
-                    "asc-size": [
-                        10.0,
-                        10.0
-                    ],
-                    "asc-tex-coord": [
-                        0.0,
-                        0.0,
-                        1.0,
-                        1.0
-                    ],
-                    "asc-with-animation": true,
-                    "asc-stride": [
-                        0.2,
-                        0.5
-                    ],
-                    "asc-max-cut": 10,
-                    "asc-switch-time": 0.02,
-                    "asc-repeat-flag": true
-                },
-                {
-                    "type": "interact",
-                    "aitc-init-func-name": "bbInit",
-                    "aitc-update-func-name": "bbUpdate",
-                    "aitc-destory-func-name": "bbDestory"
                 }
             ]
         }
