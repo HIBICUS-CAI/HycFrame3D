@@ -43,10 +43,8 @@ void testASpInput(AInputComponent *Aic, const Timer &Timer) {
     Aic->getSceneNode().getMainCamera()->rotateRSCamera(0.f, HoriR);
   }
 
-  if (input::isKeyPushedInSingle(KB_RETURN)) {
-    P_LOG(LOG_DEBUG, "to test2");
-    Aic->getSceneNode().getSceneManager()->loadSceneNode("sample2-scene",
-                                                         "sample2-scene.json");
+  if (input::isKeyPushedInSingle(KB_ESCAPE)) {
+    PostQuitMessage(0);
   }
 
   if (input::isKeyPushedInSingle(KB_P)) {
