@@ -62,7 +62,7 @@ downsampling-count = 7
 # gauss bluring count for each level's downsampling,
 #   final bluring count would be
 #   "downsampling-count" * "downsampling-blur-count".
-downsampling-blur-count = 9
+downsampling-blur-count = 2
 # type : uint
 # gauss bluring kernel's size,
 #   with radius as ((int)"gauss-kernel-size" / 2).
