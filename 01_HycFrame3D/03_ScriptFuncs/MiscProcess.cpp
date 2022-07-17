@@ -24,11 +24,11 @@ void RegisterMiscProcess(ObjectFactory* _factory)
     _factory->getUDestoryMapPtr().insert(
         { FUNC_NAME(ResultDestory),ResultDestory });
     _factory->getUInitMapPtr().insert(
-        { FUNC_NAME(LogoFadeInit),LogoFadeInit });
+        { FUNC_NAME(logoFadeInit),logoFadeInit });
     _factory->getUUpdateMapPtr().insert(
-        { FUNC_NAME(LogoFadeUpdate),LogoFadeUpdate });
+        { FUNC_NAME(logoFadeUpdate),logoFadeUpdate });
     _factory->getUDestoryMapPtr().insert(
-        { FUNC_NAME(LogoFadeDestory),LogoFadeDestory });
+        { FUNC_NAME(logoFadeDestory),logoFadeDestory });
 }
 
 static ATransformComponent* g_DragonAtc = nullptr;
@@ -155,7 +155,7 @@ void ResultDestory(UInteractComponent* _uitc)
 static USpriteComponent* g_LogoFadeUsc = nullptr;
 static float g_LogoTimer = 0.f;
 
-bool LogoFadeInit(UInteractComponent* _uitc)
+bool logoFadeInit(UInteractComponent* _uitc)
 {
     g_LogoTimer = 0.f;
     g_LogoFadeUsc = _uitc->getUiOwner()->
@@ -164,7 +164,7 @@ bool LogoFadeInit(UInteractComponent* _uitc)
     return true;
 }
 
-void LogoFadeUpdate(UInteractComponent* _uitc, const Timer& _timer)
+void logoFadeUpdate(UInteractComponent* _uitc, const Timer& _timer)
 {
     if (g_LogoTimer < 1000.f)
     {
@@ -188,7 +188,7 @@ void LogoFadeUpdate(UInteractComponent* _uitc, const Timer& _timer)
     g_LogoTimer += _timer.floatDeltaTime();
 }
 
-void LogoFadeDestory(UInteractComponent* _uitc)
+void logoFadeDestory(UInteractComponent* _uitc)
 {
     g_LogoTimer = 0.f;
     g_LogoFadeUsc = nullptr;

@@ -1,0 +1,576 @@
+{
+    "$schema": "../Configs/scene-file-json-schema.json",
+    "scene-name": "select-scene",
+    "ambient-factor": [
+        0.8,
+        0.8,
+        0.8,
+        1.0
+    ],
+    "audio-assets": [
+        {
+            "audio-name": "click-btn",
+            "audio-file": "se-click-button.wav"
+        },
+        {
+            "audio-name": "select-btn",
+            "audio-file": "se-select-button.wav"
+        },
+        {
+            "audio-name": "start-run",
+            "audio-file": "se-start-run.wav"
+        },
+        {
+            "audio-name": "start-tutorial",
+            "audio-file": "se-start-tutorial.wav"
+        }
+    ],
+    "actor": [
+        {
+            "actor-name": "temp-run-cmd-actor",
+            "components": [
+                {
+                    "type": "input",
+                    "aic-func-name": "tempToRun"
+                }
+            ]
+        }
+    ],
+    "ui": [
+        {
+            "ui-name": "hill-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        0.1,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-hill.png"
+                },
+                {
+                    "type": "interact",
+                    "uitc-init-func-name": "HillInfoInit",
+                    "uitc-update-func-name": "HillInfoUpdate",
+                    "uitc-destory-func-name": "HillInfoDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "back-title-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        -500.0,
+                        300.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-title.png"
+                },
+                {
+                    "type": "button",
+                    "ubc-init-selected": false,
+                    "ubc-down-btn": "tutorial-btn-ui",
+                    "ubc-right-btn": "tutorial-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "uic-func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "uauc-sounds": [
+                        "select-btn",
+                        "click-btn"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "tutorial-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        -300.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-tutorial.png"
+                },
+                {
+                    "type": "button",
+                    "ubc-init-selected": true,
+                    "ubc-up-btn": "back-title-btn-ui",
+                    "ubc-left-btn": "back-title-btn-ui",
+                    "ubc-right-btn": "route1-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "uic-func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "uauc-sounds": [
+                        "select-btn",
+                        "start-tutorial"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "route1-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        300.0,
+                        100.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-route1.png"
+                },
+                {
+                    "type": "button",
+                    "ubc-init-selected": false,
+                    "ubc-down-btn": "route2-btn-ui",
+                    "ubc-left-btn": "tutorial-btn-ui",
+                    "ubc-right-btn": "quit-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "uic-func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "uauc-sounds": [
+                        "select-btn",
+                        "start-run"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "route2-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        300.0,
+                        -100.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-route2.png"
+                },
+                {
+                    "type": "button",
+                    "ubc-init-selected": false,
+                    "ubc-left-btn": "tutorial-btn-ui",
+                    "ubc-up-btn": "route1-btn-ui",
+                    "ubc-down-btn": "quit-btn-ui",
+                    "ubc-right-btn": "quit-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "uic-func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "uauc-sounds": [
+                        "select-btn",
+                        "start-run"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "quit-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        500.0,
+                        -300.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-quit.png"
+                },
+                {
+                    "type": "button",
+                    "ubc-init-selected": false,
+                    "ubc-left-btn": "route2-btn-ui",
+                    "ubc-up-btn": "route2-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "uic-func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "uauc-sounds": [
+                        "select-btn",
+                        "click-btn"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "text-tutorial-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        128.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-text-tutorial.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "text-route1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        128.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-text-route1.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "text-route2-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        128.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-text-route2.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "uitc-init-func-name": "SceneFadeInit",
+                    "uitc-update-func-name": "SceneFadeUpdate",
+                    "uitc-destory-func-name": "SceneFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        -320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        540.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        -540.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        }
+    ]
+}

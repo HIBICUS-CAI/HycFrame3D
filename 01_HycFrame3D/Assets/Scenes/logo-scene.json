@@ -1,0 +1,212 @@
+{
+    "$schema": "../Configs/scene-file-json-schema.json",
+    "scene-name": "logo-scene",
+    "ambient-factor": [
+        0.5,
+        0.5,
+        0.5,
+        1.0
+    ],
+    "audio-assets": [
+        {
+            "audio-name": "title",
+            "audio-file": "bgm-title.wav"
+        },
+        {
+            "audio-name": "route1",
+            "audio-file": "bgm-route1.wav"
+        },
+        {
+            "audio-name": "route2",
+            "audio-file": "bgm-route2.wav"
+        },
+        {
+            "audio-name": "result",
+            "audio-file": "bgm-success.wav"
+        }
+    ],
+    "actor": [
+        {
+            "actor-name": "temp-cmd-actor",
+            "components": [
+                {
+                    "type": "input",
+                    "aic-func-name": "tempToTitle"
+                }
+            ]
+        }
+    ],
+    "ui": [
+        {
+            "ui-name": "white-bg-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "my-logo-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        -320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        400.0,
+                        400.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "my_logo.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "frame-logo-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        250.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        600.0,
+                        100.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "frame_logo.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "url-logo-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        -320.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1000.0,
+                        100.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "url_logo.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "fade-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                },
+                {
+                    "type": "interact",
+                    "uitc-init-func-name": "logoFadeInit",
+                    "uitc-update-func-name": "logoFadeUpdate",
+                    "uitc-destory-func-name": "logoFadeDestory"
+                }
+            ]
+        }
+    ]
+}

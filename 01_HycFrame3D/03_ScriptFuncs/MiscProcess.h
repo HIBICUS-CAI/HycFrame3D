@@ -3,7 +3,7 @@
 #include "ActorAll.h"
 #include "UiAll.h"
 
-void RegisterMiscProcess(ObjectFactory* _factory);
+void RegisterMiscProcess(ObjectFactory* Factory);
 
 bool DragonInit(AInteractComponent*);
 void DragonUpdate(AInteractComponent*, const Timer&);
@@ -17,6 +17,6 @@ bool ResultInit(UInteractComponent*);
 void ResultUpdate(UInteractComponent*, const Timer&);
 void ResultDestory(UInteractComponent*);
 
-bool LogoFadeInit(UInteractComponent*);
-void LogoFadeUpdate(UInteractComponent*, const Timer&);
-void LogoFadeDestory(UInteractComponent*);
+bool logoFadeInit(UInteractComponent*);
+void logoFadeUpdate(UInteractComponent*, const Timer&);
+void logoFadeDestory(UInteractComponent*);

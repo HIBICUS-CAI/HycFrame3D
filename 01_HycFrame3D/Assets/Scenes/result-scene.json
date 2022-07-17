@@ -1,0 +1,290 @@
+{
+    "$schema": "../Configs/scene-file-json-schema.json",
+    "scene-name": "result-scene",
+    "ambient-factor": [
+        0.8,
+        0.8,
+        0.8,
+        1.0
+    ],
+    "ibl-environment": "winter_forest_env.dds",
+    "ibl-diffuse": "winter_forest_diff.dds",
+    "ibl-specular": "winter_forest_spec.dds",
+    "audio-assets": [
+        {
+            "audio-name": "click-btn",
+            "audio-file": "se-click-button.wav"
+        },
+        {
+            "audio-name": "select-btn",
+            "audio-file": "se-select-button.wav"
+        },
+        {
+            "audio-name": "start-run",
+            "audio-file": "se-start-run.wav"
+        },
+        {
+            "audio-name": "start-tutorial",
+            "audio-file": "se-start-tutorial.wav"
+        }
+    ],
+    "actor": [
+        {
+            "actor-name": "temp-cmd-actor",
+            "components": [
+                {
+                    "type": "input",
+                    "aic-func-name": "tempToTitle"
+                }
+            ]
+        }
+    ],
+    "ui": [
+        {
+            "ui-name": "congratuate-ani-ui",
+            "components":[
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        1280.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "empty.png"
+                },
+                {
+                    "type": "animate",
+                    "uac-animates": [
+                        {
+                            "name": "success",
+                            "tex-file": "congratuate_animate.png",
+                            "u-v-stride": [
+                                0.2,
+                                1.0
+                            ],
+                            "max-count": 5,
+                            "switch-time": 0.2,
+                            "repeat-flag": true
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "uitc-init-func-name": "ResultInit",
+                    "uitc-update-func-name": "ResultUpdate",
+                    "uitc-destory-func-name": "ResultDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "result-title-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        -300.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-title.png"
+                },
+                {
+                    "type": "button",
+                    "ubc-init-selected": true
+                },
+                {
+                    "type": "input",
+                    "uic-func-name": "NormalBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "uauc-sounds": [
+                        "select-btn",
+                        "click-btn"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "uitc-init-func-name": "SceneFadeInit",
+                    "uitc-update-func-name": "SceneFadeUpdate",
+                    "uitc-destory-func-name": "SceneFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        -320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        540.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        -540.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        }
+    ]
+}

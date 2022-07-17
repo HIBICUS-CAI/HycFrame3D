@@ -5,9 +5,9 @@
 # the name of the first scene,
 #   should be same with the name
 #   definites in scene file below.
-name = "sample1-scene"
+name = "result-scene"
 # type : string
 # the name of the first scene file,
 #   the scene name definites in this file
 #   should be same with the name above.
-file = "sample1-scene.json"
+file = "result-scene.json"

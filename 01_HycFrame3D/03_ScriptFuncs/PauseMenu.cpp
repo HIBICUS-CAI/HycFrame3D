@@ -100,7 +100,7 @@ void PauseMenuBtnInput(UInputComponent* _uic, const Timer& _timer)
     }
     if (GetSceneOutFinish(DEST_NOT_REACH))
     {
-        P_LOG(LOG_DEBUG, "to title\n");
+        P_LOG(LOG_DEBUG, "to title");
         _uic->getUiOwner()->getSceneNode().getSceneManager()->
             loadSceneNode("title-scene", "title-scene.json");
         stopBGM();

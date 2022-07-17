@@ -1,0 +1,3931 @@
+{
+    "scene-name": "tutorial-scene",
+    "ambient-light": [
+        0.2,
+        0.2,
+        0.2,
+        1.0
+    ],
+    "model-assets": [
+        {
+            "mesh-name": "ground-grid",
+            "load-mode": "program-grid",
+            "force-diffuse": "white_tile_diffuse.jpg",
+            "force-normal": "white_tile_normal.jpg",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "grid-size": [
+                    100.0,
+                    100.0
+                ],
+                "row-col-count": [
+                    2,
+                    2
+                ]
+            }
+        },
+        {
+            "mesh-name": "wall-box",
+            "load-mode": "program-box",
+            "force-diffuse": "white_tile_diffuse.jpg",
+            "force-normal": "white_tile_normal.jpg",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    2.0,
+                    100.0,
+                    100.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "obstacle-box",
+            "load-mode": "program-box",
+            "force-diffuse": "tile.dds",
+            "force-normal": "tile_nmap.dds",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    100.0,
+                    100.0,
+                    100.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "dragon",
+            "load-mode": "model-file",
+            "load-info": {
+                "model-file": "Dragon.FBX.meshdata",
+                "file-type": "binary"
+            }
+        },
+        {
+            "mesh-name": "small-yel-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    0.2,
+                    0.3,
+                    0.3
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "smallest-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "box-size": [
+                    0.025,
+                    0.05,
+                    0.025
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "gun-bullet",
+            "load-mode": "program-sphere",
+            "force-diffuse": "tile.dds",
+            "force-normal": "tile_nmap.dds",
+            "load-info": {
+                "tex-file": "cloud.png",
+                "radius": 0.3,
+                "slice-stack-count": [
+                    8,
+                    8
+                ]
+            }
+        },
+        {
+            "mesh-name": "destination-cyl",
+            "load-mode": "program-cylinder",
+            "load-info": {
+                "tex-file": "sand.jpg",
+                "top-btm-het-size": [
+                    0.1,
+                    10.0,
+                    20.0
+                ],
+                "slice-stack-count": [
+                    3,
+                    1
+                ]
+            }
+        },
+        {
+            "mesh-name": "need-get-down-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "tutorial_not_here.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "move-cam-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "move_and_camera.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "jump-dash-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "jump_and_dash.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "aim-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "aim.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "normal-crystal-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "normal_crystal.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "sleep-crystal-0-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sleep_crystal_0.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "sleep-crystal-1-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "sleep_crystal_1.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        },
+        {
+            "mesh-name": "goal-manual-box",
+            "load-mode": "program-box",
+            "load-info": {
+                "tex-file": "goal.png",
+                "box-size": [
+                    1.0,
+                    1.0,
+                    1.0
+                ],
+                "divide": 0
+            }
+        }
+    ],
+    "audio-assets": [
+        {
+            "audio-name": "click-btn",
+            "audio-file": "se-click-button.wav"
+        },
+        {
+            "audio-name": "crystal-hit",
+            "audio-file": "se-crystal-hit.wav"
+        },
+        {
+            "audio-name": "dash",
+            "audio-file": "se-dash.wav"
+        },
+        {
+            "audio-name": "fall",
+            "audio-file": "se-fall.wav"
+        },
+        {
+            "audio-name": "goal",
+            "audio-file": "se-goal.wav"
+        },
+        {
+            "audio-name": "jump",
+            "audio-file": "se-jump.wav"
+        },
+        {
+            "audio-name": "select-btn",
+            "audio-file": "se-select-button.wav"
+        },
+        {
+            "audio-name": "shoot",
+            "audio-file": "se-shoot.wav"
+        },
+        {
+            "audio-name": "wake-crystal",
+            "audio-file": "se-wake-crystal.wav"
+        }
+    ],
+    "actor": [
+        {
+            "actor-name": "move-cam-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        5.0,
+                        -3.8
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        10.0,
+                        10.0,
+                        10.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "move-cam-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-jumpdash0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -45.0,
+                        70.0,
+                        175.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-jumpdash1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        45.0,
+                        70.0,
+                        175.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-jumpdash2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -45.0,
+                        5.0,
+                        175.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-jumpdash3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        45.0,
+                        5.0,
+                        175.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "jump-dash-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        37.5,
+                        200.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        74.9,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "jump-dash-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-aim-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        35.0,
+                        75.0,
+                        350.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        80.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "aim-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        37.5,
+                        350.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        75.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "aim-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-normal-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        5.0,
+                        540.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-normal-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        5.0,
+                        460.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-normal-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        5.0,
+                        540.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-normal-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        5.0,
+                        460.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "normal-crystal-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        37.5,
+                        500.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        75.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "normal-crystal-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-shoot-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        5.0,
+                        690.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-shoot-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        5.0,
+                        610.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-shoot-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        5.0,
+                        690.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light-shoot-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        5.0,
+                        610.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        50.0,
+                        70.0
+                    ],
+                    "spot-power": 0.0
+                }
+            ]
+        },
+        {
+            "actor-name": "sleep-crystal-0-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        37.5,
+                        650.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        75.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "sleep-crystal-0-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "sleep-crystal-1-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -49.0,
+                        37.5,
+                        650.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        75.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "sleep-crystal-1-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-point-light-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        190.0,
+                        780.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-point-light-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        135.0,
+                        780.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-point-light-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        190.0,
+                        780.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-point-light-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        135.0,
+                        780.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "goal-manual-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        162.5,
+                        799.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        75.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "goal-manual-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-point-light-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        100.0,
+                        275.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        93.75,
+                        250.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        37.5,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "need-get-down-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-point-light-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        150.0,
+                        450.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        49.0,
+                        143.75,
+                        425.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        37.5,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "need-get-down-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-point-light-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        150.0,
+                        600.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.6,
+                        0.6,
+                        0.6
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        70.0,
+                        90.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "need-down-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -49.0,
+                        143.75,
+                        575.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        37.5,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "need-get-down-box"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "player-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        10.0,
+                        25.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        3.14,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "input",
+                    "func-name": "PlayerInput"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "PlayerInit",
+                    "update-func-name": "PlayerUpdate",
+                    "destory-func-name": "PlayerDestory"
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        3.0
+                    ]
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "dash",
+                        "jump",
+                        "shoot"
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "player-angle-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        3.14,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "player-gun-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        5.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        3.14,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "smallest-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.025,
+                                2.6
+                            ]
+                        },
+                        {
+                            "mesh-name": "small-yel-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.2,
+                                2.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "small-yel-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.2,
+                                2.3
+                            ]
+                        },
+                        {
+                            "mesh-name": "small-yel-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.2,
+                                2.6
+                            ]
+                        },
+                        {
+                            "mesh-name": "small-yel-box",
+                            "mesh-offset": [
+                                0.0,
+                                -0.4,
+                                2.0
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-manager",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "BulletManagerInit",
+                    "update-func-name": "BulletManagerUpdate",
+                    "destory-func-name": "BulletManagerDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        0.3
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "gun-bullet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        0.3
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "gun-bullet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "bullet-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        0.3
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "gun-bullet"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -50.0,
+                        100.0,
+                        400.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        2.0,
+                        300.0,
+                        800.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                -350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                -350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                -250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                -250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                -150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                -150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                350.0
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        50.0,
+                        100.0,
+                        400.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        2.0,
+                        300.0,
+                        800.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                -350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                -350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                -250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                -250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                -150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                -150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                350.0
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        100.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        1.57,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        2.0,
+                        300.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                0.0
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "wall-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        100.0,
+                        800.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        1.57,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        2.0,
+                        300.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                -50.0,
+                                0.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "wall-box",
+                            "mesh-offset": [
+                                0.0,
+                                50.0,
+                                0.0
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "obs-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        25.0,
+                        250.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        100.0,
+                        100.0,
+                        100.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "obstacle-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "obs-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        20.0,
+                        405.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        0.005,
+                        1.0,
+                        0.5
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        0.5,
+                        100.0,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "obstacle-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "obs-2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        62.5,
+                        425.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.25,
+                        0.5
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        100.0,
+                        125.0,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "obstacle-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "obs-3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        62.5,
+                        575.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.25,
+                        0.5
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        100.0,
+                        125.0,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "obstacle-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "obs-4-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        62.5,
+                        725.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.25,
+                        0.5
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        100.0,
+                        125.0,
+                        50.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "obstacle-box"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "ObstacleInit",
+                    "update-func-name": "ObstacleUpdate",
+                    "destory-func-name": "ObstacleDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "n-crystal-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        40.0,
+                        500.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "NCrystalInit",
+                    "update-func-name": "NCrystalUpdate",
+                    "destory-func-name": "NCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        0.9,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit"
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "s-crystal-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        40.0,
+                        650.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        3.0,
+                        3.0,
+                        3.0
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "SCrystalInit",
+                    "update-func-name": "SCrystalUpdate",
+                    "destory-func-name": "SCrystalDestory"
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.9,
+                        0.0,
+                        0.9
+                    ],
+                    "direction": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "crystal-hit",
+                        "wake-crystal"
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "destination-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        8.0,
+                        775.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "destination-cyl"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "DestInit",
+                    "update-func-name": "DestUpdate",
+                    "destory-func-name": "DestDestory"
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        10.0,
+                        20.0,
+                        10.0
+                    ]
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "goal"
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "destination-particle-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        20.0,
+                        775.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "emit-per-second": 400.0,
+                    "velocity": [
+                        0.0,
+                        30.0,
+                        0.0
+                    ],
+                    "pos-variance": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "vel-variance": 0.5,
+                    "acceleration": [
+                        0.0,
+                        -9.8,
+                        0.0
+                    ],
+                    "particle-mass": 0.3,
+                    "life-span": 100.0,
+                    "start-end-size": [
+                        0.5,
+                        0.0
+                    ],
+                    "start-color": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "end-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "streak-flag": true,
+                    "texture-name": "circle"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "DestPtcInit",
+                    "update-func-name": "DestPtcUpdate",
+                    "destory-func-name": "DestPtcDestory"
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "sphere",
+                    "collision-size": [
+                        100.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "ground-0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        400.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        300.0,
+                        2.0,
+                        800.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                350.0
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "GoundInit",
+                    "update-func-name": "GoundUpdate",
+                    "destory-func-name": "GoundDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "ground-1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        200.0,
+                        400.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        3.14
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "collision",
+                    "collision-shape": "box",
+                    "collision-size": [
+                        300.0,
+                        2.0,
+                        800.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -350.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                -50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                50.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                150.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                250.0
+                            ]
+                        },
+                        {
+                            "mesh-name": "ground-grid",
+                            "mesh-offset": [
+                                0.0,
+                                0.0,
+                                350.0
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "GoundInit",
+                    "update-func-name": "GoundUpdate",
+                    "destory-func-name": "GoundDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "dragon-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        20.0,
+                        50.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        0.25,
+                        0.25,
+                        0.25
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "meshes": [
+                        {
+                            "mesh-name": "dragon"
+                        }
+                    ]
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "DragonInit",
+                    "update-func-name": "DragonUpdate",
+                    "destory-func-name": "DragonDestory"
+                }
+            ]
+        },
+        {
+            "actor-name": "direct-light0-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -15.0,
+                        40.0,
+                        40.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "direct",
+                    "with-shadow": true,
+                    "with-bloom": false,
+                    "strength": [
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "direction": [
+                        1.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        5.0,
+                        15.0
+                    ],
+                    "spot-power": 2.0,
+                    "cam-up-vec": [
+                        1.0,
+                        1.0,
+                        -1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "direct-light1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        15.0,
+                        40.0,
+                        40.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "direct",
+                    "with-shadow": true,
+                    "with-bloom": false,
+                    "strength": [
+                        0.0,
+                        1.0,
+                        1.0
+                    ],
+                    "direction": [
+                        -1.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        5.0,
+                        15.0
+                    ],
+                    "spot-power": 2.0,
+                    "cam-up-vec": [
+                        -1.0,
+                        1.0,
+                        -1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "direct-light2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        40.0,
+                        60.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "direct",
+                    "with-shadow": true,
+                    "with-bloom": false,
+                    "strength": [
+                        1.0,
+                        0.0,
+                        1.0
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        5.0,
+                        15.0
+                    ],
+                    "spot-power": 2.0,
+                    "cam-up-vec": [
+                        0.0,
+                        1.0,
+                        -1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light1-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -40.0,
+                        100.0,
+                        100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        9.0,
+                        9.0,
+                        9.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        1.0,
+                        1.0,
+                        0.0
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light2-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        40.0,
+                        100.0,
+                        100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        9.0,
+                        9.0,
+                        9.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        0.0,
+                        1.0,
+                        1.0
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        },
+        {
+            "actor-name": "point-light3-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        100.0,
+                        100.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        9.0,
+                        9.0,
+                        9.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "light-type": "point",
+                    "with-shadow": false,
+                    "with-bloom": true,
+                    "strength": [
+                        1.0,
+                        0.0,
+                        1.0
+                    ],
+                    "direction": [
+                        0.0,
+                        -1.0,
+                        -1.0
+                    ],
+                    "fall-off-start-end": [
+                        30.0,
+                        80.0
+                    ],
+                    "spot-power": 5.0
+                }
+            ]
+        }
+    ],
+    "ui": [
+        {
+            "ui-name": "bullet-icon0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        350.0,
+                        -340.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        40.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "bullet_icon.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "bullet-icon1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        470.0,
+                        -340.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        40.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "bullet_icon.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "bullet-icon2-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        590.0,
+                        -340.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        100.0,
+                        40.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "bullet_icon.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "pause-menu-main-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.8
+                    ],
+                    "tex-file": "white.jpg"
+                },
+                {
+                    "type": "input",
+                    "func-name": "PauseMenuInput"
+                },
+                {
+                    "type": "interact",
+                    "init-func-name": "PauseMenuInit",
+                    "update-func-name": "PauseMenuUpdate",
+                    "destory-func-name": "PauseMenuDestory"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "pause-continue-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        50.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "ui-continue.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": true,
+                    "down-btn": "pause-title-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "PauseMenuBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn",
+                        "click-btn"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "pause-title-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -50.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        200.0,
+                        50.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "ui-title.png"
+                },
+                {
+                    "type": "button",
+                    "init-selected": false,
+                    "up-btn": "pause-continue-btn-ui"
+                },
+                {
+                    "type": "input",
+                    "func-name": "PauseMenuBtnInput"
+                },
+                {
+                    "type": "audio",
+                    "sounds": [
+                        "select-btn",
+                        "click-btn"
+                    ]
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "DeadFadeInit",
+                    "update-func-name": "DeadFadeUpdate",
+                    "destory-func-name": "DeadFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -576.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -448.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-2-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -320.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-3-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -192.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-4-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -64.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-5-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        64.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-6-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        192.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-7-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        320.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-8-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        448.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "dead-black-9-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        576.0,
+                        720.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        128.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "init-func-name": "SceneFadeInit",
+                    "update-func-name": "SceneFadeUpdate",
+                    "destory-func-name": "SceneFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        -320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        540.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "init-position": [
+                        0.0,
+                        -540.0,
+                        0.0
+                    ],
+                    "init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "tex-file": "white.jpg"
+                }
+            ]
+        }
+    ]
+}

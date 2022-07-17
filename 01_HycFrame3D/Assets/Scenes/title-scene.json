@@ -1,0 +1,333 @@
+{
+    "$schema": "../Configs/scene-file-json-schema.json",
+    "scene-name": "title-scene",
+    "ambient-factor": [
+        0.8,
+        0.8,
+        0.8,
+        1.0
+    ],
+    "ibl-environment": "winter_forest_env.dds",
+    "ibl-diffuse": "winter_forest_diff.dds",
+    "ibl-specular": "winter_forest_spec.dds",
+    "audio-assets": [
+        {
+            "audio-name": "click-btn",
+            "audio-file": "se-click-button.wav"
+        },
+        {
+            "audio-name": "crystal-hit",
+            "audio-file": "se-crystal-hit.wav"
+        },
+        {
+            "audio-name": "dash",
+            "audio-file": "se-dash.wav"
+        },
+        {
+            "audio-name": "fall",
+            "audio-file": "se-fall.wav"
+        },
+        {
+            "audio-name": "goal",
+            "audio-file": "se-goal.wav"
+        },
+        {
+            "audio-name": "jump",
+            "audio-file": "se-jump.wav"
+        },
+        {
+            "audio-name": "select-btn",
+            "audio-file": "se-select-button.wav"
+        },
+        {
+            "audio-name": "shoot",
+            "audio-file": "se-shoot.wav"
+        },
+        {
+            "audio-name": "start-run",
+            "audio-file": "se-start-run.wav"
+        },
+        {
+            "audio-name": "start-tutorial",
+            "audio-file": "se-start-tutorial.wav"
+        },
+        {
+            "audio-name": "wake-crystal",
+            "audio-file": "se-wake-crystal.wav"
+        }
+    ],
+    "actor": [
+        {
+            "actor-name": "temp-cmd-actor",
+            "components": [
+                {
+                    "type": "input",
+                    "aic-func-name": "tempToSelect"
+                }
+            ]
+        },
+        {
+            "actor-name": "cam-rotate-actor",
+            "components": [
+                {
+                    "type": "interact",
+                    "aitc-init-func-name": "TitleCamInit",
+                    "aitc-update-func-name": "TitleCamUpdate",
+                    "aitc-destory-func-name": "TitleCamDestory"
+                }
+            ]
+        }
+    ],
+    "ui": [
+        {
+            "ui-name": "start-game-btn-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        0.0,
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "usc-tex-file": "empty.png"
+                },
+                {
+                    "type": "button",
+                    "ubc-init-selected": true
+                },
+                {
+                    "type": "input",
+                    "uic-func-name": "NormalBtnInput"
+                }
+            ]
+        },
+        {
+            "ui-name": "btn-hint-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        -200.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        128.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "ui-title-btn.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "title-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        100.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "title1.png"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-fade-manager-ui",
+            "components": [
+                {
+                    "type": "interact",
+                    "uitc-init-func-name": "SceneFadeInit",
+                    "uitc-update-func-name": "SceneFadeUpdate",
+                    "uitc-destory-func-name": "SceneFadeDestory"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        -320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-in-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        320.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        640.0,
+                        720.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-0-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        540.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        },
+        {
+            "ui-name": "scene-out-1-ui",
+            "components": [
+                {
+                    "type": "transform",
+                    "utc-init-position": [
+                        0.0,
+                        -540.0,
+                        0.0
+                    ],
+                    "utc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "utc-init-scale": [
+                        1280.0,
+                        360.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "sprite",
+                    "usc-offset-color": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "usc-tex-file": "white.jpg"
+                }
+            ]
+        }
+    ]
+}

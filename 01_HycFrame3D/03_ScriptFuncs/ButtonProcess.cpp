@@ -131,7 +131,7 @@ void NormalBtnInput(UInputComponent* _uic, const Timer& _timer)
                 playSe("click-btn", 0.3f);
             sceneName = "title-scene";
             sceneFile = "title-scene.json";
-            P_LOG(LOG_DEBUG, "to title\n");
+            P_LOG(LOG_DEBUG, "to title");
             SetSceneOutFlg(true);
         }
         else if (ubc->getCompName() == "tutorial-btn-ui-button")
@@ -142,7 +142,7 @@ void NormalBtnInput(UInputComponent* _uic, const Timer& _timer)
                 playSe("start-tutorial", 0.3f);
             sceneName = "tutorial-scene";
             sceneFile = "tutorial-scene.json";
-            P_LOG(LOG_DEBUG, "to tutorial\n");
+            P_LOG(LOG_DEBUG, "to tutorial");
             SetSceneOutFlg(true);
         }
         else if (ubc->getCompName() == "route1-btn-ui-button")
@@ -155,7 +155,7 @@ void NormalBtnInput(UInputComponent* _uic, const Timer& _timer)
                 playSe("start-run", 0.3f);
             sceneName = "run-scene";
             sceneFile = "run-scene.json";
-            P_LOG(LOG_DEBUG, "to run\n");
+            P_LOG(LOG_DEBUG, "to run");
             SetSceneOutFlg(true);
         }
         else if (ubc->getCompName() == "route2-btn-ui-button")
@@ -168,7 +168,7 @@ void NormalBtnInput(UInputComponent* _uic, const Timer& _timer)
                 playSe("start-run", 0.3f);
             sceneName = "route2-scene";
             sceneFile = "route2-scene.json";
-            P_LOG(LOG_DEBUG, "to run2\n");
+            P_LOG(LOG_DEBUG, "to run2");
             SetSceneOutFlg(true);
         }
         else if (ubc->getCompName() == "quit-btn-ui-button")
@@ -185,14 +185,14 @@ void NormalBtnInput(UInputComponent* _uic, const Timer& _timer)
                 playSe("click-btn", 0.3f);
             sceneName = "title-scene";
             sceneFile = "title-scene.json";
-            P_LOG(LOG_DEBUG, "to title\n");
+            P_LOG(LOG_DEBUG, "to title");
             SetSceneOutFlg(true);
         }
         else if (ubc->getCompName() == "start-game-btn-ui-button")
         {
             sceneName = "select-scene";
             sceneFile = "select-scene.json";
-            P_LOG(LOG_DEBUG, "to select\n");
+            P_LOG(LOG_DEBUG, "to select");
             SetSceneOutFlg(true);
         }
     }
