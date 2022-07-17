@@ -347,7 +347,19 @@
     <ClCompile Include="02_FrameContent\UTransformComponent.cpp" />
     <ClCompile Include="03_ScriptFuncs\00_FunctionRegister.cpp" />
     <ClCompile Include="03_ScriptFuncs\01_MaterialEditor.cpp" />
+    <ClCompile Include="03_ScriptFuncs\BulletProcess.cpp" />
+    <ClCompile Include="03_ScriptFuncs\ButtonProcess.cpp" />
+    <ClCompile Include="03_ScriptFuncs\DestProcess.cpp" />
+    <ClCompile Include="03_ScriptFuncs\FadeProcess.cpp" />
+    <ClCompile Include="03_ScriptFuncs\MiscProcess.cpp" />
+    <ClCompile Include="03_ScriptFuncs\NormalCrystal.cpp" />
+    <ClCompile Include="03_ScriptFuncs\PauseMenu.cpp" />
+    <ClCompile Include="03_ScriptFuncs\PlayerProcess.cpp" />
+    <ClCompile Include="03_ScriptFuncs\SleepCrystal.cpp" />
     <ClCompile Include="03_ScriptFuncs\SPInput.cpp" />
+    <ClCompile Include="03_ScriptFuncs\StaticGround.cpp" />
+    <ClCompile Include="03_ScriptFuncs\StaticObstacle.cpp" />
+    <ClCompile Include="03_ScriptFuncs\TitleCamera.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -410,7 +422,19 @@
     <ClInclude Include="02_FrameContent\UTransformComponent.h" />
     <ClInclude Include="03_ScriptFuncs\00_FunctionRegister.h" />
     <ClInclude Include="03_ScriptFuncs\01_MaterialEditor.h" />
+    <ClInclude Include="03_ScriptFuncs\BulletProcess.h" />
+    <ClInclude Include="03_ScriptFuncs\ButtonProcess.h" />
+    <ClInclude Include="03_ScriptFuncs\DestProcess.h" />
+    <ClInclude Include="03_ScriptFuncs\FadeProcess.h" />
+    <ClInclude Include="03_ScriptFuncs\MiscProcess.h" />
+    <ClInclude Include="03_ScriptFuncs\NormalCrystal.h" />
+    <ClInclude Include="03_ScriptFuncs\PauseMenu.h" />
+    <ClInclude Include="03_ScriptFuncs\PlayerProcess.h" />
+    <ClInclude Include="03_ScriptFuncs\SleepCrystal.h" />
     <ClInclude Include="03_ScriptFuncs\SPInput.h" />
+    <ClInclude Include="03_ScriptFuncs\StaticGround.h" />
+    <ClInclude Include="03_ScriptFuncs\StaticObstacle.h" />
+    <ClInclude Include="03_ScriptFuncs\TitleCamera.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\03_InputDevice\03_InputDevice.vcxproj">
