@@ -26,7 +26,7 @@ bool TitleCamInit(AInteractComponent* _aitc)
 
 void TitleCamUpdate(AInteractComponent* _aitc, const Timer& _timer)
 {
-    float time = 0.2f * _timer.floatDeltaTime() / 1000.f;
+    float time = 0.05f * _timer.floatDeltaTime() / 1000.f;
     g_MainCam->rotateRSCamera(0.f, time);
 }
 

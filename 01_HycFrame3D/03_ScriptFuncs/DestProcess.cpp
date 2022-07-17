@@ -88,11 +88,11 @@ void DestPtcUpdate(AInteractComponent* _aitc, const Timer& _timer)
 {
     if (g_DestPtcAcc->checkCollisionWith(PLAYER_NAME))
     {
-        g_DestPtcApc->getEmitterInfo().EmitNumPerSecond = 2400.f;
+        g_DestPtcApc->getEmitterInfo().EmitNumPerSecond = 240.f;
     }
     else
     {
-        g_DestPtcApc->getEmitterInfo().EmitNumPerSecond = 800.f;
+        g_DestPtcApc->getEmitterInfo().EmitNumPerSecond = 80.f;
     }
 }
 

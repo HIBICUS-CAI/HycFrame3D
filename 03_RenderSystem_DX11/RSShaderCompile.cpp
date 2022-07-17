@@ -13,8 +13,8 @@ HRESULT rs_tool::compileShaderFromFile(const WCHAR *FileName,
   DWORD ShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
   ShaderFlags |= D3DCOMPILE_DEBUG;
-  ShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
+  ShaderFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 
   ID3DBlob *ErrorBlobPtr = nullptr;
 

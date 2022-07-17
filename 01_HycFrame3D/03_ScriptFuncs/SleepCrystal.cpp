@@ -38,32 +38,32 @@ void SCrystalUpdate(AInteractComponent* _aitc, const Timer& _timer)
 
     if (isActive && found->second > 0.f)
     {
-        float ratio = 1.f - ((5.f - found->second) / 5.f) + 0.1f;
         found->second -= _timer.floatDeltaTime() / 1000.f;
-        alc->getLightInfo()->setRSLightAlbedo(
-            { 0.f, 0.f, SCRYSTAL_AFTER_COLOR.z * ratio });
+        alc->getLightInfo()->setRSLightAlbedo(SCRYSTAL_AFTER_COLOR);
+        alc->getLightInfo()->setRSLightIntensity(900.f);
         alc->getLightInfo()->updateBloomColor();
     }
     else if (isActive && found->second <= 0.f)
     {
         g_SCrystalActiveMap[_aitc] = FALSE;
         found->second = 0.f;
-        alc->getLightInfo()->setRSLightAlbedo({0.f, 0.f, 0.f});
+        alc->getLightInfo()->setRSLightAlbedo(SCRYSTAL_AFTER_COLOR);
+        alc->getLightInfo()->setRSLightIntensity(0.f);
         alc->getLightInfo()->updateBloomColor();
     }
     else if (found->second < 5.f)
     {
         float ratio = (found->second / 5.f) - 0.2f;
         found->second += _timer.floatDeltaTime() / 1000.f;
-        alc->getLightInfo()->setRSLightAlbedo(
-            { SCRYSTAL_BEFIRE_COLOR.x * ratio, 0.f,
-            SCRYSTAL_BEFIRE_COLOR.z * ratio });
+        alc->getLightInfo()->setRSLightAlbedo(SCRYSTAL_BEFIRE_COLOR);
+        alc->getLightInfo()->setRSLightIntensity(600.f * ratio);
         alc->getLightInfo()->updateBloomColor();
     }
     else
     {
         found->second = 5.f;
         alc->getLightInfo()->setRSLightAlbedo(SCRYSTAL_BEFIRE_COLOR);
+        alc->getLightInfo()->setRSLightIntensity(600.f);
         alc->getLightInfo()->updateBloomColor();
     }
 

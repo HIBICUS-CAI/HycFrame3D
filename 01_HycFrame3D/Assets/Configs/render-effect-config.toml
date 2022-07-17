@@ -62,7 +62,7 @@ downsampling-count = 7
 # gauss bluring count for each level's downsampling,
 #   final bluring count would be
 #   "downsampling-count" * "downsampling-blur-count".
-downsampling-blur-count = 2
+downsampling-blur-count = 9
 # type : uint
 # gauss bluring kernel's size,
 #   with radius as ((int)"gauss-kernel-size" / 2).
@@ -102,7 +102,7 @@ max-value = 10.0
 # the factor to decide curve of adapted luminance to exposure,
 #   scene goes brighter when this value get samller,
 #   as (1 / "inverse-factor" / lumin).
-inverse-factor = 25.0
+inverse-factor = 15.0
 
 # about anti-aliasing fxaa setting.
 [fxaa]

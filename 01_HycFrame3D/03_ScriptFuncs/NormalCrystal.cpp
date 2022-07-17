@@ -2,7 +2,7 @@
 #include "PlayerProcess.h"
 #include <unordered_map>
 
-static const DirectX::XMFLOAT3 NCRYSTAL_COLOR = { 0.f,0.9f,0.f };
+static const float NCRYSTAL_INTENSITY = 300.f;
 static std::unordered_map<AInteractComponent*, float> g_NCrystalTimerMap = {};
 
 void RegisterNormalCrystal(ObjectFactory* _factory)
@@ -41,12 +41,11 @@ void NCrystalUpdate(AInteractComponent* _aitc, const Timer& _timer)
         found->second = 0.f;
     }
 
-    float lightRatio = found->second / 5.f - 0.5f;
+    float lightRatio = found->second / 5.f;
     if (active) { lightRatio = 1.f; }
     auto alc = _aitc->getActorOwner()->
         getComponent<ALightComponent>();
-    alc->getLightInfo()->setRSLightAlbedo(
-        { 0.f, NCRYSTAL_COLOR.y * lightRatio, 0.f });
+    alc->getLightInfo()->setRSLightIntensity(NCRYSTAL_INTENSITY * lightRatio);
     alc->getLightInfo()->updateBloomColor();
 
     found->second += _timer.floatDeltaTime() / 1000.f;
