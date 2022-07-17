@@ -87,9 +87,13 @@ void SceneManager::checkLoadStatus() {
     if (CurrentScenePtr != LoadingScenePtr) {
       NeedRelScenePtr = CurrentScenePtr;
       CurrentScenePtr = LoadingScenePtr;
+      // TEMP----------------
+      NeedRelScenePtr->releaseScene();
+      delete NeedRelScenePtr;
+      // TEMP----------------
     }
 
-    std::thread LoadThread(&SceneManager::loadNextScene, this, NeedRelScenePtr);
+    std::thread LoadThread(&SceneManager::loadNextScene, this, nullptr);
     LoadThread.detach();
   }
 
