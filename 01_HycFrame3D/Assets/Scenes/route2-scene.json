@@ -1,11 +1,15 @@
 {
+    "$schema": "../Configs/scene-file-json-schema.json",
     "scene-name": "route2-scene",
-    "ambient-light": [
-        0.5,
-        0.5,
-        0.5,
+    "ambient-factor": [
+        0.2,
+        0.2,
+        0.2,
         1.0
     ],
+    "ibl-environment": "cape_hill_env.dds",
+    "ibl-diffuse": "cape_hill_diff.dds",
+    "ibl-specular": "cape_hill_spec.dds",
     "audio-assets": [
         {
             "audio-name": "click-btn",
@@ -51,54 +55,74 @@
     "model-assets": [
         {
             "mesh-name": "yel-box",
+            "material-info": {
+                "major-material": "gloss-marble",
+                "minor-material": "rough-marble",
+                "interpolate-factor": 0.5
+            },
             "load-mode": "program-box",
             "force-diffuse": "tile.dds",
             "force-normal": "tile_nmap.dds",
             "load-info": {
-                "tex-file": "sand.jpg",
-                "box-size": [
+                "b-tex-file": "sand.jpg",
+                "b-size": [
                     15.0,
                     15.0,
                     15.0
                 ],
-                "divide": 0
+                "b-divide": 0
             }
         },
         {
             "mesh-name": "small-yel-box",
+            "material-info": {
+                "major-material": "gloss-plastic",
+                "minor-material": "rough-plastic",
+                "interpolate-factor": 0.6
+            },
             "load-mode": "program-box",
             "load-info": {
-                "tex-file": "sand.jpg",
-                "box-size": [
+                "b-tex-file": "sand.jpg",
+                "b-size": [
                     0.2,
                     0.3,
                     0.3
                 ],
-                "divide": 0
+                "b-divide": 0
             }
         },
         {
             "mesh-name": "smallest-box",
+            "material-info": {
+                "major-material": "gloss-plastic",
+                "minor-material": "rough-plastic",
+                "interpolate-factor": 0.6
+            },
             "load-mode": "program-box",
             "load-info": {
-                "tex-file": "sand.jpg",
-                "box-size": [
+                "b-tex-file": "sand.jpg",
+                "b-size": [
                     0.025,
                     0.05,
                     0.025
                 ],
-                "divide": 0
+                "b-divide": 0
             }
         },
         {
             "mesh-name": "gun-bullet",
+            "material-info": {
+                "major-material": "gloss-porcelain",
+                "minor-material": "rough-porcelain",
+                "interpolate-factor": 0.2
+            },
             "load-mode": "program-sphere",
             "force-diffuse": "tile.dds",
             "force-normal": "tile_nmap.dds",
             "load-info": {
-                "tex-file": "cloud.png",
-                "radius": 0.3,
-                "slice-stack-count": [
+                "s-tex-file": "cloud.png",
+                "s-radius": 0.3,
+                "s-slice-stack-count": [
                     8,
                     8
                 ]
@@ -106,44 +130,40 @@
         },
         {
             "mesh-name": "yel-grid",
-            "load-mode": "program-box",
             "material-info": {
-                "albedo": [
-                    0.5,
-                    0.5,
-                    0.5,
-                    0.5
-                ],
-                "fresnel": [
-                    0.1,
-                    0.3,
-                    0.1
-                ],
-                "shininess": 0.1
+                "major-material": "gloss-marble",
+                "minor-material": "rough-marble",
+                "interpolate-factor": 1.0
             },
+            "load-mode": "program-box",
             "force-diffuse": "ground_diffuse.jpg",
             "force-normal": "ground_normal.jpg",
             "load-info": {
-                "tex-file": "cloud.png",
-                "box-size": [
+                "b-tex-file": "cloud.png",
+                "b-size": [
                     50.0,
                     2.0,
                     100.0
                 ],
-                "divide": 0
+                "b-divide": 0
             }
         },
         {
             "mesh-name": "destination-cyl",
+            "material-info": {
+                "major-material": "gloss-gold",
+                "minor-material": "rough-gold",
+                "interpolate-factor": 0.1
+            },
             "load-mode": "program-cylinder",
             "load-info": {
-                "tex-file": "sand.jpg",
-                "top-btm-het-size": [
+                "c-tex-file": "sand.jpg",
+                "c-top-btm-het-size": [
                     0.1,
                     10.0,
                     20.0
                 ],
-                "slice-stack-count": [
+                "c-slice-stack-count": [
                     3,
                     1
                 ]
@@ -151,41 +171,37 @@
         },
         {
             "mesh-name": "wall-box",
+            "material-info": {
+                "major-material": "gloss-marble",
+                "minor-material": "rough-marble",
+                "interpolate-factor": 1.0
+            },
             "load-mode": "program-box",
             "force-diffuse": "wall_diffuse.jpg",
             "force-normal": "wall_normal.jpg",
             "load-info": {
-                "tex-file": "sand.jpg",
-                "box-size": [
+                "b-tex-file": "sand.jpg",
+                "b-size": [
                     1.0,
                     1.0,
                     1.0
                 ],
-                "divide": 0
+                "b-divide": 0
             }
         },
         {
             "mesh-name": "hill",
-            "load-mode": "model-file",
             "material-info": {
-                "albedo": [
-                    0.8,
-                    0.8,
-                    0.8,
-                    0.8
-                ],
-                "fresnel": [
-                    0.05,
-                    0.05,
-                    0.05
-                ],
-                "shininess": 0.3
+                "major-material": "gloss-plastic",
+                "minor-material": "rough-plastic",
+                "interpolate-factor": 0.7
             },
+            "load-mode": "model-file",
             "force-diffuse": "hill_diffuse.png",
             "force-normal": "hill_normal.png",
             "load-info": {
-                "model-file": "hill.obj.meshdata",
-                "file-type": "binary"
+                "m-file": "hill.obj.meshdata",
+                "m-file-type": "binary"
             }
         }
     ],
@@ -195,7 +211,7 @@
             "components": [
                 {
                     "type": "input",
-                    "func-name": "TempToResult"
+                    "aic-func-name": "tempToResult"
                 }
             ]
         },
@@ -204,17 +220,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         -10.0,
                         -50.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -222,24 +238,24 @@
                 },
                 {
                     "type": "input",
-                    "func-name": "PlayerInput"
+                    "aic-func-name": "PlayerInput"
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "PlayerInit",
-                    "update-func-name": "PlayerUpdate",
-                    "destory-func-name": "PlayerDestory"
+                    "aitc-init-func-name": "PlayerInit",
+                    "aitc-update-func-name": "PlayerUpdate",
+                    "aitc-destory-func-name": "PlayerDestory"
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "sphere",
-                    "collision-size": [
+                    "acc-collision-shape": "sphere",
+                    "acc-collision-size": [
                         3.0
                     ]
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "dash",
                         "jump",
                         "shoot"
@@ -252,17 +268,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -275,17 +291,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         -15.0,
                         -50.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -293,7 +309,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "smallest-box",
                             "mesh-offset": [
@@ -343,9 +359,9 @@
             "components": [
                 {
                     "type": "interact",
-                    "init-func-name": "BulletManagerInit",
-                    "update-func-name": "BulletManagerUpdate",
-                    "destory-func-name": "BulletManagerDestory"
+                    "aitc-init-func-name": "BulletManagerInit",
+                    "aitc-update-func-name": "BulletManagerUpdate",
+                    "aitc-destory-func-name": "BulletManagerDestory"
                 }
             ]
         },
@@ -354,17 +370,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -372,14 +388,14 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "sphere",
-                    "collision-size": [
+                    "acc-collision-shape": "sphere",
+                    "acc-collision-size": [
                         0.3
                     ]
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "gun-bullet"
                         }
@@ -392,17 +408,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -410,14 +426,14 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "sphere",
-                    "collision-size": [
+                    "acc-collision-shape": "sphere",
+                    "acc-collision-size": [
                         0.3
                     ]
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "gun-bullet"
                         }
@@ -430,17 +446,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -448,14 +464,14 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "sphere",
-                    "collision-size": [
+                    "acc-collision-shape": "sphere",
+                    "acc-collision-size": [
                         0.3
                     ]
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "gun-bullet"
                         }
@@ -468,17 +484,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         340.0,
                         20.0,
                         -7.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -486,24 +502,25 @@
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.0,
                         0.3,
                         0.3
                     ],
-                    "direction": [
+                    "alc-intensity": 126.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 }
             ]
         },
@@ -512,17 +529,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         380.0,
                         20.0,
                         -7.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -530,24 +547,25 @@
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
-                        0.6,
-                        0.6,
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
+                        0.3,
+                        0.3,
                         0.0
                     ],
-                    "direction": [
+                    "alc-intensity": 126.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 }
             ]
         },
@@ -556,17 +574,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         340.0,
                         20.0,
                         -87.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -574,24 +592,25 @@
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.3,
                         0.3,
                         0.0
                     ],
-                    "direction": [
+                    "alc-intensity": 126.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 }
             ]
         },
@@ -600,17 +619,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         380.0,
                         20.0,
                         -87.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -618,24 +637,25 @@
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.0,
                         0.3,
                         0.3
                     ],
-                    "direction": [
+                    "alc-intensity": 126.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 }
             ]
         },
@@ -644,17 +664,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         5.0,
                         3.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         50.0,
                         50.0,
                         9.0
@@ -662,8 +682,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         50.0,
                         50.0,
                         9.0
@@ -671,7 +691,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "wall-box"
                         }
@@ -679,9 +699,9 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "ObstacleInit",
-                    "update-func-name": "ObstacleUpdate",
-                    "destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "ObstacleInit",
+                    "aitc-update-func-name": "ObstacleUpdate",
+                    "aitc-destory-func-name": "ObstacleDestory"
                 }
             ]
         },
@@ -690,17 +710,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         385.0,
                         5.0,
                         -42.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         50.0,
                         100.0
@@ -708,8 +728,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         50.0,
                         100.0
@@ -717,7 +737,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "wall-box"
                         }
@@ -725,9 +745,9 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "ObstacleInit",
-                    "update-func-name": "ObstacleUpdate",
-                    "destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "ObstacleInit",
+                    "aitc-update-func-name": "ObstacleUpdate",
+                    "aitc-destory-func-name": "ObstacleDestory"
                 }
             ]
         },
@@ -736,17 +756,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         335.0,
                         5.0,
                         -42.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         50.0,
                         100.0
@@ -754,8 +774,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         50.0,
                         100.0
@@ -763,7 +783,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "wall-box"
                         }
@@ -771,9 +791,9 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "ObstacleInit",
-                    "update-func-name": "ObstacleUpdate",
-                    "destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "ObstacleInit",
+                    "aitc-update-func-name": "ObstacleUpdate",
+                    "aitc-destory-func-name": "ObstacleDestory"
                 }
             ]
         },
@@ -782,17 +802,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         30.0,
                         -42.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         50.0,
                         3.0,
                         100.0
@@ -800,8 +820,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         50.0,
                         3.0,
                         100.0
@@ -809,7 +829,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "wall-box"
                         }
@@ -817,9 +837,9 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "ObstacleInit",
-                    "update-func-name": "ObstacleUpdate",
-                    "destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "ObstacleInit",
+                    "aitc-update-func-name": "ObstacleUpdate",
+                    "aitc-destory-func-name": "ObstacleDestory"
                 }
             ]
         },
@@ -828,17 +848,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         374.0,
                         5.0,
                         -92.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         22.0,
                         50.0,
                         3.0
@@ -846,8 +866,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         22.0,
                         50.0,
                         3.0
@@ -855,7 +875,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "wall-box"
                         }
@@ -863,9 +883,9 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "ObstacleInit",
-                    "update-func-name": "ObstacleUpdate",
-                    "destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "ObstacleInit",
+                    "aitc-update-func-name": "ObstacleUpdate",
+                    "aitc-destory-func-name": "ObstacleDestory"
                 }
             ]
         },
@@ -874,17 +894,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         346.0,
                         5.0,
                         -92.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         22.0,
                         50.0,
                         3.0
@@ -892,8 +912,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         22.0,
                         50.0,
                         3.0
@@ -901,7 +921,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "wall-box"
                         }
@@ -909,9 +929,9 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "ObstacleInit",
-                    "update-func-name": "ObstacleUpdate",
-                    "destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "ObstacleInit",
+                    "aitc-update-func-name": "ObstacleUpdate",
+                    "aitc-destory-func-name": "ObstacleDestory"
                 }
             ]
         },
@@ -920,17 +940,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         -20.0,
                         -100.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -938,8 +958,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         50.0,
                         2.0,
                         200.0
@@ -947,7 +967,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "yel-grid",
                             "mesh-offset": [
@@ -968,9 +988,9 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "GoundInit",
-                    "update-func-name": "GoundUpdate",
-                    "destory-func-name": "GoundDestory"
+                    "aitc-init-func-name": "GoundInit",
+                    "aitc-update-func-name": "GoundUpdate",
+                    "aitc-destory-func-name": "GoundDestory"
                 }
             ]
         },
@@ -979,17 +999,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         -17.5,
                         -100.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -997,43 +1017,43 @@
                 },
                 {
                     "type": "particle",
-                    "emit-per-second": 120.0,
-                    "velocity": [
+                    "apc-emit-per-second": 5.0,
+                    "apc-velocity": [
                         0.0,
-                        1.0,
+                        5.0,
                         0.0
                     ],
-                    "pos-variance": [
-                        1.0,
-                        1.0,
-                        1.0
+                    "apc-pos-variance": [
+                        3.0,
+                        3.0,
+                        3.0
                     ],
-                    "vel-variance": 0.5,
-                    "acceleration": [
+                    "apc-vel-variance": 0.3,
+                    "apc-acceleration": [
                         0.0,
-                        1.0,
+                        0.98,
                         0.0
                     ],
-                    "particle-mass": 0.1,
-                    "life-span": 150.0,
-                    "start-end-size": [
+                    "apc-particle-mass": 1.0,
+                    "apc-life-span": 30.0,
+                    "apc-start-end-size": [
                         2.0,
                         5.0
                     ],
-                    "start-color": [
+                    "apc-start-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "end-color": [
+                    "apc-end-color": [
                         1.0,
                         1.0,
                         1.0,
                         0.0
                     ],
-                    "streak-flag": false,
-                    "texture-name": "smoke"
+                    "apc-streak-flag": false,
+                    "apc-texture-name": "smoke"
                 }
             ]
         },
@@ -1042,17 +1062,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         460.0,
                         230.0,
-                        -300.0
+                        -200.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -1060,8 +1080,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         50.0,
                         2.0,
                         200.0
@@ -1069,7 +1089,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "yel-grid",
                             "mesh-offset": [
@@ -1090,9 +1110,9 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "GoundInit",
-                    "update-func-name": "GoundUpdate",
-                    "destory-func-name": "GoundDestory"
+                    "aitc-init-func-name": "GoundInit",
+                    "aitc-update-func-name": "GoundUpdate",
+                    "aitc-destory-func-name": "GoundDestory"
                 }
             ]
         },
@@ -1101,17 +1121,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         460.0,
                         232.5,
-                        -300.0
+                        -200.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -1119,43 +1139,43 @@
                 },
                 {
                     "type": "particle",
-                    "emit-per-second": 120.0,
-                    "velocity": [
+                    "apc-emit-per-second": 5.0,
+                    "apc-velocity": [
                         0.0,
-                        1.0,
+                        5.0,
                         0.0
                     ],
-                    "pos-variance": [
-                        1.0,
-                        1.0,
-                        1.0
+                    "apc-pos-variance": [
+                        3.0,
+                        3.0,
+                        3.0
                     ],
-                    "vel-variance": 0.5,
-                    "acceleration": [
+                    "apc-vel-variance": 0.3,
+                    "apc-acceleration": [
                         0.0,
-                        1.0,
+                        0.98,
                         0.0
                     ],
-                    "particle-mass": 0.1,
-                    "life-span": 150.0,
-                    "start-end-size": [
+                    "apc-particle-mass": 1.0,
+                    "apc-life-span": 30.0,
+                    "apc-start-end-size": [
                         2.0,
                         5.0
                     ],
-                    "start-color": [
+                    "apc-start-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "end-color": [
+                    "apc-end-color": [
                         1.0,
                         1.0,
                         1.0,
                         0.0
                     ],
-                    "streak-flag": false,
-                    "texture-name": "smoke"
+                    "apc-streak-flag": false,
+                    "apc-texture-name": "smoke"
                 }
             ]
         },
@@ -1164,17 +1184,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         425.0,
                         56.0,
                         -265.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1182,8 +1202,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1191,34 +1211,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "NCrystalInit",
-                    "update-func-name": "NCrystalUpdate",
-                    "destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "NCrystalInit",
+                    "aitc-update-func-name": "NCrystalUpdate",
+                    "aitc-destory-func-name": "NCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.0,
                         0.9,
                         0.0
                     ],
-                    "direction": [
+                    "alc-intensity": 300.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit"
                     ]
                 }
@@ -1229,17 +1250,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         92.0,
                         -330.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1247,8 +1268,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1256,34 +1277,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "NCrystalInit",
-                    "update-func-name": "NCrystalUpdate",
-                    "destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "NCrystalInit",
+                    "aitc-update-func-name": "NCrystalUpdate",
+                    "aitc-destory-func-name": "NCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.0,
                         0.9,
                         0.0
                     ],
-                    "direction": [
+                    "alc-intensity": 300.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit"
                     ]
                 }
@@ -1294,17 +1316,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         295.0,
                         128.0,
                         -265.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1312,8 +1334,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1321,34 +1343,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "NCrystalInit",
-                    "update-func-name": "NCrystalUpdate",
-                    "destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "NCrystalInit",
+                    "aitc-update-func-name": "NCrystalUpdate",
+                    "aitc-destory-func-name": "NCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.0,
                         0.9,
                         0.0
                     ],
-                    "direction": [
+                    "alc-intensity": 300.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit"
                     ]
                 }
@@ -1359,17 +1382,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         164.0,
                         -200.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1377,8 +1400,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1386,34 +1409,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "NCrystalInit",
-                    "update-func-name": "NCrystalUpdate",
-                    "destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "NCrystalInit",
+                    "aitc-update-func-name": "NCrystalUpdate",
+                    "aitc-destory-func-name": "NCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.0,
                         0.9,
                         0.0
                     ],
-                    "direction": [
+                    "alc-intensity": 300.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit"
                     ]
                 }
@@ -1424,17 +1448,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         35.0,
                         237.0,
                         -175.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1442,8 +1466,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1451,34 +1475,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "NCrystalInit",
-                    "update-func-name": "NCrystalUpdate",
-                    "destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "NCrystalInit",
+                    "aitc-update-func-name": "NCrystalUpdate",
+                    "aitc-destory-func-name": "NCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.0,
                         0.9,
                         0.0
                     ],
-                    "direction": [
+                    "alc-intensity": 300.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit"
                     ]
                 }
@@ -1489,17 +1514,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         375.0,
                         237.0,
                         -175.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1507,8 +1532,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1516,34 +1541,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "NCrystalInit",
-                    "update-func-name": "NCrystalUpdate",
-                    "destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "NCrystalInit",
+                    "aitc-update-func-name": "NCrystalUpdate",
+                    "aitc-destory-func-name": "NCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.0,
                         0.9,
                         0.0
                     ],
-                    "direction": [
+                    "alc-intensity": 300.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit"
                     ]
                 }
@@ -1554,17 +1580,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         20.0,
                         -200.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1572,8 +1598,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1581,34 +1607,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "SCrystalInit",
-                    "update-func-name": "SCrystalUpdate",
-                    "destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "SCrystalInit",
+                    "aitc-update-func-name": "SCrystalUpdate",
+                    "aitc-destory-func-name": "SCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.9,
                         0.0,
                         0.9
                     ],
-                    "direction": [
+                    "alc-intensity": 600.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit",
                         "wake-crystal"
                     ]
@@ -1620,17 +1647,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         360.0,
                         200.0,
                         -200.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1638,8 +1665,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1647,34 +1674,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "SCrystalInit",
-                    "update-func-name": "SCrystalUpdate",
-                    "destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "SCrystalInit",
+                    "aitc-update-func-name": "SCrystalUpdate",
+                    "aitc-destory-func-name": "SCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.9,
                         0.0,
                         0.9
                     ],
-                    "direction": [
+                    "alc-intensity": 600.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit",
                         "wake-crystal"
                     ]
@@ -1686,17 +1714,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         120.0,
                         237.0,
                         -175.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1704,8 +1732,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1713,34 +1741,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "SCrystalInit",
-                    "update-func-name": "SCrystalUpdate",
-                    "destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "SCrystalInit",
+                    "aitc-update-func-name": "SCrystalUpdate",
+                    "aitc-destory-func-name": "SCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.9,
                         0.0,
                         0.9
                     ],
-                    "direction": [
+                    "alc-intensity": 600.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit",
                         "wake-crystal"
                     ]
@@ -1752,17 +1781,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         205.0,
                         237.0,
                         -175.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1770,8 +1799,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1779,34 +1808,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "SCrystalInit",
-                    "update-func-name": "SCrystalUpdate",
-                    "destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "SCrystalInit",
+                    "aitc-update-func-name": "SCrystalUpdate",
+                    "aitc-destory-func-name": "SCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.9,
                         0.0,
                         0.9
                     ],
-                    "direction": [
+                    "alc-intensity": 600.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit",
                         "wake-crystal"
                     ]
@@ -1818,17 +1848,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         290.0,
                         237.0,
                         -175.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         3.0,
                         3.0,
                         3.0
@@ -1836,8 +1866,8 @@
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         3.0,
                         3.0,
                         3.0
@@ -1845,34 +1875,35 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "SCrystalInit",
-                    "update-func-name": "SCrystalUpdate",
-                    "destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "SCrystalInit",
+                    "aitc-update-func-name": "SCrystalUpdate",
+                    "aitc-destory-func-name": "SCrystalDestory"
                 },
                 {
                     "type": "light",
-                    "light-type": "point",
-                    "with-shadow": false,
-                    "with-bloom": true,
-                    "strength": [
+                    "alc-light-type": "point",
+                    "alc-with-shadow": false,
+                    "alc-with-bloom": true,
+                    "alc-albedo": [
                         0.9,
                         0.0,
                         0.9
                     ],
-                    "direction": [
+                    "alc-intensity": 600.0,
+                    "alc-direction": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         30.0,
                         80.0
                     ],
-                    "spot-power": 5.0
+                    "alc-spot-power": 5.0
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "crystal-hit",
                         "wake-crystal"
                     ]
@@ -1884,17 +1915,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         0.0,
                         450.0,
                         -540.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -1902,25 +1933,26 @@
                 },
                 {
                     "type": "light",
-                    "light-type": "direct",
-                    "with-shadow": true,
-                    "with-bloom": false,
-                    "strength": [
+                    "alc-light-type": "direct",
+                    "alc-with-shadow": true,
+                    "alc-with-bloom": false,
+                    "alc-albedo": [
                         0.8,
                         0.8,
                         0.8
                     ],
-                    "direction": [
+                    "alc-intensity": 0.7,
+                    "alc-direction": [
                         0.0,
                         -1.0,
                         1.0
                     ],
-                    "fall-off-start-end": [
+                    "alc-fall-off-start-end": [
                         5.0,
                         15.0
                     ],
-                    "spot-power": 2.0,
-                    "cam-up-vec": [
+                    "alc-spot-power": 2.0,
+                    "alc-cam-up-vec": [
                         0.0,
                         1.0,
                         1.0
@@ -1933,17 +1965,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         0.0,
                         -100.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         100.0,
                         100.0,
                         100.0
@@ -1951,7 +1983,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "hill"
                         }
@@ -1964,17 +1996,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         -50.0,
                         225.0,
                         -175.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -1982,7 +2014,7 @@
                 },
                 {
                     "type": "mesh",
-                    "meshes": [
+                    "amc-meshes": [
                         {
                             "mesh-name": "destination-cyl"
                         }
@@ -1990,14 +2022,14 @@
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "DestInit",
-                    "update-func-name": "DestUpdate",
-                    "destory-func-name": "DestDestory"
+                    "aitc-init-func-name": "DestInit",
+                    "aitc-update-func-name": "DestUpdate",
+                    "aitc-destory-func-name": "DestDestory"
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "box",
-                    "collision-size": [
+                    "acc-collision-shape": "box",
+                    "acc-collision-size": [
                         10.0,
                         20.0,
                         10.0
@@ -2005,7 +2037,7 @@
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "aauc-sounds": [
                         "goal"
                     ]
                 }
@@ -2016,17 +2048,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "atc-init-position": [
                         -50.0,
                         237.0,
                         -175.0
                     ],
-                    "init-angle": [
+                    "atc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "atc-init-scale": [
                         1.0,
                         1.0,
                         1.0
@@ -2034,54 +2066,54 @@
                 },
                 {
                     "type": "particle",
-                    "emit-per-second": 400.0,
-                    "velocity": [
+                    "apc-emit-per-second": 40.0,
+                    "apc-velocity": [
                         0.0,
-                        18.0,
+                        60.0,
                         0.0
                     ],
-                    "pos-variance": [
+                    "apc-pos-variance": [
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "vel-variance": 0.5,
-                    "acceleration": [
+                    "apc-vel-variance": 0.5,
+                    "apc-acceleration": [
                         0.0,
                         -9.8,
                         0.0
                     ],
-                    "particle-mass": 0.3,
-                    "life-span": 100.0,
-                    "start-end-size": [
+                    "apc-particle-mass": 2.0,
+                    "apc-life-span": 100.0,
+                    "apc-start-end-size": [
                         0.5,
                         0.0
                     ],
-                    "start-color": [
-                        1.0,
+                    "apc-start-color": [
+                        30.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "end-color": [
-                        0.0,
+                    "apc-end-color": [
+                        9.0,
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "streak-flag": true,
-                    "texture-name": "circle"
+                    "apc-streak-flag": true,
+                    "apc-texture-name": "circle"
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "DestPtcInit",
-                    "update-func-name": "DestPtcUpdate",
-                    "destory-func-name": "DestPtcDestory"
+                    "aitc-init-func-name": "DestPtcInit",
+                    "aitc-update-func-name": "DestPtcUpdate",
+                    "aitc-destory-func-name": "DestPtcDestory"
                 },
                 {
                     "type": "collision",
-                    "collision-shape": "sphere",
-                    "collision-size": [
+                    "acc-collision-shape": "sphere",
+                    "acc-collision-size": [
                         100.0
                     ]
                 }
@@ -2094,17 +2126,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         350.0,
                         -340.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         100.0,
                         40.0,
                         1.0
@@ -2112,13 +2144,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "bullet_icon.png"
+                    "usc-tex-file": "bullet_icon.png"
                 }
             ]
         },
@@ -2127,17 +2159,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         470.0,
                         -340.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         100.0,
                         40.0,
                         1.0
@@ -2145,13 +2177,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "bullet_icon.png"
+                    "usc-tex-file": "bullet_icon.png"
                 }
             ]
         },
@@ -2160,17 +2192,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         590.0,
                         -340.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         100.0,
                         40.0,
                         1.0
@@ -2178,13 +2210,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "bullet_icon.png"
+                    "usc-tex-file": "bullet_icon.png"
                 }
             ]
         },
@@ -2193,17 +2225,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         1280.0,
                         720.0,
                         1.0
@@ -2211,27 +2243,27 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         0.8
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 },
                 {
                     "type": "input",
-                    "func-name": "PauseMenuInput"
+                    "uic-func-name": "PauseMenuInput"
                 },
                 {
                     "type": "interact",
-                    "init-func-name": "PauseMenuInit",
-                    "update-func-name": "PauseMenuUpdate",
-                    "destory-func-name": "PauseMenuDestory"
+                    "uitc-init-func-name": "PauseMenuInit",
+                    "uitc-update-func-name": "PauseMenuUpdate",
+                    "uitc-destory-func-name": "PauseMenuDestory"
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "uauc-sounds": [
                         "select-btn"
                     ]
                 }
@@ -2242,17 +2274,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         0.0,
                         50.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         200.0,
                         50.0,
                         1.0
@@ -2260,26 +2292,26 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "ui-continue.png"
+                    "usc-tex-file": "ui-continue.png"
                 },
                 {
                     "type": "button",
-                    "init-selected": true,
-                    "down-btn": "pause-title-btn-ui"
+                    "ubc-init-selected": true,
+                    "ubc-down-btn": "pause-title-btn-ui"
                 },
                 {
                     "type": "input",
-                    "func-name": "PauseMenuBtnInput"
+                    "uic-func-name": "PauseMenuBtnInput"
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "uauc-sounds": [
                         "select-btn",
                         "click-btn"
                     ]
@@ -2291,17 +2323,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         0.0,
                         -50.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         200.0,
                         50.0,
                         1.0
@@ -2309,26 +2341,26 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "ui-title.png"
+                    "usc-tex-file": "ui-title.png"
                 },
                 {
                     "type": "button",
-                    "init-selected": false,
-                    "up-btn": "pause-continue-btn-ui"
+                    "ubc-init-selected": false,
+                    "ubc-up-btn": "pause-continue-btn-ui"
                 },
                 {
                     "type": "input",
-                    "func-name": "PauseMenuBtnInput"
+                    "uic-func-name": "PauseMenuBtnInput"
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "uauc-sounds": [
                         "select-btn",
                         "click-btn"
                     ]
@@ -2340,13 +2372,13 @@
             "components": [
                 {
                     "type": "interact",
-                    "init-func-name": "DeadFadeInit",
-                    "update-func-name": "DeadFadeUpdate",
-                    "destory-func-name": "DeadFadeDestory"
+                    "uitc-init-func-name": "DeadFadeInit",
+                    "uitc-update-func-name": "DeadFadeUpdate",
+                    "uitc-destory-func-name": "DeadFadeDestory"
                 },
                 {
                     "type": "audio",
-                    "sounds": [
+                    "uauc-sounds": [
                         "reborn"
                     ]
                 }
@@ -2357,17 +2389,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         -576.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2375,13 +2407,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2390,17 +2422,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         -448.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2408,13 +2440,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2423,17 +2455,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         -320.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2441,13 +2473,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2456,17 +2488,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         -192.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2474,13 +2506,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2489,17 +2521,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         -64.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2507,13 +2539,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2522,17 +2554,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         64.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2540,13 +2572,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2555,17 +2587,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         192.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2573,13 +2605,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2588,17 +2620,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         320.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2606,13 +2638,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2621,17 +2653,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         448.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2639,13 +2671,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2654,17 +2686,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         576.0,
                         720.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         128.0,
                         720.0,
                         1.0
@@ -2672,13 +2704,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         0.0,
                         0.0,
                         0.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2687,9 +2719,9 @@
             "components": [
                 {
                     "type": "interact",
-                    "init-func-name": "SceneFadeInit",
-                    "update-func-name": "SceneFadeUpdate",
-                    "destory-func-name": "SceneFadeDestory"
+                    "uitc-init-func-name": "SceneFadeInit",
+                    "uitc-update-func-name": "SceneFadeUpdate",
+                    "uitc-destory-func-name": "SceneFadeDestory"
                 }
             ]
         },
@@ -2698,17 +2730,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         -320.0,
                         0.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         640.0,
                         720.0,
                         1.0
@@ -2716,13 +2748,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2731,17 +2763,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         320.0,
                         0.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         640.0,
                         720.0,
                         1.0
@@ -2749,13 +2781,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2764,17 +2796,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         0.0,
                         540.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         1280.0,
                         360.0,
                         1.0
@@ -2782,13 +2814,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         },
@@ -2797,17 +2829,17 @@
             "components": [
                 {
                     "type": "transform",
-                    "init-position": [
+                    "utc-init-position": [
                         0.0,
                         -540.0,
                         0.0
                     ],
-                    "init-angle": [
+                    "utc-init-angle": [
                         0.0,
                         0.0,
                         0.0
                     ],
-                    "init-scale": [
+                    "utc-init-scale": [
                         1280.0,
                         360.0,
                         1.0
@@ -2815,13 +2847,13 @@
                 },
                 {
                     "type": "sprite",
-                    "offset-color": [
+                    "usc-offset-color": [
                         1.0,
                         1.0,
                         1.0,
                         1.0
                     ],
-                    "tex-file": "white.jpg"
+                    "usc-tex-file": "white.jpg"
                 }
             ]
         }
