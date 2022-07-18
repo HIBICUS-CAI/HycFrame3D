@@ -2700,6 +2700,82 @@
                     ]
                 }
             ]
+        },
+        {
+            "actor-name": "snow-particle-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "atc-init-position": [
+                        0.0,
+                        500.0,
+                        0.0
+                    ],
+                    "atc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "atc-init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "particle",
+                    "apc-emit-per-second": 400.0,
+                    "apc-velocity": [
+                        0.0,
+                        -1.0,
+                        0.0
+                    ],
+                    "apc-pos-variance": [
+                        10000.0,
+                        0.0,
+                        10000.0
+                    ],
+                    "apc-vel-variance": 0.5,
+                    "apc-acceleration": [
+                        0.0,
+                        -9.8,
+                        0.0
+                    ],
+                    "apc-particle-mass": 0.5,
+                    "apc-life-span": 120.0,
+                    "apc-start-end-size": [
+                        5.0,
+                        5.0
+                    ],
+                    "apc-start-color": [
+                        2.0,
+                        2.0,
+                        2.0,
+                        1.0
+                    ],
+                    "apc-end-color": [
+                        2.0,
+                        2.0,
+                        2.0,
+                        0.0
+                    ],
+                    "apc-streak-flag": false,
+                    "apc-texture-name": "circle"
+                },
+                {
+                    "type": "interact",
+                    "aitc-init-func-name": "DestPtcInit",
+                    "aitc-update-func-name": "DestPtcUpdate",
+                    "aitc-destory-func-name": "DestPtcDestory"
+                },
+                {
+                    "type": "collision",
+                    "acc-collision-shape": "sphere",
+                    "acc-collision-size": [
+                        100.0
+                    ]
+                }
+            ]
         }
     ],
     "ui": [
