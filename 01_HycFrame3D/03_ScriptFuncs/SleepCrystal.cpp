@@ -3,8 +3,11 @@
 #include "BulletProcess.h"
 #include "PlayerProcess.h"
 
-static const DirectX::XMFLOAT3 SCRYSTAL_BEFIRE_COLOR = { 0.9f,0.f,0.9f };
-static const DirectX::XMFLOAT3 SCRYSTAL_AFTER_COLOR = { 0.f,0.f,0.9f };
+#include <RSUtilityFunctions.h>
+
+static const DirectX::XMFLOAT3 SCRYSTAL_BEFIRE_COLOR = { 1.f,0.f,1.f };
+static const DirectX::XMFLOAT3 SCRYSTAL_AFTER_COLOR = {0.f, 0.f, 1.f};
+static const DirectX::XMFLOAT3 SCRYSTAL_SLEEP_COLOR = {1.f, 0.f, 0.f};
 static std::unordered_map<AInteractComponent*, float> g_SCrystalTimerMap = {};
 static std::unordered_map<AInteractComponent*, BOOL> g_SCrystalActiveMap = {};
 
@@ -38,8 +41,15 @@ void SCrystalUpdate(AInteractComponent* _aitc, const Timer& _timer)
 
     if (isActive && found->second > 0.f)
     {
+        float ratio = 1.f - ((5.f - found->second) / 5.f);
+        ratio =
+          (ratio > 0.2f) ? 1.f : rs_tool::lerp(1.f, 0.f, (0.2f - ratio) / 0.2f);
         found->second -= _timer.floatDeltaTime() / 1000.f;
-        alc->getLightInfo()->setRSLightAlbedo(SCRYSTAL_AFTER_COLOR);
+        dx::XMFLOAT3 Color = {0.f, 0.f, 0.f};
+        Color.x = rs_tool::lerp(SCRYSTAL_SLEEP_COLOR.x, SCRYSTAL_AFTER_COLOR.x, ratio);
+        Color.z =
+            rs_tool::lerp(SCRYSTAL_SLEEP_COLOR.z, SCRYSTAL_AFTER_COLOR.z, ratio);
+        alc->getLightInfo()->setRSLightAlbedo(Color);
         alc->getLightInfo()->setRSLightIntensity(900.f);
         alc->getLightInfo()->updateBloomColor();
     }
@@ -47,16 +57,23 @@ void SCrystalUpdate(AInteractComponent* _aitc, const Timer& _timer)
     {
         g_SCrystalActiveMap[_aitc] = FALSE;
         found->second = 0.f;
-        alc->getLightInfo()->setRSLightAlbedo(SCRYSTAL_AFTER_COLOR);
-        alc->getLightInfo()->setRSLightIntensity(0.f);
+        alc->getLightInfo()->setRSLightAlbedo(SCRYSTAL_SLEEP_COLOR);
+        alc->getLightInfo()->setRSLightIntensity(900.f);
         alc->getLightInfo()->updateBloomColor();
     }
     else if (found->second < 5.f)
     {
-        float ratio = (found->second / 5.f) - 0.2f;
+        float ratio = found->second / 5.f;
+        ratio = (ratio < 0.5f)
+                       ? 0.f
+                       : rs_tool::lerp(0.f, 1.f, (ratio - 0.5f) / 0.5f);
         found->second += _timer.floatDeltaTime() / 1000.f;
-        alc->getLightInfo()->setRSLightAlbedo(SCRYSTAL_BEFIRE_COLOR);
-        alc->getLightInfo()->setRSLightIntensity(600.f * ratio);
+        dx::XMFLOAT3 Color = {1.f, 0.f, 0.f};
+        Color.z = rs_tool::lerp(SCRYSTAL_SLEEP_COLOR.z, SCRYSTAL_BEFIRE_COLOR.z,
+                                ratio);
+        alc->getLightInfo()->setRSLightAlbedo(Color);
+        alc->getLightInfo()->setRSLightIntensity(
+            rs_tool ::lerp(900.f, 600.f, ratio));
         alc->getLightInfo()->updateBloomColor();
     }
     else
