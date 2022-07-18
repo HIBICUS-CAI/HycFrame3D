@@ -61,8 +61,9 @@
                 "interpolate-factor": 0.5
             },
             "load-mode": "program-box",
-            "force-diffuse": "tile.dds",
-            "force-normal": "tile_nmap.dds",
+            "force-diffuse": "tile_diffuse.png",
+            "force-normal": "tile_normal.png",
+            "force-roughness": "tile_rough.png",
             "load-info": {
                 "b-tex-file": "sand.jpg",
                 "b-size": [
@@ -117,8 +118,9 @@
                 "interpolate-factor": 0.2
             },
             "load-mode": "program-sphere",
-            "force-diffuse": "tile.dds",
-            "force-normal": "tile_nmap.dds",
+            "force-diffuse": "tile_diffuse.png",
+            "force-normal": "tile_normal.png",
+            "force-roughness": "tile_rough.png",
             "load-info": {
                 "s-tex-file": "cloud.png",
                 "s-radius": 0.3,
@@ -138,6 +140,7 @@
             "load-mode": "program-box",
             "force-diffuse": "ground_diffuse.jpg",
             "force-normal": "ground_normal.jpg",
+            "force-roughness": "ground_rough.jpg",
             "load-info": {
                 "b-tex-file": "cloud.png",
                 "b-size": [
@@ -179,6 +182,7 @@
             "load-mode": "program-box",
             "force-diffuse": "wall_diffuse.jpg",
             "force-normal": "wall_normal.jpg",
+            "force-roughness": "wall_rough.jpg",
             "load-info": {
                 "b-tex-file": "sand.jpg",
                 "b-size": [

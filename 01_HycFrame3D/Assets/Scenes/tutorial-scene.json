@@ -38,7 +38,7 @@
             "material-info": {
                 "major-material": "gloss-porcelain",
                 "minor-material": "rough-porcelain",
-                "interpolate-factor": 0.2
+                "interpolate-factor": 0.5
             },
             "load-mode": "program-box",
             "force-diffuse": "white_tile_diffuse.jpg",
@@ -61,8 +61,9 @@
                 "interpolate-factor": 0.7
             },
             "load-mode": "program-box",
-            "force-diffuse": "tile.dds",
-            "force-normal": "tile_nmap.dds",
+            "force-diffuse": "tile_diffuse.png",
+            "force-normal": "tile_normal.png",
+            "force-roughness": "tile_rough.png",
             "load-info": {
                 "b-tex-file": "sand.jpg",
                 "b-size": [
@@ -130,8 +131,9 @@
                 "interpolate-factor": 0.2
             },
             "load-mode": "program-sphere",
-            "force-diffuse": "tile.dds",
-            "force-normal": "tile_nmap.dds",
+            "force-diffuse": "tile_diffuse.png",
+            "force-normal": "tile_normal.png",
+            "force-roughness": "tile_rough.png",
             "load-info": {
                 "s-tex-file": "cloud.png",
                 "s-radius": 0.3,
@@ -165,8 +167,8 @@
         {
             "mesh-name": "need-get-down-box",
             "material-info": {
-                "major-material": "gloss-marble",
-                "minor-material": "rough-marble",
+                "major-material": "rough-rubber",
+                "minor-material": "rough-rubber",
                 "interpolate-factor": 1.0
             },
             "load-mode": "program-box",
@@ -183,8 +185,8 @@
         {
             "mesh-name": "move-cam-manual-box",
             "material-info": {
-                "major-material": "gloss-marble",
-                "minor-material": "rough-marble",
+                "major-material": "rough-rubber",
+                "minor-material": "rough-rubber",
                 "interpolate-factor": 1.0
             },
             "load-mode": "program-box",
@@ -201,8 +203,8 @@
         {
             "mesh-name": "jump-dash-manual-box",
             "material-info": {
-                "major-material": "gloss-marble",
-                "minor-material": "rough-marble",
+                "major-material": "rough-rubber",
+                "minor-material": "rough-rubber",
                 "interpolate-factor": 1.0
             },
             "load-mode": "program-box",
@@ -219,8 +221,8 @@
         {
             "mesh-name": "aim-manual-box",
             "material-info": {
-                "major-material": "gloss-marble",
-                "minor-material": "rough-marble",
+                "major-material": "rough-rubber",
+                "minor-material": "rough-rubber",
                 "interpolate-factor": 1.0
             },
             "load-mode": "program-box",
@@ -237,8 +239,8 @@
         {
             "mesh-name": "normal-crystal-manual-box",
             "material-info": {
-                "major-material": "gloss-marble",
-                "minor-material": "rough-marble",
+                "major-material": "rough-rubber",
+                "minor-material": "rough-rubber",
                 "interpolate-factor": 1.0
             },
             "load-mode": "program-box",
@@ -255,8 +257,8 @@
         {
             "mesh-name": "sleep-crystal-0-manual-box",
             "material-info": {
-                "major-material": "gloss-marble",
-                "minor-material": "rough-marble",
+                "major-material": "rough-rubber",
+                "minor-material": "rough-rubber",
                 "interpolate-factor": 1.0
             },
             "load-mode": "program-box",
@@ -273,8 +275,8 @@
         {
             "mesh-name": "sleep-crystal-1-manual-box",
             "material-info": {
-                "major-material": "gloss-marble",
-                "minor-material": "rough-marble",
+                "major-material": "rough-rubber",
+                "minor-material": "rough-rubber",
                 "interpolate-factor": 1.0
             },
             "load-mode": "program-box",
@@ -291,8 +293,8 @@
         {
             "mesh-name": "goal-manual-box",
             "material-info": {
-                "major-material": "gloss-marble",
-                "minor-material": "rough-marble",
+                "major-material": "rough-rubber",
+                "minor-material": "rough-rubber",
                 "interpolate-factor": 1.0
             },
             "load-mode": "program-box",
@@ -2896,43 +2898,6 @@
             ]
         },
         {
-            "actor-name": "dragon-actor",
-            "components": [
-                {
-                    "type": "transform",
-                    "atc-init-position": [
-                        0.0,
-                        20.0,
-                        50.0
-                    ],
-                    "atc-init-angle": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "atc-init-scale": [
-                        0.25,
-                        0.25,
-                        0.25
-                    ]
-                },
-                {
-                    "type": "mesh",
-                    "amc-meshes": [
-                        {
-                            "mesh-name": "dragon"
-                        }
-                    ]
-                },
-                {
-                    "type": "interact",
-                    "aitc-init-func-name": "DragonInit",
-                    "aitc-update-func-name": "DragonUpdate",
-                    "aitc-destory-func-name": "DragonDestory"
-                }
-            ]
-        },
-        {
             "actor-name": "direct-light0-actor",
             "components": [
                 {
@@ -3063,7 +3028,7 @@
                         0.0,
                         1.0
                     ],
-                    "alc-intensity": 0.2,
+                    "alc-intensity": 0.002,
                     "alc-direction": [
                         0.0,
                         -1.0,
