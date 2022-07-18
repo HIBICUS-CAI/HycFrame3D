@@ -57,7 +57,7 @@ void DestUpdate(AInteractComponent* _aitc, const Timer& _timer)
 
     if (GetSceneOutFinish(DEST_REACH))
     {
-        P_LOG(LOG_DEBUG, "to result\n");
+        P_LOG(LOG_DEBUG, "to result");
         _aitc->getActorOwner()->getSceneNode().getSceneManager()->
             loadSceneNode("result-scene", "result-scene.json");
         setVolume("result", 0.2f);

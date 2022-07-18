@@ -14,16 +14,16 @@ light-model = "brdf_disney"
 [ssao]
 # type : float
 # length of the vector for nearest point calculating.
-radius = 6.0
+radius = 0.5
 # type : float
 # the range about effective occlusion.
-range-start = 3.0
+range-start = 0.2
 # type : float
 # the range about effective occlusion.
-range-end = 15.0
+range-end = 1.0
 # type : float
 # the min value for valid delta depth.
-epsilon = 5.0
+epsilon = 0.05
 # type : uint
 # gauss bluring count.
 blur-count = 4
