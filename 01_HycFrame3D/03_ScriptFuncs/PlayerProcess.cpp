@@ -6,6 +6,7 @@
 #include "FadeProcess.h"
 #include "PauseMenu.h"
 
+#include <TomlUtility.h>
 #include <WM_Interface.h>
 
 #include <vector>
@@ -42,6 +43,26 @@ static ATransformComponent *G_LastReachGroundAtc = nullptr;
 
 static bool G_ResetDeadPlayerToGround = false;
 
+struct MOVE_SPEED_CONFIG {
+  const float SpeedFactor = 1.f;
+  MOVE_SPEED_CONFIG() {
+    using namespace hyc::text;
+    std::string ErrorMessage = "";
+    TomlNode RootNode = {};
+    if (!loadTomlAndParse(RootNode,
+                          ".\\Assets\\Configs\\game-control-config.toml",
+                          ErrorMessage)) {
+      assert(false && "check error message in source code");
+      exit(-1);
+    } else {
+      float &SpdFactorRef = const_cast<float &>(SpeedFactor);
+      SpdFactorRef = getAs<float>(RootNode["input"]["camera-speed-factor"]);
+    }
+  }
+};
+
+static MOVE_SPEED_CONFIG G_SpeedFactorConfig = {};
+
 void playerInput(AInputComponent *Aic, const Timer &Timer) {
   if (getGamePauseFlg() || getSceneInFlg()) {
     return;
@@ -57,6 +78,8 @@ void playerInput(AInputComponent *Aic, const Timer &Timer) {
   }
   float HoriR = MouseOffset.x * Deltatime / 2000.f;
   float VertR = -MouseOffset.y * Deltatime / 2000.f;
+  HoriR *= G_SpeedFactorConfig.SpeedFactor;
+  VertR *= G_SpeedFactorConfig.SpeedFactor;
 
   G_PlayerAngleAtc->rotate({VertR, HoriR, 0.f});
   if (fabsf(G_PlayerAngleAtc->getProcessingRotation().x) > XM_PIDIV2) {

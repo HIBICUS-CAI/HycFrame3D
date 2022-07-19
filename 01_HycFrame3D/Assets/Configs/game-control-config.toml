@@ -1,0 +1,5 @@
+[input]
+# type : float, valid range : (0.0, +inf)
+# the speed factor to mutiply to final camera's translation,
+#   recommend to be (0.0, 1.0]
+camera-speed-factor = 1.0
