@@ -71,9 +71,9 @@
             "components": [
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "TitleCamInit",
-                    "aitc-update-func-name": "TitleCamUpdate",
-                    "aitc-destory-func-name": "TitleCamDestory"
+                    "aitc-init-func-name": "titleCamInit",
+                    "aitc-update-func-name": "titleCamUpdate",
+                    "aitc-destory-func-name": "titleCamDestory"
                 }
             ]
         }
@@ -116,7 +116,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "NormalBtnInput"
+                    "uic-func-name": "normalBtnInput"
                 }
             ]
         },
@@ -191,9 +191,9 @@
             "components": [
                 {
                     "type": "interact",
-                    "uitc-init-func-name": "SceneFadeInit",
-                    "uitc-update-func-name": "SceneFadeUpdate",
-                    "uitc-destory-func-name": "SceneFadeDestory"
+                    "uitc-init-func-name": "sceneFadeInit",
+                    "uitc-update-func-name": "sceneFadeUpdate",
+                    "uitc-destory-func-name": "sceneFadeDestory"
                 }
             ]
         },

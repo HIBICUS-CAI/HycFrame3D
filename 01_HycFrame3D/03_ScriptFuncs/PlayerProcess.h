@@ -13,30 +13,30 @@ constexpr auto PLAYER_NAME = "player-actor";
 #pragma clang diagnostic pop
 #endif // __clang__
 
-void RegisterPlayerProcess(ObjectFactory* _factory);
+void registerPlayerProcess(ObjectFactory *Factory);
 
-void PlayerInput(AInputComponent*, const Timer&);
+void playerInput(AInputComponent *, const Timer &);
 
-bool PlayerInit(AInteractComponent*);
-void PlayerUpdate(AInteractComponent*, const Timer&);
-void PlayerDestory(AInteractComponent*);
+bool playerInit(AInteractComponent *);
+void playerUpdate(AInteractComponent *, const Timer &);
+void playerDestory(AInteractComponent *);
 
-void SetPlayerDashFlg(bool _canDashFlg);
-bool GetPlayerDashFlg();
+void setPlayerDashFlg(bool CanDashFlag);
+bool getPlayerDashFlg();
 
-bool GetPlayerIsDashingFlg();
+bool getPlayerIsDashingFlg();
 
-bool GetPlayerAimingFlg();
+bool getPlayerAimingFlg();
 
-void SetPlayerContactGround();
+void setPlayerContactGround();
 
-void SetPlayerBrokeHead();
+void setPlayerBrokeHead();
 
-void SetPlayerDashToObstacle();
+void setPlayerDashToObstacle();
 
-DirectX::XMFLOAT3& GetPlayerMoveDirection();
-void SetPlayerMoveDirection(DirectX::XMFLOAT3 _dir);
+const DirectX::XMFLOAT3 &getPlayerMoveDirection();
+void setPlayerMoveDirection(const DirectX::XMFLOAT3 &Direction);
 
-void SetPlayerLastReachGround(ATransformComponent* _groundAtc);
+void setPlayerLastReachGround(ATransformComponent *GroundAtc);
 
-void ResetDeadPlayerToGround();
+void resetDeadPlayerToGround();

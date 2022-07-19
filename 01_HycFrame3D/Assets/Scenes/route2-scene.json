@@ -242,13 +242,13 @@
                 },
                 {
                     "type": "input",
-                    "aic-func-name": "PlayerInput"
+                    "aic-func-name": "playerInput"
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "PlayerInit",
-                    "aitc-update-func-name": "PlayerUpdate",
-                    "aitc-destory-func-name": "PlayerDestory"
+                    "aitc-init-func-name": "playerInit",
+                    "aitc-update-func-name": "playerUpdate",
+                    "aitc-destory-func-name": "playerDestory"
                 },
                 {
                     "type": "collision",
@@ -363,9 +363,9 @@
             "components": [
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "BulletManagerInit",
-                    "aitc-update-func-name": "BulletManagerUpdate",
-                    "aitc-destory-func-name": "BulletManagerDestory"
+                    "aitc-init-func-name": "bulletManagerInit",
+                    "aitc-update-func-name": "bulletManagerUpdate",
+                    "aitc-destory-func-name": "bulletManagerDestory"
                 }
             ]
         },
@@ -703,9 +703,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "ObstacleInit",
-                    "aitc-update-func-name": "ObstacleUpdate",
-                    "aitc-destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "obstacleInit",
+                    "aitc-update-func-name": "obstacleUpdate",
+                    "aitc-destory-func-name": "obstacleDestory"
                 }
             ]
         },
@@ -749,9 +749,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "ObstacleInit",
-                    "aitc-update-func-name": "ObstacleUpdate",
-                    "aitc-destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "obstacleInit",
+                    "aitc-update-func-name": "obstacleUpdate",
+                    "aitc-destory-func-name": "obstacleDestory"
                 }
             ]
         },
@@ -795,9 +795,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "ObstacleInit",
-                    "aitc-update-func-name": "ObstacleUpdate",
-                    "aitc-destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "obstacleInit",
+                    "aitc-update-func-name": "obstacleUpdate",
+                    "aitc-destory-func-name": "obstacleDestory"
                 }
             ]
         },
@@ -841,9 +841,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "ObstacleInit",
-                    "aitc-update-func-name": "ObstacleUpdate",
-                    "aitc-destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "obstacleInit",
+                    "aitc-update-func-name": "obstacleUpdate",
+                    "aitc-destory-func-name": "obstacleDestory"
                 }
             ]
         },
@@ -887,9 +887,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "ObstacleInit",
-                    "aitc-update-func-name": "ObstacleUpdate",
-                    "aitc-destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "obstacleInit",
+                    "aitc-update-func-name": "obstacleUpdate",
+                    "aitc-destory-func-name": "obstacleDestory"
                 }
             ]
         },
@@ -933,9 +933,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "ObstacleInit",
-                    "aitc-update-func-name": "ObstacleUpdate",
-                    "aitc-destory-func-name": "ObstacleDestory"
+                    "aitc-init-func-name": "obstacleInit",
+                    "aitc-update-func-name": "obstacleUpdate",
+                    "aitc-destory-func-name": "obstacleDestory"
                 }
             ]
         },
@@ -992,9 +992,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "GoundInit",
-                    "aitc-update-func-name": "GoundUpdate",
-                    "aitc-destory-func-name": "GoundDestory"
+                    "aitc-init-func-name": "groundInit",
+                    "aitc-update-func-name": "groundUpdate",
+                    "aitc-destory-func-name": "groundDestory"
                 }
             ]
         },
@@ -1114,9 +1114,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "GoundInit",
-                    "aitc-update-func-name": "GoundUpdate",
-                    "aitc-destory-func-name": "GoundDestory"
+                    "aitc-init-func-name": "groundInit",
+                    "aitc-update-func-name": "groundUpdate",
+                    "aitc-destory-func-name": "groundDestory"
                 }
             ]
         },
@@ -1215,9 +1215,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "NCrystalInit",
-                    "aitc-update-func-name": "NCrystalUpdate",
-                    "aitc-destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "normalCrystalInit",
+                    "aitc-update-func-name": "normalCrystalUpdate",
+                    "aitc-destory-func-name": "normalCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1281,9 +1281,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "NCrystalInit",
-                    "aitc-update-func-name": "NCrystalUpdate",
-                    "aitc-destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "normalCrystalInit",
+                    "aitc-update-func-name": "normalCrystalUpdate",
+                    "aitc-destory-func-name": "normalCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1347,9 +1347,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "NCrystalInit",
-                    "aitc-update-func-name": "NCrystalUpdate",
-                    "aitc-destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "normalCrystalInit",
+                    "aitc-update-func-name": "normalCrystalUpdate",
+                    "aitc-destory-func-name": "normalCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1413,9 +1413,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "NCrystalInit",
-                    "aitc-update-func-name": "NCrystalUpdate",
-                    "aitc-destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "normalCrystalInit",
+                    "aitc-update-func-name": "normalCrystalUpdate",
+                    "aitc-destory-func-name": "normalCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1479,9 +1479,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "NCrystalInit",
-                    "aitc-update-func-name": "NCrystalUpdate",
-                    "aitc-destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "normalCrystalInit",
+                    "aitc-update-func-name": "normalCrystalUpdate",
+                    "aitc-destory-func-name": "normalCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1545,9 +1545,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "NCrystalInit",
-                    "aitc-update-func-name": "NCrystalUpdate",
-                    "aitc-destory-func-name": "NCrystalDestory"
+                    "aitc-init-func-name": "normalCrystalInit",
+                    "aitc-update-func-name": "normalCrystalUpdate",
+                    "aitc-destory-func-name": "normalCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1611,9 +1611,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "SCrystalInit",
-                    "aitc-update-func-name": "SCrystalUpdate",
-                    "aitc-destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "sleepCrystalInit",
+                    "aitc-update-func-name": "sleepCrystalUpdate",
+                    "aitc-destory-func-name": "sleepCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1678,9 +1678,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "SCrystalInit",
-                    "aitc-update-func-name": "SCrystalUpdate",
-                    "aitc-destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "sleepCrystalInit",
+                    "aitc-update-func-name": "sleepCrystalUpdate",
+                    "aitc-destory-func-name": "sleepCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1745,9 +1745,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "SCrystalInit",
-                    "aitc-update-func-name": "SCrystalUpdate",
-                    "aitc-destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "sleepCrystalInit",
+                    "aitc-update-func-name": "sleepCrystalUpdate",
+                    "aitc-destory-func-name": "sleepCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1812,9 +1812,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "SCrystalInit",
-                    "aitc-update-func-name": "SCrystalUpdate",
-                    "aitc-destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "sleepCrystalInit",
+                    "aitc-update-func-name": "sleepCrystalUpdate",
+                    "aitc-destory-func-name": "sleepCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -1879,9 +1879,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "SCrystalInit",
-                    "aitc-update-func-name": "SCrystalUpdate",
-                    "aitc-destory-func-name": "SCrystalDestory"
+                    "aitc-init-func-name": "sleepCrystalInit",
+                    "aitc-update-func-name": "sleepCrystalUpdate",
+                    "aitc-destory-func-name": "sleepCrystalDestory"
                 },
                 {
                     "type": "light",
@@ -2026,9 +2026,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "DestInit",
-                    "aitc-update-func-name": "DestUpdate",
-                    "aitc-destory-func-name": "DestDestory"
+                    "aitc-init-func-name": "destInit",
+                    "aitc-update-func-name": "destUpdate",
+                    "aitc-destory-func-name": "destDestory"
                 },
                 {
                     "type": "collision",
@@ -2110,9 +2110,9 @@
                 },
                 {
                     "type": "interact",
-                    "aitc-init-func-name": "DestPtcInit",
-                    "aitc-update-func-name": "DestPtcUpdate",
-                    "aitc-destory-func-name": "DestPtcDestory"
+                    "aitc-init-func-name": "destPtcInit",
+                    "aitc-update-func-name": "destPtcUpdate",
+                    "aitc-destory-func-name": "destPtcDestory"
                 },
                 {
                     "type": "collision",
@@ -2257,13 +2257,13 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "PauseMenuInput"
+                    "uic-func-name": "pauseMenuInput"
                 },
                 {
                     "type": "interact",
-                    "uitc-init-func-name": "PauseMenuInit",
-                    "uitc-update-func-name": "PauseMenuUpdate",
-                    "uitc-destory-func-name": "PauseMenuDestory"
+                    "uitc-init-func-name": "pauseMenuInit",
+                    "uitc-update-func-name": "pauseMenuUpdate",
+                    "uitc-destory-func-name": "pauseMenuDestory"
                 },
                 {
                     "type": "audio",
@@ -2311,7 +2311,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "PauseMenuBtnInput"
+                    "uic-func-name": "pauseMenuBtnInput"
                 },
                 {
                     "type": "audio",
@@ -2360,7 +2360,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "PauseMenuBtnInput"
+                    "uic-func-name": "pauseMenuBtnInput"
                 },
                 {
                     "type": "audio",
@@ -2376,9 +2376,9 @@
             "components": [
                 {
                     "type": "interact",
-                    "uitc-init-func-name": "DeadFadeInit",
-                    "uitc-update-func-name": "DeadFadeUpdate",
-                    "uitc-destory-func-name": "DeadFadeDestory"
+                    "uitc-init-func-name": "deadFadeInit",
+                    "uitc-update-func-name": "deadFadeUpdate",
+                    "uitc-destory-func-name": "deadFadeDestory"
                 },
                 {
                     "type": "audio",
@@ -2723,9 +2723,9 @@
             "components": [
                 {
                     "type": "interact",
-                    "uitc-init-func-name": "SceneFadeInit",
-                    "uitc-update-func-name": "SceneFadeUpdate",
-                    "uitc-destory-func-name": "SceneFadeDestory"
+                    "uitc-init-func-name": "sceneFadeInit",
+                    "uitc-update-func-name": "sceneFadeUpdate",
+                    "uitc-destory-func-name": "sceneFadeDestory"
                 }
             ]
         },

@@ -1,206 +1,165 @@
 #include "ButtonProcess.h"
+
 #include "FadeProcess.h"
 
-void RegisterButtonProcess(ObjectFactory* _factory)
-{
-#ifdef _DEBUG
-    assert(_factory);
-#endif // _DEBUG
-    _factory->getUInputMapPtr().insert(
-        { FUNC_NAME(NormalBtnInput),NormalBtnInput });
+void registerButtonProcess(ObjectFactory *Factory) {
+  assert(Factory);
+  Factory->getUInputMapPtr().insert(
+      {FUNC_NAME(normalBtnInput), normalBtnInput});
 }
 
-static SUBMESH_DATA* g_BtnFlagSprite = nullptr;
+static SUBMESH_DATA *G_BtnFlagSprite = nullptr;
 
-void NormalBtnInput(UInputComponent* _uic, const Timer& _timer)
-{
-    static std::string sceneName = "";
-    static std::string sceneFile = "";
+void normalBtnInput(UInputComponent *Uic, const Timer &Timer) {
+  static std::string SceneName = "";
+  static std::string SceneFile = "";
 
-    if (!g_BtnFlagSprite)
-    {
-        g_BtnFlagSprite = _uic->getUiOwner()->getSceneNode().getAssetsPool()->
-            getSubMeshIfExisted(SELECTED_BTN_SPRITE_NAME);
-    }
+  if (!G_BtnFlagSprite) {
+    G_BtnFlagSprite = Uic->getSceneNode().getAssetsPool()->getSubMeshIfExisted(
+        SELECTED_BTN_SPRITE_NAME);
+  }
 
-    if (GetSceneInFlg() || GetSceneOutFlg())
-    {
-        auto& map = g_BtnFlagSprite->InstanceMap;
-        for (auto& ins : map)
-        {
-            auto& ins_data = ins.second;
-            ins_data.CustomizedData1 = { 1.f,1.f,1.f,0.f };
-            break;
-        }
-        return;
+  if (getSceneInFlg() || getSceneOutFlg()) {
+    auto &Map = G_BtnFlagSprite->InstanceMap;
+    for (auto &Ins : Map) {
+      auto &InsData = Ins.second;
+      InsData.CustomizedData1 = {1.f, 1.f, 1.f, 0.f};
+      break;
     }
-    else if (GetSceneOutFinish())
-    {
-        auto& map = g_BtnFlagSprite->InstanceMap;
-        for (auto& ins : map)
-        {
-            auto& ins_data = ins.second;
-            ins_data.CustomizedData1 = { 1.f,1.f,1.f,0.f };
-            break;
-        }
+    return;
+  } else if (getSceneOutFinish()) {
+    auto &Map = G_BtnFlagSprite->InstanceMap;
+    for (auto &Ins : Map) {
+      auto &InsData = Ins.second;
+      InsData.CustomizedData1 = {1.f, 1.f, 1.f, 0.f};
+      break;
     }
-    else
-    {
-        auto& map = g_BtnFlagSprite->InstanceMap;
-        for (auto& ins : map)
-        {
-            auto& ins_data = ins.second;
-            ins_data.CustomizedData1 = { 1.f,1.f,1.f,1.f };
-            break;
-        }
+  } else {
+    auto &Map = G_BtnFlagSprite->InstanceMap;
+    for (auto &Ins : Map) {
+      auto &InsData = Ins.second;
+      InsData.CustomizedData1 = {1.f, 1.f, 1.f, 1.f};
+      break;
     }
+  }
 
-    if (_uic->getUiOwner()->getSceneNode().getSceneNodeName() == "title-scene")
-    {
-        auto& map = g_BtnFlagSprite->InstanceMap;
-        for (auto& ins : map)
-        {
-            auto& ins_data = ins.second;
-            ins_data.CustomizedData1 = { 1.f,1.f,1.f,0.f };
-            break;
-        }
+  if (Uic->getUiOwner()->getSceneNode().getSceneNodeName() == "title-scene") {
+    auto &Map = G_BtnFlagSprite->InstanceMap;
+    for (auto &Ins : Map) {
+      auto &InsData = Ins.second;
+      InsData.CustomizedData1 = {1.f, 1.f, 1.f, 0.f};
+      break;
     }
+  }
 
-    auto ubc = _uic->getUiOwner()->
-        getComponent<UButtonComponent>();
-    if (!ubc) { return; }
+  auto Ubc = Uic->getUiOwner()->getComponent<UButtonComponent>();
+  if (!Ubc) {
+    return;
+  }
 
-    if (input::isKeyPushedInSingle(KB_UP))
-    {
-        _uic->getUiOwner()->getComponent<UAudioComponent>()->
-            playSe("select-btn", 0.3f);
-        ubc->selectUpBtn();
-    }
-    if (input::isKeyPushedInSingle(KB_DOWN))
-    {
-        _uic->getUiOwner()->getComponent<UAudioComponent>()->
-            playSe("select-btn", 0.3f);
-        ubc->selectDownBtn();
-    }
-    if (input::isKeyPushedInSingle(KB_LEFT))
-    {
-        _uic->getUiOwner()->getComponent<UAudioComponent>()->
-            playSe("select-btn", 0.3f);
-        ubc->selectLeftBtn();
-    }
-    if (input::isKeyPushedInSingle(KB_RIGHT))
-    {
-        _uic->getUiOwner()->getComponent<UAudioComponent>()->
-            playSe("select-btn", 0.3f);
-        ubc->selectRightBtn();
-    }
-    if (input::isKeyPushedInSingle(GP_UPDIRBTN))
-    {
-        _uic->getUiOwner()->getComponent<UAudioComponent>()->
-            playSe("select-btn", 0.3f);
-        ubc->selectUpBtn();
-    }
-    if (input::isKeyPushedInSingle(GP_DOWNDIRBTN))
-    {
-        _uic->getUiOwner()->getComponent<UAudioComponent>()->
-            playSe("select-btn", 0.3f);
-        ubc->selectDownBtn();
-    }
-    if (input::isKeyPushedInSingle(GP_LEFTDIRBTN))
-    {
-        _uic->getUiOwner()->getComponent<UAudioComponent>()->
-            playSe("select-btn", 0.3f);
-        ubc->selectLeftBtn();
-    }
-    if (input::isKeyPushedInSingle(GP_RIGHTDIRBTN))
-    {
-        _uic->getUiOwner()->getComponent<UAudioComponent>()->
-            playSe("select-btn", 0.3f);
-        ubc->selectRightBtn();
-    }
+  if (input::isKeyPushedInSingle(KB_UP)) {
+    Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("select-btn",
+                                                               0.3f);
+    Ubc->selectUpBtn();
+  }
+  if (input::isKeyPushedInSingle(KB_DOWN)) {
+    Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("select-btn",
+                                                               0.3f);
+    Ubc->selectDownBtn();
+  }
+  if (input::isKeyPushedInSingle(KB_LEFT)) {
+    Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("select-btn",
+                                                               0.3f);
+    Ubc->selectLeftBtn();
+  }
+  if (input::isKeyPushedInSingle(KB_RIGHT)) {
+    Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("select-btn",
+                                                               0.3f);
+    Ubc->selectRightBtn();
+  }
+  if (input::isKeyPushedInSingle(GP_UPDIRBTN)) {
+    Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("select-btn",
+                                                               0.3f);
+    Ubc->selectUpBtn();
+  }
+  if (input::isKeyPushedInSingle(GP_DOWNDIRBTN)) {
+    Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("select-btn",
+                                                               0.3f);
+    Ubc->selectDownBtn();
+  }
+  if (input::isKeyPushedInSingle(GP_LEFTDIRBTN)) {
+    Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("select-btn",
+                                                               0.3f);
+    Ubc->selectLeftBtn();
+  }
+  if (input::isKeyPushedInSingle(GP_RIGHTDIRBTN)) {
+    Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("select-btn",
+                                                               0.3f);
+    Ubc->selectRightBtn();
+  }
 
-    if ((ubc->isCursorOnBtn() && input::isKeyPushedInSingle(M_LEFTBTN)) ||
-        ((input::isKeyPushedInSingle(KB_RETURN) ||
-          input::isKeyPushedInSingle(GP_BOTTOMBTN)) &&
-            ubc->isBeingSelected()))
-    {
-        if (ubc->getCompName() == "back-title-btn-ui-button")
-        {
-            _uic->getUiOwner()->
-                getComponent<UAudioComponent>()->
-                playSe("click-btn", 0.3f);
-            sceneName = "title-scene";
-            sceneFile = "title-scene.json";
-            P_LOG(LOG_DEBUG, "to title");
-            SetSceneOutFlg(true);
-        }
-        else if (ubc->getCompName() == "tutorial-btn-ui-button")
-        {
-            stopBGM();
-            _uic->getUiOwner()->
-                getComponent<UAudioComponent>()->
-                playSe("start-tutorial", 0.3f);
-            sceneName = "tutorial-scene";
-            sceneFile = "tutorial-scene.json";
-            P_LOG(LOG_DEBUG, "to tutorial");
-            SetSceneOutFlg(true);
-        }
-        else if (ubc->getCompName() == "route1-btn-ui-button")
-        {
-            stopBGM();
-            setVolume("route1", 0.2f);
-            playBGM("route1");
-            _uic->getUiOwner()->
-                getComponent<UAudioComponent>()->
-                playSe("start-run", 0.3f);
-            sceneName = "run-scene";
-            sceneFile = "run-scene.json";
-            P_LOG(LOG_DEBUG, "to run");
-            SetSceneOutFlg(true);
-        }
-        else if (ubc->getCompName() == "route2-btn-ui-button")
-        {
-            stopBGM();
-            setVolume("route2", 0.2f);
-            playBGM("route2");
-            _uic->getUiOwner()->
-                getComponent<UAudioComponent>()->
-                playSe("start-run", 0.3f);
-            sceneName = "route2-scene";
-            sceneFile = "route2-scene.json";
-            P_LOG(LOG_DEBUG, "to run2");
-            SetSceneOutFlg(true);
-        }
-        else if (ubc->getCompName() == "quit-btn-ui-button")
-        {
-            PostQuitMessage(0);
-        }
-        else if (ubc->getCompName() == "result-title-btn-ui-button")
-        {
-            stopBGM();
-            setVolume("title", 0.2f);
-            playBGM("title");
-            _uic->getUiOwner()->
-                getComponent<UAudioComponent>()->
-                playSe("click-btn", 0.3f);
-            sceneName = "title-scene";
-            sceneFile = "title-scene.json";
-            P_LOG(LOG_DEBUG, "to title");
-            SetSceneOutFlg(true);
-        }
-        else if (ubc->getCompName() == "start-game-btn-ui-button")
-        {
-            sceneName = "select-scene";
-            sceneFile = "select-scene.json";
-            P_LOG(LOG_DEBUG, "to select");
-            SetSceneOutFlg(true);
-        }
+  if ((Ubc->isCursorOnBtn() && input::isKeyPushedInSingle(M_LEFTBTN)) ||
+      ((input::isKeyPushedInSingle(KB_RETURN) ||
+        input::isKeyPushedInSingle(GP_BOTTOMBTN)) &&
+       Ubc->isBeingSelected())) {
+    if (Ubc->getCompName() == "back-title-btn-ui-button") {
+      Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("click-btn",
+                                                                 0.3f);
+      SceneName = "title-scene";
+      SceneFile = "title-scene.json";
+      P_LOG(LOG_DEBUG, "to title");
+      setSceneOutFlg(true);
+    } else if (Ubc->getCompName() == "tutorial-btn-ui-button") {
+      stopBGM();
+      Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe(
+          "start-tutorial", 0.3f);
+      SceneName = "tutorial-scene";
+      SceneFile = "tutorial-scene.json";
+      P_LOG(LOG_DEBUG, "to tutorial");
+      setSceneOutFlg(true);
+    } else if (Ubc->getCompName() == "route1-btn-ui-button") {
+      stopBGM();
+      setVolume("route1", 0.2f);
+      playBGM("route1");
+      Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("start-run",
+                                                                 0.3f);
+      SceneName = "run-scene";
+      SceneFile = "run-scene.json";
+      P_LOG(LOG_DEBUG, "to run");
+      setSceneOutFlg(true);
+    } else if (Ubc->getCompName() == "route2-btn-ui-button") {
+      stopBGM();
+      setVolume("route2", 0.2f);
+      playBGM("route2");
+      Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("start-run",
+                                                                 0.3f);
+      SceneName = "route2-scene";
+      SceneFile = "route2-scene.json";
+      P_LOG(LOG_DEBUG, "to run2");
+      setSceneOutFlg(true);
+    } else if (Ubc->getCompName() == "quit-btn-ui-button") {
+      PostQuitMessage(0);
+    } else if (Ubc->getCompName() == "result-title-btn-ui-button") {
+      stopBGM();
+      setVolume("title", 0.2f);
+      playBGM("title");
+      Uic->getUiOwner()->getComponent<UAudioComponent>()->playSe("click-btn",
+                                                                 0.3f);
+      SceneName = "title-scene";
+      SceneFile = "title-scene.json";
+      P_LOG(LOG_DEBUG, "to title");
+      setSceneOutFlg(true);
+    } else if (Ubc->getCompName() == "start-game-btn-ui-button") {
+      SceneName = "select-scene";
+      SceneFile = "select-scene.json";
+      P_LOG(LOG_DEBUG, "to select");
+      setSceneOutFlg(true);
     }
+  }
 
-    if (GetSceneOutFinish())
-    {
-        g_BtnFlagSprite = nullptr;
-        _uic->getUiOwner()->getSceneNode().getSceneManager()->
-            loadSceneNode(sceneName.c_str(), sceneFile.c_str());
-    }
+  if (getSceneOutFinish()) {
+    G_BtnFlagSprite = nullptr;
+    Uic->getUiOwner()->getSceneNode().getSceneManager()->loadSceneNode(
+        SceneName.c_str(), SceneFile.c_str());
+  }
 }

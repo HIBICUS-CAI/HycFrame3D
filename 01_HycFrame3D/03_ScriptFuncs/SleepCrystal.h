@@ -2,8 +2,8 @@
 
 #include "ActorAll.h"
 
-void RegisterSleepCrystal(ObjectFactory* _factory);
+void registerSleepCrystal(ObjectFactory *Factory);
 
-bool SCrystalInit(AInteractComponent*);
-void SCrystalUpdate(AInteractComponent*, const Timer&);
-void SCrystalDestory(AInteractComponent*);
+bool sleepCrystalInit(AInteractComponent *);
+void sleepCrystalUpdate(AInteractComponent *, const Timer &);
+void sleepCrystalDestory(AInteractComponent *);

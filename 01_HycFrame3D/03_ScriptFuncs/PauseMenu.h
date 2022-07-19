@@ -2,12 +2,12 @@
 
 #include "UiAll.h"
 
-void RegisterPauseMenu(ObjectFactory* _factory);
+void registerPauseMenu(ObjectFactory *Factory);
 
-void PauseMenuInput(UInputComponent*, const Timer&);
-void PauseMenuBtnInput(UInputComponent*, const Timer&);
-bool PauseMenuInit(UInteractComponent*);
-void PauseMenuUpdate(UInteractComponent*, const Timer&);
-void PauseMenuDestory(UInteractComponent*);
+void pauseMenuInput(UInputComponent *, const Timer &);
+void pauseMenuBtnInput(UInputComponent *, const Timer &);
+bool pauseMenuInit(UInteractComponent *);
+void pauseMenuUpdate(UInteractComponent *, const Timer &);
+void pauseMenuDestory(UInteractComponent *);
 
-bool GetGamePauseFlg();
+bool getGamePauseFlg();

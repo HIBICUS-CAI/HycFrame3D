@@ -1,195 +1,150 @@
 #include "MiscProcess.h"
 
-void RegisterMiscProcess(ObjectFactory* _factory)
-{
-#ifdef _DEBUG
-    assert(_factory);
-#endif // _DEBUG
-    _factory->getAInitMapPtr().insert(
-        { FUNC_NAME(DragonInit),DragonInit });
-    _factory->getAUpdateMapPtr().insert(
-        { FUNC_NAME(DragonUpdate),DragonUpdate });
-    _factory->getADestoryMapPtr().insert(
-        { FUNC_NAME(DragonDestory),DragonDestory });
-    _factory->getUInitMapPtr().insert(
-        { FUNC_NAME(HillInfoInit),HillInfoInit });
-    _factory->getUUpdateMapPtr().insert(
-        { FUNC_NAME(HillInfoUpdate),HillInfoUpdate });
-    _factory->getUDestoryMapPtr().insert(
-        { FUNC_NAME(HillInfoDestory),HillInfoDestory });
-    _factory->getUInitMapPtr().insert(
-        { FUNC_NAME(ResultInit),ResultInit });
-    _factory->getUUpdateMapPtr().insert(
-        { FUNC_NAME(ResultUpdate),ResultUpdate });
-    _factory->getUDestoryMapPtr().insert(
-        { FUNC_NAME(ResultDestory),ResultDestory });
-    _factory->getUInitMapPtr().insert(
-        { FUNC_NAME(logoFadeInit),logoFadeInit });
-    _factory->getUUpdateMapPtr().insert(
-        { FUNC_NAME(logoFadeUpdate),logoFadeUpdate });
-    _factory->getUDestoryMapPtr().insert(
-        { FUNC_NAME(logoFadeDestory),logoFadeDestory });
+void registerMiscProcess(ObjectFactory *Factory) {
+  assert(Factory);
+  Factory->getAInitMapPtr().insert({FUNC_NAME(dragonInit), dragonInit});
+  Factory->getAUpdateMapPtr().insert({FUNC_NAME(dragonUpdate), dragonUpdate});
+  Factory->getADestoryMapPtr().insert(
+      {FUNC_NAME(dragonDestory), dragonDestory});
+  Factory->getUInitMapPtr().insert({FUNC_NAME(hillInfoInit), hillInfoInit});
+  Factory->getUUpdateMapPtr().insert(
+      {FUNC_NAME(hillInfoUpdate), hillInfoUpdate});
+  Factory->getUDestoryMapPtr().insert(
+      {FUNC_NAME(hillInfoDestory), hillInfoDestory});
+  Factory->getUInitMapPtr().insert({FUNC_NAME(resultInit), resultInit});
+  Factory->getUUpdateMapPtr().insert({FUNC_NAME(resultUpdate), resultUpdate});
+  Factory->getUDestoryMapPtr().insert(
+      {FUNC_NAME(resultDestory), resultDestory});
+  Factory->getUInitMapPtr().insert({FUNC_NAME(logoFadeInit), logoFadeInit});
+  Factory->getUUpdateMapPtr().insert(
+      {FUNC_NAME(logoFadeUpdate), logoFadeUpdate});
+  Factory->getUDestoryMapPtr().insert(
+      {FUNC_NAME(logoFadeDestory), logoFadeDestory});
 }
 
-static ATransformComponent* g_DragonAtc = nullptr;
+static ATransformComponent *G_DragonAtc = nullptr;
 
-bool DragonInit(AInteractComponent* _aitc)
-{
-    g_DragonAtc = _aitc->getActorOwner()->
-        getComponent<ATransformComponent>();
-    if (!g_DragonAtc) { return false; }
-    return true;
+bool dragonInit(AInteractComponent *Aitc) {
+  G_DragonAtc = Aitc->getActorOwner()->getComponent<ATransformComponent>();
+  if (!G_DragonAtc) {
+    return false;
+  }
+  return true;
 }
 
-void DragonUpdate(AInteractComponent* _aitc, const Timer& _timer)
-{
-    g_DragonAtc->rotateYAsix(_timer.floatDeltaTime() / 8000.f);
+void dragonUpdate(AInteractComponent *Aitc, const Timer &Timer) {
+  G_DragonAtc->rotateYAsix(Timer.floatDeltaTime() / 8000.f);
 }
 
-void DragonDestory(AInteractComponent* _aitc)
-{
-    g_DragonAtc = nullptr;
+void dragonDestory(AInteractComponent *Aitc) { G_DragonAtc = nullptr; }
+
+static UButtonComponent *G_TutorialUbc = nullptr;
+static UButtonComponent *G_Route1Ubc = nullptr;
+static UButtonComponent *G_Route2Ubc = nullptr;
+static USpriteComponent *G_TutorialInfoUsc = nullptr;
+static USpriteComponent *G_Route1InfoUsc = nullptr;
+static USpriteComponent *G_Route2InfoUsc = nullptr;
+
+bool hillInfoInit(UInteractComponent *Uitc) {
+  G_TutorialUbc = nullptr;
+  G_Route1Ubc = nullptr;
+  G_Route2Ubc = nullptr;
+  G_TutorialInfoUsc = nullptr;
+  G_Route1InfoUsc = nullptr;
+  G_Route2InfoUsc = nullptr;
+  return true;
 }
 
-static UButtonComponent* g_TutorialUbc = nullptr;
-static UButtonComponent* g_Route1Ubc = nullptr;
-static UButtonComponent* g_Route2Ubc = nullptr;
-static USpriteComponent* g_TutorialInfoUsc = nullptr;
-static USpriteComponent* g_Route1InfoUsc = nullptr;
-static USpriteComponent* g_Route2InfoUsc = nullptr;
+void hillInfoUpdate(UInteractComponent *Uitc, const Timer &Timer) {
+  if (!G_TutorialUbc) {
+    G_TutorialUbc =
+        Uitc->getUiObject("tutorial-btn-ui")->getComponent<UButtonComponent>();
+  }
+  if (!G_Route1Ubc) {
+    G_Route1Ubc =
+        Uitc->getUiObject("route1-btn-ui")->getComponent<UButtonComponent>();
+  }
+  if (!G_Route2Ubc) {
+    G_Route2Ubc =
+        Uitc->getUiObject("route2-btn-ui")->getComponent<UButtonComponent>();
+  }
+  if (!G_TutorialInfoUsc) {
+    G_TutorialInfoUsc =
+        Uitc->getUiObject("text-tutorial-ui")->getComponent<USpriteComponent>();
+  }
+  if (!G_Route1InfoUsc) {
+    G_Route1InfoUsc =
+        Uitc->getUiObject("text-route1-ui")->getComponent<USpriteComponent>();
+  }
+  if (!G_Route2InfoUsc) {
+    G_Route2InfoUsc =
+        Uitc->getUiObject("text-route2-ui")->getComponent<USpriteComponent>();
+  }
 
-bool HillInfoInit(UInteractComponent* _uitc)
-{
-    g_TutorialUbc = nullptr;
-    g_Route1Ubc = nullptr;
-    g_Route2Ubc = nullptr;
-    g_TutorialInfoUsc = nullptr;
-    g_Route1InfoUsc = nullptr;
-    g_Route2InfoUsc = nullptr;
-    return true;
+  G_TutorialInfoUsc->setOffsetColor({1.f, 1.f, 1.f, 0.f});
+  G_Route1InfoUsc->setOffsetColor({1.f, 1.f, 1.f, 0.f});
+  G_Route2InfoUsc->setOffsetColor({1.f, 1.f, 1.f, 0.f});
+  if (G_TutorialUbc->isBeingSelected()) {
+    G_TutorialInfoUsc->setOffsetColor({1.f, 1.f, 1.f, 1.f});
+  }
+  if (G_Route1Ubc->isBeingSelected()) {
+    G_Route1InfoUsc->setOffsetColor({1.f, 1.f, 1.f, 1.f});
+  }
+  if (G_Route2Ubc->isBeingSelected()) {
+    G_Route2InfoUsc->setOffsetColor({1.f, 1.f, 1.f, 1.f});
+  }
 }
 
-void HillInfoUpdate(UInteractComponent* _uitc, const Timer& _timer)
-{
-    if (!g_TutorialUbc)
-    {
-        g_TutorialUbc = _uitc->getUiOwner()->getSceneNode().
-            getUiObject("tutorial-btn-ui")->
-            getComponent<UButtonComponent>();
-    }
-    if (!g_Route1Ubc)
-    {
-        g_Route1Ubc = _uitc->getUiOwner()->getSceneNode().
-            getUiObject("route1-btn-ui")->
-            getComponent<UButtonComponent>();
-    }
-    if (!g_Route2Ubc)
-    {
-        g_Route2Ubc = _uitc->getUiOwner()->getSceneNode().
-            getUiObject("route2-btn-ui")->
-            getComponent<UButtonComponent>();
-    }
-    if (!g_TutorialInfoUsc)
-    {
-        g_TutorialInfoUsc = _uitc->getUiOwner()->getSceneNode().
-            getUiObject("text-tutorial-ui")->
-            getComponent<USpriteComponent>();
-    }
-    if (!g_Route1InfoUsc)
-    {
-        g_Route1InfoUsc = _uitc->getUiOwner()->getSceneNode().
-            getUiObject("text-route1-ui")->
-            getComponent<USpriteComponent>();
-    }
-    if (!g_Route2InfoUsc)
-    {
-        g_Route2InfoUsc = _uitc->getUiOwner()->getSceneNode().
-            getUiObject("text-route2-ui")->
-            getComponent<USpriteComponent>();
-    }
-
-    g_TutorialInfoUsc->setOffsetColor({ 1.f,1.f,1.f,0.f });
-    g_Route1InfoUsc->setOffsetColor({ 1.f,1.f,1.f,0.f });
-    g_Route2InfoUsc->setOffsetColor({ 1.f,1.f,1.f,0.f });
-    if (g_TutorialUbc->isBeingSelected())
-    {
-        g_TutorialInfoUsc->setOffsetColor({ 1.f,1.f,1.f,1.f });
-    }
-    if (g_Route1Ubc->isBeingSelected())
-    {
-        g_Route1InfoUsc->setOffsetColor({ 1.f,1.f,1.f,1.f });
-    }
-    if (g_Route2Ubc->isBeingSelected())
-    {
-        g_Route2InfoUsc->setOffsetColor({ 1.f,1.f,1.f,1.f });
-    }
+void hillInfoDestory(UInteractComponent *_uitc) {
+  G_TutorialUbc = nullptr;
+  G_Route1Ubc = nullptr;
+  G_Route2Ubc = nullptr;
+  G_TutorialInfoUsc = nullptr;
+  G_Route1InfoUsc = nullptr;
+  G_Route2InfoUsc = nullptr;
 }
 
-void HillInfoDestory(UInteractComponent* _uitc)
-{
-    g_TutorialUbc = nullptr;
-    g_Route1Ubc = nullptr;
-    g_Route2Ubc = nullptr;
-    g_TutorialInfoUsc = nullptr;
-    g_Route1InfoUsc = nullptr;
-    g_Route2InfoUsc = nullptr;
+bool resultInit(UInteractComponent *Uitc) {
+  Uitc->getUiOwner()->getComponent<UAnimateComponent>()->changeAnimateTo(
+      "success");
+  return true;
 }
 
-bool ResultInit(UInteractComponent* _uitc)
-{
-    _uitc->getUiOwner()->getComponent<UAnimateComponent>()->
-        changeAnimateTo("success");
-    return true;
+void resultUpdate(UInteractComponent *Uitc, const Timer &Timer) {}
+
+void resultDestory(UInteractComponent *Uitc) {}
+
+static USpriteComponent *G_LogoFadeUsc = nullptr;
+static float G_LogoTimer = 0.f;
+
+bool logoFadeInit(UInteractComponent *Uitc) {
+  G_LogoTimer = 0.f;
+  G_LogoFadeUsc = Uitc->getUiOwner()->getComponent<USpriteComponent>();
+  if (!G_LogoFadeUsc) {
+    return false;
+  }
+  return true;
 }
 
-void ResultUpdate(UInteractComponent* _uitc, const Timer& _timer)
-{
+void logoFadeUpdate(UInteractComponent *Uitc, const Timer &Timer) {
+  if (G_LogoTimer < 1000.f) {
+    G_LogoFadeUsc->setOffsetColor(
+        {1.f, 1.f, 1.f, 1.f - (G_LogoTimer / 1000.f)});
+  } else if (G_LogoTimer > 2500.f && G_LogoTimer < 3500.f) {
+    G_LogoFadeUsc->setOffsetColor(
+        {1.f, 1.f, 1.f, (G_LogoTimer - 2500.f) / 1000.f});
+  } else if (G_LogoTimer > 3500.f) {
+    Uitc->getSceneNode().getSceneManager()->loadSceneNode("title-scene",
+                                                          "title-scene.json");
+    stopBGM();
+    setVolume("title", 0.2f);
+    playBGM("title");
+  }
 
+  G_LogoTimer += Timer.floatDeltaTime();
 }
 
-void ResultDestory(UInteractComponent* _uitc)
-{
-
-}
-
-static USpriteComponent* g_LogoFadeUsc = nullptr;
-static float g_LogoTimer = 0.f;
-
-bool logoFadeInit(UInteractComponent* _uitc)
-{
-    g_LogoTimer = 0.f;
-    g_LogoFadeUsc = _uitc->getUiOwner()->
-        getComponent<USpriteComponent>();
-    if (!g_LogoFadeUsc) { return false; }
-    return true;
-}
-
-void logoFadeUpdate(UInteractComponent* _uitc, const Timer& _timer)
-{
-    if (g_LogoTimer < 1000.f)
-    {
-        g_LogoFadeUsc->setOffsetColor(
-            { 1.f,1.f,1.f,1.f - (g_LogoTimer / 1000.f) });
-    }
-    else if (g_LogoTimer > 2500.f && g_LogoTimer < 3500.f)
-    {
-        g_LogoFadeUsc->setOffsetColor(
-            { 1.f,1.f,1.f,(g_LogoTimer - 2500.f) / 1000.f });
-    }
-    else if (g_LogoTimer > 3500.f)
-    {
-        _uitc->getUiOwner()->getSceneNode().getSceneManager()->
-            loadSceneNode("title-scene", "title-scene.json");
-        stopBGM();
-        setVolume("title", 0.2f);
-        playBGM("title");
-    }
-
-    g_LogoTimer += _timer.floatDeltaTime();
-}
-
-void logoFadeDestory(UInteractComponent* _uitc)
-{
-    g_LogoTimer = 0.f;
-    g_LogoFadeUsc = nullptr;
+void logoFadeDestory(UInteractComponent *Uitc) {
+  G_LogoTimer = 0.f;
+  G_LogoFadeUsc = nullptr;
 }

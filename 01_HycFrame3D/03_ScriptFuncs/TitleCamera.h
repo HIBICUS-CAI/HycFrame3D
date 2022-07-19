@@ -2,8 +2,8 @@
 
 #include "ActorAll.h"
 
-void RegisterTitleCamera(ObjectFactory* _factory);
+void registerTitleCamera(ObjectFactory *Factory);
 
-bool TitleCamInit(AInteractComponent*);
-void TitleCamUpdate(AInteractComponent*, const Timer&);
-void TitleCamDestory(AInteractComponent*);
+bool titleCamInit(AInteractComponent *);
+void titleCamUpdate(AInteractComponent *, const Timer &);
+void titleCamDestory(AInteractComponent *);

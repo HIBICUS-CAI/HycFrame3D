@@ -70,9 +70,9 @@
                 },
                 {
                     "type": "interact",
-                    "uitc-init-func-name": "HillInfoInit",
-                    "uitc-update-func-name": "HillInfoUpdate",
-                    "uitc-destory-func-name": "HillInfoDestory"
+                    "uitc-init-func-name": "hillInfoInit",
+                    "uitc-update-func-name": "hillInfoUpdate",
+                    "uitc-destory-func-name": "hillInfoDestory"
                 }
             ]
         },
@@ -115,7 +115,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "NormalBtnInput"
+                    "uic-func-name": "normalBtnInput"
                 },
                 {
                     "type": "audio",
@@ -166,7 +166,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "NormalBtnInput"
+                    "uic-func-name": "normalBtnInput"
                 },
                 {
                     "type": "audio",
@@ -217,7 +217,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "NormalBtnInput"
+                    "uic-func-name": "normalBtnInput"
                 },
                 {
                     "type": "audio",
@@ -269,7 +269,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "NormalBtnInput"
+                    "uic-func-name": "normalBtnInput"
                 },
                 {
                     "type": "audio",
@@ -319,7 +319,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "NormalBtnInput"
+                    "uic-func-name": "normalBtnInput"
                 },
                 {
                     "type": "audio",
@@ -434,9 +434,9 @@
             "components": [
                 {
                     "type": "interact",
-                    "uitc-init-func-name": "SceneFadeInit",
-                    "uitc-update-func-name": "SceneFadeUpdate",
-                    "uitc-destory-func-name": "SceneFadeDestory"
+                    "uitc-init-func-name": "sceneFadeInit",
+                    "uitc-update-func-name": "sceneFadeUpdate",
+                    "uitc-destory-func-name": "sceneFadeDestory"
                 }
             ]
         },

@@ -1,229 +1,186 @@
 #include "FadeProcess.h"
+
 #include "PlayerProcess.h"
 
-void RegisterFadeProcess(ObjectFactory* _factory)
-{
-#ifdef _DEBUG
-    assert(_factory);
-#endif // _DEBUG
-    _factory->getUInitMapPtr().insert(
-        { FUNC_NAME(DeadFadeInit),DeadFadeInit });
-    _factory->getUUpdateMapPtr().insert(
-        { FUNC_NAME(DeadFadeUpdate),DeadFadeUpdate });
-    _factory->getUDestoryMapPtr().insert(
-        { FUNC_NAME(DeadFadeDestory),DeadFadeDestory });
-    _factory->getUInitMapPtr().insert(
-        { FUNC_NAME(SceneFadeInit),SceneFadeInit });
-    _factory->getUUpdateMapPtr().insert(
-        { FUNC_NAME(SceneFadeUpdate),SceneFadeUpdate });
-    _factory->getUDestoryMapPtr().insert(
-        { FUNC_NAME(SceneFadeDestory),SceneFadeDestory });
+void registerFadeProcess(ObjectFactory *Factory) {
+  assert(Factory);
+  Factory->getUInitMapPtr().insert({FUNC_NAME(deadFadeInit), deadFadeInit});
+  Factory->getUUpdateMapPtr().insert(
+      {FUNC_NAME(deadFadeUpdate), deadFadeUpdate});
+  Factory->getUDestoryMapPtr().insert(
+      {FUNC_NAME(deadFadeDestory), deadFadeDestory});
+  Factory->getUInitMapPtr().insert({FUNC_NAME(sceneFadeInit), sceneFadeInit});
+  Factory->getUUpdateMapPtr().insert(
+      {FUNC_NAME(sceneFadeUpdate), sceneFadeUpdate});
+  Factory->getUDestoryMapPtr().insert(
+      {FUNC_NAME(sceneFadeDestory), sceneFadeDestory});
 }
 
-static UTransformComponent* g_DeadFadesUtc[10] = { nullptr };
+static UTransformComponent *G_DeadFadesUtc[10] = {nullptr};
 
-static bool g_DeadFadeRun = false;
-static bool g_DeadFadeDestDown = true;
+static bool G_DeadFadeRun = false;
+static bool G_DeadFadeDestDown = true;
 
-bool DeadFadeInit(UInteractComponent* _uitc)
-{
-    auto compContainer = _uitc->getUiOwner()->getSceneNode().
-        getComponentContainer();
-    for (UINT i = 0; i < ARRAYSIZE(g_DeadFadesUtc); i++)
-    {
-        std::string compName =
-            "dead-black-" + std::to_string(i) + "-ui-transform";
-        g_DeadFadesUtc[i] = (UTransformComponent*)(compContainer->
-            getComponent(compName));
-        if (!g_DeadFadesUtc[i]) { return false; }
+bool deadFadeInit(UInteractComponent *Uitc) {
+  using namespace hyc::str;
+  auto CompContainer =
+      Uitc->getUiOwner()->getSceneNode().getComponentContainer();
+  for (UINT I = 0; I < ARRAYSIZE(G_DeadFadesUtc); I++) {
+    G_DeadFadesUtc[I] = static_cast<UTransformComponent *>(
+        CompContainer->getComponent(sFormat("dead-black-{}-ui-transform", I)));
+    if (!G_DeadFadesUtc[I]) {
+      return false;
     }
+  }
 
-    g_DeadFadeRun = false;
+  G_DeadFadeRun = false;
 
-    return true;
+  return true;
 }
 
-void DeadFadeUpdate(UInteractComponent* _uitc, const Timer& _timer)
-{
-    static float runTime = 0.f;
-    if (g_DeadFadeRun)
-    {
-        float dest = g_DeadFadeDestDown ? 1.f : -1.f;
-        if (runTime >= 0.f && runTime < 500.f)
-        {
-            for (UINT i = 0; i < 10; i++)
-            {
-                float startTime = (float)(i * 25);
-                float offsetTime = runTime - startTime;
-                if (offsetTime >= 0.f && offsetTime <= 250.f)
-                {
-                    float offsetY = 720.f - (720.f *
-                        sinf(offsetTime / 250.f * DirectX::XM_PIDIV2));
-                    DirectX::XMFLOAT3 pos = g_DeadFadesUtc[i]->getPosition();
-                    pos.y = offsetY * dest;
-                    g_DeadFadesUtc[i]->setPosition(pos);
-                }
-            }
+void deadFadeUpdate(UInteractComponent *Uitc, const Timer &Timer) {
+  static float RunTime = 0.f;
+  if (G_DeadFadeRun) {
+    float Dest = G_DeadFadeDestDown ? 1.f : -1.f;
+    if (RunTime >= 0.f && RunTime < 500.f) {
+      for (UINT I = 0; I < 10; I++) {
+        float StartTime = static_cast<float>(I * 25);
+        float OffsetTime = RunTime - StartTime;
+        if (OffsetTime >= 0.f && OffsetTime <= 250.f) {
+          float OffsetY =
+              720.f - (720.f * sinf(OffsetTime / 250.f * dx::XM_PIDIV2));
+          dx::XMFLOAT3 Pos = G_DeadFadesUtc[I]->getPosition();
+          Pos.y = OffsetY * Dest;
+          G_DeadFadesUtc[I]->setPosition(Pos);
         }
-        else
-        {
-            if (runTime >= 1000.f)
-            {
-                _uitc->getUiOwner()->
-                    getComponent<UAudioComponent>()->
-                    playSe("reborn", 0.15f);
-                runTime = 0.f;
-                g_DeadFadeRun = false;
-                g_DeadFadeDestDown = !g_DeadFadeDestDown;
-                return;
-            }
-            else
-            {
-                for (UINT i = 0; i < 10; i++)
-                {
-                    ResetDeadPlayerToGround();
-                    float startTime = (float)(i * 25);
-                    float offsetTime = runTime - 500.f - startTime;
-                    if (offsetTime >= 0.f && offsetTime <= 250.f)
-                    {
-                        float offsetY = 0.f - (720.f *
-                            sinf(offsetTime / 250.f * DirectX::XM_PIDIV2));
-                        DirectX::XMFLOAT3 pos = g_DeadFadesUtc[i]->getPosition();
-                        pos.y = offsetY * dest;;
-                        g_DeadFadesUtc[i]->setPosition(pos);
-                    }
-                }
-            }
+      }
+    } else {
+      if (RunTime >= 1000.f) {
+        Uitc->getUiOwner()->getComponent<UAudioComponent>()->playSe("reborn",
+                                                                    0.15f);
+        RunTime = 0.f;
+        G_DeadFadeRun = false;
+        G_DeadFadeDestDown = !G_DeadFadeDestDown;
+        return;
+      } else {
+        for (UINT I = 0; I < 10; I++) {
+          resetDeadPlayerToGround();
+          float StartTime = static_cast<float>(I * 25);
+          float OffsetTime = RunTime - 500.f - StartTime;
+          if (OffsetTime >= 0.f && OffsetTime <= 250.f) {
+            float OffsetY =
+                0.f - (720.f * sinf(OffsetTime / 250.f * dx::XM_PIDIV2));
+            dx::XMFLOAT3 Pos = G_DeadFadesUtc[I]->getPosition();
+            Pos.y = OffsetY * Dest;
+            G_DeadFadesUtc[I]->setPosition(Pos);
+          }
         }
-        runTime += _timer.floatDeltaTime();
+      }
     }
+    RunTime += Timer.floatDeltaTime();
+  }
 }
 
-void DeadFadeDestory(UInteractComponent* _uitc)
-{
-    g_DeadFadeRun = false;
+void deadFadeDestory(UInteractComponent *Uitc) { G_DeadFadeRun = false; }
+
+bool getDeadFadeRunningFlg() { return G_DeadFadeRun; }
+
+void setDeadFadeRunningFlg(bool Flag) { G_DeadFadeRun = Flag; }
+
+static bool G_SceneInFlg = true;
+static bool G_SceneOutFlg = false;
+static bool G_SceneOutTrigger = false;
+
+static UTransformComponent *G_SceneInUtc[2] = {nullptr};
+static UTransformComponent *G_SceneOutUtc[2] = {nullptr};
+
+static float G_SceneInOutTimer = 0.f;
+
+bool sceneFadeInit(UInteractComponent *Uitc) {
+  using namespace hyc::str;
+  G_SceneInFlg = true;
+  G_SceneOutFlg = false;
+  G_SceneOutTrigger = false;
+  G_SceneInOutTimer = 0.f;
+
+  auto CompContainer = Uitc->getSceneNode().getComponentContainer();
+  for (UINT I = 0; I < 2; I++) {
+    G_SceneInUtc[I] = static_cast<UTransformComponent *>(
+        CompContainer->getComponent(sFormat("scene-in-{}-ui-transform", I)));
+    G_SceneOutUtc[I] = static_cast<UTransformComponent *>(
+        CompContainer->getComponent(sFormat("scene-out-{}-ui-transform", I)));
+  }
+
+  return true;
 }
 
-bool GetDeadFadeRunningFlg()
-{
-    return g_DeadFadeRun;
-}
-
-void SetDeadFadeRunningFlg(bool _flag)
-{
-    g_DeadFadeRun = _flag;
-}
-
-static bool g_SceneInFlg = true;
-static bool g_SceneOutFlg = false;
-static bool g_SceneOutTrigger = false;
-
-static UTransformComponent* g_SceneInUtc[2] = { nullptr };
-static UTransformComponent* g_SceneOutUtc[2] = { nullptr };
-
-static float g_SceneInOutTimer = 0.f;
-
-bool SceneFadeInit(UInteractComponent* _uitc)
-{
-    g_SceneInFlg = true;
-    g_SceneOutFlg = false;
-    g_SceneOutTrigger = false;
-    g_SceneInOutTimer = 0.f;
-
-    auto compContainer = _uitc->getUiOwner()->getSceneNode().
-        getComponentContainer();
-    for (UINT i = 0; i < 2; i++)
-    {
-        std::string name = "";
-        name = "scene-in-" + std::to_string(i) + "-ui-transform";
-        g_SceneInUtc[i] = (UTransformComponent*)(compContainer->
-            getComponent(name));
-        name = "scene-out-" + std::to_string(i) + "-ui-transform";
-        g_SceneOutUtc[i] = (UTransformComponent*)(compContainer->
-            getComponent(name));
-    }
-
-    return true;
-}
-
-void SceneFadeUpdate(UInteractComponent* _uitc, const Timer& _timer)
-{
-    if (g_SceneInFlg)
-    {
-        if (g_SceneInOutTimer > 500.f)
-        {
-            g_SceneInFlg = false;
-            g_SceneInOutTimer = 0.f;
-            return;
-        }
-
-        float sinVal = sinf(g_SceneInOutTimer / 500.f * DirectX::XM_PIDIV2);
-        float absX = (sinVal) * 640.f + 320.f;
-        DirectX::XMFLOAT3 pos = {};
-        pos = g_SceneInUtc[0]->getPosition();
-        pos.x = -1.f * absX;
-        g_SceneInUtc[0]->setPosition(pos);
-        pos = g_SceneInUtc[1]->getPosition();
-        pos.x = 1.f * absX;
-        g_SceneInUtc[1]->setPosition(pos);
-
-        g_SceneInOutTimer += _timer.floatDeltaTime();
+void sceneFadeUpdate(UInteractComponent *Uitc, const Timer &Timer) {
+  if (G_SceneInFlg) {
+    if (G_SceneInOutTimer > 500.f) {
+      G_SceneInFlg = false;
+      G_SceneInOutTimer = 0.f;
+      return;
     }
 
-    if (g_SceneOutFlg)
-    {
-        if (g_SceneInOutTimer > 500.f)
-        {
-            g_SceneOutFlg = false;
-            g_SceneInOutTimer = 0.f;
-            return;
-        }
+    float SinVal = sinf(G_SceneInOutTimer / 500.f * dx::XM_PIDIV2);
+    float AbsX = SinVal * 640.f + 320.f;
+    dx::XMFLOAT3 Pos = {};
+    Pos = G_SceneInUtc[0]->getPosition();
+    Pos.x = -1.f * AbsX;
+    G_SceneInUtc[0]->setPosition(Pos);
+    Pos = G_SceneInUtc[1]->getPosition();
+    Pos.x = 1.f * AbsX;
+    G_SceneInUtc[1]->setPosition(Pos);
 
-        float sinVal = sinf(g_SceneInOutTimer / 500.f * DirectX::XM_PIDIV2);
-        float absY = (1.f - sinVal) * 360.f + 180.f;
-        DirectX::XMFLOAT3 pos = {};
-        pos = g_SceneOutUtc[0]->getPosition();
-        pos.y = -1.f * absY;
-        g_SceneOutUtc[0]->setPosition(pos);
-        pos = g_SceneOutUtc[1]->getPosition();
-        pos.y = 1.f * absY;
-        g_SceneOutUtc[1]->setPosition(pos);
+    G_SceneInOutTimer += Timer.floatDeltaTime();
+  }
 
-        g_SceneInOutTimer += _timer.floatDeltaTime();
+  if (G_SceneOutFlg) {
+    if (G_SceneInOutTimer > 500.f) {
+      G_SceneOutFlg = false;
+      G_SceneInOutTimer = 0.f;
+      return;
     }
+
+    float SinVal = sinf(G_SceneInOutTimer / 500.f * dx::XM_PIDIV2);
+    float AbsY = (1.f - SinVal) * 360.f + 180.f;
+    dx::XMFLOAT3 Pos = {};
+    Pos = G_SceneOutUtc[0]->getPosition();
+    Pos.y = -1.f * AbsY;
+    G_SceneOutUtc[0]->setPosition(Pos);
+    Pos = G_SceneOutUtc[1]->getPosition();
+    Pos.y = 1.f * AbsY;
+    G_SceneOutUtc[1]->setPosition(Pos);
+
+    G_SceneInOutTimer += Timer.floatDeltaTime();
+  }
 }
 
-void SceneFadeDestory(UInteractComponent* _uitc)
-{
-    g_SceneInFlg = true;
-    g_SceneOutFlg = false;
-    g_SceneOutTrigger = false;
+void sceneFadeDestory(UInteractComponent *Uitc) {
+  G_SceneInFlg = true;
+  G_SceneOutFlg = false;
+  G_SceneOutTrigger = false;
 }
 
-bool GetSceneInFlg()
-{
-    return g_SceneInFlg;
+bool getSceneInFlg() { return G_SceneInFlg; }
+
+bool getSceneOutFlg() { return G_SceneOutFlg; }
+
+static UINT G_SceneOutFilter = static_cast<UINT>(-1);
+
+bool getSceneOutFinish(UINT Filter) {
+  bool FilterFlag = (G_SceneOutFilter == static_cast<UINT>(-1))
+                        ? true
+                        : ((G_SceneOutFilter == Filter) ? true : false);
+  return G_SceneOutTrigger && !G_SceneOutFlg && FilterFlag;
 }
 
-bool GetSceneOutFlg()
-{
-    return g_SceneOutFlg;
-}
-
-static UINT g_SceneOutFilter = (UINT)-1;
-
-bool GetSceneOutFinish(UINT _filter)
-{
-    bool filter = (g_SceneOutFilter == (UINT)-1) ? true :
-        ((g_SceneOutFilter == _filter) ? true : false);
-    return g_SceneOutTrigger && !g_SceneOutFlg && filter;
-}
-
-void SetSceneOutFlg(bool _flag, UINT _filter)
-{
-    if (g_SceneOutTrigger || g_SceneOutFlg) { return; }
-    g_SceneOutFlg = _flag;
-    g_SceneOutTrigger = true;
-    g_SceneInOutTimer = 0.f;
-    g_SceneOutFilter = _filter;
+void setSceneOutFlg(bool Flag, UINT Filter) {
+  if (G_SceneOutTrigger || G_SceneOutFlg) {
+    return;
+  }
+  G_SceneOutFlg = Flag;
+  G_SceneOutTrigger = true;
+  G_SceneInOutTimer = 0.f;
+  G_SceneOutFilter = Filter;
 }

@@ -1,170 +1,168 @@
 #include "BulletProcess.h"
-#include <vector>
-#include "PlayerProcess.h"
+
 #include "PauseMenu.h"
+#include "PlayerProcess.h"
 
-using namespace DirectX;
+#include <vector>
 
-static std::vector<ATransformComponent*> g_UsableBulletAtcVec = {};
-static std::vector<std::pair<ATransformComponent*, DirectX::XMFLOAT3>>
-g_UsingBulletAtcVec = {};
+using namespace dx;
 
-static ATransformComponent* g_PlayerAtc = nullptr;
+static std::vector<ATransformComponent *> G_UsableBulletAtcVec = {};
+static std::vector<std::pair<ATransformComponent *, dx::XMFLOAT3>>
+    G_UsingBulletAtcVec = {};
 
-static bool g_PlayerCanAim = true;
+static ATransformComponent *G_PlayerAtc = nullptr;
 
-static float g_AimingRestTimer = 15.f;
+static bool G_PlayerCanAim = true;
 
-static USpriteComponent* g_BulletIconUsc[3] = { nullptr };
+static float G_AimingRestTimer = 15.f;
 
-void RegisterBulletProcess(ObjectFactory* _factory)
-{
-#ifdef _DEBUG
-    assert(_factory);
-#endif // _DEBUG
-    _factory->getAInitMapPtr().insert(
-        { FUNC_NAME(BulletManagerInit),BulletManagerInit });
-    _factory->getAUpdateMapPtr().insert(
-        { FUNC_NAME(BulletManagerUpdate),BulletManagerUpdate });
-    _factory->getADestoryMapPtr().insert(
-        { FUNC_NAME(BulletManagerDestory),BulletManagerDestory });
+static USpriteComponent *G_BulletIconUsc[3] = {nullptr};
+
+void registerBulletProcess(ObjectFactory *Factory) {
+  assert(Factory);
+  Factory->getAInitMapPtr().insert(
+      {FUNC_NAME(bulletManagerInit), bulletManagerInit});
+  Factory->getAUpdateMapPtr().insert(
+      {FUNC_NAME(bulletManagerUpdate), bulletManagerUpdate});
+  Factory->getADestoryMapPtr().insert(
+      {FUNC_NAME(bulletManagerDestory), bulletManagerDestory});
 }
 
-bool BulletManagerInit(AInteractComponent* _aitc)
-{
-    g_UsableBulletAtcVec.clear();
-    g_UsingBulletAtcVec.clear();
+bool bulletManagerInit(AInteractComponent *Aitc) {
+  G_UsableBulletAtcVec.clear();
+  G_UsingBulletAtcVec.clear();
 
-    for (UINT i = 0; i < 3; i++)
-    {
-        std::string atcName = "bullet-" +
-            std::to_string(i) + "-actor-transform";
-        auto atc = (ATransformComponent*)(_aitc->getActorOwner()->getSceneNode().
-            getComponentContainer()->getComponent(atcName));
-        if (!atc) { return false; }
-        g_UsableBulletAtcVec.push_back(atc);
+  for (UINT I = 0; I < 3; I++) {
+    std::string AtcName = "bullet-" + std::to_string(I) + "-actor-transform";
+    auto Atc = static_cast<ATransformComponent *>(
+        Aitc->getSceneNode().getComponentContainer()->getComponent(AtcName));
+    if (!Atc) {
+      return false;
     }
+    G_UsableBulletAtcVec.push_back(Atc);
+  }
 
-    g_PlayerAtc = (ATransformComponent*)(_aitc->getActorOwner()->getSceneNode().
-        getComponentContainer()->getComponent("player-actor-transform"));
-    if (!g_PlayerAtc) { return false; }
-
-    g_PlayerCanAim = true;
-
-    for (UINT i = 0; i < 3; i++)
-    {
-        std::string compName = "bullet-icon" + std::to_string(i) + "-ui-sprite";
-        g_BulletIconUsc[i] = (USpriteComponent*)(_aitc->getActorOwner()->
-            getSceneNode().getComponentContainer()->getComponent(compName));
-    }
-
-    return true;
-}
-
-void BulletManagerUpdate(AInteractComponent* _aitc,const Timer& _timer)
-{
-    if (GetGamePauseFlg()) { return; }
-
-    if (GetPlayerAimingFlg())
-    {
-        g_AimingRestTimer -= _timer.floatDeltaTime() / 1000.f;
-        if (g_AimingRestTimer < -3.f) { g_AimingRestTimer = -3.f; }
-    }
-    else
-    {
-        g_AimingRestTimer += _timer.floatDeltaTime() / 1000.f / 3.f * 5.f;
-        if (g_AimingRestTimer > 15.f) { g_AimingRestTimer = 15.f; }
-    }
-
-    if (g_AimingRestTimer <= 0.05f) { g_PlayerCanAim = false; }
-    else { g_PlayerCanAim = true; }
-
-    float blt0IconAlpha = (g_AimingRestTimer - 10.f) / 5.f;
-    float blt1IconAlpha = (g_AimingRestTimer - 5.f) / 5.f;
-    float blt2IconAlpha = (g_AimingRestTimer) / 5.f;
-    DirectX::XMFLOAT4 offset0 = { 1.f,1.f,1.f,blt0IconAlpha };
-    DirectX::XMFLOAT4 offset1 = { 1.f,1.f,1.f,blt1IconAlpha };
-    DirectX::XMFLOAT4 offset2 = { 1.f,1.f,1.f,blt2IconAlpha };
-    g_BulletIconUsc[0]->setOffsetColor(offset0);
-    g_BulletIconUsc[1]->setOffsetColor(offset1);
-    g_BulletIconUsc[2]->setOffsetColor(offset2);
-
-    float slowRatio = (GetPlayerAimingFlg() && g_PlayerCanAim) ? 0.1f : 1.f;
-    float deltatime = _timer.floatDeltaTime() * slowRatio;
-    //UINT usingSize = (UINT)g_UsingBulletAtcVec.size();
-    for (auto i = g_UsingBulletAtcVec.begin(); i != g_UsingBulletAtcVec.end();)
-    {
-        auto& blt = *i;
-        auto bltAtc = blt.first;
-        auto& direction = blt.second;
-        bltAtc->translateXAsix(direction.x * deltatime);
-        bltAtc->translateYAsix(direction.y * deltatime);
-        bltAtc->translateZAsix(direction.z * deltatime);
-
-        DirectX::XMVECTOR vec = DirectX::XMLoadFloat3(
-            &bltAtc->getProcessingPosition());
-        DirectX::XMVECTOR playerPos = DirectX::XMLoadFloat3(
-            &g_PlayerAtc->getProcessingPosition());
-        vec -= playerPos;
-        vec = DirectX::XMVector3Length(vec);
-        if (DirectX::XMVectorGetX(vec) > 150.f)
-        {
-            i = g_UsingBulletAtcVec.erase(i);
-            g_UsableBulletAtcVec.push_back(bltAtc);
-        }
-        else { ++i; }
-    }
-
-    for (auto& blt : g_UsableBulletAtcVec)
-    {
-        blt->setPosition(g_PlayerAtc->getPosition());
-    }
-}
-
-void BulletManagerDestory(AInteractComponent* _aitc)
-{
-    g_UsableBulletAtcVec.clear();
-    g_UsingBulletAtcVec.clear();
-    g_PlayerAtc = nullptr;
-
-    for (UINT i = 0; i < 3; i++)
-    {
-        g_BulletIconUsc[i] = nullptr;
-    }
-}
-
-void SetBulletShoot(DirectX::XMFLOAT3& _pos, DirectX::XMFLOAT3& _vec)
-{
-    if (g_UsableBulletAtcVec.size())
-    {
-        auto atc = g_UsableBulletAtcVec.back();
-        g_UsableBulletAtcVec.pop_back();
-        atc->setPosition(_pos);
-        DirectX::XMVECTOR norVec = DirectX::XMLoadFloat3(&_vec);
-        norVec = DirectX::XMVector3Normalize(norVec);
-        DirectX::XMFLOAT3 vec = { 0.f,0.f,0.f };
-        DirectX::XMStoreFloat3(&vec, norVec);
-        g_UsingBulletAtcVec.push_back({ atc,vec });
-
-        if (g_AimingRestTimer > 10.f) { g_AimingRestTimer = 10.f; }
-        else if (g_AimingRestTimer > 5.f) { g_AimingRestTimer = 5.f; }
-        else { g_AimingRestTimer = 0.f; }
-    }
-}
-
-bool GetPlayerCanAimFlg()
-{
-    return g_PlayerCanAim;
-}
-
-bool CheckCollisionWithBullet(ACollisionComponent* _acc)
-{
-    static std::string objName = "";
-    for (auto& blt : g_UsingBulletAtcVec)
-    {
-        objName = blt.first->getActorOwner()->getObjectName();
-        if (_acc->checkCollisionWith(objName)) { return true; }
-    }
-
+  G_PlayerAtc = static_cast<ATransformComponent *>(
+      Aitc->getSceneNode().getComponentContainer()->getComponent(
+          "player-actor-transform"));
+  if (!G_PlayerAtc) {
     return false;
+  }
+
+  G_PlayerCanAim = true;
+
+  for (UINT I = 0; I < 3; I++) {
+    std::string CompName = "bullet-icon" + std::to_string(I) + "-ui-sprite";
+    G_BulletIconUsc[I] = static_cast<USpriteComponent *>(
+        Aitc->getSceneNode().getComponentContainer()->getComponent(CompName));
+  }
+
+  return true;
+}
+
+void bulletManagerUpdate(AInteractComponent *Aitc, const Timer &Timer) {
+  if (getGamePauseFlg()) {
+    return;
+  }
+
+  if (getPlayerAimingFlg()) {
+    G_AimingRestTimer -= Timer.floatDeltaTime() / 1000.f;
+    if (G_AimingRestTimer < -3.f) {
+      G_AimingRestTimer = -3.f;
+    }
+  } else {
+    G_AimingRestTimer += Timer.floatDeltaTime() / 1000.f / 3.f * 5.f;
+    if (G_AimingRestTimer > 15.f) {
+      G_AimingRestTimer = 15.f;
+    }
+  }
+
+  if (G_AimingRestTimer <= 0.05f) {
+    G_PlayerCanAim = false;
+  } else {
+    G_PlayerCanAim = true;
+  }
+
+  float Blt0IconAlpha = (G_AimingRestTimer - 10.f) / 5.f;
+  float Blt1IconAlpha = (G_AimingRestTimer - 5.f) / 5.f;
+  float Blt2IconAlpha = (G_AimingRestTimer) / 5.f;
+  dx::XMFLOAT4 Offset0 = {1.f, 1.f, 1.f, Blt0IconAlpha};
+  dx::XMFLOAT4 Offset1 = {1.f, 1.f, 1.f, Blt1IconAlpha};
+  dx::XMFLOAT4 Offset2 = {1.f, 1.f, 1.f, Blt2IconAlpha};
+  G_BulletIconUsc[0]->setOffsetColor(Offset0);
+  G_BulletIconUsc[1]->setOffsetColor(Offset1);
+  G_BulletIconUsc[2]->setOffsetColor(Offset2);
+
+  float SlowRatio = (getPlayerAimingFlg() && G_PlayerCanAim) ? 0.1f : 1.f;
+  float Deltatime = Timer.floatDeltaTime() * SlowRatio;
+  for (auto I = G_UsingBulletAtcVec.begin(); I != G_UsingBulletAtcVec.end();) {
+    auto &Blt = *I;
+    auto BltAtc = Blt.first;
+    auto &Direction = Blt.second;
+    BltAtc->translateXAsix(Direction.x * Deltatime);
+    BltAtc->translateYAsix(Direction.y * Deltatime);
+    BltAtc->translateZAsix(Direction.z * Deltatime);
+
+    dx::XMVECTOR Vec = dx::XMLoadFloat3(&BltAtc->getProcessingPosition());
+    dx::XMVECTOR PlayerPos =
+        dx::XMLoadFloat3(&G_PlayerAtc->getProcessingPosition());
+    Vec -= PlayerPos;
+    Vec = dx::XMVector3Length(Vec);
+    if (dx::XMVectorGetX(Vec) > 150.f) {
+      I = G_UsingBulletAtcVec.erase(I);
+      G_UsableBulletAtcVec.push_back(BltAtc);
+    } else {
+      ++I;
+    }
+  }
+
+  for (auto &Blt : G_UsableBulletAtcVec) {
+    Blt->setPosition(G_PlayerAtc->getPosition());
+  }
+}
+
+void bulletManagerDestory(AInteractComponent *Aitc) {
+  G_UsableBulletAtcVec.clear();
+  G_UsingBulletAtcVec.clear();
+  G_PlayerAtc = nullptr;
+
+  for (UINT I = 0; I < 3; I++) {
+    G_BulletIconUsc[I] = nullptr;
+  }
+}
+
+void setBulletShoot(dx::XMFLOAT3 &Pos, dx::XMFLOAT3 &Vec) {
+  if (G_UsableBulletAtcVec.size()) {
+    auto Atc = G_UsableBulletAtcVec.back();
+    G_UsableBulletAtcVec.pop_back();
+    Atc->setPosition(Pos);
+    dx::XMVECTOR NorVec = dx::XMLoadFloat3(&Vec);
+    NorVec = dx::XMVector3Normalize(NorVec);
+    dx::XMFLOAT3 Vec = {0.f, 0.f, 0.f};
+    dx::XMStoreFloat3(&Vec, NorVec);
+    G_UsingBulletAtcVec.push_back({Atc, Vec});
+
+    if (G_AimingRestTimer > 10.f) {
+      G_AimingRestTimer = 10.f;
+    } else if (G_AimingRestTimer > 5.f) {
+      G_AimingRestTimer = 5.f;
+    } else {
+      G_AimingRestTimer = 0.f;
+    }
+  }
+}
+
+bool getPlayerCanAimFlg() { return G_PlayerCanAim; }
+
+bool checkCollisionWithBullet(ACollisionComponent *Acc) {
+  static std::string ObjName = "";
+  for (auto &Blt : G_UsingBulletAtcVec) {
+    ObjName = Blt.first->getActorOwner()->getObjectName();
+    if (Acc->checkCollisionWith(ObjName)) {
+      return true;
+    }
+  }
+
+  return false;
 }

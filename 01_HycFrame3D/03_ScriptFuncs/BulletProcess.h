@@ -3,14 +3,14 @@
 #include "ActorAll.h"
 #include "UiAll.h"
 
-void RegisterBulletProcess(ObjectFactory* _factory);
+void registerBulletProcess(ObjectFactory *Factory);
 
-bool BulletManagerInit(AInteractComponent*);
-void BulletManagerUpdate(AInteractComponent *, const Timer &);
-void BulletManagerDestory(AInteractComponent*);
+bool bulletManagerInit(AInteractComponent *);
+void bulletManagerUpdate(AInteractComponent *, const Timer &);
+void bulletManagerDestory(AInteractComponent *);
 
-void SetBulletShoot(DirectX::XMFLOAT3& _pos, DirectX::XMFLOAT3& _vec);
+void setBulletShoot(dx::XMFLOAT3 &Pos, dx::XMFLOAT3 &Vec);
 
-bool GetPlayerCanAimFlg();
+bool getPlayerCanAimFlg();
 
-bool CheckCollisionWithBullet(ACollisionComponent* _acc);
+bool checkCollisionWithBullet(ACollisionComponent *Acc);

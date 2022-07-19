@@ -2,20 +2,20 @@
 
 #include "UiAll.h"
 
-void RegisterFadeProcess(ObjectFactory* _factory);
+void registerFadeProcess(ObjectFactory *Factory);
 
-bool DeadFadeInit(UInteractComponent*);
-void DeadFadeUpdate(UInteractComponent*, const Timer&);
-void DeadFadeDestory(UInteractComponent*);
+bool deadFadeInit(UInteractComponent *);
+void deadFadeUpdate(UInteractComponent *, const Timer &);
+void deadFadeDestory(UInteractComponent *);
 
-bool SceneFadeInit(UInteractComponent*);
-void SceneFadeUpdate(UInteractComponent*, const Timer&);
-void SceneFadeDestory(UInteractComponent*);
+bool sceneFadeInit(UInteractComponent *);
+void sceneFadeUpdate(UInteractComponent *, const Timer &);
+void sceneFadeDestory(UInteractComponent *);
 
-bool GetDeadFadeRunningFlg();
-void SetDeadFadeRunningFlg(bool _flag);
+bool getDeadFadeRunningFlg();
+void setDeadFadeRunningFlg(bool Flag);
 
-bool GetSceneInFlg();
-bool GetSceneOutFlg();
-bool GetSceneOutFinish(UINT _filter = (UINT)-1);
-void SetSceneOutFlg(bool _flag, UINT _filter = (UINT)-1);
+bool getSceneInFlg();
+bool getSceneOutFlg();
+bool getSceneOutFinish(UINT Filter = static_cast<UINT>(-1));
+void setSceneOutFlg(bool Flag, UINT Filter = static_cast<UINT>(-1));

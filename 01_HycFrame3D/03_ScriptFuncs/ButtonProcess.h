@@ -2,6 +2,6 @@
 
 #include "UiAll.h"
 
-void RegisterButtonProcess(ObjectFactory* _factory);
+void registerButtonProcess(ObjectFactory *Factory);
 
-void NormalBtnInput(UInputComponent*, const Timer&);
+void normalBtnInput(UInputComponent *, const Timer &);

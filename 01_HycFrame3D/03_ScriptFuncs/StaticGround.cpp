@@ -1,129 +1,106 @@
 #include "StaticGround.h"
-#include "PlayerProcess.h"
+
 #include "BulletProcess.h"
+#include "PlayerProcess.h"
+
 #include <unordered_set>
 
-using namespace DirectX;
+using namespace dx;
 
-static std::unordered_set<AInteractComponent*> g_GroundSet = {};
+static std::unordered_set<AInteractComponent *> G_GroundSet = {};
 
-void RegisterStaticGround(ObjectFactory* _factory)
-{
-#ifdef _DEBUG
-    assert(_factory);
-#endif // _DEBUG
-    _factory->getAInitMapPtr().insert(
-        { FUNC_NAME(GoundInit),GoundInit });
-    _factory->getAUpdateMapPtr().insert(
-        { FUNC_NAME(GoundUpdate),GoundUpdate });
-    _factory->getADestoryMapPtr().insert(
-        { FUNC_NAME(GoundDestory),GoundDestory });
+void registerStaticGround(ObjectFactory *Factory) {
+  assert(Factory);
+  Factory->getAInitMapPtr().insert({FUNC_NAME(groundInit), groundInit});
+  Factory->getAUpdateMapPtr().insert({FUNC_NAME(groundUpdate), groundUpdate});
+  Factory->getADestoryMapPtr().insert(
+      {FUNC_NAME(groundDestory), groundDestory});
 }
 
-bool GoundInit(AInteractComponent* _aitc)
-{
-    g_GroundSet.insert(_aitc);
+bool groundInit(AInteractComponent *Aitc) {
+  G_GroundSet.insert(Aitc);
 
-    return true;
+  return true;
 }
 
-void GoundUpdate(AInteractComponent* _aitc, const Timer& _timer)
-{
-    auto acc = _aitc->getActorOwner()->
-        getComponent<ACollisionComponent>();
-    static CONTACT_PONT_PAIR contact = {};
-    if (acc->checkCollisionWith(PLAYER_NAME, &contact))
-    {
-        auto playerAtc = _aitc->getActorOwner()->getSceneNode().
-            getActorObject(PLAYER_NAME)->
-            getComponent<ATransformComponent>();
-        auto contactPoint =
-            ACollisionComponent::calcCenterOfContact(contact);
-        float xOffset = fabsf(contactPoint.x -
-            playerAtc->getProcessingPosition().x);
-        float zOffset = fabsf(contactPoint.z -
-            playerAtc->getProcessingPosition().z);
-        if (GetPlayerIsDashingFlg())
-        {
-            playerAtc->rollBackPosition();
-            SetPlayerDashToObstacle();
-        }
-        else if (xOffset < 3.1f && zOffset < 3.1f &&
-            (contactPoint.y - playerAtc->getProcessingPosition().y) < -0.1f)
-        {
-            playerAtc->rollBackPositionY();
+void groundUpdate(AInteractComponent *Aitc, const Timer &Timer) {
+  auto Acc = Aitc->getActorOwner()->getComponent<ACollisionComponent>();
+  static CONTACT_PONT_PAIR Contact = {};
+  if (Acc->checkCollisionWith(PLAYER_NAME, &Contact)) {
+    auto PlayerAtc =
+        Aitc->getActorObject(PLAYER_NAME)->getComponent<ATransformComponent>();
+    auto ContactPoint = ACollisionComponent::calcCenterOfContact(Contact);
+    float XOffset =
+        fabsf(ContactPoint.x - PlayerAtc->getProcessingPosition().x);
+    float ZOffset =
+        fabsf(ContactPoint.z - PlayerAtc->getProcessingPosition().z);
+    if (getPlayerIsDashingFlg()) {
+      PlayerAtc->rollBackPosition();
+      setPlayerDashToObstacle();
+    } else if (XOffset < 3.1f && ZOffset < 3.1f &&
+               (ContactPoint.y - PlayerAtc->getProcessingPosition().y) <
+                   -0.1f) {
+      PlayerAtc->rollBackPositionY();
 
-            XMFLOAT3 playerPnt = playerAtc->getProcessingPosition();
-            XMVECTOR contactVec = XMLoadFloat3(&contact.first) -
-                XMLoadFloat3(&playerPnt);
-            float lengthFirSq = XMVectorGetX(XMVector3LengthSq(contactVec));
-            contactVec = XMLoadFloat3(&contact.second) -
-                XMLoadFloat3(&playerPnt);
-            float lengthSecSq = XMVectorGetX(XMVector3LengthSq(contactVec));
-            float xzSq = xOffset * xOffset + zOffset * zOffset;
-            float yFir = sqrtf(fabsf(lengthFirSq - xzSq));
-            float ySec = sqrtf(fabsf(lengthSecSq - xzSq));
-            float offset = fabsf(yFir - ySec);
-            playerAtc->translateYAsix(offset);
+      XMFLOAT3 PlayerPnt = PlayerAtc->getProcessingPosition();
+      XMVECTOR ContactVec =
+          XMLoadFloat3(&Contact.first) - XMLoadFloat3(&PlayerPnt);
+      float LengthFirSq = XMVectorGetX(XMVector3LengthSq(ContactVec));
+      ContactVec = XMLoadFloat3(&Contact.second) - XMLoadFloat3(&PlayerPnt);
+      float LengthSecSq = XMVectorGetX(XMVector3LengthSq(ContactVec));
+      float XZSq = XOffset * XOffset + ZOffset * ZOffset;
+      float YFir = sqrtf(fabsf(LengthFirSq - XZSq));
+      float YSec = sqrtf(fabsf(LengthSecSq - XZSq));
+      float Offset = fabsf(YFir - YSec);
+      PlayerAtc->translateYAsix(Offset);
 
-            SetPlayerContactGround();
-            auto atc = _aitc->getActorOwner()->
-                getComponent<ATransformComponent>();
-            SetPlayerLastReachGround(atc);
-        }
-        else if (xOffset < 3.1f && zOffset < 3.1f &&
-            (contactPoint.y - playerAtc->getProcessingPosition().y) > 2.5f)
-        {
-            playerAtc->rollBackPositionY();
+      setPlayerContactGround();
+      auto Atc = Aitc->getActorOwner()->getComponent<ATransformComponent>();
+      setPlayerLastReachGround(Atc);
+    } else if (XOffset < 3.1f && ZOffset < 3.1f &&
+               (ContactPoint.y - PlayerAtc->getProcessingPosition().y) > 2.5f) {
+      PlayerAtc->rollBackPositionY();
 
-            XMFLOAT3 playerPnt = playerAtc->getProcessingPosition();
-            XMVECTOR contactVec = XMLoadFloat3(&contact.first) -
-                XMLoadFloat3(&playerPnt);
-            float lengthFirSq = XMVectorGetX(XMVector3LengthSq(contactVec));
-            contactVec = XMLoadFloat3(&contact.second) -
-                XMLoadFloat3(&playerPnt);
-            float lengthSecSq = XMVectorGetX(XMVector3LengthSq(contactVec));
-            float xzSq = xOffset * xOffset + zOffset * zOffset;
-            float yFir = sqrtf(fabsf(lengthFirSq - xzSq));
-            float ySec = sqrtf(fabsf(lengthSecSq - xzSq));
-            float offset = fabsf(yFir - ySec);
-            playerAtc->translateYAsix(-offset);
+      XMFLOAT3 PlayerPnt = PlayerAtc->getProcessingPosition();
+      XMVECTOR ContactVec =
+          XMLoadFloat3(&Contact.first) - XMLoadFloat3(&PlayerPnt);
+      float LengthFirSq = XMVectorGetX(XMVector3LengthSq(ContactVec));
+      ContactVec = XMLoadFloat3(&Contact.second) - XMLoadFloat3(&PlayerPnt);
+      float LengthSecSq = XMVectorGetX(XMVector3LengthSq(ContactVec));
+      float XZSq = XOffset * XOffset + ZOffset * ZOffset;
+      float YFir = sqrtf(fabsf(LengthFirSq - XZSq));
+      float YSec = sqrtf(fabsf(LengthSecSq - XZSq));
+      float Offset = fabsf(YFir - YSec);
+      PlayerAtc->translateYAsix(-Offset);
 
-            SetPlayerBrokeHead();
-        }
-        else
-        {
-            static const DirectX::XMFLOAT3 xUnit = { 1.f,0.f,0.f };
-            static const DirectX::XMFLOAT3 zUnit = { 0.f,0.f,1.f };
-            static const DirectX::XMVECTOR xVec = DirectX::XMLoadFloat3(&xUnit);
-            static const DirectX::XMVECTOR zVec = DirectX::XMLoadFloat3(&zUnit);
-            DirectX::XMFLOAT3 playerMove = GetPlayerMoveDirection();
-            DirectX::XMFLOAT3 playerPnt = playerAtc->getProcessingPosition();
-            DirectX::XMVECTOR plyMoveVec = DirectX::XMLoadFloat3(&playerMove);
-            DirectX::XMVECTOR contactVec = DirectX::XMLoadFloat3(&contactPoint) -
-                DirectX::XMLoadFloat3(&playerPnt);
-            contactVec = DirectX::XMVector3Normalize(contactVec);
-            contactVec = DirectX::XMVectorGetX(DirectX::XMVector3Dot(
-                contactVec, plyMoveVec)) * contactVec;
-            DirectX::XMVECTOR moveVec = plyMoveVec - contactVec;
-            float xAsix = DirectX::XMVectorGetX(DirectX::XMVector3Dot(
-                moveVec, xVec));
-            float zAsix = DirectX::XMVectorGetX(DirectX::XMVector3Dot(
-                moveVec, zVec));
-            float aimSlow = (GetPlayerAimingFlg() && GetPlayerCanAimFlg()) ?
-                0.1f : 1.f;
-            float deltatime = _timer.floatDeltaTime() * aimSlow;
-            playerAtc->rollBackPositionX();
-            playerAtc->rollBackPositionZ();
-            playerAtc->translateZAsix(0.02f * deltatime * zAsix);
-            playerAtc->translateXAsix(0.02f * deltatime * xAsix);
-            DirectX::XMStoreFloat3(&playerMove, moveVec);
-            SetPlayerMoveDirection(playerMove);
-        }
+      setPlayerBrokeHead();
+    } else {
+      static const dx::XMFLOAT3 X_UNIT = {1.f, 0.f, 0.f};
+      static const dx::XMFLOAT3 Z_UNIT = {0.f, 0.f, 1.f};
+      static const dx::XMVECTOR X_UVEC = dx::XMLoadFloat3(&X_UNIT);
+      static const dx::XMVECTOR Z_UVEC = dx::XMLoadFloat3(&Z_UNIT);
+      dx::XMFLOAT3 PlayerMove = getPlayerMoveDirection();
+      dx::XMFLOAT3 PlayerPnt = PlayerAtc->getProcessingPosition();
+      dx::XMVECTOR PlyMoveVec = dx::XMLoadFloat3(&PlayerMove);
+      dx::XMVECTOR ContactVec =
+          dx::XMLoadFloat3(&ContactPoint) - dx::XMLoadFloat3(&PlayerPnt);
+      ContactVec = dx::XMVector3Normalize(ContactVec);
+      ContactVec = dx::XMVectorGetX(dx::XMVector3Dot(ContactVec, PlyMoveVec)) *
+                   ContactVec;
+      dx::XMVECTOR MoveVec = PlyMoveVec - ContactVec;
+      float XAsix = dx::XMVectorGetX(dx::XMVector3Dot(MoveVec, X_UVEC));
+      float ZAsix = dx::XMVectorGetX(dx::XMVector3Dot(MoveVec, Z_UVEC));
+      float AimSlow =
+          (getPlayerAimingFlg() && getPlayerCanAimFlg()) ? 0.1f : 1.f;
+      float Deltatime = Timer.floatDeltaTime() * AimSlow;
+      PlayerAtc->rollBackPositionX();
+      PlayerAtc->rollBackPositionZ();
+      PlayerAtc->translateZAsix(0.02f * Deltatime * ZAsix);
+      PlayerAtc->translateXAsix(0.02f * Deltatime * XAsix);
+      dx::XMStoreFloat3(&PlayerMove, MoveVec);
+      setPlayerMoveDirection(PlayerMove);
     }
+  }
 }
 
-void GoundDestory(AInteractComponent* _aitc)
-{
-    g_GroundSet.erase(_aitc);
-}
+void groundDestory(AInteractComponent *Aitc) { G_GroundSet.erase(Aitc); }

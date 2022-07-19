@@ -19,16 +19,16 @@
 void registerAllFuncPtr(ObjectFactory *Factory) {
   registerMaterialEditor(Factory);
   registerSPInput(Factory);
-  RegisterPlayerProcess(Factory);
-  RegisterNormalCrystal(Factory);
-  RegisterSleepCrystal(Factory);
-  RegisterBulletProcess(Factory);
-  RegisterStaticGround(Factory);
-  RegisterStaticObstacle(Factory);
-  RegisterFadeProcess(Factory);
-  RegisterPauseMenu(Factory);
-  RegisterDestProcess(Factory);
-  RegisterButtonProcess(Factory);
-  RegisterTitleCamera(Factory);
-  RegisterMiscProcess(Factory);
+  registerPlayerProcess(Factory);
+  registerNormalCrystal(Factory);
+  registerSleepCrystal(Factory);
+  registerBulletProcess(Factory);
+  registerStaticGround(Factory);
+  registerStaticObstacle(Factory);
+  registerFadeProcess(Factory);
+  registerPauseMenu(Factory);
+  registerDestProcess(Factory);
+  registerButtonProcess(Factory);
+  registerTitleCamera(Factory);
+  registerMiscProcess(Factory);
 }

@@ -2,8 +2,8 @@
 
 #include "ActorAll.h"
 
-void RegisterStaticGround(ObjectFactory* _factory);
+void registerStaticGround(ObjectFactory *Factory);
 
-bool GoundInit(AInteractComponent*);
-void GoundUpdate(AInteractComponent*, const Timer&);
-void GoundDestory(AInteractComponent*);
+bool groundInit(AInteractComponent *);
+void groundUpdate(AInteractComponent *, const Timer &);
+void groundDestory(AInteractComponent *);

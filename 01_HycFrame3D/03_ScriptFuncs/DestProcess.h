@@ -2,12 +2,12 @@
 
 #include "ActorAll.h"
 
-void RegisterDestProcess(ObjectFactory* _factory);
+void registerDestProcess(ObjectFactory *Factory);
 
-bool DestInit(AInteractComponent*);
-void DestUpdate(AInteractComponent*, const Timer&);
-void DestDestory(AInteractComponent*);
+bool destInit(AInteractComponent *);
+void destUpdate(AInteractComponent *, const Timer &);
+void destDestory(AInteractComponent *);
 
-bool DestPtcInit(AInteractComponent*);
-void DestPtcUpdate(AInteractComponent*, const Timer&);
-void DestPtcDestory(AInteractComponent*);
+bool destPtcInit(AInteractComponent *);
+void destPtcUpdate(AInteractComponent *, const Timer &);
+void destPtcDestory(AInteractComponent *);

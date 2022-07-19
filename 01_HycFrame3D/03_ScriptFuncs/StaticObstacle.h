@@ -2,8 +2,8 @@
 
 #include "ActorAll.h"
 
-void RegisterStaticObstacle(ObjectFactory* _factory);
+void registerStaticObstacle(ObjectFactory *Factory);
 
-bool ObstacleInit(AInteractComponent*);
-void ObstacleUpdate(AInteractComponent*, const Timer&);
-void ObstacleDestory(AInteractComponent*);
+bool obstacleInit(AInteractComponent *);
+void obstacleUpdate(AInteractComponent *, const Timer &);
+void obstacleDestory(AInteractComponent *);

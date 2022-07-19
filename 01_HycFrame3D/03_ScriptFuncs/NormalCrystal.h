@@ -2,8 +2,8 @@
 
 #include "ActorAll.h"
 
-void RegisterNormalCrystal(ObjectFactory* _factory);
+void registerNormalCrystal(ObjectFactory *Factory);
 
-bool NCrystalInit(AInteractComponent*);
-void NCrystalUpdate(AInteractComponent*, const Timer&);
-void NCrystalDestory(AInteractComponent*);
+bool normalCrystalInit(AInteractComponent *);
+void normalCrystalUpdate(AInteractComponent *, const Timer &);
+void normalCrystalDestory(AInteractComponent *);

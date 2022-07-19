@@ -3,20 +3,20 @@
 #include "ActorAll.h"
 #include "UiAll.h"
 
-void RegisterMiscProcess(ObjectFactory* Factory);
+void registerMiscProcess(ObjectFactory *Factory);
 
-bool DragonInit(AInteractComponent*);
-void DragonUpdate(AInteractComponent*, const Timer&);
-void DragonDestory(AInteractComponent*);
+bool dragonInit(AInteractComponent *);
+void dragonUpdate(AInteractComponent *, const Timer &);
+void dragonDestory(AInteractComponent *);
 
-bool HillInfoInit(UInteractComponent*);
-void HillInfoUpdate(UInteractComponent*, const Timer&);
-void HillInfoDestory(UInteractComponent*);
+bool hillInfoInit(UInteractComponent *);
+void hillInfoUpdate(UInteractComponent *, const Timer &);
+void hillInfoDestory(UInteractComponent *);
 
-bool ResultInit(UInteractComponent*);
-void ResultUpdate(UInteractComponent*, const Timer&);
-void ResultDestory(UInteractComponent*);
+bool resultInit(UInteractComponent *);
+void resultUpdate(UInteractComponent *, const Timer &);
+void resultDestory(UInteractComponent *);
 
-bool logoFadeInit(UInteractComponent*);
-void logoFadeUpdate(UInteractComponent*, const Timer&);
-void logoFadeDestory(UInteractComponent*);
+bool logoFadeInit(UInteractComponent *);
+void logoFadeUpdate(UInteractComponent *, const Timer &);
+void logoFadeDestory(UInteractComponent *);

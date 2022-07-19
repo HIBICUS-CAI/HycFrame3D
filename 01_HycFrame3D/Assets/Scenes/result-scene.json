@@ -89,9 +89,9 @@
                 },
                 {
                     "type": "interact",
-                    "uitc-init-func-name": "ResultInit",
-                    "uitc-update-func-name": "ResultUpdate",
-                    "uitc-destory-func-name": "ResultDestory"
+                    "uitc-init-func-name": "resultInit",
+                    "uitc-update-func-name": "resultUpdate",
+                    "uitc-destory-func-name": "resultDestory"
                 }
             ]
         },
@@ -132,7 +132,7 @@
                 },
                 {
                     "type": "input",
-                    "uic-func-name": "NormalBtnInput"
+                    "uic-func-name": "normalBtnInput"
                 },
                 {
                     "type": "audio",
@@ -148,9 +148,9 @@
             "components": [
                 {
                     "type": "interact",
-                    "uitc-init-func-name": "SceneFadeInit",
-                    "uitc-update-func-name": "SceneFadeUpdate",
-                    "uitc-destory-func-name": "SceneFadeDestory"
+                    "uitc-init-func-name": "sceneFadeInit",
+                    "uitc-update-func-name": "sceneFadeUpdate",
+                    "uitc-destory-func-name": "sceneFadeDestory"
                 }
             ]
         },
