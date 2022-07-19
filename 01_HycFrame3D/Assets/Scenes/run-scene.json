@@ -2728,7 +2728,7 @@
                 },
                 {
                     "type": "particle",
-                    "apc-emit-per-second": 400.0,
+                    "apc-emit-per-second": 4000.0,
                     "apc-velocity": [
                         0.0,
                         -1.0,
@@ -2765,19 +2765,6 @@
                     ],
                     "apc-streak-flag": false,
                     "apc-texture-name": "circle"
-                },
-                {
-                    "type": "interact",
-                    "aitc-init-func-name": "destPtcInit",
-                    "aitc-update-func-name": "destPtcUpdate",
-                    "aitc-destory-func-name": "destPtcDestory"
-                },
-                {
-                    "type": "collision",
-                    "acc-collision-shape": "sphere",
-                    "acc-collision-size": [
-                        100.0
-                    ]
                 }
             ]
         }
