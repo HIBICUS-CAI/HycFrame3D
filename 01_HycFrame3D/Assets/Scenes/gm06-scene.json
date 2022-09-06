@@ -1,0 +1,119 @@
+{
+    "$schema": "../Configs/scene-file-json-schema.json",
+    "scene-name": "gm06-scene",
+    "ambient-factor": [
+        0.8,
+        0.8,
+        0.8,
+        1.0
+    ],
+    "ibl-environment": "room_env.dds",
+    "ibl-diffuse": "room_diff.dds",
+    "ibl-specular": "room_spec.dds",
+    "model-assets": [
+        {
+            "mesh-name": "rex_ani",
+            "load-mode": "model-file",
+            "force-diffuse": "rex_diffuse.png",
+            "material-info": {
+                "major-material": "gloss-plastic",
+                "minor-material": "rough-plastic",
+                "interpolate-factor": 0.8
+            },
+            "load-info": {
+                "m-file": "rex_ani.gltf.meshdata",
+                "m-file-type": "binary"
+            }
+        }
+    ],
+    "audio-assets": [],
+    "actor": [
+        {
+            "actor-name": "sp-direct-light-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "atc-init-position": [
+                        0.0,
+                        100.0,
+                        -100.0
+                    ],
+                    "atc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "atc-init-scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                },
+                {
+                    "type": "light",
+                    "alc-light-type": "direct",
+                    "alc-with-shadow": true,
+                    "alc-with-bloom": false,
+                    "alc-intensity": 1.0,
+                    "alc-albedo": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ],
+                    "alc-direction": [
+                        0.0,
+                        -1.0,
+                        1.0
+                    ],
+                    "alc-fall-off-start-end": [
+                        5.0,
+                        15.0
+                    ],
+                    "alc-spot-power": 2.0,
+                    "alc-cam-up-vec": [
+                        0.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            ]
+        },
+        {
+            "actor-name": "sp-rex-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "atc-init-position": [
+                        0.0,
+                        -20.0,
+                        60.0
+                    ],
+                    "atc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "atc-init-scale": [
+                        5.0,
+                        5.0,
+                        5.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "amc-meshes": [
+                        {
+                            "mesh-name": "rex_ani"
+                        }
+                    ]
+                },
+                {
+                    "type": "animate",
+                    "aac-init-animation": "idle",
+                    "aac-speed-factor": 50.0
+                }
+            ]
+        }
+    ],
+    "ui": []
+}
