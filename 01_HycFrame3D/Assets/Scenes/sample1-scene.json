@@ -18,8 +18,9 @@
                 "minor-material": "rough-porcelain",
                 "interpolate-factor": 0.0
             },
-            "force-diffuse": "tile.dds",
-            "force-normal": "tile_nmap.dds",
+            "force-diffuse": "wall_diffuse.jpg",
+            "force-normal": "wall_normal.jpg",
+            "force-roughness": "wall_rough.jpg",
             "load-mode": "program-box",
             "load-info": {
                 "b-tex-file": "sand.jpg",
@@ -38,6 +39,7 @@
                 "minor-material": "rough-soil",
                 "interpolate-factor": 1.0
             },
+            "force-diffuse": "copper.png",
             "load-mode": "program-grid",
             "load-info": {
                 "g-tex-file": "copper.png",
