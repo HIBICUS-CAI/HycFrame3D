@@ -17,6 +17,10 @@ void playerInput(AInputComponent *Aic, const Timer &Timer) {
   Aic->getActorOwner()->getComponent<AAnimateComponent>()->changeAnimationTo(
       "idle");
 
+  if (input::isKeyDownInSingle(KB_ESCAPE)) {
+    PostQuitMessage(0);
+  }
+
   if (input::isKeyDownInSingle(KB_Q)) {
     G_PlayerAtc->rotateYAsix(-0.005f * DeltaTime);
   }
