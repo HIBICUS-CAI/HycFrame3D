@@ -29,7 +29,7 @@
     "audio-assets": [],
     "actor": [
         {
-            "actor-name": "sp-direct-light-actor",
+            "actor-name": "direct-light-actor",
             "components": [
                 {
                     "type": "transform",
@@ -79,7 +79,7 @@
             ]
         },
         {
-            "actor-name": "sp-rex-actor",
+            "actor-name": "player-actor",
             "components": [
                 {
                     "type": "transform",
@@ -90,7 +90,7 @@
                     ],
                     "atc-init-angle": [
                         0.0,
-                        0.0,
+                        3.14,
                         0.0
                     ],
                     "atc-init-scale": [
@@ -111,6 +111,16 @@
                     "type": "animate",
                     "aac-init-animation": "idle",
                     "aac-speed-factor": 50.0
+                },
+                {
+                    "type": "input",
+                    "aic-func-name": "playerInput"
+                },
+                {
+                    "type": "interact",
+                    "aitc-init-func-name": "playerInit",
+                    "aitc-update-func-name": "playerUpdate",
+                    "aitc-destory-func-name": "playerDestory"
                 }
             ]
         }

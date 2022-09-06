@@ -347,6 +347,7 @@
     <ClCompile Include="02_FrameContent\UTransformComponent.cpp" />
     <ClCompile Include="03_ScriptFuncs\00_FunctionRegister.cpp" />
     <ClCompile Include="03_ScriptFuncs\01_MaterialEditor.cpp" />
+    <ClCompile Include="03_ScriptFuncs\Player.cpp" />
     <ClCompile Include="03_ScriptFuncs\SPInput.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -410,6 +411,7 @@
     <ClInclude Include="02_FrameContent\UTransformComponent.h" />
     <ClInclude Include="03_ScriptFuncs\00_FunctionRegister.h" />
     <ClInclude Include="03_ScriptFuncs\01_MaterialEditor.h" />
+    <ClInclude Include="03_ScriptFuncs\Player.h" />
     <ClInclude Include="03_ScriptFuncs\SPInput.h" />
   </ItemGroup>
   <ItemGroup>
