@@ -123,6 +123,37 @@
                     "aitc-destory-func-name": "playerDestory"
                 }
             ]
+        },
+        {
+            "actor-name": "terrain-actor",
+            "components": [
+                {
+                    "type": "transform",
+                    "atc-init-position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "atc-init-angle": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "atc-init-scale": [
+                        10.0,
+                        1.0,
+                        10.0
+                    ]
+                },
+                {
+                    "type": "mesh",
+                    "amc-meshes": [
+                        {
+                            "mesh-name": "terrain"
+                        }
+                    ]
+                }
+            ]
         }
     ],
     "ui": []
