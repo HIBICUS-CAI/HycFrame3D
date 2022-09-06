@@ -96,13 +96,13 @@ trans-speed = 0.05
 # type : float, valid range : [0.0 , +inf)
 # the range of dynamic exposure,
 #   as clamp(expo, "min-value", "max-value").
-min-value = 0.05
+min-value = 0.01
 max-value = 10.0
 # type : float, valid range : (0.0, +inf)
 # the factor to decide curve of adapted luminance to exposure,
 #   scene goes brighter when this value get samller,
 #   as (1 / "inverse-factor" / lumin).
-inverse-factor = 15.0
+inverse-factor = 25.0
 
 # about anti-aliasing fxaa setting.
 [fxaa]

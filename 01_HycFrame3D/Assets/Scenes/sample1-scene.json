@@ -39,7 +39,8 @@
                 "minor-material": "rough-soil",
                 "interpolate-factor": 1.0
             },
-            "force-diffuse": "copper.png",
+            "force-diffuse": "black_tile_diffuse.jpg",
+            "force-normal": "black_tile_normal.jpg",
             "load-mode": "program-grid",
             "load-info": {
                 "g-tex-file": "copper.png",

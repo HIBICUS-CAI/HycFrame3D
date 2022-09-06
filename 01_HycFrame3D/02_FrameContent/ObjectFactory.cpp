@@ -143,6 +143,9 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
       MatInfo = {};
       ForceDiffuse = "";
       ForceNormal = "";
+      ForceMetal = "";
+      ForceRough = "";
+      ForceEmiss = "";
       LoadMode = "";
       MeshData = {};
 
