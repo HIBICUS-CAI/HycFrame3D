@@ -1,7 +1,7 @@
 ﻿//---------------------------------------------------------------
 // File: RSCommon.h
-// Proj: RenderSystem_DX11
-// Info: 声明RenderSystem_DX11相关的全局类型
+// Proj: RenderSystem_VK
+// Info: 声明RenderSystem_VK相关的全局类型
 // Date: 2021.9.14
 // Mail: cai_genkan@outlook.com
 // Comt: 在此lib项目内中提供ExtraMacro
@@ -10,13 +10,26 @@
 #pragma once
 
 #include <DirectXMath.h>
-#include <Windows.h>
 #include <array>
-#include <d3d11_1.h>
+#include <cstdint>
 #include <string>
 #include <vector>
+#include <vulkan/vulkan.h>
 
 namespace dx = DirectX;
+
+// win32 style integer names used all over the render code,
+// redeclaring them is harmless when windows.h is also included
+using UINT = unsigned int;
+using INT = int;
+
+class RSBuffer;
+class RSTexture;
+class RSShaderResourceView;
+class RSUnorderedAccessView;
+class RSRenderTargetView;
+class RSDepthStencilView;
+class RSInputLayout;
 
 enum class PASS_TYPE { RENDER, COMPUTE };
 
@@ -203,10 +216,10 @@ enum class MESH_TEXTURE_TYPE {
 };
 
 struct RS_SUBMESH_DATA {
-  D3D_PRIMITIVE_TOPOLOGY TopologyType = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
-  ID3D11InputLayout *InputLayout = nullptr;
-  ID3D11Buffer *IndexBuffer = nullptr;
-  ID3D11Buffer *VertexBuffer = nullptr;
+  VkPrimitiveTopology TopologyType = VK_PRIMITIVE_TOPOLOGY_MAX_ENUM;
+  const RSInputLayout *InputLayout = nullptr;
+  RSBuffer *IndexBuffer = nullptr;
+  RSBuffer *VertexBuffer = nullptr;
   UINT IndexSize = 0;
   std::array<std::string, static_cast<size_t>(MESH_TEXTURE_TYPE::SIZE)>
       Textures = {""};
@@ -215,10 +228,10 @@ struct RS_SUBMESH_DATA {
 };
 
 struct RS_SUBMESH_DRAWCALL_DATA {
-  D3D_PRIMITIVE_TOPOLOGY TopologyType = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
-  ID3D11InputLayout *InputLayout = nullptr;
-  ID3D11Buffer *IndexBuffer = nullptr;
-  ID3D11Buffer *VertexBuffer = nullptr;
+  VkPrimitiveTopology TopologyType = VK_PRIMITIVE_TOPOLOGY_MAX_ENUM;
+  const RSInputLayout *InputLayout = nullptr;
+  RSBuffer *IndexBuffer = nullptr;
+  RSBuffer *VertexBuffer = nullptr;
   UINT IndexSize = 0;
 };
 
@@ -243,7 +256,7 @@ struct RS_INSTANCE_DRAWCALL_DATA {
 
 struct RS_MESH_TEXTURE_INFO {
   bool EnabledFlag = false;
-  ID3D11ShaderResourceView *Srv = nullptr;
+  RSShaderResourceView *Srv = nullptr;
 };
 
 struct RS_MISC_INFO {
@@ -278,19 +291,19 @@ struct RS_RESOURCE_INFO {
   RS_RESOURCE_TYPE Type = RS_RESOURCE_TYPE::BUFFER;
 
   union RS_RESOURCE_DATA {
-    ID3D11Buffer *Buffer = nullptr;
-    ID3D11Texture1D *Texture1D;
-    ID3D11Texture2D *Texture2D;
-    ID3D11Texture3D *Texture3D;
+    RSBuffer *Buffer = nullptr;
+    RSTexture *Texture1D;
+    RSTexture *Texture2D;
+    RSTexture *Texture3D;
   } Resource;
 
-  ID3D11RenderTargetView *Rtv = nullptr;
-  ID3D11DepthStencilView *Dsv = nullptr;
-  ID3D11ShaderResourceView *Srv = nullptr;
-  ID3D11UnorderedAccessView *Uav = nullptr;
+  RSRenderTargetView *Rtv = nullptr;
+  RSDepthStencilView *Dsv = nullptr;
+  RSShaderResourceView *Srv = nullptr;
+  RSUnorderedAccessView *Uav = nullptr;
 };
 
-#ifdef _RS_DX11
+#ifdef _RS_VK
 #include "RSExtraMacro.h"
-#endif // _RS_DX11
+#endif // _RS_VK
 #include "RSVertexType.h"
