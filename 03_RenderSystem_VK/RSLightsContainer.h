@@ -17,7 +17,7 @@
 
 class RSLightsContainer {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
 
   std::unordered_map<std::string, class RSLight *> LightsMap;
   std::unordered_map<std::string, DirectX::XMFLOAT4> AmbientLightsMap;
@@ -34,7 +34,7 @@ public:
   RSLightsContainer();
   ~RSLightsContainer();
 
-  bool startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_VK *RootPtr);
   void cleanAndStop();
 
   class RSLight *createRSLight(const std::string &Name, const LIGHT_INFO *Info);

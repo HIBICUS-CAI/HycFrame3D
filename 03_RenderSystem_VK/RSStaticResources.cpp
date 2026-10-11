@@ -11,7 +11,7 @@
 
 #include "RSDevices.h"
 #include "RSPipeline.h"
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 #include "RSTopic.h"
 #include "RSUtilityFunctions.h"
 #include "RSVkObjects.h"
@@ -29,7 +29,7 @@ RSStaticResources::RSStaticResources()
 
 RSStaticResources::~RSStaticResources() {}
 
-bool RSStaticResources::startUp(RSRoot_DX11 *RootPtr) {
+bool RSStaticResources::startUp(RSRoot_VK *RootPtr) {
   if (!RootPtr) {
     return false;
   }

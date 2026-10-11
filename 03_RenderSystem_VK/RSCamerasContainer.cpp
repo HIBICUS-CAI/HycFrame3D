@@ -10,7 +10,7 @@
 #include "RSCamerasContainer.h"
 
 #include "RSCamera.h"
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 
 #define LOCK DataLock.lock()
 #define UNLOCK DataLock.unlock()
@@ -20,7 +20,7 @@ RSCamerasContainer::RSCamerasContainer()
 
 RSCamerasContainer::~RSCamerasContainer() {}
 
-bool RSCamerasContainer::startUp(RSRoot_DX11 *RootPtr) {
+bool RSCamerasContainer::startUp(RSRoot_VK *RootPtr) {
   if (!RootPtr) {
     return false;
   }

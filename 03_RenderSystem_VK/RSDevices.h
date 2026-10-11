@@ -36,7 +36,7 @@ struct RS_DYNAMIC_ALLOCATION {
 
 class RSDevices {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
 
   RENDER_DEVICE_CONFIG RenderDeivceConfig;
 
@@ -123,7 +123,7 @@ public:
   RSDevices();
   ~RSDevices();
 
-  bool startUp(class RSRoot_DX11 *RootPtr, SDL_Window *WndHandle);
+  bool startUp(class RSRoot_VK *RootPtr, SDL_Window *WndHandle);
   void cleanAndStop();
 
   VkInstance getInstance() const { return Instance; }

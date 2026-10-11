@@ -11,7 +11,7 @@
 
 #include "RSCamerasContainer.h"
 #include "RSLight.h"
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 
 #include <algorithm>
 
@@ -25,7 +25,7 @@ RSLightsContainer::RSLightsContainer()
 
 RSLightsContainer::~RSLightsContainer() {}
 
-bool RSLightsContainer::startUp(RSRoot_DX11 *RootPtr) {
+bool RSLightsContainer::startUp(RSRoot_VK *RootPtr) {
   if (!RootPtr) {
     return false;
   }

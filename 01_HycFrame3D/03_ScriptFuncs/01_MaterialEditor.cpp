@@ -1,7 +1,7 @@
 #include "01_MaterialEditor.h"
 
 #include <RSPipelinesManager.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 #include <RSStaticResources.h>
 
 void registerMaterialEditor(ObjectFactory *Factory) {
@@ -75,10 +75,10 @@ void matEditorInput(AInputComponent *Aic, const Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_P)) {
     static bool Simp = false;
     if (Simp) {
-      getRSDX11RootInstance()->getPipelinesManager()->setPipeline(
+      getRSVKRootInstance()->getPipelinesManager()->setPipeline(
           "light-pipeline");
     } else {
-      getRSDX11RootInstance()->getPipelinesManager()->setPipeline(
+      getRSVKRootInstance()->getPipelinesManager()->setPipeline(
           "simple-pipeline");
     }
     Simp = !Simp;
@@ -225,14 +225,14 @@ void matEditorInput(AInputComponent *Aic, const Timer &Timer) {
     if (*EditValue > 1.f) {
       *EditValue = 1.f;
     }
-    getRSDX11RootInstance()->getStaticResources()->remapMaterialData();
+    getRSVKRootInstance()->getStaticResources()->remapMaterialData();
   }
   if (input::isKeyDownInSingle(KB_LEFT)) {
     *EditValue -= Deltatime / 1000.f;
     if (*EditValue < 0.f) {
       *EditValue = 0.f;
     }
-    getRSDX11RootInstance()->getStaticResources()->remapMaterialData();
+    getRSVKRootInstance()->getStaticResources()->remapMaterialData();
   }
 
   float &Factor =
@@ -260,7 +260,7 @@ void matEditorInput(AInputComponent *Aic, const Timer &Timer) {
 
 bool matEditorInit(AInteractComponent *Aitc) {
   std::string Basic = "light-pipeline";
-  getRSDX11RootInstance()->getPipelinesManager()->setPipeline(Basic);
+  getRSVKRootInstance()->getPipelinesManager()->setPipeline(Basic);
 
   G_PointLightAtc = Aitc->getActorObject("point-light-actor")
                         ->getComponent<ATransformComponent>();
@@ -280,9 +280,8 @@ bool matEditorInit(AInteractComponent *Aitc) {
     return false;
   }
 
-  G_Material = getRSDX11RootInstance()
-                   ->getStaticResources()
-                   ->getMaterialDataPtrForTest();
+  G_Material =
+      getRSVKRootInstance()->getStaticResources()->getMaterialDataPtrForTest();
   if (!G_Material) {
     return false;
   }

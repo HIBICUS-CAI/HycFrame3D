@@ -8,7 +8,7 @@
 
 #include <FormatUtility.h>
 #include <RSMeshHelper.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 #include <RSStaticResources.h>
 #include <TextUtility.h>
 
@@ -163,7 +163,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
             getJsonNode(Json, JsonPath + "/material-info/minor-material");
         JsonNode FactorNode =
             getJsonNode(Json, JsonPath + "/material-info/interpolate-factor");
-        auto StaticResPtr = getRSDX11RootInstance()->getStaticResources();
+        auto StaticResPtr = getRSVKRootInstance()->getStaticResources();
 
         assert(StaticResPtr && MajorNode && MinorNode && FactorNode);
 
@@ -233,7 +233,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
             getJsonNode(Json, JsonPath + "/load-info/b-size/2")->GetFloat();
         UINT Divide =
             getJsonNode(Json, JsonPath + "/load-info/b-divide")->GetUint();
-        MeshData = getRSDX11RootInstance()
+        MeshData = getRSVKRootInstance()
                        ->getMeshHelper()
                        ->getGeoGenerator()
                        ->createBox(
@@ -250,7 +250,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
         UINT Stack =
             getJsonNode(Json, JsonPath + "/load-info/s-slice-stack-count/1")
                 ->GetUint();
-        MeshData = getRSDX11RootInstance()
+        MeshData = getRSVKRootInstance()
                        ->getMeshHelper()
                        ->getGeoGenerator()
                        ->createSphere(
@@ -264,7 +264,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
         UINT Divide =
             getJsonNode(Json, JsonPath + "/load-info/gs-divide")->GetUint();
         MeshData =
-            getRSDX11RootInstance()
+            getRSVKRootInstance()
                 ->getMeshHelper()
                 ->getGeoGenerator()
                 ->createGeometrySphere(
@@ -287,7 +287,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
         UINT Stack =
             getJsonNode(Json, JsonPath + "/load-info/c-slice-stack-count/1")
                 ->GetUint();
-        MeshData = getRSDX11RootInstance()
+        MeshData = getRSVKRootInstance()
                        ->getMeshHelper()
                        ->getGeoGenerator()
                        ->createCylinder(
@@ -304,7 +304,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
                        ->GetUint();
         UINT Col = getJsonNode(Json, JsonPath + "/load-info/g-row-col-count/1")
                        ->GetUint();
-        MeshData = getRSDX11RootInstance()
+        MeshData = getRSVKRootInstance()
                        ->getMeshHelper()
                        ->getGeoGenerator()
                        ->createGrid(
@@ -338,7 +338,7 @@ void ObjectFactory::createSceneAssets(SceneNode *Scene, JsonFile &Json) {
 
       if (!MeshData.Textures.size()) {
         P_LOG(LOG_ERROR, "invlaid model without diffuse : {}", MeshName);
-        getRSDX11RootInstance()->getMeshHelper()->releaseSubMesh(MeshData);
+        getRSVKRootInstance()->getMeshHelper()->releaseSubMesh(MeshData);
         return;
       }
 

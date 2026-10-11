@@ -8,7 +8,7 @@
 #include <RSCommon.h>
 #include <RSDevices.h>
 #include <RSResourceManager.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 #include <RSTextureLoader.h>
 
 #include <vector>
@@ -64,14 +64,13 @@ bool UAnimateComponent::loadAnimate(const std::string &AniName,
   RSShaderResourceView *Srv = nullptr;
   std::string TexPath = "./Assets/Textures/" + AniPath;
 
-  auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
+  auto ResourceManager = getRSVKRootInstance()->getResourceManager();
   auto IfExist = ResourceManager->getMeshSrv(AniPath);
 
   if (IfExist) {
-  } else if (rs_tool::createTextureFromFile(
-                 getRSDX11RootInstance()->getDevices(), TexPath, nullptr,
-                 &Srv)) {
-    getRSDX11RootInstance()->getResourceManager()->addMeshSrv(AniPath, Srv);
+  } else if (rs_tool::createTextureFromFile(getRSVKRootInstance()->getDevices(),
+                                            TexPath, nullptr, &Srv)) {
+    getRSVKRootInstance()->getResourceManager()->addMeshSrv(AniPath, Srv);
   } else {
     P_LOG(LOG_ERROR, "fail to load texture : {}", AniPath);
     return false;

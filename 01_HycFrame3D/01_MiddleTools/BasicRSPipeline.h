@@ -206,7 +206,7 @@ private:
   RS_CAM_INFO *RSCameraInfo;
 
 public:
-  RSPass_MRT(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_MRT(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_MRT(const RSPass_MRT &Source);
   virtual ~RSPass_MRT();
 
@@ -253,7 +253,7 @@ private:
   RS_CAM_INFO *RSCameraInfo;
 
 public:
-  RSPass_Ssao(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Ssao(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_Ssao(const RSPass_Ssao &Source);
   virtual ~RSPass_Ssao();
 
@@ -285,7 +285,7 @@ private:
   RSShaderResourceView *DepthMapSrv;
 
 public:
-  RSPass_KBBlur(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_KBBlur(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_KBBlur(const RSPass_KBBlur &Source);
   virtual ~RSPass_KBBlur();
 
@@ -320,7 +320,7 @@ private:
   RSShaderResourceView *BonesStructedBufferSrv;
 
 public:
-  RSPass_Shadow(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Shadow(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_Shadow(const RSPass_Shadow &Source);
   virtual ~RSPass_Shadow();
 
@@ -369,7 +369,7 @@ private:
   RS_CAM_INFO *RSCameraInfo;
 
 public:
-  RSPass_Defered(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Defered(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_Defered(const RSPass_Defered &Source);
   virtual ~RSPass_Defered();
 
@@ -404,7 +404,7 @@ private:
   RS_CAM_INFO *RSCameraInfo;
 
 public:
-  RSPass_SkyShpere(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_SkyShpere(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_SkyShpere(const RSPass_SkyShpere &Source);
   virtual ~RSPass_SkyShpere();
 
@@ -444,7 +444,7 @@ private:
   RSSampler *Sampler;
 
 public:
-  RSPass_Bloom(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Bloom(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_Bloom(const RSPass_Bloom &Source);
   virtual ~RSPass_Bloom();
 
@@ -526,7 +526,7 @@ private:
 public:
   RSPass_PriticleSetUp(std::string &Name,
                        PASS_TYPE Type,
-                       class RSRoot_DX11 *Root);
+                       class RSRoot_VK *Root);
   RSPass_PriticleSetUp(const RSPass_PriticleSetUp &Source);
   virtual ~RSPass_PriticleSetUp();
 
@@ -578,7 +578,7 @@ private:
 public:
   RSPass_PriticleEmitSimulate(std::string &Name,
                               PASS_TYPE Type,
-                              class RSRoot_DX11 *Root);
+                              class RSRoot_VK *Root);
   RSPass_PriticleEmitSimulate(const RSPass_PriticleEmitSimulate &Source);
   virtual ~RSPass_PriticleEmitSimulate();
 
@@ -634,7 +634,7 @@ private:
 public:
   RSPass_PriticleTileRender(std::string &Name,
                             PASS_TYPE Type,
-                            class RSRoot_DX11 *Root);
+                            class RSRoot_VK *Root);
   RSPass_PriticleTileRender(const RSPass_PriticleTileRender &Source);
   virtual ~RSPass_PriticleTileRender();
 
@@ -671,7 +671,7 @@ private:
   RS_CAM_INFO *RSCameraInfo;
 
 public:
-  RSPass_Sprite(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Sprite(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_Sprite(const RSPass_Sprite &Source);
   virtual ~RSPass_Sprite();
 
@@ -705,9 +705,7 @@ private:
   RSBuffer *IndexBuffer;
 
 public:
-  RSPass_SimpleLight(std::string &Name,
-                     PASS_TYPE Type,
-                     class RSRoot_DX11 *Root);
+  RSPass_SimpleLight(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_SimpleLight(const RSPass_SimpleLight &Source);
   virtual ~RSPass_SimpleLight();
 
@@ -747,7 +745,7 @@ private:
   class RSCamera *RSCamera;
 
 public:
-  RSPass_Billboard(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_Billboard(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_Billboard(const RSPass_Billboard &Source);
   virtual ~RSPass_Billboard();
 
@@ -781,9 +779,7 @@ private:
   std::array<RSUnorderedAccessView *, 2> AverageLuminUavArray;
 
 public:
-  RSPass_Tonemapping(std::string &Name,
-                     PASS_TYPE Type,
-                     class RSRoot_DX11 *Root);
+  RSPass_Tonemapping(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_Tonemapping(const RSPass_Tonemapping &Source);
   virtual ~RSPass_Tonemapping();
 
@@ -824,7 +820,7 @@ private:
   std::array<RSUnorderedAccessView *, 8> UpSampleUavArray;
 
 public:
-  RSPass_BloomHdr(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_BloomHdr(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_BloomHdr(const RSPass_BloomHdr &Source);
   virtual ~RSPass_BloomHdr();
 
@@ -854,7 +850,7 @@ private:
   RSSampler *LinearBorderSampler;
 
 public:
-  RSPass_FXAA(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
+  RSPass_FXAA(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_FXAA(const RSPass_FXAA &Source);
   virtual ~RSPass_FXAA();
 
@@ -885,9 +881,7 @@ private:
   RSSampler *LinearWrapSampler;
 
 public:
-  RSPass_ToSwapChain(std::string &Name,
-                     PASS_TYPE Type,
-                     class RSRoot_DX11 *Root);
+  RSPass_ToSwapChain(std::string &Name, PASS_TYPE Type, class RSRoot_VK *Root);
   RSPass_ToSwapChain(const RSPass_ToSwapChain &Source);
   virtual ~RSPass_ToSwapChain();
 

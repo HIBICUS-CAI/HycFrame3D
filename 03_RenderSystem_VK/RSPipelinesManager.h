@@ -17,7 +17,7 @@
 
 class RSPipelinesManager {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
   class RSPipeline *CurrentPipeline;
   class RSPipeline *NextPipeline;
   std::unordered_map<std::string, class RSPipeline *> PipelineMap;
@@ -27,7 +27,7 @@ public:
   RSPipelinesManager();
   ~RSPipelinesManager();
 
-  bool startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_VK *RootPtr);
   void cleanAndStop();
 
   void addPipeline(const std::string &Name, class RSPipeline *Pipeline);

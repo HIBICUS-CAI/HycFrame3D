@@ -6,7 +6,7 @@
 #include "UiObject.h"
 
 #include <RSMeshHelper.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 #include <TextUtility.h>
 #include <WM_Interface.h>
 
@@ -62,7 +62,7 @@ bool UButtonComponent::init() {
     }
 
     RS_SUBMESH_DATA BtnSelect =
-        getRSDX11RootInstance()
+        getRSVKRootInstance()
             ->getMeshHelper()
             ->getGeoGenerator()
             ->createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX,

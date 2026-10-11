@@ -8,7 +8,7 @@
 #include <RSLight.h>
 #include <RSLightsContainer.h>
 #include <RSMeshHelper.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 
 #include <vector>
 
@@ -37,12 +37,12 @@ bool ALightComponent::init() {
 void ALightComponent::update(const Timer &Timer) { syncDataFromTransform(); }
 
 void ALightComponent::destory() {
-  getRSDX11RootInstance()->getLightsContainer()->deleteRSLight(LightName, true);
+  getRSVKRootInstance()->getLightsContainer()->deleteRSLight(LightName, true);
 }
 
 void ALightComponent::createLight() {
   LightName = getCompName();
-  RSLightPtr = getRSDX11RootInstance()->getLightsContainer()->createRSLight(
+  RSLightPtr = getRSVKRootInstance()->getLightsContainer()->createRSLight(
       LightName, &LightInfoForInit);
 #ifdef _DEBUG
   assert(RSLightPtr);
@@ -54,10 +54,8 @@ void ALightComponent::createLight() {
             BOX_BLOOM_MESH_NAME);
     if (!MeshPtr) {
       RS_SUBMESH_DATA BoxBloom =
-          getRSDX11RootInstance()
-              ->getMeshHelper()
-              ->getGeoGenerator()
-              ->createBox(1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
+          getRSVKRootInstance()->getMeshHelper()->getGeoGenerator()->createBox(
+              1.f, 1.f, 1.f, 0, LAYOUT_TYPE::NORMAL_COLOR);
       getActorOwner()->getSceneNode().getAssetsPool()->insertNewSubMesh(
           BOX_BLOOM_MESH_NAME, BoxBloom, MESH_TYPE::LIGHT);
       MeshPtr =
@@ -69,7 +67,7 @@ void ALightComponent::createLight() {
 
   if (IsCamera) {
     bool CamCreate =
-        getRSDX11RootInstance()->getLightsContainer()->createLightCameraFor(
+        getRSVKRootInstance()->getLightsContainer()->createLightCameraFor(
             LightName, &LightCamInfoForInit);
 #ifdef _DEBUG
     assert(CamCreate);

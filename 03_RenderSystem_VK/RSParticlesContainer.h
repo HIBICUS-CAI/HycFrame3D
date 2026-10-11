@@ -19,7 +19,7 @@
 
 class RSParticlesContainer {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
 
   bool ResetFlag;
 
@@ -32,7 +32,7 @@ public:
   RSParticlesContainer();
   ~RSParticlesContainer();
 
-  bool startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_VK *RootPtr);
   void cleanAndStop();
 
   bool getResetFlg();

@@ -13,7 +13,7 @@
 
 class RSMeshHelper {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
   class RSResourceManager *ResourceManager;
   class RSDevices *Devices;
   class RSGeometryGenerator *GeoGenerator;
@@ -22,7 +22,7 @@ public:
   RSMeshHelper();
   ~RSMeshHelper();
 
-  bool startUp(class RSRoot_DX11 *RootPtr,
+  bool startUp(class RSRoot_VK *RootPtr,
                class RSResourceManager *ResManagerPtr);
   void cleanAndStop();
 
@@ -52,7 +52,7 @@ private:
   class RSResourceManager *ResourceManager;
 
 public:
-  RSGeometryGenerator(class RSRoot_DX11 *RootPtr);
+  RSGeometryGenerator(class RSRoot_VK *RootPtr);
   ~RSGeometryGenerator();
 
   RS_SUBMESH_DATA createBox(float Width,

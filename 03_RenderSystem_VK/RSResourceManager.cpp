@@ -9,7 +9,7 @@
 
 #include "RSResourceManager.h"
 
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 #include "RSVkObjects.h"
 
 #include <cassert>
@@ -24,7 +24,7 @@ RSResourceManager::RSResourceManager()
 
 RSResourceManager::~RSResourceManager() {}
 
-bool RSResourceManager::startUp(RSRoot_DX11 *RootPtr) {
+bool RSResourceManager::startUp(RSRoot_VK *RootPtr) {
   if (!RootPtr) {
     return false;
   }

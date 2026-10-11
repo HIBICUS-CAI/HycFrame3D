@@ -9,7 +9,7 @@
 
 #include "RSParticlesContainer.h"
 
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 
 #define LOCK DataLock.lock()
 #define UNLOCK DataLock.unlock()
@@ -20,7 +20,7 @@ RSParticlesContainer::RSParticlesContainer()
 
 RSParticlesContainer::~RSParticlesContainer() {}
 
-bool RSParticlesContainer::startUp(RSRoot_DX11 *RootPtr) {
+bool RSParticlesContainer::startUp(RSRoot_VK *RootPtr) {
   if (!RootPtr) {
     return false;
   }

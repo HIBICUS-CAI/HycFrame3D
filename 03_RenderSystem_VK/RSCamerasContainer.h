@@ -17,7 +17,7 @@
 
 class RSCamerasContainer {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
 
   std::recursive_mutex DataLock;
 
@@ -27,7 +27,7 @@ public:
   RSCamerasContainer();
   ~RSCamerasContainer();
 
-  bool startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_VK *RootPtr);
   void cleanAndStop();
 
   class RSCamera *createRSCamera(const std::string &Name, const CAM_INFO *Info);

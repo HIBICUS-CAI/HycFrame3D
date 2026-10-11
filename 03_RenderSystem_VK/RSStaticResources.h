@@ -15,7 +15,7 @@
 
 class RSStaticResources {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
 
   // rasterizer/depth/blend states are parts of pipeline state objects in
   // vulkan, so only shaders and samplers are shared here
@@ -36,7 +36,7 @@ public:
   RSStaticResources();
   ~RSStaticResources();
 
-  bool startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_VK *RootPtr);
   void cleanAndStop();
 
   class RSShader *getStaticShader(const std::string &ShaderName);
