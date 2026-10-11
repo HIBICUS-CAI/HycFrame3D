@@ -9,7 +9,6 @@
 #include <ID_Interface.h>
 #include <WM_Interface.h>
 
-static HWND G_WndHandle = {};
 static float G_WndWidth = 0.f;
 static float G_WndHeight = 0.f;
 static const float G_ScreenWidth = 1280.f;
@@ -21,11 +20,11 @@ ButtonSystem::ButtonSystem(SystemExecutive *SysExecutive)
 ButtonSystem::~ButtonSystem() {}
 
 bool ButtonSystem::init() {
-  RECT WndRect = {};
-  G_WndHandle = window::getWindowPtr()->getWndHandle();
-  GetClientRect(G_WndHandle, &WndRect);
-  G_WndWidth = static_cast<float>(WndRect.right - WndRect.left);
-  G_WndHeight = static_cast<float>(WndRect.bottom - WndRect.top);
+  int ClientWidth = 0;
+  int ClientHeight = 0;
+  window::getWindowPtr()->getClientSize(ClientWidth, ClientHeight);
+  G_WndWidth = static_cast<float>(ClientWidth);
+  G_WndHeight = static_cast<float>(ClientHeight);
 
 #ifdef _DEBUG
   assert(getSystemExecutive());
@@ -46,12 +45,12 @@ bool ButtonSystem::init() {
 }
 
 void ButtonSystem::run(const Timer &Timer) {
-  POINT P = {};
-  GetCursorPos(&P);
-  ScreenToClient(G_WndHandle, &P);
-  float CursorX = (static_cast<float>(P.x) / G_WndWidth - 0.5f) * G_ScreenWidth;
+  int PX = 0;
+  int PY = 0;
+  window::getWindowPtr()->getCursorPosition(PX, PY);
+  float CursorX = (static_cast<float>(PX) / G_WndWidth - 0.5f) * G_ScreenWidth;
   float CursorY =
-      -(static_cast<float>(P.y) / G_WndHeight - 0.5f) * G_ScreenHeight;
+      -(static_cast<float>(PY) / G_WndHeight - 0.5f) * G_ScreenHeight;
 #ifdef _DEBUG
   CursorX = (CursorX < -G_ScreenWidth / 2.f) ? -G_ScreenWidth / 2.f : CursorX;
   CursorX = (CursorX > G_ScreenWidth / 2.f) ? G_ScreenWidth / 2.f : CursorX;
