@@ -31,6 +31,8 @@ struct SPIRV_BINDING_INFO {
   // hidden counter buffer of an append/consume/counter structured buffer
   bool IsCounter = false;
   uint32_t CounterOwnerBinding = 0;
+  // array stride of a structured buffer, used to validate c++ structures
+  uint32_t ElementStride = 0;
 };
 
 struct SPIRV_IO_INFO {

@@ -41,6 +41,7 @@ constexpr uint32_t OP_MEMBER_DECORATE_STRING = 5633;
 // decorations
 constexpr uint32_t DEC_BLOCK = 2;
 constexpr uint32_t DEC_BUFFER_BLOCK = 3;
+constexpr uint32_t DEC_ARRAY_STRIDE = 6;
 constexpr uint32_t DEC_BUILTIN = 11;
 constexpr uint32_t DEC_LOCATION = 30;
 constexpr uint32_t DEC_BINDING = 33;
@@ -104,6 +105,7 @@ struct MODULE_INFO {
   std::unordered_map<uint32_t, std::string> Names = {};
   std::unordered_map<uint32_t, uint32_t> Bindings = {};
   std::unordered_map<uint32_t, uint32_t> Locations = {};
+  std::unordered_map<uint32_t, uint32_t> ArrayStrides = {};
   std::unordered_map<uint32_t, std::string> Semantics = {};
   std::unordered_set<uint32_t> BuiltIns = {};
   std::unordered_set<uint32_t> Blocks = {};
@@ -134,6 +136,9 @@ MODULE_INFO parseModule(const std::vector<uint32_t> &Code,
         break;
       case DEC_LOCATION:
         Info.Locations[W[1]] = W[3];
+        break;
+      case DEC_ARRAY_STRIDE:
+        Info.ArrayStrides[W[1]] = W[3];
         break;
       case DEC_BUILTIN:
         Info.BuiltIns.insert(W[1]);
@@ -355,6 +360,15 @@ bool reflectSpirv(const std::vector<uint32_t> &Code,
       if (Var.StorageClass == SC_STORAGE_BUFFER ||
           Info.BufferBlocks.count(TypeId)) {
         Binding.Type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        if (!Type.Operands.empty()) {
+          uint32_t LastMember = Type.Operands.back();
+          auto Last = Info.Types.find(LastMember);
+          if (Last != Info.Types.end() &&
+              Last->second.Opcode == OP_TYPE_RUNTIME_ARRAY &&
+              Info.ArrayStrides.count(LastMember)) {
+            Binding.ElementStride = Info.ArrayStrides.at(LastMember);
+          }
+        }
       } else {
         Binding.Type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
       }
