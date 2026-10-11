@@ -2,13 +2,12 @@
 
 #include "PrintLog.h"
 
-#include <DDSTextureLoader11.h>
 #include <RSDevices.h>
 #include <RSMeshHelper.h>
 #include <RSResourceManager.h>
 #include <RSRoot_DX11.h>
+#include <RSTextureLoader.h>
 #include <TextUtility.h>
-#include <WICTextureLoader11.h>
 
 #include <cstdio>
 #include <cstring>
@@ -769,38 +768,20 @@ void addTextureToSubMesh(RS_SUBMESH_DATA *OutResult,
                          MESH_TEXTURE_TYPE Type) {
   RSRoot_DX11 *Root = getRSDX11RootInstance();
 
-  std::wstring WStr = L"";
-  std::string Name = "";
-  HRESULT Hr = S_OK;
-  ID3D11ShaderResourceView *Srv = nullptr;
-
-  WStr = std::wstring(FilePath.begin(), FilePath.end());
-  WStr = L"./Assets/Textures/" + WStr;
+  std::string Path = "./Assets/Textures/" + FilePath;
+  RSShaderResourceView *Srv = nullptr;
 
   if (Root->getResourceManager()->getMeshSrv(FilePath)) {
     OutResult->Textures[static_cast<size_t>(Type)] = FilePath;
     return;
   }
 
-  if (FilePath.find(".dds") != std::string::npos ||
-      FilePath.find(".DDS") != std::string::npos) {
-    Hr = dx::CreateDDSTextureFromFile(Root->getDevices()->getDevice(),
-                                      WStr.c_str(), nullptr, &Srv);
-    if (SUCCEEDED(Hr)) {
-      Name = FilePath;
-      Root->getResourceManager()->addMeshSrv(Name, Srv);
-    } else {
-      P_LOG(LOG_ERROR, "failed to load texture : {}", FilePath);
-    }
+  // dds or common image files are chosen by the extension
+  if (rs_tool::createTextureFromFile(Root->getDevices(), Path, nullptr,
+                                     &Srv)) {
+    Root->getResourceManager()->addMeshSrv(FilePath, Srv);
   } else {
-    Hr = dx::CreateWICTextureFromFile(Root->getDevices()->getDevice(),
-                                      WStr.c_str(), nullptr, &Srv);
-    if (SUCCEEDED(Hr)) {
-      Name = FilePath;
-      Root->getResourceManager()->addMeshSrv(Name, Srv);
-    } else {
-      P_LOG(LOG_ERROR, "failed to load texture : {}", FilePath);
-    }
+    P_LOG(LOG_ERROR, "failed to load texture : {}", FilePath);
   }
 
   OutResult->Textures[static_cast<size_t>(Type)] = FilePath;
