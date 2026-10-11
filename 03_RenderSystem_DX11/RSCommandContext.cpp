@@ -555,6 +555,18 @@ void RSCommandContext::clearDepthStencilView(RSDepthStencilView *Dsv,
 void RSCommandContext::setViewport(const VkViewport &ViewPort) {
   Viewport = ViewPort;
   ViewportSet = true;
+  // a viewport changed between draws of the same render targets
+  if (Rendering.Begun) {
+    applyViewport(Viewport);
+  }
+}
+
+void RSCommandContext::applyViewport(const VkViewport &ViewPort) {
+  // negative height keeps direct3d clip space and window coordinates
+  VkViewport Flipped = ViewPort;
+  Flipped.y += Flipped.height;
+  Flipped.height = -Flipped.height;
+  vkCmdSetViewport(Command, 0, 1, &Flipped);
 }
 
 //---------------------------------------------------------------
@@ -962,15 +974,10 @@ void RSCommandContext::beginRendering() {
 
   VkRect2D Scissor = {{0, 0}, Extent};
   vkCmdSetScissor(Command, 0, 1, &Scissor);
-  VkViewport Flipped = ViewportSet
-                           ? Viewport
-                           : VkViewport{0.f, 0.f, static_cast<float>(Extent.width),
-                                        static_cast<float>(Extent.height), 0.f,
-                                        1.f};
-  // negative height keeps direct3d clip space and window coordinates
-  Flipped.y += Flipped.height;
-  Flipped.height = -Flipped.height;
-  vkCmdSetViewport(Command, 0, 1, &Flipped);
+  applyViewport(ViewportSet
+                    ? Viewport
+                    : VkViewport{0.f, 0.f, static_cast<float>(Extent.width),
+                                 static_cast<float>(Extent.height), 0.f, 1.f});
 }
 
 void RSCommandContext::endRendering() {
