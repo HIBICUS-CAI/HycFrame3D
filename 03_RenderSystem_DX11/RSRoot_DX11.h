@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSRoot_DX11.h
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 保存并提供此RenderSystem相关的重要内容引用
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
@@ -29,7 +29,7 @@ public:
   RSRoot_DX11();
   ~RSRoot_DX11();
 
-  bool startUp(HWND WndHandle);
+  bool startUp(struct SDL_Window *WndHandle);
   void cleanAndStop();
 
   class RSDevices *getDevices() const;
