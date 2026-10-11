@@ -1,7 +1,7 @@
 ﻿//---------------------------------------------------------------
 // File: RSMeshHelper.h
-// Proj: RenderSystem_DX11
-// Info: 提供对SubMesh转换为DirectX可识别形式的方法
+// Proj: RenderSystem_VK
+// Info: 提供对SubMesh转换为Vulkan可识别形式的方法
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
 // Comt: NULL
@@ -35,10 +35,10 @@ public:
   class RSGeometryGenerator *getGeoGenerator();
 
 private:
-  ID3D11InputLayout *refStaticInputLayout(LAYOUT_TYPE LayoutType);
-  ID3D11Buffer *createIndexBuffer(const std::vector<UINT> *const IndicesArray);
-  ID3D11Buffer *createVertexBuffer(const void *const ConstRawVerticesPtr,
-                                   LAYOUT_TYPE LayoutType);
+  const RSInputLayout *refStaticInputLayout(LAYOUT_TYPE LayoutType);
+  RSBuffer *createIndexBuffer(const std::vector<UINT> *const IndicesArray);
+  RSBuffer *createVertexBuffer(const void *const ConstRawVerticesPtr,
+                               LAYOUT_TYPE LayoutType);
   void createTexSrv(RS_SUBMESH_DATA *OutResult,
                     const std::vector<std::string> *const Textures);
   void createSubMeshMaterial(RS_SUBMESH_DATA *OutResult,
