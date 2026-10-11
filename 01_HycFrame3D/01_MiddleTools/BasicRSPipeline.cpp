@@ -4785,25 +4785,24 @@ void RSPass_BloomHdr::releasePass() {
 }
 
 void RSPass_BloomHdr::execuatePass() {
-  static ID3D11UnorderedAccessView *NullUav = nullptr;
-  static ID3D11ShaderResourceView *NullSrv = nullptr;
+  static RSUnorderedAccessView *NullUav = nullptr;
+  static RSShaderResourceView *NullSrv = nullptr;
   UINT Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
   UINT Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
   UINT DispatchX = rs_tool::align(Width, 16) / 16;
   UINT DispatchY = rs_tool::align(Height, 16) / 16;
 
-  context()->CSSetShader(FilterPixelShader, nullptr, 0);
-  context()->CSSetShaderResources(0, 1, &HdrSrv);
-  context()->CSSetUnorderedAccessViews(0, 1, NeedBloomUavArray.data(), nullptr);
+  context()->setPipelineState(FilterPixelShader);
+  context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 1, &HdrSrv);
+  context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                     NeedBloomUavArray.data());
 
-  context()->Dispatch(DispatchX, DispatchY, 1);
+  context()->dispatch(DispatchX, DispatchY, 1);
 
-  context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
-  context()->CSSetShaderResources(0, 1, &NullSrv);
+  context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1, &NullUav);
+  context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 1, &NullSrv);
 
-  context()->GenerateMips(NeedBloomSrv);
-
-  D3D11_MAPPED_SUBRESOURCE Msr = {};
+  context()->generateMips(NeedBloomSrv);
 
   static const size_t DOWN_COUNT = G_RenderEffectConfig.BloomDownSamplingCount;
   static const size_t UP_COUNT = DOWN_COUNT - 1;
@@ -4813,26 +4812,26 @@ void RSPass_BloomHdr::execuatePass() {
     auto Index = 1;
     UINT BlurTexWidth = Width / (1 << Index);
     UINT BlurTexHeight = Height / (1 << Index);
-    context()->Map(BlurConstBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    BLM_BLUR_INFO *Info = static_cast<BLM_BLUR_INFO *>(Msr.pData);
+    BLM_BLUR_INFO *Info = static_cast<BLM_BLUR_INFO *>(BlurConstBuffer->map());
     Info->TexWidth = BlurTexWidth;
     Info->TexHeight = BlurTexHeight;
-    context()->Unmap(BlurConstBuffer, 0);
+    BlurConstBuffer->unmap();
 
-    context()->CSSetUnorderedAccessViews(0, 1, &NeedBloomUavArray[Index],
-                                         nullptr);
-    context()->CSSetConstantBuffers(0, 1, &BlurConstBuffer);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                       &NeedBloomUavArray[Index]);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                  &BlurConstBuffer);
 
     for (size_t J = 0; J < BLUR_COUNT; J++) {
-      context()->CSSetShader(KABlurHoriShader, nullptr, 0);
+      context()->setPipelineState(KABlurHoriShader);
       DispatchX = rs_tool::align(BlurTexWidth, 256) / 256;
       DispatchY = BlurTexHeight;
-      context()->Dispatch(DispatchX, DispatchY, 1);
+      context()->dispatch(DispatchX, DispatchY, 1);
 
-      context()->CSSetShader(KABlurVertShader, nullptr, 0);
+      context()->setPipelineState(KABlurVertShader);
       DispatchX = BlurTexWidth;
       DispatchY = rs_tool::align(BlurTexHeight, 256) / 256;
-      context()->Dispatch(DispatchX, DispatchY, 1);
+      context()->dispatch(DispatchX, DispatchY, 1);
     }
   }
 
@@ -4840,97 +4839,82 @@ void RSPass_BloomHdr::execuatePass() {
     auto Index = I + 1;
     UINT BlurTexWidth = Width / (1 << Index);
     UINT BlurTexHeight = Height / (1 << Index);
-    context()->Map(BlurConstBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    BLM_BLUR_INFO *Info = static_cast<BLM_BLUR_INFO *>(Msr.pData);
+    BLM_BLUR_INFO *Info = static_cast<BLM_BLUR_INFO *>(BlurConstBuffer->map());
     Info->TexWidth = BlurTexWidth;
     Info->TexHeight = BlurTexHeight;
-    context()->Unmap(BlurConstBuffer, 0);
+    BlurConstBuffer->unmap();
 
-    context()->CSSetUnorderedAccessViews(0, 1, &NeedBloomUavArray[Index],
-                                         nullptr);
-    context()->CSSetConstantBuffers(0, 1, &BlurConstBuffer);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                       &NeedBloomUavArray[Index]);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                  &BlurConstBuffer);
 
     for (size_t J = 0; J < BLUR_COUNT; J++) {
-      context()->CSSetShader(BlurHoriShader, nullptr, 0);
+      context()->setPipelineState(BlurHoriShader);
       DispatchX = rs_tool::align(BlurTexWidth, 256) / 256;
       DispatchY = BlurTexHeight;
-      context()->Dispatch(DispatchX, DispatchY, 1);
+      context()->dispatch(DispatchX, DispatchY, 1);
 
-      context()->CSSetShader(BlurVertShader, nullptr, 0);
+      context()->setPipelineState(BlurVertShader);
       DispatchX = BlurTexWidth;
       DispatchY = rs_tool::align(BlurTexHeight, 256) / 256;
-      context()->Dispatch(DispatchX, DispatchY, 1);
+      context()->dispatch(DispatchX, DispatchY, 1);
     }
   }
-  context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
+  context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1, &NullUav);
 
   Width /= 2;
   Height /= 2;
-  context()->CSSetShader(UpSampleShader, nullptr, 0);
-  context()->CSSetShaderResources(0, 1, &NeedBloomSrv);
-  context()->CSSetSamplers(0, 1, &LinearBorderSampler);
+  context()->setPipelineState(UpSampleShader);
+  context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 1, &NeedBloomSrv);
+  context()->setSamplers(RS_SHADER_STAGE::COMPUTE, 0, 1, &LinearBorderSampler);
   for (size_t I = 0; I < UP_COUNT; I++) {
     auto InvI = static_cast<int>(UP_COUNT - 1 - I);
     InvI = (InvI < 0) ? -InvI : InvI;
     UINT TexWidth = Width / (1 << InvI);
     UINT TexHeight = Height / (1 << InvI);
 
-    context()->Map(BlurConstBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    BLM_BLUR_INFO *Info = static_cast<BLM_BLUR_INFO *>(Msr.pData);
+    BLM_BLUR_INFO *Info = static_cast<BLM_BLUR_INFO *>(BlurConstBuffer->map());
     Info->TexWidth = TexWidth;
     Info->TexHeight = TexHeight;
     Info->Pads[0] = static_cast<UINT>(InvI);
-    context()->Unmap(BlurConstBuffer, 0);
+    BlurConstBuffer->unmap();
 
-    context()->CSSetUnorderedAccessViews(0, 2, &UpSampleUavArray[InvI],
-                                         nullptr);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 2,
+                                       &UpSampleUavArray[InvI]);
 
     DispatchX = rs_tool::align(TexWidth, 16) / 16;
     DispatchY = rs_tool::align(TexHeight, 16) / 16;
-    context()->Dispatch(DispatchX, DispatchY, 1);
+    context()->dispatch(DispatchX, DispatchY, 1);
   }
-  context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
-  context()->CSSetUnorderedAccessViews(1, 1, &NullUav, nullptr);
+  context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1, &NullUav);
+  context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 1, 1, &NullUav);
 
-  context()->Map(IntensityConstBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-  BLM_INTENSITY_INFO *Info = static_cast<BLM_INTENSITY_INFO *>(Msr.pData);
+  BLM_INTENSITY_INFO *Info =
+      static_cast<BLM_INTENSITY_INFO *>(IntensityConstBuffer->map());
   Info->IntensityFactor = G_RenderEffectConfig.BloomIntensityFactor;
-  context()->Unmap(IntensityConstBuffer, 0);
-  context()->CSSetShader(BlendShader, nullptr, 0);
-  context()->CSSetConstantBuffers(0, 1, &IntensityConstBuffer);
-  context()->CSSetShaderResources(0, 1, &UpSampleSrv);
-  context()->CSSetUnorderedAccessViews(0, 1, &HdrUav, nullptr);
+  IntensityConstBuffer->unmap();
+  context()->setPipelineState(BlendShader);
+  context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                &IntensityConstBuffer);
+  context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 1, &UpSampleSrv);
+  context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1, &HdrUav);
   DispatchX = rs_tool::align(Width * 2, 16) / 16;
   DispatchY = rs_tool::align(Height * 2, 16) / 16;
-  context()->Dispatch(DispatchX, DispatchY, 1);
+  context()->dispatch(DispatchX, DispatchY, 1);
 
-  context()->CSSetShaderResources(0, 1, &NullSrv);
-  context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
+  context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 1, &NullSrv);
+  context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1, &NullUav);
 }
 
 bool RSPass_BloomHdr::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
-
   const std::string PickMinValue =
       hyc::str::sFormat("{:+f}f", G_RenderEffectConfig.BloomMinValue);
-  D3D_SHADER_MACRO PickMacro[] = {{"MIN_VALUE", PickMinValue.c_str()},
-                                  {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/bloom_pick_compute.hlsl", "main", "cs_5_0",
-      &ShaderBlob, PickMacro);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &FilterPixelShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  rs_tool::SHADER_MACRO PickMacro[] = {{"MIN_VALUE", PickMinValue.c_str()},
+                                       {nullptr, nullptr}};
+  FilterPixelShader = compileComputePipeline(
+      "./Assets/Shaders/bloom_pick_compute.hlsl", "main", PickMacro);
+  FAIL_NULL_RETURN(FilterPixelShader);
 
   std::string KernelSize = "";
   std::string KernelHalf = "";
@@ -4951,105 +4935,33 @@ bool RSPass_BloomHdr::createShaders() {
     }
     WeightArray += "}";
   }
-  D3D_SHADER_MACRO BlurMacro[] = {{"KERNEL_SIZE", KernelSize.c_str()},
-                                  {"KERNEL_HALF", KernelHalf.c_str()},
-                                  {"WEIGHT_ARRAY", WeightArray.c_str()},
-                                  {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/gauss_blur_compute.hlsl", "HMain", "cs_5_0",
-      &ShaderBlob, BlurMacro);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  rs_tool::SHADER_MACRO BlurMacro[] = {{"KERNEL_SIZE", KernelSize.c_str()},
+                                       {"KERNEL_HALF", KernelHalf.c_str()},
+                                       {"WEIGHT_ARRAY", WeightArray.c_str()},
+                                       {nullptr, nullptr}};
+  BlurHoriShader = compileComputePipeline(
+      "./Assets/Shaders/gauss_blur_compute.hlsl", "HMain", BlurMacro);
+  FAIL_NULL_RETURN(BlurHoriShader);
 
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &BlurHoriShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BlurVertShader = compileComputePipeline(
+      "./Assets/Shaders/gauss_blur_compute.hlsl", "VMain", BlurMacro);
+  FAIL_NULL_RETURN(BlurVertShader);
 
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/gauss_blur_compute.hlsl", "VMain", "cs_5_0",
-      &ShaderBlob, BlurMacro);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  KABlurHoriShader = compileComputePipeline(
+      "./Assets/Shaders/karis_average_compute.hlsl", "HMain", BlurMacro);
+  FAIL_NULL_RETURN(KABlurHoriShader);
 
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &BlurVertShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  KABlurVertShader = compileComputePipeline(
+      "./Assets/Shaders/karis_average_compute.hlsl", "VMain", BlurMacro);
+  FAIL_NULL_RETURN(KABlurVertShader);
 
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/karis_average_compute.hlsl", "HMain", "cs_5_0",
-      &ShaderBlob, BlurMacro);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  UpSampleShader = compileComputePipeline(
+      "./Assets/Shaders/bloom_upsample_compute.hlsl", "main");
+  FAIL_NULL_RETURN(UpSampleShader);
 
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &KABlurHoriShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/karis_average_compute.hlsl", "VMain", "cs_5_0",
-      &ShaderBlob, BlurMacro);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &KABlurVertShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/bloom_upsample_compute.hlsl", "main", "cs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &UpSampleShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/bloom_blend_compute.hlsl", "main", "cs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &BlendShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BlendShader = compileComputePipeline(
+      "./Assets/Shaders/bloom_blend_compute.hlsl", "main");
+  FAIL_NULL_RETURN(BlendShader);
 
   return true;
 }
@@ -5058,126 +4970,68 @@ bool RSPass_BloomHdr::createViews() {
   HdrUav = G_RSRoot->getDevices()->getHighDynamicUav();
   HdrSrv = G_RSRoot->getDevices()->getHighDynamicSrv();
 
-  HRESULT Hr = S_OK;
-  D3D11_TEXTURE2D_DESC TexDesc = {};
-  D3D11_RENDER_TARGET_VIEW_DESC RtvDesc = {};
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-  D3D11_UNORDERED_ACCESS_VIEW_DESC UavDesc = {};
-  ZeroMemory(&TexDesc, sizeof(TexDesc));
-  ZeroMemory(&RtvDesc, sizeof(RtvDesc));
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  ZeroMemory(&UavDesc, sizeof(UavDesc));
-
+  auto Devices = G_RSRoot->getDevices();
   UINT DownMips = G_RenderEffectConfig.BloomDownSamplingCount + 1;
   UINT UpMips = DownMips - 2;
 
-  TexDesc.Width = G_RSRoot->getDevices()->getCurrWndWidth();
-  TexDesc.Height = G_RSRoot->getDevices()->getCurrWndHeight();
-  TexDesc.MipLevels = DownMips;
-  TexDesc.ArraySize = 1;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.Usage = D3D11_USAGE_DEFAULT;
-  TexDesc.CPUAccessFlags = 0;
-  TexDesc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
-  TexDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  TexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE |
-                      D3D11_BIND_UNORDERED_ACCESS;
-  Hr = device()->CreateTexture2D(&TexDesc, nullptr, &NeedBloomTexture);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  // generateMips needs no render target usage, the mips are blitted
+  NeedBloomTexture = createTexture2D(
+      VK_FORMAT_R16G16B16A16_SFLOAT, Devices->getCurrWndWidth(),
+      Devices->getCurrWndHeight(),
+      VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, DownMips);
+  FAIL_NULL_RETURN(NeedBloomTexture);
 
-  SrvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-  SrvDesc.Texture2D.MostDetailedMip = 0;
-  SrvDesc.Texture2D.MipLevels = DownMips;
-  Hr = device()->CreateShaderResourceView(NeedBloomTexture, &SrvDesc,
-                                          &NeedBloomSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  NeedBloomSrv = Devices->createShaderResourceView(NeedBloomTexture);
+  FAIL_NULL_RETURN(NeedBloomSrv);
 
+  RS_TEXTURE_VIEW_DESC UavDesc = {};
+  UavDesc.ViewType = VK_IMAGE_VIEW_TYPE_2D;
+  UavDesc.MipCount = 1;
   for (size_t I = 0; I < DownMips; I++) {
-    UavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-    UavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-    UavDesc.Texture2D.MipSlice = static_cast<UINT>(I);
-    Hr = device()->CreateUnorderedAccessView(NeedBloomTexture, &UavDesc,
-                                             &NeedBloomUavArray[I]);
-    if (FAILED(Hr)) {
-      return false;
-    }
+    UavDesc.BaseMip = static_cast<UINT>(I);
+    NeedBloomUavArray[I] =
+        Devices->createUnorderedAccessView(NeedBloomTexture, &UavDesc);
+    FAIL_NULL_RETURN(NeedBloomUavArray[I]);
   }
 
-  TexDesc.Width /= 2;
-  TexDesc.Height /= 2;
-  TexDesc.MipLevels = UpMips;
-  TexDesc.MiscFlags = 0;
-  TexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-  SrvDesc.Texture2D.MipLevels = UpMips;
-  Hr = device()->CreateTexture2D(&TexDesc, nullptr, &UpSampleTexture);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  UpSampleTexture = createTexture2D(
+      VK_FORMAT_R16G16B16A16_SFLOAT, Devices->getCurrWndWidth() / 2,
+      Devices->getCurrWndHeight() / 2,
+      VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT, UpMips);
+  FAIL_NULL_RETURN(UpSampleTexture);
 
-  Hr = device()->CreateShaderResourceView(UpSampleTexture, &SrvDesc,
-                                          &UpSampleSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  UpSampleSrv = Devices->createShaderResourceView(UpSampleTexture);
+  FAIL_NULL_RETURN(UpSampleSrv);
 
   for (size_t I = 0; I < UpMips; I++) {
-    UavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-    UavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-    UavDesc.Texture2D.MipSlice = static_cast<UINT>(I);
-    Hr = device()->CreateUnorderedAccessView(UpSampleTexture, &UavDesc,
-                                             &UpSampleUavArray[I]);
-    if (FAILED(Hr)) {
-      return false;
-    }
+    UavDesc.BaseMip = static_cast<UINT>(I);
+    UpSampleUavArray[I] =
+        Devices->createUnorderedAccessView(UpSampleTexture, &UavDesc);
+    FAIL_NULL_RETURN(UpSampleUavArray[I]);
   }
 
   return true;
 }
 
 bool RSPass_BloomHdr::createBuffers() {
-  HRESULT Hr = S_OK;
-  D3D11_BUFFER_DESC BufDesc = {};
+  RS_BUFFER_DESC BufDesc = {};
+  BufDesc.Usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+  BufDesc.Memory = RS_MEMORY_USAGE::DYNAMIC;
+  BufDesc.Size = sizeof(BLM_BLUR_INFO);
+  BlurConstBuffer = G_RSRoot->getDevices()->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(BlurConstBuffer);
 
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_DYNAMIC;
-  BufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-  BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  BufDesc.ByteWidth = sizeof(BLM_BLUR_INFO);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &BlurConstBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  BufDesc.ByteWidth = sizeof(BLM_INTENSITY_INFO);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &IntensityConstBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(BLM_INTENSITY_INFO);
+  IntensityConstBuffer = G_RSRoot->getDevices()->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(IntensityConstBuffer);
 
   return true;
 }
 
 bool RSPass_BloomHdr::createSampler() {
-  HRESULT Hr = S_OK;
-  D3D11_SAMPLER_DESC SamDesc = {};
-  ZeroMemory(&SamDesc, sizeof(SamDesc));
-
-  SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-  SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-  SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-  SamDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SamDesc.MinLOD = 0;
-  SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SamDesc, &LinearBorderSampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LinearBorderSampler = G_RSRoot->getDevices()->createSampler(
+      makeLinearSamplerInfo(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER));
+  FAIL_NULL_RETURN(LinearBorderSampler);
 
   return true;
 }
