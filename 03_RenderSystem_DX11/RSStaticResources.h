@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSStaticResources.h
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 保存并提供所有常用的资源及其引用
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
@@ -17,27 +17,20 @@ class RSStaticResources {
 private:
   class RSRoot_DX11 *RenderSystemRoot;
 
-  std::unordered_map<std::string, ID3D11VertexShader *> VertexShaderMap;
-  std::unordered_map<std::string, ID3D11GeometryShader *> GeometryShaderMap;
-  std::unordered_map<std::string, ID3D11PixelShader *> PixelShaderMap;
-  std::unordered_map<std::string, ID3D11ComputeShader *> ComputeShaderMap;
+  // rasterizer/depth/blend states are parts of pipeline state objects in
+  // vulkan, so only shaders and samplers are shared here
+  std::unordered_map<std::string, class RSShader *> ShaderMap;
+  std::unordered_map<std::string, class RSSampler *> SamplerMap;
 
-  std::unordered_map<std::string, ID3D11RasterizerState *> RasterizerStateMap;
-  std::unordered_map<std::string, ID3D11DepthStencilState *>
-      DepthStencilStateMap;
-  std::unordered_map<std::string, ID3D11BlendState *> BlendStateMap;
-
-  std::unordered_map<std::string, ID3D11SamplerState *> SamplerMap;
-
-  std::unordered_map<std::string, ID3D11InputLayout *> InputLayoutMap;
+  std::unordered_map<std::string, class RSInputLayout *> InputLayoutMap;
 
   std::unordered_map<std::string, class RSPipeline *> StaticPipelineMap;
   std::unordered_map<std::string, class RSTopic *> StaticTopicMap;
 
   std::vector<RS_MATERIAL_DATA> MaterialVector;
   std::unordered_map<std::string, UINT> MaterialIndexMap;
-  ID3D11Buffer *MaterialBuffer;
-  ID3D11ShaderResourceView *MaterialBufferSrv;
+  RSBuffer *MaterialBuffer;
+  RSShaderResourceView *MaterialBufferSrv;
 
 public:
   RSStaticResources();
@@ -46,28 +39,21 @@ public:
   bool startUp(class RSRoot_DX11 *RootPtr);
   void cleanAndStop();
 
-  ID3D11VertexShader *getStaticVertexShader(const std::string &ShaderName);
-  ID3D11GeometryShader *getStaticGeometryShader(const std::string &ShaderName);
-  ID3D11PixelShader *getStaticPixelShader(const std::string &ShaderName);
-  ID3D11ComputeShader *getStaticComputeShader(const std::string &ShaderName);
-  ID3D11RasterizerState *getStaticRasterizerState(const std::string &StateName);
-  ID3D11DepthStencilState *
-  getStaticDepthStencilState(const std::string &StateName);
-  ID3D11BlendState *getStaticBlendState(const std::string &StateName);
-  ID3D11SamplerState *getStaticSampler(const std::string &SamplerName);
-  ID3D11InputLayout *getStaticInputLayout(const std::string &LayoutName);
+  class RSShader *getStaticShader(const std::string &ShaderName);
+  class RSSampler *getStaticSampler(const std::string &SamplerName);
+  const class RSInputLayout *getStaticInputLayout(const std::string &LayoutName);
   const class RSPipeline *const
   getStaticPipeline(const std::string &PipelineName);
   const class RSTopic *const getStaticTopic(const std::string &TopicName);
   UINT getStaticMaterialIndex(const std::string &MaterialName);
   RS_MATERIAL_DATA *getMaterialDataPtrForTest() { return &MaterialVector[0]; }
-  ID3D11ShaderResourceView *getMaterialSrv() { return MaterialBufferSrv; }
+  RSShaderResourceView *getMaterialSrv() { return MaterialBufferSrv; }
 
   void remapMaterialData();
 
 private:
   bool compileStaticShaders();
-  bool buildStaticStates();
+  bool buildStaticSamplers();
   bool buildStaticInputLayouts();
   bool buildStaticTopics();
   bool buildStaticPipelines();
