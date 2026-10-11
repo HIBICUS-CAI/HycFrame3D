@@ -5040,19 +5040,22 @@ RSPass_ToSwapChain::RSPass_ToSwapChain(std::string &Name,
                                        PASS_TYPE Type,
                                        RSRoot_DX11 *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
-      PixelShader(nullptr), VertexBuffer(nullptr), IndexBuffer(nullptr),
-      SwapChainRtv(nullptr), HdrSrv(nullptr), LinearWrapSampler(nullptr) {}
+      PixelShader(nullptr), Pipeline(nullptr), VertexBuffer(nullptr),
+      IndexBuffer(nullptr), SwapChainRtv(nullptr), HdrSrv(nullptr),
+      LinearWrapSampler(nullptr) {}
 
 RSPass_ToSwapChain::RSPass_ToSwapChain(const RSPass_ToSwapChain &Source)
     : RSPass_Base(Source), VertexShader(Source.VertexShader),
-      PixelShader(Source.PixelShader), VertexBuffer(Source.VertexBuffer),
-      IndexBuffer(Source.IndexBuffer), SwapChainRtv(Source.SwapChainRtv),
-      HdrSrv(Source.HdrSrv), LinearWrapSampler(Source.LinearWrapSampler) {
+      PixelShader(Source.PixelShader), Pipeline(Source.Pipeline),
+      VertexBuffer(Source.VertexBuffer), IndexBuffer(Source.IndexBuffer),
+      SwapChainRtv(Source.SwapChainRtv), HdrSrv(Source.HdrSrv),
+      LinearWrapSampler(Source.LinearWrapSampler) {
   if (HasBeenInited) {
     RS_ADDREF(VertexBuffer);
     RS_ADDREF(IndexBuffer);
     RS_ADDREF(VertexShader);
     RS_ADDREF(PixelShader);
+    RS_ADDREF(Pipeline);
     RS_ADDREF(LinearWrapSampler);
   }
 }
@@ -5080,6 +5083,9 @@ bool RSPass_ToSwapChain::initPass() {
   if (!createSamplers()) {
     return false;
   }
+  if (!createPipelines()) {
+    return false;
+  }
 
   HasBeenInited = true;
 
@@ -5091,121 +5097,48 @@ void RSPass_ToSwapChain::releasePass() {
   RS_RELEASE(IndexBuffer);
   RS_RELEASE(VertexShader);
   RS_RELEASE(PixelShader);
+  RS_RELEASE(Pipeline);
   RS_RELEASE(LinearWrapSampler);
 }
 
 void RSPass_ToSwapChain::execuatePass() {
-  context()->OMSetRenderTargets(1, &SwapChainRtv, nullptr);
-  context()->RSSetViewports(1, &G_ViewPort);
-  context()->ClearRenderTargetView(SwapChainRtv, dx::Colors::DarkGreen);
-  context()->VSSetShader(VertexShader, nullptr, 0);
-  context()->PSSetShader(PixelShader, nullptr, 0);
+  context()->setRenderTargets(1, &SwapChainRtv, nullptr);
+  context()->setViewport(G_ViewPort);
+  context()->clearRenderTargetView(SwapChainRtv, dx::Colors::DarkGreen);
+  context()->setPipelineState(Pipeline);
 
-  UINT Stride = sizeof(vertex_type::TangentVertex);
-  UINT Offset = 0;
+  RSShaderResourceView *Srv[] = {HdrSrv};
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 0, 1, Srv);
 
-  static ID3D11ShaderResourceView *Srv[] = {HdrSrv};
-  context()->PSSetShaderResources(0, 1, Srv);
-
-  static ID3D11SamplerState *Samp[] = {
+  RSSampler *Samp[] = {
       LinearWrapSampler,
   };
-  context()->PSSetSamplers(0, 1, Samp);
+  context()->setSamplers(RS_SHADER_STAGE::PIXEL, 0, 1, Samp);
 
-  context()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  context()->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &Offset);
-  context()->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+  context()->setPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+  context()->setVertexBuffer(VertexBuffer);
+  context()->setIndexBuffer(IndexBuffer);
 
-  context()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+  context()->drawIndexedInstanced(6, 1, 0, 0, 0);
 
-  ID3D11RenderTargetView *NullRtv = nullptr;
-  context()->OMSetRenderTargets(1, &NullRtv, nullptr);
-  static ID3D11ShaderResourceView *NullSrv[] = {nullptr};
-  context()->PSSetShaderResources(0, 1, NullSrv);
+  context()->setRenderTargets(0, nullptr, nullptr);
+  static RSShaderResourceView *NullSrv[] = {nullptr};
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 0, 1, NullSrv);
 }
 
 bool RSPass_ToSwapChain::createBuffers() {
-  HRESULT Hr = S_OK;
-  D3D11_BUFFER_DESC BufDesc = {};
-
-  vertex_type::TangentVertex V[4] = {};
-  V[0].Position = dx::XMFLOAT3(-1.0f, -1.0f, 0.0f);
-  V[1].Position = dx::XMFLOAT3(-1.0f, +1.0f, 0.0f);
-  V[2].Position = dx::XMFLOAT3(+1.0f, +1.0f, 0.0f);
-  V[3].Position = dx::XMFLOAT3(+1.0f, -1.0f, 0.0f);
-  V[0].TexCoord = dx::XMFLOAT2(0.0f, 1.0f);
-  V[1].TexCoord = dx::XMFLOAT2(0.0f, 0.0f);
-  V[2].TexCoord = dx::XMFLOAT2(1.0f, 0.0f);
-  V[3].TexCoord = dx::XMFLOAT2(1.0f, 1.0f);
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-  BufDesc.ByteWidth = sizeof(vertex_type::TangentVertex) * 4;
-  BufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.MiscFlags = 0;
-  BufDesc.StructureByteStride = 0;
-  D3D11_SUBRESOURCE_DATA VInitData = {};
-  ZeroMemory(&VInitData, sizeof(VInitData));
-  VInitData.pSysMem = V;
-  Hr = device()->CreateBuffer(&BufDesc, &VInitData, &VertexBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  UINT Indices[6] = {0, 1, 2, 0, 2, 3};
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-  BufDesc.ByteWidth = sizeof(UINT) * 6;
-  BufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.StructureByteStride = 0;
-  BufDesc.MiscFlags = 0;
-  D3D11_SUBRESOURCE_DATA IInitData = {};
-  ZeroMemory(&IInitData, sizeof(IInitData));
-  IInitData.pSysMem = Indices;
-  Hr = device()->CreateBuffer(&BufDesc, &IInitData, &IndexBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  return true;
+  // the vertex shader only uses SV_VertexID
+  return createScreenQuad(&VertexBuffer, &IndexBuffer);
 }
 
 bool RSPass_ToSwapChain::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
+  VertexShader = compileShader("./Assets/Shaders/copy_texture_vertex.hlsl",
+                               "main", "vs_5_0");
+  FAIL_NULL_RETURN(VertexShader);
 
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/copy_texture_vertex.hlsl", "main", "vs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &VertexShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/copy_texture_pixel.hlsl", "main", "ps_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreatePixelShader(ShaderBlob->GetBufferPointer(),
-                                   ShaderBlob->GetBufferSize(), nullptr,
-                                   &PixelShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  PixelShader = compileShader("./Assets/Shaders/copy_texture_pixel.hlsl",
+                              "main", "ps_5_0");
+  FAIL_NULL_RETURN(PixelShader);
 
   return true;
 }
@@ -5218,38 +5151,21 @@ bool RSPass_ToSwapChain::createViews() {
 }
 
 bool RSPass_ToSwapChain::createSamplers() {
-  HRESULT Hr = S_OK;
-  D3D11_SAMPLER_DESC SamDesc = {};
-  ZeroMemory(&SamDesc, sizeof(SamDesc));
-  auto FilterLevel = G_RenderEffectConfig.SamplerLevel;
-  switch (FilterLevel) {
-  case SAMPLER_LEVEL::POINT:
-    SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-    break;
-  case SAMPLER_LEVEL::BILINEAR:
-    SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    break;
-  case SAMPLER_LEVEL::ANISO_8X:
-    SamDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-    SamDesc.MaxAnisotropy = 8;
-    break;
-  case SAMPLER_LEVEL::ANISO_16X:
-    SamDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-    SamDesc.MaxAnisotropy = 16;
-    break;
-  default:
-    return false;
-  }
-  SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-  SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-  SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-  SamDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SamDesc.MinLOD = 0;
-  SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SamDesc, &LinearWrapSampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LinearWrapSampler = G_RSRoot->getDevices()->createSampler(
+      makeConfigSamplerInfo(VK_SAMPLER_ADDRESS_MODE_REPEAT));
+  FAIL_NULL_RETURN(LinearWrapSampler);
+
+  return true;
+}
+
+bool RSPass_ToSwapChain::createPipelines() {
+  RS_GRAPHICS_PIPELINE_DESC Desc = {};
+  Desc.VertexShader = VertexShader;
+  Desc.PixelShader = PixelShader;
+  Desc.ColorTargetCount = 1;
+  Desc.ColorFormats[0] = SwapChainRtv->getTexture()->getDesc().Format;
+  Pipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(Pipeline);
 
   return true;
 }

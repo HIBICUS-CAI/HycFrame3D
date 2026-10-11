@@ -874,13 +874,14 @@ private:
 
 class RSPass_ToSwapChain : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11PixelShader *PixelShader;
-  ID3D11Buffer *VertexBuffer;
-  ID3D11Buffer *IndexBuffer;
-  ID3D11RenderTargetView *SwapChainRtv;
-  ID3D11ShaderResourceView *HdrSrv;
-  ID3D11SamplerState *LinearWrapSampler;
+  RSShader *VertexShader;
+  RSShader *PixelShader;
+  RSPipelineState *Pipeline;
+  RSBuffer *VertexBuffer;
+  RSBuffer *IndexBuffer;
+  RSRenderTargetView *SwapChainRtv;
+  RSShaderResourceView *HdrSrv;
+  RSSampler *LinearWrapSampler;
 
 public:
   RSPass_ToSwapChain(std::string &Name,
@@ -903,6 +904,7 @@ private:
   bool createShaders();
   bool createViews();
   bool createSamplers();
+  bool createPipelines();
 };
 
 void setPipelineDeltaTime(float DeltaMilliSecond);
