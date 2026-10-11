@@ -46,6 +46,10 @@ public:
   uint32_t Release();
 
   RSDevices *getDevices() const { return Devices; }
+
+  // prints objects which are still alive like ReportLiveDeviceObjects,
+  // only tracked in debug builds, returns the count of them
+  static size_t reportLiveObjects();
 };
 
 //---------------------------------------------------------------
