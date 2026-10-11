@@ -3,39 +3,39 @@
 #include "ID_BasicMacro.h"
 
 #include "InputDeviceBase.h"
-#include "WindowWIN32.h"
+#include "WindowSDL2.h"
 
-#include <Windows.h>
-#include <Xinput.h>
 #include <array>
-#include <dinput.h>
+#include <cstdint>
 
-using MOUSE_OFFSET = POINT;
-using STICK_OFFSET = POINT;
-using BACKSHD_OFFSET = LONG;
+struct INPUT_OFFSET_POINT {
+  int32_t x = 0;
+  int32_t y = 0;
+};
+
+using MOUSE_OFFSET = INPUT_OFFSET_POINT;
+using STICK_OFFSET = INPUT_OFFSET_POINT;
+using BACKSHD_OFFSET = int32_t;
 
 class InputManager {
 private:
-  HINSTANCE Instance;
-  HWND WndHandle;
-
-  static LPDIRECTINPUT8 DirectInputPtr;
+  WindowSDL2 *Wnd;
 
   InputDeviceBase *KeyBoardPtr;
   InputDeviceBase *MousePtr;
   std::array<InputDeviceBase *, MAX_INPUTDEVICE_NUM> GamePadPtrs;
 
 public:
-  InputManager(WindowWIN32 *Wnd);
+  InputManager(WindowSDL2 *Wnd);
 
-  HRESULT createDirectInputMain();
-  void closeDirectInputMain();
+  bool createInputMain();
+  void closeInputMain();
 
   void enumAllInputDevices();
-  HRESULT pollAllInputDevices();
+  bool pollAllInputDevices();
 
-  bool isThisKeyBeingPushedInSingle(UINT KeyCode);
-  bool isThisKeyHasBeenPushedInSingle(UINT KeyCode);
+  bool isThisKeyBeingPushedInSingle(unsigned int KeyCode);
+  bool isThisKeyHasBeenPushedInSingle(unsigned int KeyCode);
 
   STICK_OFFSET getGamePadLeftStickOffset(int GamepadIndex = 0);
   STICK_OFFSET getGamePadRightStickOffset(int GamepadIndex = 0);
@@ -48,11 +48,4 @@ public:
   InputDeviceBase *getKeyBoard();
   InputDeviceBase *getMouse();
   InputDeviceBase *getGamePadByIndex(int Index = 0);
-
-private:
-  static BOOL CALLBACK enumGamePadCallBack(const DIDEVICEINSTANCE *DIDeviceInst,
-                                           VOID *ContextPtr);
-  static BOOL CALLBACK
-  diEnumGamePadObjCallBack(const DIDEVICEOBJECTINSTANCE *DIDeviceObjInst,
-                           VOID *ContextPtr);
 };

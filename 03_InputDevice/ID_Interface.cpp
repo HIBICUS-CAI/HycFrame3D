@@ -14,8 +14,7 @@ bool startUp() {
     return false;
   }
 
-  HRESULT Hr = G_InputManager->createDirectInputMain();
-  if (FAILED(Hr)) {
+  if (!G_InputManager->createInputMain()) {
     delete G_InputManager;
     G_InputManager = nullptr;
     return false;
@@ -28,7 +27,7 @@ bool startUp() {
 
 void cleanAndStop() {
   if (G_InputManager) {
-    G_InputManager->closeDirectInputMain();
+    G_InputManager->closeInputMain();
     delete G_InputManager;
     G_InputManager = nullptr;
   }
@@ -37,19 +36,14 @@ void cleanAndStop() {
 InputManager *getInputManagerPtr() { return G_InputManager; }
 
 bool pollDevices() {
-  HRESULT Hr = G_InputManager->pollAllInputDevices();
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  return true;
+  return G_InputManager->pollAllInputDevices();
 }
 
-bool isKeyDownInSingle(UINT KeyCode) {
+bool isKeyDownInSingle(unsigned int KeyCode) {
   return G_InputManager->isThisKeyBeingPushedInSingle(KeyCode);
 }
 
-bool isKeyPushedInSingle(UINT KeyCode) {
+bool isKeyPushedInSingle(unsigned int KeyCode) {
   return G_InputManager->isThisKeyHasBeenPushedInSingle(KeyCode);
 }
 

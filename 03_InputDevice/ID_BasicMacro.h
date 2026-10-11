@@ -1,7 +1,6 @@
 #pragma once
 
 #define MAX_INPUTDEVICE_NUM (4)
-#define DIRECTINPUT_VERSION (0x0800)
 #define MAX_KEYBOARDS_KEY_NUM (256)
 
 #define KB_ESCAPE (0x01)
