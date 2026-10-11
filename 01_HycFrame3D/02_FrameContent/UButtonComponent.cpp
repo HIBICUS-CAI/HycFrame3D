@@ -52,7 +52,7 @@ bool UButtonComponent::init() {
       TomlNode BtnFlgConfig = {};
       std::string ErrorMess = "";
       if (!loadTomlAndParse(BtnFlgConfig,
-                            ".\\Assets\\Configs\\selected-flag-config.toml",
+                            "./Assets/Configs/selected-flag-config.toml",
                             ErrorMess)) {
         P_LOG(LOG_ERROR, "failed to parse btn flag config : {}", ErrorMess);
         return false;

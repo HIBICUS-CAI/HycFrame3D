@@ -48,7 +48,7 @@ bool SceneManager::deferedStartUp() {
   TomlNode EntryInfo = {};
   std::string ErrorMess = "";
   if (!loadTomlAndParse(EntryInfo,
-                        ".\\Assets\\Configs\\scene-entry-config.toml",
+                        "./Assets/Configs/scene-entry-config.toml",
                         ErrorMess)) {
     P_LOG(LOG_ERROR, "failed to parse entry scene config : {}", ErrorMess);
     return false;
@@ -72,7 +72,7 @@ void SceneManager::loadSceneNode(const std::string &Name,
                                  const std::string &File) {
   LoadNewSceneFlag = true;
   NewSceneInfo[0] = Name;
-  NewSceneInfo[1] = ".\\Assets\\Scenes\\" + File;
+  NewSceneInfo[1] = "./Assets/Scenes/" + File;
 }
 
 void SceneManager::checkLoadStatus() {
@@ -112,7 +112,7 @@ SceneNode *SceneManager::getCurrentSceneNode() const { return CurrentScenePtr; }
 
 bool SceneManager::loadLoadingScene() {
   LoadingScenePtr = ObjectFactoryPtr->createSceneNode(
-      "loading-scene", ".\\Assets\\Scenes\\loading-scene.json");
+      "loading-scene", "./Assets/Scenes/loading-scene.json");
   CurrentScenePtr = LoadingScenePtr;
 
   return (LoadingScenePtr ? true : false);

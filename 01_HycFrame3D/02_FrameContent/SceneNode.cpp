@@ -81,7 +81,7 @@ void SceneNode::loadIBLTexture(const std::string &Env,
 
   if (Env != "") {
     WStr = std::wstring(Env.begin(), Env.end());
-    WStr = L".\\Assets\\Textures\\" + WStr;
+    WStr = L"./Assets/Textures/" + WStr;
     Hr = DirectX::CreateDDSTextureFromFile(
         getRSDX11RootInstance()->getDevices()->getDevice(), WStr.c_str(),
         nullptr, &Srv);
@@ -92,7 +92,7 @@ void SceneNode::loadIBLTexture(const std::string &Env,
 
   if (Diff != "") {
     WStr = std::wstring(Diff.begin(), Diff.end());
-    WStr = L".\\Assets\\Textures\\" + WStr;
+    WStr = L"./Assets/Textures/" + WStr;
     Hr = DirectX::CreateDDSTextureFromFile(
         getRSDX11RootInstance()->getDevices()->getDevice(), WStr.c_str(),
         nullptr, &Srv);
@@ -103,7 +103,7 @@ void SceneNode::loadIBLTexture(const std::string &Env,
 
   if (Spec != "") {
     WStr = std::wstring(Spec.begin(), Spec.end());
-    WStr = L".\\Assets\\Textures\\" + WStr;
+    WStr = L"./Assets/Textures/" + WStr;
     Hr = DirectX::CreateDDSTextureFromFile(
         getRSDX11RootInstance()->getDevices()->getDevice(), WStr.c_str(),
         nullptr, &Srv);
