@@ -136,9 +136,12 @@ void AssetsPool::insertNewSound(const std::string &SoundName) {
 
 void AssetsPool::deleteAllAssets() {
   for (auto &SubMeshData : SubMeshPool) {
-    if (SubMeshData.first.find("-sprite") != std::string::npos) {
+    // ui sprites share the rect owned by the geometry generator, actor
+    // sprites are also named "-sprite" but own their point meshes
+    bool IsUiSprite = SubMeshData.second.MeshType == MESH_TYPE::UI_SPRITE;
+    if (IsUiSprite && SubMeshData.first.find("-sprite") != std::string::npos) {
       continue;
-    } else if (SubMeshData.first == SELECTED_BTN_SPRITE_NAME) {
+    } else if (IsUiSprite && SubMeshData.first == SELECTED_BTN_SPRITE_NAME) {
       continue;
     }
 
