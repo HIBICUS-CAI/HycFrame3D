@@ -694,14 +694,15 @@ private:
 
 class RSPass_SimpleLight : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11PixelShader *PixelShader;
-  ID3D11RenderTargetView *RenderTargetView;
-  ID3D11SamplerState *LinearWrapSampler;
-  ID3D11ShaderResourceView *GeoBufferSrv;
-  ID3D11ShaderResourceView *SsaoSrv;
-  ID3D11Buffer *VertexBuffer;
-  ID3D11Buffer *IndexBuffer;
+  RSShader *VertexShader;
+  RSShader *PixelShader;
+  RSPipelineState *Pipeline;
+  RSRenderTargetView *RenderTargetView;
+  RSSampler *LinearWrapSampler;
+  RSShaderResourceView *GeoBufferSrv;
+  RSShaderResourceView *SsaoSrv;
+  RSBuffer *VertexBuffer;
+  RSBuffer *IndexBuffer;
 
 public:
   RSPass_SimpleLight(std::string &Name,
@@ -724,6 +725,7 @@ private:
   bool createBuffers();
   bool createViews();
   bool createSamplers();
+  bool createPipelines();
 };
 
 class RSPass_Billboard : public RSPass_Base {
