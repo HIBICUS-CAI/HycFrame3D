@@ -1,7 +1,7 @@
 ﻿//---------------------------------------------------------------
 // File: RSMeshHelper.cpp
-// Proj: RenderSystem_DX11
-// Info: 提供对SubMesh转换为dx可识别形式的方法
+// Proj: RenderSystem_VK
+// Info: 提供对SubMesh转换为vulkan可识别形式的方法
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
 // Comt: NULL
@@ -9,14 +9,15 @@
 
 #include "RSMeshHelper.h"
 
-#include "DDSTextureLoader11.h"
 #include "RSDevices.h"
 #include "RSResourceManager.h"
 #include "RSRoot_DX11.h"
 #include "RSStaticResources.h"
-#include "WICTextureLoader11.h"
+#include "RSTextureLoader.h"
 
 #include <cassert>
+#include <cstdio>
+#include <cstring>
 
 using namespace dx;
 
@@ -57,22 +58,22 @@ void RSMeshHelper::processSubMesh(RS_SUBMESH_DATA *OutResult,
   auto TopologyType = Info->TopologyType;
   switch (TopologyType) {
   case TOPOLOGY_TYPE::POINTLIST:
-    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+    OutResult->TopologyType = VK_PRIMITIVE_TOPOLOGY_POINT_LIST;
     break;
   case TOPOLOGY_TYPE::LINELIST:
-    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
+    OutResult->TopologyType = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
     break;
   case TOPOLOGY_TYPE::LINESTRIP:
-    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+    OutResult->TopologyType = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;
     break;
   case TOPOLOGY_TYPE::TRIANGLELIST:
-    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+    OutResult->TopologyType = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
     break;
   case TOPOLOGY_TYPE::TRIANGLESTRIP:
-    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
+    OutResult->TopologyType = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
     break;
   default:
-    OutResult->TopologyType = D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+    OutResult->TopologyType = VK_PRIMITIVE_TOPOLOGY_MAX_ENUM;
     break;
   }
   OutResult->AnimationFlag = Info->AnimationFlag;
@@ -86,8 +87,9 @@ void RSMeshHelper::processSubMesh(RS_SUBMESH_DATA *OutResult,
   }
 }
 
-ID3D11InputLayout *RSMeshHelper::refStaticInputLayout(LAYOUT_TYPE LayoutType) {
-  ID3D11InputLayout *InputLayout = nullptr;
+const RSInputLayout *
+RSMeshHelper::refStaticInputLayout(LAYOUT_TYPE LayoutType) {
+  const RSInputLayout *InputLayout = nullptr;
   std::string Name = "";
   switch (LayoutType) {
   case LAYOUT_TYPE::NORMAL_COLOR:
@@ -111,31 +113,17 @@ ID3D11InputLayout *RSMeshHelper::refStaticInputLayout(LAYOUT_TYPE LayoutType) {
   return InputLayout;
 }
 
-ID3D11Buffer *
+RSBuffer *
 RSMeshHelper::createIndexBuffer(const std::vector<UINT> *const IndicesArray) {
-  ID3D11Buffer *IndexBuffer = nullptr;
-  D3D11_BUFFER_DESC IBD = {};
-  D3D11_SUBRESOURCE_DATA InitData = {};
-  ZeroMemory(&IBD, sizeof(IBD));
-  ZeroMemory(&InitData, sizeof(InitData));
-  IBD.Usage = D3D11_USAGE_IMMUTABLE;
-  IBD.ByteWidth = static_cast<UINT>(sizeof(UINT) * IndicesArray->size());
-  IBD.BindFlags = D3D11_BIND_INDEX_BUFFER;
-  IBD.CPUAccessFlags = 0;
-  IBD.MiscFlags = 0;
+  RS_BUFFER_DESC IBD = {};
+  IBD.Size = static_cast<VkDeviceSize>(sizeof(UINT) * IndicesArray->size());
+  IBD.Usage = VK_BUFFER_USAGE_INDEX_BUFFER_BIT;
+  IBD.Memory = RS_MEMORY_USAGE::GPU_ONLY;
 
-  InitData.pSysMem = IndicesArray->data();
-
-  HRESULT Hr = S_OK;
-  Hr = Devices->getDevice()->CreateBuffer(&IBD, &InitData, &IndexBuffer);
-  if (SUCCEEDED(Hr)) {
-    return IndexBuffer;
-  } else {
-    return nullptr;
-  }
+  return Devices->createBuffer(IBD, IndicesArray->data());
 }
 
-ID3D11Buffer *
+RSBuffer *
 RSMeshHelper::createVertexBuffer(const void *const ConstRawVerticesPtr,
                                  LAYOUT_TYPE LayoutType) {
   if (!ConstRawVerticesPtr) {
@@ -183,76 +171,35 @@ RSMeshHelper::createVertexBuffer(const void *const ConstRawVerticesPtr,
     return nullptr;
   }
 
-  ID3D11Buffer *VertexBuffer = nullptr;
-  D3D11_BUFFER_DESC VBD = {};
-  D3D11_SUBRESOURCE_DATA InitData = {};
-  ZeroMemory(&VBD, sizeof(VBD));
-  ZeroMemory(&InitData, sizeof(InitData));
-  VBD.Usage = D3D11_USAGE_IMMUTABLE;
-  VBD.ByteWidth = VertexSize * Size;
-  VBD.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-  VBD.CPUAccessFlags = 0;
-  VBD.MiscFlags = 0;
+  RS_BUFFER_DESC VBD = {};
+  VBD.Size = static_cast<VkDeviceSize>(VertexSize) * Size;
+  VBD.Usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+  VBD.Memory = RS_MEMORY_USAGE::GPU_ONLY;
 
-  InitData.pSysMem = VertArray;
-
-  HRESULT Hr = S_OK;
-  Hr = Devices->getDevice()->CreateBuffer(&VBD, &InitData, &VertexBuffer);
-  if (SUCCEEDED(Hr)) {
-    return VertexBuffer;
-  } else {
-    return nullptr;
-  }
+  return Devices->createBuffer(VBD, VertArray);
 }
 
 void RSMeshHelper::createTexSrv(
     RS_SUBMESH_DATA *OutResult,
     const std::vector<std::string> *const Textures) {
   auto &TexArrat = OutResult->Textures;
-  static std::wstring WStr = L"";
-  static std::string Name = "";
-  static HRESULT Hr = S_OK;
-  ID3D11ShaderResourceView *Srv = nullptr;
+  RSShaderResourceView *Srv = nullptr;
 
   for (auto &Tex : *Textures) {
-    Name = Tex;
+    const std::string &Name = Tex;
     auto ExistedSrv = ResourceManager->getMeshSrv(Name);
     if (ExistedSrv) {
       TexArrat[0] = Name;
       continue;
     }
 
-    WStr = std::wstring(Tex.begin(), Tex.end());
-    WStr = L"./Assets/Textures/" + WStr;
-    if (Tex.find(".dds") != std::string::npos ||
-        Tex.find(".DDS") != std::string::npos) {
-      Hr = dx::CreateDDSTextureFromFile(Devices->getDevice(), WStr.c_str(),
-                                        nullptr, &Srv);
-      if (SUCCEEDED(Hr)) {
-        Name = Tex;
-        ResourceManager->addMeshSrv(Name, Srv);
-        TexArrat[0] = Name;
-      } else {
-        char ErrorLog[128] = "";
-        sprintf_s(ErrorLog, 128,
-                  "[[[WARNING]]] : cannot load this texture %s\n",
-                  Name.c_str());
-        OutputDebugString(ErrorLog);
-      }
+    std::string Path = "./Assets/Textures/" + Tex;
+    if (rs_tool::createTextureFromFile(Devices, Path, nullptr, &Srv)) {
+      ResourceManager->addMeshSrv(Name, Srv);
+      TexArrat[0] = Name;
     } else {
-      Hr = dx::CreateWICTextureFromFile(Devices->getDevice(), WStr.c_str(),
-                                        nullptr, &Srv);
-      if (SUCCEEDED(Hr)) {
-        Name = Tex;
-        ResourceManager->addMeshSrv(Name, Srv);
-        TexArrat[0] = Name;
-      } else {
-        char ErrorLog[128] = "";
-        sprintf_s(ErrorLog, 128,
-                  "[[[WARNING]]] : cannot load this texture %s\n",
-                  Name.c_str());
-        OutputDebugString(ErrorLog);
-      }
+      std::fprintf(stderr, "[[[WARNING]]] : cannot load this texture %s\n",
+                   Name.c_str());
     }
   }
 }
@@ -262,7 +209,9 @@ void RSMeshHelper::createSubMeshMaterial(RS_SUBMESH_DATA *OutResult,
   assert(Info);
 
   RS_MATERIAL_INFO *MaterialPtr = &(OutResult->Material);
-  memcpy_s(MaterialPtr, sizeof(RS_MATERIAL_INFO), Info, sizeof(MATERIAL_INFO));
+  static_assert(sizeof(RS_MATERIAL_INFO) == sizeof(MATERIAL_INFO),
+                "material info layouts must be same");
+  std::memcpy(MaterialPtr, Info, sizeof(MATERIAL_INFO));
 }
 
 void RSMeshHelper::releaseSubMesh(RS_SUBMESH_DATA &MeshData) {
@@ -945,10 +894,10 @@ RSGeometryGenerator::createGeometrySphere(float Radius,
                   3,  10, 7, 10, 6, 7, 6, 11, 7, 6, 0, 11, 6,  1, 0,
                   10, 1,  6, 11, 0, 9, 2, 11, 9, 5, 2, 9,  11, 2, 7};
 
-    ColorPtr.resize(ARRAYSIZE(Pos));
+    ColorPtr.resize(static_cast<UINT>(std::size(Pos)));
     Indeices.assign(&K[0], &K[60]);
 
-    for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
+    for (UINT I = 0, E = static_cast<UINT>(std::size(Pos)); I < E; I++) {
       ColorPtr[I].Position = Pos[I];
     }
     for (UINT I = 0; I < DivideNumber; I++) {
@@ -1005,10 +954,10 @@ RSGeometryGenerator::createGeometrySphere(float Radius,
                   3,  10, 7, 10, 6, 7, 6, 11, 7, 6, 0, 11, 6,  1, 0,
                   10, 1,  6, 11, 0, 9, 2, 11, 9, 5, 2, 9,  11, 2, 7};
 
-    BasicPtr.resize(ARRAYSIZE(Pos));
+    BasicPtr.resize(static_cast<UINT>(std::size(Pos)));
     Indeices.assign(&K[0], &K[60]);
 
-    for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
+    for (UINT I = 0, E = static_cast<UINT>(std::size(Pos)); I < E; I++) {
       BasicPtr[I].Position = Pos[I];
     }
     for (UINT I = 0; I < DivideNumber; I++) {
@@ -1067,10 +1016,10 @@ RSGeometryGenerator::createGeometrySphere(float Radius,
                   3,  10, 7, 10, 6, 7, 6, 11, 7, 6, 0, 11, 6,  1, 0,
                   10, 1,  6, 11, 0, 9, 2, 11, 9, 5, 2, 9,  11, 2, 7};
 
-    TangentPtr.resize(ARRAYSIZE(Pos));
+    TangentPtr.resize(static_cast<UINT>(std::size(Pos)));
     Indeices.assign(&K[0], &K[60]);
 
-    for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
+    for (UINT I = 0, E = static_cast<UINT>(std::size(Pos)); I < E; I++) {
       TangentPtr[I].Position = Pos[I];
     }
     for (UINT I = 0; I < DivideNumber; I++) {
@@ -1700,33 +1649,13 @@ RSGeometryGenerator::createSpriteRect(LAYOUT_TYPE LayoutType,
     G_SpriteRectHasBuilt = true;
   }
 
-  static std::wstring WStr = L"";
-  static std::string Name = "";
-  static HRESULT Hr = S_OK;
-  ID3D11ShaderResourceView *Srv = nullptr;
-  WStr = std::wstring(TexturePath.begin(), TexturePath.end());
-  WStr = L"./Assets/Textures/" + WStr;
-  if (TexturePath.find(".dds") != std::string::npos ||
-      TexturePath.find(".DDS") != std::string::npos) {
-    Hr = dx::CreateDDSTextureFromFile(Devices->getDevice(), WStr.c_str(),
-                                      nullptr, &Srv);
-    if (SUCCEEDED(Hr)) {
-      Name = TexturePath;
-      ResourceManager->addMeshSrv(Name, Srv);
-      G_SpriteData.Textures[0] = Name;
-    } else {
-      assert(false && "texture load fail");
-    }
+  RSShaderResourceView *Srv = nullptr;
+  std::string Path = "./Assets/Textures/" + TexturePath;
+  if (rs_tool::createTextureFromFile(Devices, Path, nullptr, &Srv)) {
+    ResourceManager->addMeshSrv(TexturePath, Srv);
+    G_SpriteData.Textures[0] = TexturePath;
   } else {
-    Hr = dx::CreateWICTextureFromFile(Devices->getDevice(), WStr.c_str(),
-                                      nullptr, &Srv);
-    if (SUCCEEDED(Hr)) {
-      Name = TexturePath;
-      ResourceManager->addMeshSrv(Name, Srv);
-      G_SpriteData.Textures[0] = Name;
-    } else {
-      assert(false && "texture load fail");
-    }
+    assert(false && "texture load fail");
   }
 
   return G_SpriteData;
