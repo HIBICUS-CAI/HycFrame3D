@@ -1,15 +1,11 @@
 ﻿//---------------------------------------------------------------
 // File: RSRoot_DX11.cpp
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 保存并提供此RenderSystem相关的重要内容引用
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
 // Comt: NULL
 //---------------------------------------------------------------
-
-#pragma comment(lib, "d3dcompiler.lib")
-#pragma comment(lib, "d3d11.lib")
-#pragma comment(lib, "dxguid.lib")
 
 #include "RSRoot_DX11.h"
 
@@ -21,6 +17,7 @@
 #include "RSParticlesContainer.h"
 #include "RSPipelinesManager.h"
 #include "RSResourceManager.h"
+#include "RSShaderCompile.h"
 #include "RSStaticResources.h"
 
 #include <cassert>
@@ -43,7 +40,7 @@ RSRoot_DX11::RSRoot_DX11()
 
 RSRoot_DX11::~RSRoot_DX11() {}
 
-bool RSRoot_DX11::startUp(HWND WndHandle) {
+bool RSRoot_DX11::startUp(SDL_Window *WndHandle) {
   DevicesPtr = new RSDevices();
   if (!DevicesPtr->startUp(this, WndHandle)) {
     return false;
@@ -99,6 +96,11 @@ bool RSRoot_DX11::startUp(HWND WndHandle) {
 }
 
 void RSRoot_DX11::cleanAndStop() {
+  // command buffers and resources below may still be used by the gpu
+  if (DevicesPtr) {
+    DevicesPtr->waitIdle();
+  }
+
   if (PipelinesManagerPtr) {
     PipelinesManagerPtr->cleanAndStop();
     delete PipelinesManagerPtr;
@@ -151,6 +153,12 @@ void RSRoot_DX11::cleanAndStop() {
     DevicesPtr->cleanAndStop();
     delete DevicesPtr;
     DevicesPtr = nullptr;
+  }
+
+  rs_tool::finalizeShaderCompiler();
+
+  if (G_RSRoot_DX11_Instance == this) {
+    G_RSRoot_DX11_Instance = nullptr;
   }
 }
 
