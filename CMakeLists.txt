@@ -29,8 +29,11 @@ set(HYC_THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/ThirdParty)
 
 find_package(Threads REQUIRED)
 find_package(SDL2 REQUIRED)
+find_package(Vulkan REQUIRED)
+find_package(glslang CONFIG REQUIRED)
 
 add_subdirectory(05_HycUtilitiy)
 add_subdirectory(04_WindowManager)
 add_subdirectory(03_InputDevice)
 add_subdirectory(04_HycLogger)
+add_subdirectory(03_RenderSystem_DX11)
