@@ -214,6 +214,7 @@ void RSDevices::cleanAndStop() {
     vkDestroyPipelineCache(Device, PipelineCache, nullptr);
     PipelineCache = VK_NULL_HANDLE;
   }
+  RSVkObject::reportLiveObjects();
   if (Allocator) {
     vmaDestroyAllocator(Allocator);
     Allocator = nullptr;

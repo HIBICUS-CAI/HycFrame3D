@@ -18,15 +18,59 @@
 #include <cassert>
 #include <cstdio>
 #include <cstring>
+#include <typeinfo>
 #include <unordered_map>
+#include <unordered_set>
 
 //---------------------------------------------------------------
 // base object
 //---------------------------------------------------------------
 
-RSVkObject::RSVkObject(RSDevices *Owner) : RefCount(1), Devices(Owner) {}
+#ifdef _DEBUG
+namespace {
 
-RSVkObject::~RSVkObject() {}
+std::mutex G_LiveObjectsLock = {};
+std::unordered_set<RSVkObject *> G_LiveObjects = {};
+
+} // namespace
+#endif // _DEBUG
+
+RSVkObject::RSVkObject(RSDevices *Owner) : RefCount(1), Devices(Owner) {
+#ifdef _DEBUG
+  std::lock_guard<std::mutex> Lock(G_LiveObjectsLock);
+  G_LiveObjects.insert(this);
+#endif // _DEBUG
+}
+
+RSVkObject::~RSVkObject() {
+#ifdef _DEBUG
+  std::lock_guard<std::mutex> Lock(G_LiveObjectsLock);
+  G_LiveObjects.erase(this);
+#endif // _DEBUG
+}
+
+size_t RSVkObject::reportLiveObjects() {
+#ifdef _DEBUG
+  std::lock_guard<std::mutex> Lock(G_LiveObjectsLock);
+  for (auto Object : G_LiveObjects) {
+    std::fprintf(stderr, "[[[WARNING]]] : live %s refcount %u",
+                 typeid(*Object).name(), Object->RefCount.load());
+    if (auto Buffer = dynamic_cast<RSBuffer *>(Object)) {
+      std::fprintf(stderr, " size %llu",
+                   static_cast<unsigned long long>(Buffer->getDesc().Size));
+    } else if (auto Texture = dynamic_cast<RSTexture *>(Object)) {
+      std::fprintf(stderr, " %ux%u mips %u layers %u format %d",
+                   Texture->getDesc().Width, Texture->getDesc().Height,
+                   Texture->getDesc().MipLevels, Texture->getDesc().ArrayLayers,
+                   static_cast<int>(Texture->getDesc().Format));
+    }
+    std::fprintf(stderr, "\n");
+  }
+  return G_LiveObjects.size();
+#else
+  return 0;
+#endif // _DEBUG
+}
 
 uint32_t RSVkObject::AddRef() { return ++RefCount; }
 
