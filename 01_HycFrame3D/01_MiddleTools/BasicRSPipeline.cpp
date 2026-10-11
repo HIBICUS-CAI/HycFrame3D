@@ -2796,168 +2796,116 @@ void RSPass_PriticleSetUp::releasePass() {
 
 void RSPass_PriticleSetUp::execuatePass() {}
 
+
 bool RSPass_PriticleSetUp::createBuffers() {
-  HRESULT Hr = S_OK;
-  D3D11_BUFFER_DESC BufDesc = {};
-  D3D11_TEXTURE2D_DESC TexDesc = {};
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  ZeroMemory(&TexDesc, sizeof(TexDesc));
+  auto Devices = G_RSRoot->getDevices();
+  RS_BUFFER_DESC BufDesc = {};
 
-  BufDesc.ByteWidth = sizeof(RS_PARTICLE_PART_A) * PTC_MAX_PARTICLE_SIZE;
-  BufDesc.Usage = D3D11_USAGE_DEFAULT;
-  BufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-  BufDesc.StructureByteStride = sizeof(RS_PARTICLE_PART_A);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &ParticlePartA);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(RS_PARTICLE_PART_A) * PTC_MAX_PARTICLE_SIZE;
+  BufDesc.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+  BufDesc.Memory = RS_MEMORY_USAGE::GPU_ONLY;
+  BufDesc.StructureStride = sizeof(RS_PARTICLE_PART_A);
+  ParticlePartA = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(ParticlePartA);
 
-  BufDesc.ByteWidth = sizeof(RS_PARTICLE_PART_B) * PTC_MAX_PARTICLE_SIZE;
-  BufDesc.StructureByteStride = sizeof(RS_PARTICLE_PART_B);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &ParticlePartB);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(RS_PARTICLE_PART_B) * PTC_MAX_PARTICLE_SIZE;
+  BufDesc.StructureStride = sizeof(RS_PARTICLE_PART_B);
+  ParticlePartB = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(ParticlePartB);
 
-  BufDesc.ByteWidth = sizeof(dx::XMFLOAT4) * PTC_MAX_PARTICLE_SIZE;
-  BufDesc.StructureByteStride = sizeof(dx::XMFLOAT4);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &ViewspacePosBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(dx::XMFLOAT4) * PTC_MAX_PARTICLE_SIZE;
+  BufDesc.StructureStride = sizeof(dx::XMFLOAT4);
+  ViewspacePosBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(ViewspacePosBuffer);
 
-  BufDesc.ByteWidth = sizeof(float) * PTC_MAX_PARTICLE_SIZE;
-  BufDesc.StructureByteStride = sizeof(float);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &MaxRadiusBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(float) * PTC_MAX_PARTICLE_SIZE;
+  BufDesc.StructureStride = sizeof(float);
+  MaxRadiusBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(MaxRadiusBuffer);
 
-  BufDesc.ByteWidth = sizeof(UINT) * PTC_MAX_PARTICLE_SIZE;
-  BufDesc.StructureByteStride = sizeof(UINT);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &DeadListBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(UINT) * PTC_MAX_PARTICLE_SIZE;
+  BufDesc.StructureStride = sizeof(UINT);
+  DeadListBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(DeadListBuffer);
 
-  BufDesc.ByteWidth =
-      sizeof(RS_ALIVE_INDEX_BUFFER_ELEMENT) * PTC_MAX_PARTICLE_SIZE;
-  BufDesc.StructureByteStride = sizeof(RS_ALIVE_INDEX_BUFFER_ELEMENT);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &AliveIndexBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(RS_ALIVE_INDEX_BUFFER_ELEMENT) * PTC_MAX_PARTICLE_SIZE;
+  BufDesc.StructureStride = sizeof(RS_ALIVE_INDEX_BUFFER_ELEMENT);
+  AliveIndexBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(AliveIndexBuffer);
 
-  BufDesc.StructureByteStride = 0;
-  BufDesc.MiscFlags = 0;
-  BufDesc.ByteWidth =
+  // typed buffers become texel buffers
+  BufDesc.Usage = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT |
+                  VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT;
+  BufDesc.StructureStride = 0;
+  BufDesc.Size =
       sizeof(UINT) * PTC_MAX_PARTICLE_SIZE * PTC_MAX_COARSE_CULL_TILE_SIZE;
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &StridedCoarseCullBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  StridedCoarseCullBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(StridedCoarseCullBuffer);
 
-  BufDesc.ByteWidth = sizeof(UINT) * PTC_MAX_COARSE_CULL_TILE_SIZE;
-  Hr = device()->CreateBuffer(&BufDesc, nullptr,
-                              &StridedCoarseCullCounterBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(UINT) * PTC_MAX_COARSE_CULL_TILE_SIZE;
+  StridedCoarseCullCounterBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(StridedCoarseCullCounterBuffer);
 
   UINT numElements = TilingConstant.NumTilesX * TilingConstant.NumTilesY *
                      PTC_TILE_BUFFER_SIZE;
-  BufDesc.ByteWidth = sizeof(UINT) * numElements;
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &TiledIndexBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(UINT) * numElements;
+  TiledIndexBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(TiledIndexBuffer);
 
   numElements = TilingConstant.NumTilesX * TilingConstant.NumTilesY *
                 PTC_TILE_X_SIZE * PTC_TILE_Y_SIZE;
-  BufDesc.ByteWidth = 8 * numElements; // DXGI_FORMAT_R16G16B16A16_FLOAT
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &ParticleRenderBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = 8 * numElements; // VK_FORMAT_R16G16B16A16_SFLOAT
+  ParticleRenderBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(ParticleRenderBuffer);
 
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_DEFAULT;
-  BufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.ByteWidth = 4 * sizeof(UINT); // one for record and three for pad
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &DeadListConstantBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &ActiveListConstantBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  // written by copyStructureCount
+  BufDesc = {};
+  BufDesc.Usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+  BufDesc.Memory = RS_MEMORY_USAGE::GPU_ONLY;
+  BufDesc.Size = 4 * sizeof(UINT); // one for record and three for pad
+  DeadListConstantBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(DeadListConstantBuffer);
+  ActiveListConstantBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(ActiveListConstantBuffer);
 
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_DYNAMIC;
-  BufDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-  BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  BufDesc.ByteWidth = sizeof(RS_PARTICLE_EMITTER_INFO);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &EmitterConstantBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc = {};
+  BufDesc.Usage = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT;
+  BufDesc.Memory = RS_MEMORY_USAGE::DYNAMIC;
+  BufDesc.Size = sizeof(RS_PARTICLE_EMITTER_INFO);
+  EmitterConstantBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(EmitterConstantBuffer);
 
-  BufDesc.ByteWidth = sizeof(CAMERA_STATUS);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &CameraConstantBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(CAMERA_STATUS);
+  CameraConstantBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(CameraConstantBuffer);
 
-  BufDesc.ByteWidth = sizeof(RS_TILING_CONSTANT);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &TilingConstantBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(RS_TILING_CONSTANT);
+  TilingConstantBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(TilingConstantBuffer);
 
-  BufDesc.ByteWidth = sizeof(PTC_TIME_CONSTANT);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &TimeConstantBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BufDesc.Size = sizeof(PTC_TIME_CONSTANT);
+  TimeConstantBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(TimeConstantBuffer);
 
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_STAGING;
-  BufDesc.BindFlags = 0;
-  BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-  BufDesc.ByteWidth = sizeof(UINT);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &DebugCounterBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  // a staging buffer in d3d11 which nothing reads back
+  BufDesc = {};
+  BufDesc.Size = sizeof(UINT);
+  BufDesc.Memory = RS_MEMORY_USAGE::GPU_ONLY;
+  DebugCounterBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(DebugCounterBuffer);
 
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_DYNAMIC;
-  BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  BufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  BufDesc.ByteWidth = MAX_PARTICLE_EMITTER_SIZE * sizeof(SIMULATE_EMITTER_INFO);
-  BufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-  BufDesc.StructureByteStride = sizeof(SIMULATE_EMITTER_INFO);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &SimulEmitterStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  SimulEmitterStructedBuffer = createDynamicStructuredBuffer(
+      sizeof(SIMULATE_EMITTER_INFO), MAX_PARTICLE_EMITTER_SIZE);
+  FAIL_NULL_RETURN(SimulEmitterStructedBuffer);
 
+  RS_TEXTURE_DESC TexDesc = {};
   TexDesc.Width = 1024;
   TexDesc.Height = 1024;
-  TexDesc.ArraySize = 1;
-  TexDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-  TexDesc.Usage = D3D11_USAGE_IMMUTABLE;
-  TexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  TexDesc.MipLevels = 1;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.SampleDesc.Quality = 0;
+  TexDesc.Format = VK_FORMAT_R32G32B32A32_SFLOAT;
+  TexDesc.Usage = VK_IMAGE_USAGE_SAMPLED_BIT;
 
-  float *Values = new float[TexDesc.Width * TexDesc.Height * 4];
-  float *Ptr = Values;
+  std::vector<float> Values(TexDesc.Width * TexDesc.Height * 4);
+  float *Ptr = Values.data();
   for (UINT I = 0, E = TexDesc.Width * TexDesc.Height; I < E; I++) {
     Ptr[0] = rs_tool::randomVariance(0.0f, 1.0f);
     Ptr[1] = rs_tool::randomVariance(0.0f, 1.0f);
@@ -2966,193 +2914,120 @@ bool RSPass_PriticleSetUp::createBuffers() {
     Ptr += 4;
   }
 
-  D3D11_SUBRESOURCE_DATA Data = {};
-  Data.pSysMem = Values;
-  Data.SysMemPitch = TexDesc.Width * 16;
-  Data.SysMemSlicePitch = 0;
+  RS_SUBRESOURCE_DATA Data = {};
+  Data.Data = Values.data();
+  Data.RowPitch = TexDesc.Width * 16;
+  Data.SlicePitch = Data.RowPitch * TexDesc.Height;
 
-  Hr = device()->CreateTexture2D(&TexDesc, &Data, &ParticleRandomTexture);
-  delete[] Values;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ParticleRandomTexture = Devices->createTexture(TexDesc, &Data);
+  FAIL_NULL_RETURN(ParticleRandomTexture);
 
   return true;
 }
 
 bool RSPass_PriticleSetUp::createViews() {
-  HRESULT Hr = S_OK;
-  D3D11_UNORDERED_ACCESS_VIEW_DESC UavDesc = {};
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-  ZeroMemory(&UavDesc, sizeof(UavDesc));
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
+  auto Devices = G_RSRoot->getDevices();
+  RS_BUFFER_VIEW_DESC ViewDesc = {};
 
-  SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementOffset = 0;
-  SrvDesc.Buffer.ElementWidth = PTC_MAX_PARTICLE_SIZE;
-  UavDesc.Format = DXGI_FORMAT_UNKNOWN;
-  UavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-  UavDesc.Buffer.FirstElement = 0;
-  UavDesc.Buffer.NumElements = PTC_MAX_PARTICLE_SIZE;
-  UavDesc.Buffer.Flags = 0;
-  Hr = device()->CreateShaderResourceView(ParticlePartA, &SrvDesc, &PartA_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateUnorderedAccessView(ParticlePartA, &UavDesc, &PartA_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateUnorderedAccessView(ParticlePartB, &UavDesc, &PartB_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  auto Structured = [](UINT ElementSize, UINT NumElements,
+                       bool WithCounter = false) {
+    RS_BUFFER_VIEW_DESC Desc = {};
+    Desc.ElementSize = ElementSize;
+    Desc.NumElements = NumElements;
+    Desc.WithCounter = WithCounter;
+    return Desc;
+  };
+  auto Typed = [](VkFormat Format, UINT ElementSize, UINT NumElements) {
+    RS_BUFFER_VIEW_DESC Desc = {};
+    Desc.Format = Format;
+    Desc.ElementSize = ElementSize;
+    Desc.NumElements = NumElements;
+    return Desc;
+  };
 
-  Hr = device()->CreateShaderResourceView(ViewspacePosBuffer, &SrvDesc,
-                                          &ViewSpacePos_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateUnorderedAccessView(ViewspacePosBuffer, &UavDesc,
-                                           &ViewSpacePos_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewDesc = Structured(sizeof(RS_PARTICLE_PART_A), PTC_MAX_PARTICLE_SIZE);
+  PartA_Srv = Devices->createShaderResourceView(ParticlePartA, ViewDesc);
+  FAIL_NULL_RETURN(PartA_Srv);
+  PartA_Uav = Devices->createUnorderedAccessView(ParticlePartA, ViewDesc);
+  FAIL_NULL_RETURN(PartA_Uav);
 
-  Hr = device()->CreateShaderResourceView(MaxRadiusBuffer, &SrvDesc,
-                                          &MaxRadius_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateUnorderedAccessView(MaxRadiusBuffer, &UavDesc,
-                                           &MaxRadius_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewDesc = Structured(sizeof(RS_PARTICLE_PART_B), PTC_MAX_PARTICLE_SIZE);
+  PartB_Uav = Devices->createUnorderedAccessView(ParticlePartB, ViewDesc);
+  FAIL_NULL_RETURN(PartB_Uav);
 
-  UavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_APPEND;
-  Hr = device()->CreateUnorderedAccessView(DeadListBuffer, &UavDesc,
-                                           &DeadList_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewDesc = Structured(sizeof(dx::XMFLOAT4), PTC_MAX_PARTICLE_SIZE);
+  ViewSpacePos_Srv =
+      Devices->createShaderResourceView(ViewspacePosBuffer, ViewDesc);
+  FAIL_NULL_RETURN(ViewSpacePos_Srv);
+  ViewSpacePos_Uav =
+      Devices->createUnorderedAccessView(ViewspacePosBuffer, ViewDesc);
+  FAIL_NULL_RETURN(ViewSpacePos_Uav);
 
-  UavDesc.Format = DXGI_FORMAT_R32_UINT;
-  UavDesc.Buffer.Flags = 0;
-  UavDesc.Buffer.NumElements =
-      PTC_MAX_PARTICLE_SIZE * PTC_MAX_COARSE_CULL_TILE_SIZE;
-  SrvDesc.Format = DXGI_FORMAT_R32_UINT;
-  SrvDesc.Buffer.NumElements =
-      PTC_MAX_PARTICLE_SIZE * PTC_MAX_COARSE_CULL_TILE_SIZE;
-  Hr = device()->CreateShaderResourceView(StridedCoarseCullBuffer, &SrvDesc,
-                                          &StridedCoarseCull_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateUnorderedAccessView(StridedCoarseCullBuffer, &UavDesc,
-                                           &StridedCoarseCull_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewDesc = Structured(sizeof(float), PTC_MAX_PARTICLE_SIZE);
+  MaxRadius_Srv = Devices->createShaderResourceView(MaxRadiusBuffer, ViewDesc);
+  FAIL_NULL_RETURN(MaxRadius_Srv);
+  MaxRadius_Uav = Devices->createUnorderedAccessView(MaxRadiusBuffer, ViewDesc);
+  FAIL_NULL_RETURN(MaxRadius_Uav);
 
-  UavDesc.Buffer.NumElements = PTC_MAX_COARSE_CULL_TILE_SIZE;
-  SrvDesc.Buffer.NumElements = PTC_MAX_COARSE_CULL_TILE_SIZE;
-  Hr = device()->CreateShaderResourceView(
-      StridedCoarseCullCounterBuffer, &SrvDesc, &StridedCoarseCullCounter_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateUnorderedAccessView(
-      StridedCoarseCullCounterBuffer, &UavDesc, &StridedCoarseCullCounter_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  // D3D11_BUFFER_UAV_FLAG_APPEND
+  ViewDesc = Structured(sizeof(UINT), PTC_MAX_PARTICLE_SIZE, true);
+  DeadList_Uav = Devices->createUnorderedAccessView(DeadListBuffer, ViewDesc);
+  FAIL_NULL_RETURN(DeadList_Uav);
 
-  SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementOffset = 0;
-  SrvDesc.Buffer.ElementWidth = PTC_MAX_PARTICLE_SIZE;
-  UavDesc.Buffer.NumElements = PTC_MAX_PARTICLE_SIZE;
-  UavDesc.Buffer.Flags = D3D11_BUFFER_UAV_FLAG_COUNTER;
-  UavDesc.Format = DXGI_FORMAT_UNKNOWN;
-  Hr = device()->CreateShaderResourceView(AliveIndexBuffer, &SrvDesc,
-                                          &AliveIndex_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateUnorderedAccessView(AliveIndexBuffer, &UavDesc,
-                                           &AliveIndex_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewDesc = Typed(VK_FORMAT_R32_UINT, sizeof(UINT),
+                   PTC_MAX_PARTICLE_SIZE * PTC_MAX_COARSE_CULL_TILE_SIZE);
+  StridedCoarseCull_Srv =
+      Devices->createShaderResourceView(StridedCoarseCullBuffer, ViewDesc);
+  FAIL_NULL_RETURN(StridedCoarseCull_Srv);
+  StridedCoarseCull_Uav =
+      Devices->createUnorderedAccessView(StridedCoarseCullBuffer, ViewDesc);
+  FAIL_NULL_RETURN(StridedCoarseCull_Uav);
+
+  ViewDesc =
+      Typed(VK_FORMAT_R32_UINT, sizeof(UINT), PTC_MAX_COARSE_CULL_TILE_SIZE);
+  StridedCoarseCullCounter_Srv = Devices->createShaderResourceView(
+      StridedCoarseCullCounterBuffer, ViewDesc);
+  FAIL_NULL_RETURN(StridedCoarseCullCounter_Srv);
+  StridedCoarseCullCounter_Uav = Devices->createUnorderedAccessView(
+      StridedCoarseCullCounterBuffer, ViewDesc);
+  FAIL_NULL_RETURN(StridedCoarseCullCounter_Uav);
+
+  // D3D11_BUFFER_UAV_FLAG_COUNTER
+  ViewDesc = Structured(sizeof(RS_ALIVE_INDEX_BUFFER_ELEMENT),
+                        PTC_MAX_PARTICLE_SIZE);
+  AliveIndex_Srv = Devices->createShaderResourceView(AliveIndexBuffer, ViewDesc);
+  FAIL_NULL_RETURN(AliveIndex_Srv);
+  ViewDesc.WithCounter = true;
+  AliveIndex_Uav =
+      Devices->createUnorderedAccessView(AliveIndexBuffer, ViewDesc);
+  FAIL_NULL_RETURN(AliveIndex_Uav);
 
   UINT NumElements = TilingConstant.NumTilesX * TilingConstant.NumTilesY *
                      PTC_TILE_BUFFER_SIZE;
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  ZeroMemory(&UavDesc, sizeof(UavDesc));
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementOffset = 0;
-  SrvDesc.Format = DXGI_FORMAT_R32_UINT;
-  SrvDesc.Buffer.ElementWidth = NumElements;
-  UavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-  UavDesc.Buffer.FirstElement = 0;
-  UavDesc.Format = DXGI_FORMAT_R32_UINT;
-  UavDesc.Buffer.NumElements = NumElements;
-  Hr = device()->CreateShaderResourceView(TiledIndexBuffer, &SrvDesc,
-                                          &TiledIndex_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateUnorderedAccessView(TiledIndexBuffer, &UavDesc,
-                                           &TiledIndex_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewDesc = Typed(VK_FORMAT_R32_UINT, sizeof(UINT), NumElements);
+  TiledIndex_Srv = Devices->createShaderResourceView(TiledIndexBuffer, ViewDesc);
+  FAIL_NULL_RETURN(TiledIndex_Srv);
+  TiledIndex_Uav =
+      Devices->createUnorderedAccessView(TiledIndexBuffer, ViewDesc);
+  FAIL_NULL_RETURN(TiledIndex_Uav);
 
   NumElements = TilingConstant.NumTilesX * TilingConstant.NumTilesY *
                 PTC_TILE_X_SIZE * PTC_TILE_Y_SIZE;
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  ZeroMemory(&UavDesc, sizeof(UavDesc));
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementOffset = 0;
-  SrvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  SrvDesc.Buffer.ElementWidth = NumElements;
-  UavDesc.ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
-  UavDesc.Buffer.FirstElement = 0;
-  UavDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  UavDesc.Buffer.NumElements = NumElements;
-  Hr = device()->CreateShaderResourceView(ParticleRenderBuffer, &SrvDesc,
-                                          &ParticleRender_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-  Hr = device()->CreateUnorderedAccessView(ParticleRenderBuffer, &UavDesc,
-                                           &ParticleRender_Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewDesc = Typed(VK_FORMAT_R16G16B16A16_SFLOAT, 8, NumElements);
+  ParticleRender_Srv =
+      Devices->createShaderResourceView(ParticleRenderBuffer, ViewDesc);
+  FAIL_NULL_RETURN(ParticleRender_Srv);
+  ParticleRender_Uav =
+      Devices->createUnorderedAccessView(ParticleRenderBuffer, ViewDesc);
+  FAIL_NULL_RETURN(ParticleRender_Uav);
 
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  SrvDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-  SrvDesc.Texture2D.MipLevels = 1;
-  SrvDesc.Texture2D.MostDetailedMip = 0;
-  Hr = device()->CreateShaderResourceView(ParticleRandomTexture, &SrvDesc,
-                                          &ParticleRandom_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ParticleRandom_Srv = Devices->createShaderResourceView(ParticleRandomTexture);
+  FAIL_NULL_RETURN(ParticleRandom_Srv);
 
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementWidth = MAX_PARTICLE_EMITTER_SIZE;
-  Hr = device()->CreateShaderResourceView(SimulEmitterStructedBuffer, &SrvDesc,
-                                          &SimulEmitterStructedBuffer_Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  SimulEmitterStructedBuffer_Srv =
+      createStructuredSrv(SimulEmitterStructedBuffer,
+                          sizeof(SIMULATE_EMITTER_INFO), MAX_PARTICLE_EMITTER_SIZE);
+  FAIL_NULL_RETURN(SimulEmitterStructedBuffer_Srv);
 
   return true;
 }
