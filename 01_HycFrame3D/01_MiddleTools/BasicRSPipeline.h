@@ -803,24 +803,25 @@ private:
 
 class RSPass_BloomHdr : public RSPass_Base {
 private:
-  ID3D11ComputeShader *FilterPixelShader;
-  ID3D11ComputeShader *KABlurHoriShader;
-  ID3D11ComputeShader *KABlurVertShader;
-  ID3D11ComputeShader *BlurHoriShader;
-  ID3D11ComputeShader *BlurVertShader;
-  ID3D11ComputeShader *UpSampleShader;
-  ID3D11ComputeShader *BlendShader;
-  ID3D11SamplerState *LinearBorderSampler;
-  ID3D11Buffer *BlurConstBuffer;
-  ID3D11Buffer *IntensityConstBuffer;
-  ID3D11ShaderResourceView *HdrSrv;
-  ID3D11UnorderedAccessView *HdrUav;
-  ID3D11Texture2D *NeedBloomTexture;
-  ID3D11ShaderResourceView *NeedBloomSrv;
-  std::array<ID3D11UnorderedAccessView *, 10> NeedBloomUavArray;
-  ID3D11Texture2D *UpSampleTexture;
-  ID3D11ShaderResourceView *UpSampleSrv;
-  std::array<ID3D11UnorderedAccessView *, 8> UpSampleUavArray;
+  // compute shaders are held as their pipeline states
+  RSPipelineState *FilterPixelShader;
+  RSPipelineState *KABlurHoriShader;
+  RSPipelineState *KABlurVertShader;
+  RSPipelineState *BlurHoriShader;
+  RSPipelineState *BlurVertShader;
+  RSPipelineState *UpSampleShader;
+  RSPipelineState *BlendShader;
+  RSSampler *LinearBorderSampler;
+  RSBuffer *BlurConstBuffer;
+  RSBuffer *IntensityConstBuffer;
+  RSShaderResourceView *HdrSrv;
+  RSUnorderedAccessView *HdrUav;
+  RSTexture *NeedBloomTexture;
+  RSShaderResourceView *NeedBloomSrv;
+  std::array<RSUnorderedAccessView *, 10> NeedBloomUavArray;
+  RSTexture *UpSampleTexture;
+  RSShaderResourceView *UpSampleSrv;
+  std::array<RSUnorderedAccessView *, 8> UpSampleUavArray;
 
 public:
   RSPass_BloomHdr(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
