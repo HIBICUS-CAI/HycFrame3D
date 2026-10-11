@@ -331,6 +331,7 @@ bool RSDevices::selectPhysicalDevice() {
     Features.pNext = &Features13;
     vkGetPhysicalDeviceFeatures2(Candidate, &Features);
     if (!Features13.dynamicRendering || !Features13.synchronization2 ||
+        !Features13.shaderDemoteToHelperInvocation ||
         !Features.features.geometryShader ||
         !Features.features.shaderStorageImageReadWithoutFormat ||
         !Features.features.shaderStorageImageWriteWithoutFormat) {
@@ -424,6 +425,8 @@ bool RSDevices::createLogicalDevice() {
   Features13.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES;
   Features13.dynamicRendering = VK_TRUE;
   Features13.synchronization2 = VK_TRUE;
+  // hlsl discard is compiled to demote like d3d11 behaves
+  Features13.shaderDemoteToHelperInvocation = VK_TRUE;
   Features.pNext = &Features13;
 
   float Priority = 1.f;
