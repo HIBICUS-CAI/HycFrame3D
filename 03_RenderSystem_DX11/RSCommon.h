@@ -106,6 +106,11 @@ struct LIGHT_INFO {
   float SpotPower = 0.f;
 };
 
+// structures uploaded to structured buffers must match the layout glslang
+// gives to spir-v: members follow hlsl offsets (vectors never cross 16
+// bytes) but the array stride of a structure follows std430, so it is
+// rounded up to 16 when the structure has vectors. pads only exist on c++
+// side when the stride grows without new members in hlsl.
 struct RS_LIGHT_INFO {
   float Intensity = 1.f;
   dx::XMFLOAT3 Albedo = {};
@@ -114,7 +119,9 @@ struct RS_LIGHT_INFO {
   float FalloffEnd = 0.f;
   dx::XMFLOAT3 Position = {};
   float SpotPower = 0.f;
+  float Pads[3] = {0.f, 0.f, 0.f};
 };
+static_assert(sizeof(RS_LIGHT_INFO) == 64, "keep same as LIGHT in shaders");
 
 enum class PARTICLE_TEXTURE {
   WHITE_SMOKE,
@@ -185,7 +192,10 @@ struct RS_MATERIAL_DATA {
   float SheenTint = 0.f;
   float Clearcoat = 0.f;
   float ClearcoatGloss = 0.f;
+  float Pads[3] = {0.f, 0.f, 0.f};
 };
+static_assert(sizeof(RS_MATERIAL_DATA) == 64,
+              "keep same as MATERIAL in shaders");
 
 enum class TOPOLOGY_TYPE {
   NONE,
@@ -238,9 +248,12 @@ struct RS_SUBMESH_DRAWCALL_DATA {
 struct RS_INSTANCE_DATA {
   dx::XMFLOAT4X4 WorldMatrix = {};
   RS_MATERIAL_INFO MaterialData = {};
+  float Pad = 0.f;
   dx::XMFLOAT4 CustomizedData1 = {};
   dx::XMFLOAT4 CustomizedData2 = {};
 };
+static_assert(sizeof(RS_INSTANCE_DATA) == 112,
+              "keep same as INSTANCE_DATA in shaders");
 
 struct RS_SUBMESH_BONE_DATA {
   std::string BoneName = "";

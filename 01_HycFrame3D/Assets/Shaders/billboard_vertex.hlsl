@@ -27,6 +27,7 @@ struct INSTANCE_DATA
 {
     matrix gWorld;
     MATERIAL gMaterial;
+    float gPad;
     float4 gCustomizedData1;
     float4 gCustomizedData2;
 };

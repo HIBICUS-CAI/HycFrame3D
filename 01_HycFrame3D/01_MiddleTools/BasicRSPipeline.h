@@ -128,8 +128,12 @@ struct ViewProjCamUpPos {
   dx::XMFLOAT4X4 ViewMat = {};
   dx::XMFLOAT4X4 ProjMat = {};
   dx::XMFLOAT3 CamUpVec = {};
+  float Pad0 = 0.f;
   dx::XMFLOAT3 CamPos = {};
+  float Pad1 = 0.f;
 };
+static_assert(sizeof(ViewProjCamUpPos) == 160,
+              "keep same as VIEWPROJ_UPVEC_POS in shaders");
 
 struct Ambient {
   dx::XMFLOAT4 AmbientV = {};
