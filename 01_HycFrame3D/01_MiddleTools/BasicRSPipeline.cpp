@@ -5225,23 +5225,20 @@ void RSPass_FXAA::execuatePass() {
 
   G_RSRoot->getDevices()->copyHighDynamicTexture(context(), CopyTex);
 
-  context()->CSSetShader(FXAAShader, nullptr, 0);
-  context()->CSSetSamplers(0, 1, &LinearBorderSampler);
-  context()->CSSetShaderResources(0, 1, &CopySrv);
-  context()->CSSetUnorderedAccessViews(0, 1, &HdrUav, nullptr);
+  context()->setPipelineState(FXAAShader);
+  context()->setSamplers(RS_SHADER_STAGE::COMPUTE, 0, 1, &LinearBorderSampler);
+  context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 1, &CopySrv);
+  context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1, &HdrUav);
 
-  context()->Dispatch(DispatchX, DispatchY, 1);
+  context()->dispatch(DispatchX, DispatchY, 1);
 
-  static ID3D11ShaderResourceView *NullSrv = nullptr;
-  static ID3D11UnorderedAccessView *NullUav = nullptr;
-  context()->CSSetShaderResources(0, 1, &NullSrv);
-  context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
+  static RSShaderResourceView *NullSrv = nullptr;
+  static RSUnorderedAccessView *NullUav = nullptr;
+  context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 1, &NullSrv);
+  context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1, &NullUav);
 }
 
 bool RSPass_FXAA::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
-
   std::string ThreshouldStr =
       hyc::str::sFormat("({:+f}f)", G_RenderEffectConfig.FXAAThreshould);
   std::string MinThreshouldStr =
@@ -5250,25 +5247,15 @@ bool RSPass_FXAA::createShaders() {
       hyc::str::sFormat("({})", G_RenderEffectConfig.FXAASearchStep);
   std::string BorderGuessStr =
       hyc::str::sFormat("({})", G_RenderEffectConfig.FXAAGuess);
-  D3D_SHADER_MACRO Macro[] = {{"EDGE_THRESHOLD", ThreshouldStr.c_str()},
-                              {"MIN_EDGE_THRESHOLD", MinThreshouldStr.c_str()},
-                              {"EDGE_SEARCH_STEP", SearchStepStr.c_str()},
-                              {"EDGE_GUESS", BorderGuessStr.c_str()},
-                              {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/fxaa_compute.hlsl",
-                                      "main", "cs_5_0", &ShaderBlob, Macro);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &FXAAShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  rs_tool::SHADER_MACRO Macro[] = {
+      {"EDGE_THRESHOLD", ThreshouldStr.c_str()},
+      {"MIN_EDGE_THRESHOLD", MinThreshouldStr.c_str()},
+      {"EDGE_SEARCH_STEP", SearchStepStr.c_str()},
+      {"EDGE_GUESS", BorderGuessStr.c_str()},
+      {nullptr, nullptr}};
+  FXAAShader = compileComputePipeline("./Assets/Shaders/fxaa_compute.hlsl",
+                                      "main", Macro);
+  FAIL_NULL_RETURN(FXAAShader);
 
   return true;
 }
@@ -5276,55 +5263,23 @@ bool RSPass_FXAA::createShaders() {
 bool RSPass_FXAA::createViews() {
   HdrUav = G_RSRoot->getDevices()->getHighDynamicUav();
 
-  HRESULT Hr = S_OK;
-  D3D11_TEXTURE2D_DESC TexDesc = {};
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-  ZeroMemory(&TexDesc, sizeof(TexDesc));
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
+  auto Devices = G_RSRoot->getDevices();
+  CopyTex =
+      createTexture2D(Devices->getHighDynamicTexture()->getDesc().Format,
+                      Devices->getCurrWndWidth(), Devices->getCurrWndHeight(),
+                      VK_IMAGE_USAGE_SAMPLED_BIT);
+  FAIL_NULL_RETURN(CopyTex);
 
-  TexDesc.Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
-  TexDesc.Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
-  TexDesc.MipLevels = 1;
-  TexDesc.ArraySize = 1;
-  TexDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.SampleDesc.Quality = 0;
-  TexDesc.Usage = D3D11_USAGE_DEFAULT;
-  TexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  TexDesc.CPUAccessFlags = 0;
-  TexDesc.MiscFlags = 0;
-  Hr = device()->CreateTexture2D(&TexDesc, nullptr, &CopyTex);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  SrvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-  SrvDesc.Texture2D.MostDetailedMip = 0;
-  SrvDesc.Texture2D.MipLevels = 1;
-  Hr = device()->CreateShaderResourceView(CopyTex, &SrvDesc, &CopySrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  CopySrv = Devices->createShaderResourceView(CopyTex);
+  FAIL_NULL_RETURN(CopySrv);
 
   return true;
 }
 
 bool RSPass_FXAA::createSamplers() {
-  HRESULT Hr = S_OK;
-  D3D11_SAMPLER_DESC SampDesc = {};
-  ZeroMemory(&SampDesc, sizeof(SampDesc));
-  SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  SampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-  SampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-  SampDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-  SampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SampDesc.MinLOD = 0;
-  SampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SampDesc, &LinearBorderSampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LinearBorderSampler = G_RSRoot->getDevices()->createSampler(
+      makeLinearSamplerInfo(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER));
+  FAIL_NULL_RETURN(LinearBorderSampler);
 
   return true;
 }
