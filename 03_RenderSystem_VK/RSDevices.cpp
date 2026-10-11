@@ -1301,7 +1301,9 @@ void RSDevices::recordFinalCommand(VkCommandBuffer Cmd, uint32_t ImageIndex) {
 
     Barrier.srcStageMask = VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT;
     Barrier.srcAccessMask = VK_ACCESS_2_TRANSFER_WRITE_BIT;
-    Barrier.dstStageMask = VK_PIPELINE_STAGE_2_NONE;
+    // the transition has to be in the first scope of the semaphore signal
+    // waited by the present, a none stage would leave it unordered
+    Barrier.dstStageMask = VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT;
     Barrier.dstAccessMask = VK_ACCESS_2_NONE;
     Barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
     Barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
