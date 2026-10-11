@@ -22,7 +22,9 @@ struct VIEWPROJ_UPVEC_POS
     matrix gView;
     matrix gProjection;
     float3 gCamUpVec;
+    float gPad0;
     float3 gCamPos;
+    float gPad1;
 };
 
 StructuredBuffer<VIEWPROJ_UPVEC_POS> gViewProjCamUp : register(t0);
