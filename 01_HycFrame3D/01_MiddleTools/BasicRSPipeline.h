@@ -846,11 +846,12 @@ private:
 
 class RSPass_FXAA : public RSPass_Base {
 private:
-  ID3D11ComputeShader *FXAAShader;
-  ID3D11UnorderedAccessView *HdrUav;
-  ID3D11Texture2D *CopyTex;
-  ID3D11ShaderResourceView *CopySrv;
-  ID3D11SamplerState *LinearBorderSampler;
+  // compute shaders are held as their pipeline states
+  RSPipelineState *FXAAShader;
+  RSUnorderedAccessView *HdrUav;
+  RSTexture *CopyTex;
+  RSShaderResourceView *CopySrv;
+  RSSampler *LinearBorderSampler;
 
 public:
   RSPass_FXAA(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
