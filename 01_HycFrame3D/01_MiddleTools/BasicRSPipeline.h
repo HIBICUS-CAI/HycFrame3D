@@ -730,17 +730,17 @@ private:
 
 class RSPass_Billboard : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11GeometryShader *GeometryShader;
-  ID3D11PixelShader *PixelShader;
-  ID3D11BlendState *BlendState;
-  ID3D11RenderTargetView *RenderTargetView;
-  ID3D11DepthStencilView *DepthStencilView;
-  ID3D11SamplerState *LinearWrapSampler;
-  ID3D11Buffer *ViewProjStructedBuffer;
-  ID3D11ShaderResourceView *ViewProjStructedBufferSrv;
-  ID3D11Buffer *InstanceStructedBuffer;
-  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
+  RSShader *VertexShader;
+  RSShader *GeometryShader;
+  RSShader *PixelShader;
+  RSPipelineState *Pipeline;
+  RSRenderTargetView *RenderTargetView;
+  RSDepthStencilView *DepthStencilView;
+  RSSampler *LinearWrapSampler;
+  RSBuffer *ViewProjStructedBuffer;
+  RSShaderResourceView *ViewProjStructedBufferSrv;
+  RSBuffer *InstanceStructedBuffer;
+  RSShaderResourceView *InstanceStructedBufferSrv;
   DRAWCALL_TYPE DrawCallType;
   RSDrawCallsPipe *DrawCallPipe;
   RS_CAM_INFO *RSCameraInfo;
