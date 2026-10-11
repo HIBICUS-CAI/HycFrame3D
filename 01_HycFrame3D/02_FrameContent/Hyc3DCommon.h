@@ -9,6 +9,9 @@
 
 #include <cassert>
 
+// the timer header used to bring windows.h and its UINT into every file
+using UINT = unsigned int;
+
 enum class OBJECT_TYPE {
   ACTOR,
   UI,
