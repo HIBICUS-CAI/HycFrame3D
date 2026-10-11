@@ -8,12 +8,13 @@
 namespace tcp = hyc::tcp;
 namespace str = hyc::str;
 namespace tom = hyc::text;
+namespace proc = hyc::proc;
 
 std::list<TcpLoggerConnection::LOG> TcpLoggerConnection::LogInfoList = {};
 
 TcpLoggerConnection::TcpLoggerConnection()
     : TcpConnectionInterface(), LoggerEnabledFlag(false), SocketPtr({}),
-      ConnectAddress({}), LoggerProcessInfo({}) {}
+      ConnectAddress({}), LoggerProcessInfo{} {}
 
 TcpLoggerConnection::~TcpLoggerConnection() {}
 
@@ -23,11 +24,10 @@ void TcpLoggerConnection::insertNewLogMessage(int LogLevel,
 }
 
 bool TcpLoggerConnection::createConnection() {
-  if (__argc > 1) {
-    for (int I = 1; I < __argc; I++) {
-      if (std::string(__argv[I]) == "-L") {
-        LoggerEnabledFlag = true;
-      }
+  auto Args = proc::getCommandLineArgs();
+  for (size_t I = 1; I < Args.size(); I++) {
+    if (Args[I] == "-L") {
+      LoggerEnabledFlag = true;
     }
   }
 
@@ -38,7 +38,7 @@ bool TcpLoggerConnection::createConnection() {
   tom::TomlNode LevelConfigRoot = {};
   std::string Message = "";
   if (!tom::loadTomlAndParse(LevelConfigRoot,
-                             ".\\Assets\\Configs\\hyc-logger-config.toml",
+                             "./Assets/Configs/hyc-logger-config.toml",
                              Message)) {
     assert(false && "failed to parse logging level config file");
     return false;
@@ -46,34 +46,28 @@ bool TcpLoggerConnection::createConnection() {
 
   switch (tom::getAs<int>(LevelConfigRoot["logger"]["output-level"])) {
   case 0:
-    Message = "04_HycLogger.exe -l debug";
+    Message = "debug";
     break;
   case 1:
-    Message = "04_HycLogger.exe -l message";
+    Message = "message";
     break;
   case 2:
-    Message = "04_HycLogger.exe -l warning";
+    Message = "warning";
     break;
   case 3:
-    Message = "04_HycLogger.exe -l error";
+    Message = "error";
     break;
   default:
     break;
   }
 
-  STARTUPINFO SI = {};
-  ZeroMemory(&SI, sizeof(SI));
-  ZeroMemory(&LoggerProcessInfo, sizeof(LoggerProcessInfo));
-  SI.cb = sizeof(SI);
-
-  char *CmdLine = const_cast<char *>(Message.data());
-  BOOL ProcessCreateFlag = CreateProcessA(NULL, CmdLine, NULL, NULL, FALSE, 0,
-                                          NULL, NULL, &SI, &LoggerProcessInfo);
+  std::string LoggerPath = proc::getExecutableDirectory() + "/04_HycLogger" +
+                           proc::EXECUTABLE_SUFFIX;
+  bool ProcessCreateFlag =
+      proc::createProcess(LoggerPath, {"-l", Message}, LoggerProcessInfo);
 
   if (!ProcessCreateFlag) {
-    auto Error = GetLastError();
     assert(ProcessCreateFlag && "fail to create HycLogger");
-    (void)Error;
     return false;
   }
 
@@ -89,9 +83,7 @@ void TcpLoggerConnection::terminateConnection() {
   if (LoggerEnabledFlag) {
     SocketPtr->sendAs<int>(-1);
     SocketPtr->sendAs<std::string>("/STOP_LOGGER");
-    WaitForSingleObject(LoggerProcessInfo.hProcess, INFINITE);
-    CloseHandle(LoggerProcessInfo.hProcess);
-    CloseHandle(LoggerProcessInfo.hThread);
+    proc::waitAndCloseProcess(LoggerProcessInfo);
   }
 }
 

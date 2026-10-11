@@ -2,6 +2,7 @@
 
 #include <TcpConnectionInterface.h>
 
+#include <ProcessUtility.h>
 #include <TcpUtility.h>
 
 #include <list>
@@ -12,7 +13,7 @@ private:
   bool LoggerEnabledFlag;
   hyc::tcp::TcpSocketPtr SocketPtr;
   hyc::tcp::SocketAddressPtr ConnectAddress;
-  PROCESS_INFORMATION LoggerProcessInfo;
+  hyc::proc::ProcessHandle LoggerProcessInfo;
 
   struct LOG {
     int LogLevel;
