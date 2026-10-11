@@ -657,18 +657,17 @@ private:
 
 class RSPass_Sprite : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11PixelShader *PixelShader;
-  ID3D11DepthStencilState *DepthStencilState;
-  ID3D11BlendState *BlendState;
-  ID3D11RenderTargetView *RenderTargetView;
+  RSShader *VertexShader;
+  RSShader *PixelShader;
+  RSPipelineState *Pipeline;
+  RSRenderTargetView *RenderTargetView;
   DRAWCALL_TYPE DrawCallType;
   RSDrawCallsPipe *DrawCallPipe;
-  ID3D11Buffer *ProjStructedBuffer;
-  ID3D11ShaderResourceView *ProjStructedBufferSrv;
-  ID3D11Buffer *InstanceStructedBuffer;
-  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
-  ID3D11SamplerState *LinearSampler;
+  RSBuffer *ProjStructedBuffer;
+  RSShaderResourceView *ProjStructedBufferSrv;
+  RSBuffer *InstanceStructedBuffer;
+  RSShaderResourceView *InstanceStructedBufferSrv;
+  RSSampler *LinearSampler;
   RS_CAM_INFO *RSCameraInfo;
 
 public:
