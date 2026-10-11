@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSPipelinesManager.cpp
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 保存并管理所有的pipeline
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com

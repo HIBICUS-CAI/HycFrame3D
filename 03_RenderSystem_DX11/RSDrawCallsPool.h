@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSDrawCallsPool.h
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 管理所有保存着绘制图元的通道
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com

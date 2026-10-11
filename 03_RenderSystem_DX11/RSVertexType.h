@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSVertexType.h
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 声明RenderSystem_DX11相关所使用的顶点类型
 // Date: 2021.9.19
 // Mail: cai_genkan@outlook.com
