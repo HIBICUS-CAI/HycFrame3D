@@ -3423,16 +3423,16 @@ RSPass_PriticleTileRender::RSPass_PriticleTileRender(std::string &Name,
     : RSPass_Base(Name, Type, Root), CoarseCullingShader(nullptr),
       TileCullingShader(nullptr), TileRenderShader(nullptr),
       BlendVertexShader(nullptr), BlendPixelShader(nullptr),
-      CameraConstantBuffer(nullptr), TilingConstantBuffer(nullptr),
-      ActiveListConstantBuffer(nullptr), DepthTex_Srv(nullptr),
-      ViewSpacePos_Srv(nullptr), MaxRadius_Srv(nullptr), PartA_Srv(nullptr),
-      AliveIndex_Srv(nullptr), AliveIndex_Uav(nullptr),
+      BlendPipeline(nullptr), CameraConstantBuffer(nullptr),
+      TilingConstantBuffer(nullptr), ActiveListConstantBuffer(nullptr),
+      DepthTex_Srv(nullptr), ViewSpacePos_Srv(nullptr), MaxRadius_Srv(nullptr),
+      PartA_Srv(nullptr), AliveIndex_Srv(nullptr), AliveIndex_Uav(nullptr),
       CoarseTileIndex_Srv(nullptr), CoarseTileIndex_Uav(nullptr),
       CoarseTileIndexCounter_Srv(nullptr), CoarseTileIndexCounter_Uav(nullptr),
       TiledIndex_Srv(nullptr), TiledIndex_Uav(nullptr),
       ParticleRender_Srv(nullptr), ParticleRender_Uav(nullptr),
-      LinearClampSampler(nullptr), ParticleBlendState(nullptr),
-      ParticleTex_Srv(nullptr), RSCameraInfo(nullptr) {}
+      LinearClampSampler(nullptr), ParticleTex_Srv(nullptr),
+      RSCameraInfo(nullptr) {}
 
 RSPass_PriticleTileRender::RSPass_PriticleTileRender(
     const RSPass_PriticleTileRender &Source)
@@ -3441,6 +3441,7 @@ RSPass_PriticleTileRender::RSPass_PriticleTileRender(
       TileRenderShader(Source.TileRenderShader),
       BlendVertexShader(Source.BlendVertexShader),
       BlendPixelShader(Source.BlendPixelShader),
+      BlendPipeline(Source.BlendPipeline),
       CameraConstantBuffer(Source.CameraConstantBuffer),
       TilingConstantBuffer(Source.TilingConstantBuffer),
       ActiveListConstantBuffer(Source.ActiveListConstantBuffer),
@@ -3458,9 +3459,19 @@ RSPass_PriticleTileRender::RSPass_PriticleTileRender(
       ParticleRender_Srv(Source.ParticleRender_Srv),
       ParticleRender_Uav(Source.ParticleRender_Uav),
       LinearClampSampler(Source.LinearClampSampler),
-      ParticleBlendState(Source.ParticleBlendState),
       ParticleTex_Srv(Source.ParticleTex_Srv),
-      RSCameraInfo(Source.RSCameraInfo) {}
+      RSCameraInfo(Source.RSCameraInfo) {
+  if (HasBeenInited) {
+    RS_ADDREF(CoarseCullingShader);
+    RS_ADDREF(TileCullingShader);
+    RS_ADDREF(TileRenderShader);
+    RS_ADDREF(BlendVertexShader);
+    RS_ADDREF(BlendPixelShader);
+    RS_ADDREF(BlendPipeline);
+    RS_ADDREF(LinearClampSampler);
+    RS_ADDREF(ParticleTex_Srv);
+  }
+}
 
 RSPass_PriticleTileRender::~RSPass_PriticleTileRender() {}
 
@@ -3507,7 +3518,7 @@ void RSPass_PriticleTileRender::releasePass() {
   RS_RELEASE(TileRenderShader);
   RS_RELEASE(BlendVertexShader);
   RS_RELEASE(BlendPixelShader);
-  RS_RELEASE(ParticleBlendState);
+  RS_RELEASE(BlendPipeline);
 
   RS_RELEASE(LinearClampSampler);
 
@@ -3520,10 +3531,9 @@ void RSPass_PriticleTileRender::execuatePass() {
   }
 
   {
-    D3D11_MAPPED_SUBRESOURCE Msr = {};
     dx::XMMATRIX Mat = {};
-    context()->Map(CameraConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    CAMERA_STATUS *CamStatus = static_cast<CAMERA_STATUS *>(Msr.pData);
+    CAMERA_STATUS *CamStatus =
+        static_cast<CAMERA_STATUS *>(CameraConstantBuffer->map());
     Mat = dx::XMLoadFloat4x4(&RSCameraInfo->ViewMatrix);
     Mat = dx::XMMatrixTranspose(Mat);
     dx::XMStoreFloat4x4(&(CamStatus->View), Mat);
@@ -3540,9 +3550,9 @@ void RSPass_PriticleTileRender::execuatePass() {
     Mat = dx::XMMatrixTranspose(Mat);
     dx::XMStoreFloat4x4(&(CamStatus->ViewProj), Mat);
     CamStatus->EyePosition = RSCameraInfo->EyePosition;
-    context()->Unmap(CameraConstantBuffer, 0);
-    context()->Map(TilingConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    RS_TILING_CONSTANT *Tiling = static_cast<RS_TILING_CONSTANT *>(Msr.pData);
+    CameraConstantBuffer->unmap();
+    RS_TILING_CONSTANT *Tiling =
+        static_cast<RS_TILING_CONSTANT *>(TilingConstantBuffer->map());
     Tiling->NumTilesX = G_ParticleSetUpPass->getTilingConstantInfo().NumTilesX;
     Tiling->NumTilesY = G_ParticleSetUpPass->getTilingConstantInfo().NumTilesY;
     Tiling->NumCoarseCullingTilesX =
@@ -3555,40 +3565,46 @@ void RSPass_PriticleTileRender::execuatePass() {
     Tiling->NumCullingTilesPerCoarseTileY =
         G_ParticleSetUpPass->getTilingConstantInfo()
             .NumCullingTilesPerCoarseTileY;
-    context()->Unmap(TilingConstantBuffer, 0);
-    context()->CopyStructureCount(ActiveListConstantBuffer, 0, AliveIndex_Uav);
+    TilingConstantBuffer->unmap();
+    context()->copyStructureCount(ActiveListConstantBuffer, 0, AliveIndex_Uav);
 
-    ID3D11Buffer *CBuf[] = {CameraConstantBuffer, TilingConstantBuffer,
-                            ActiveListConstantBuffer};
-    ID3D11ShaderResourceView *Srv[] = {ViewSpacePos_Srv, MaxRadius_Srv,
-                                       AliveIndex_Srv};
-    ID3D11UnorderedAccessView *Uav[] = {CoarseTileIndex_Uav,
-                                        CoarseTileIndexCounter_Uav};
+    RSBuffer *CBuf[] = {CameraConstantBuffer, TilingConstantBuffer,
+                        ActiveListConstantBuffer};
+    RSShaderResourceView *Srv[] = {ViewSpacePos_Srv, MaxRadius_Srv,
+                                   AliveIndex_Srv};
+    RSUnorderedAccessView *Uav[] = {CoarseTileIndex_Uav,
+                                    CoarseTileIndexCounter_Uav};
     UINT Initial[] = {static_cast<UINT>(-1), static_cast<UINT>(-1)};
 
-    context()->CSSetShader(CoarseCullingShader, nullptr, 0);
-    context()->CSSetConstantBuffers(0, ARRAYSIZE(CBuf), CBuf);
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, Initial);
+    context()->setPipelineState(CoarseCullingShader);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(CBuf)), CBuf);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav,
+                                       Initial);
 
     static int ThreadGroupNum =
         rs_tool::align(PTC_MAX_PARTICLE_SIZE, PTC_COARSE_CULLING_THREADS) /
         PTC_COARSE_CULLING_THREADS;
-    context()->Dispatch(ThreadGroupNum, 1, 1);
+    context()->dispatch(ThreadGroupNum, 1, 1);
 
-    ZeroMemory(CBuf, sizeof(CBuf));
-    ZeroMemory(Srv, sizeof(Srv));
-    ZeroMemory(Uav, sizeof(Uav));
-    context()->CSSetConstantBuffers(0, ARRAYSIZE(CBuf), CBuf);
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, nullptr);
+    std::fill(std::begin(CBuf), std::end(CBuf), nullptr);
+    std::fill(std::begin(Srv), std::end(Srv), nullptr);
+    std::fill(std::begin(Uav), std::end(Uav), nullptr);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(CBuf)), CBuf);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav);
   }
 
   {
-    D3D11_MAPPED_SUBRESOURCE Msr = {};
     dx::XMMATRIX Mat = {};
-    context()->Map(CameraConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    CAMERA_STATUS *CamStatus = static_cast<CAMERA_STATUS *>(Msr.pData);
+    CAMERA_STATUS *CamStatus =
+        static_cast<CAMERA_STATUS *>(CameraConstantBuffer->map());
     Mat = dx::XMLoadFloat4x4(&RSCameraInfo->ViewMatrix);
     Mat = dx::XMMatrixTranspose(Mat);
     dx::XMStoreFloat4x4(&(CamStatus->View), Mat);
@@ -3605,9 +3621,9 @@ void RSPass_PriticleTileRender::execuatePass() {
     Mat = dx::XMMatrixTranspose(Mat);
     dx::XMStoreFloat4x4(&(CamStatus->ViewProj), Mat);
     CamStatus->EyePosition = RSCameraInfo->EyePosition;
-    context()->Unmap(CameraConstantBuffer, 0);
-    context()->Map(TilingConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    RS_TILING_CONSTANT *Tiling = static_cast<RS_TILING_CONSTANT *>(Msr.pData);
+    CameraConstantBuffer->unmap();
+    RS_TILING_CONSTANT *Tiling =
+        static_cast<RS_TILING_CONSTANT *>(TilingConstantBuffer->map());
     Tiling->NumTilesX = G_ParticleSetUpPass->getTilingConstantInfo().NumTilesX;
     Tiling->NumTilesY = G_ParticleSetUpPass->getTilingConstantInfo().NumTilesY;
     Tiling->NumCoarseCullingTilesX =
@@ -3620,38 +3636,44 @@ void RSPass_PriticleTileRender::execuatePass() {
     Tiling->NumCullingTilesPerCoarseTileY =
         G_ParticleSetUpPass->getTilingConstantInfo()
             .NumCullingTilesPerCoarseTileY;
-    context()->Unmap(TilingConstantBuffer, 0);
+    TilingConstantBuffer->unmap();
 
-    ID3D11Buffer *CBuf[] = {CameraConstantBuffer, TilingConstantBuffer,
-                            ActiveListConstantBuffer};
-    ID3D11ShaderResourceView *Srv[] = {
+    RSBuffer *CBuf[] = {CameraConstantBuffer, TilingConstantBuffer,
+                        ActiveListConstantBuffer};
+    RSShaderResourceView *Srv[] = {
         ViewSpacePos_Srv, MaxRadius_Srv,       AliveIndex_Srv,
         DepthTex_Srv,     CoarseTileIndex_Srv, CoarseTileIndexCounter_Srv};
-    ID3D11UnorderedAccessView *Uav[] = {TiledIndex_Uav};
+    RSUnorderedAccessView *Uav[] = {TiledIndex_Uav};
     UINT initial[] = {static_cast<UINT>(-1)};
 
-    context()->CSSetShader(TileCullingShader, nullptr, 0);
-    context()->CSSetConstantBuffers(0, ARRAYSIZE(CBuf), CBuf);
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, initial);
+    context()->setPipelineState(TileCullingShader);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(CBuf)), CBuf);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav,
+                                       initial);
 
-    context()->Dispatch(G_ParticleSetUpPass->getTilingConstantInfo().NumTilesX,
+    context()->dispatch(G_ParticleSetUpPass->getTilingConstantInfo().NumTilesX,
                         G_ParticleSetUpPass->getTilingConstantInfo().NumTilesY,
                         1);
 
-    ZeroMemory(CBuf, sizeof(CBuf));
-    ZeroMemory(Srv, sizeof(Srv));
-    ZeroMemory(Uav, sizeof(Uav));
-    context()->CSSetConstantBuffers(0, ARRAYSIZE(CBuf), CBuf);
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, nullptr);
+    std::fill(std::begin(CBuf), std::end(CBuf), nullptr);
+    std::fill(std::begin(Srv), std::end(Srv), nullptr);
+    std::fill(std::begin(Uav), std::end(Uav), nullptr);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(CBuf)), CBuf);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav);
   }
 
   {
-    D3D11_MAPPED_SUBRESOURCE Msr = {};
     dx::XMMATRIX Mat = {};
-    context()->Map(CameraConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    CAMERA_STATUS *CamStatus = static_cast<CAMERA_STATUS *>(Msr.pData);
+    CAMERA_STATUS *CamStatus =
+        static_cast<CAMERA_STATUS *>(CameraConstantBuffer->map());
     Mat = dx::XMLoadFloat4x4(&RSCameraInfo->ViewMatrix);
     Mat = dx::XMMatrixTranspose(Mat);
     dx::XMStoreFloat4x4(&(CamStatus->View), Mat);
@@ -3668,9 +3690,9 @@ void RSPass_PriticleTileRender::execuatePass() {
     Mat = dx::XMMatrixTranspose(Mat);
     dx::XMStoreFloat4x4(&(CamStatus->ViewProj), Mat);
     CamStatus->EyePosition = RSCameraInfo->EyePosition;
-    context()->Unmap(CameraConstantBuffer, 0);
-    context()->Map(TilingConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    RS_TILING_CONSTANT *Tiling = static_cast<RS_TILING_CONSTANT *>(Msr.pData);
+    CameraConstantBuffer->unmap();
+    RS_TILING_CONSTANT *Tiling =
+        static_cast<RS_TILING_CONSTANT *>(TilingConstantBuffer->map());
     Tiling->NumTilesX = G_ParticleSetUpPass->getTilingConstantInfo().NumTilesX;
     Tiling->NumTilesY = G_ParticleSetUpPass->getTilingConstantInfo().NumTilesY;
     Tiling->NumCoarseCullingTilesX =
@@ -3683,155 +3705,99 @@ void RSPass_PriticleTileRender::execuatePass() {
     Tiling->NumCullingTilesPerCoarseTileY =
         G_ParticleSetUpPass->getTilingConstantInfo()
             .NumCullingTilesPerCoarseTileY;
-    context()->Unmap(TilingConstantBuffer, 0);
+    TilingConstantBuffer->unmap();
 
-    ID3D11Buffer *CBuf[] = {CameraConstantBuffer, TilingConstantBuffer};
-    ID3D11ShaderResourceView *Srv[] = {
+    RSBuffer *CBuf[] = {CameraConstantBuffer, TilingConstantBuffer};
+    RSShaderResourceView *Srv[] = {
         PartA_Srv,      ViewSpacePos_Srv,           DepthTex_Srv,
         TiledIndex_Srv, CoarseTileIndexCounter_Srv, ParticleTex_Srv};
-    ID3D11UnorderedAccessView *Uav[] = {ParticleRender_Uav};
+    RSUnorderedAccessView *Uav[] = {ParticleRender_Uav};
     UINT Initial[] = {static_cast<UINT>(-1)};
-    ID3D11SamplerState *Sam[] = {LinearClampSampler};
+    RSSampler *Sam[] = {LinearClampSampler};
 
-    context()->CSSetShader(TileRenderShader, nullptr, 0);
-    context()->CSSetConstantBuffers(0, ARRAYSIZE(CBuf), CBuf);
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, Initial);
-    context()->CSSetSamplers(0, ARRAYSIZE(Sam), Sam);
+    context()->setPipelineState(TileRenderShader);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(CBuf)), CBuf);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav,
+                                       Initial);
+    context()->setSamplers(RS_SHADER_STAGE::COMPUTE, 0,
+                           static_cast<UINT>(std::size(Sam)), Sam);
 
-    context()->Dispatch(G_ParticleSetUpPass->getTilingConstantInfo().NumTilesX,
+    context()->dispatch(G_ParticleSetUpPass->getTilingConstantInfo().NumTilesX,
                         G_ParticleSetUpPass->getTilingConstantInfo().NumTilesY,
                         1);
 
-    ZeroMemory(CBuf, sizeof(CBuf));
-    ZeroMemory(Srv, sizeof(Srv));
-    ZeroMemory(Uav, sizeof(Uav));
-    context()->CSSetConstantBuffers(0, ARRAYSIZE(CBuf), CBuf);
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, nullptr);
-    context()->CSSetShader(nullptr, nullptr, 0);
+    std::fill(std::begin(CBuf), std::end(CBuf), nullptr);
+    std::fill(std::begin(Srv), std::end(Srv), nullptr);
+    std::fill(std::begin(Uav), std::end(Uav), nullptr);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(CBuf)), CBuf);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav);
   }
 
   {
     static auto Rtv =
         getRSDX11RootInstance()->getDevices()->getHighDynamicRtv();
-    static D3D11_VIEWPORT VP = {};
-    VP.Width = 1280.f;
-    VP.Height = 720.f;
-    VP.MinDepth = 0.f;
-    VP.MaxDepth = 1.f;
-    VP.TopLeftX = 0.f;
-    VP.TopLeftY = 0.f;
-    context()->VSSetShader(BlendVertexShader, nullptr, 0);
-    context()->PSSetShader(BlendPixelShader, nullptr, 0);
-    context()->OMSetBlendState(ParticleBlendState, nullptr, 0xFFFFFFFF);
-    context()->OMSetRenderTargets(1, &Rtv, nullptr);
-    context()->RSSetViewports(1, &VP);
-    context()->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
-    context()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    static VkViewport VP = {};
+    VP.width = 1280.f;
+    VP.height = 720.f;
+    VP.minDepth = 0.f;
+    VP.maxDepth = 1.f;
+    VP.x = 0.f;
+    VP.y = 0.f;
+    context()->setPipelineState(BlendPipeline);
+    context()->setRenderTargets(1, &Rtv, nullptr);
+    context()->setViewport(VP);
+    context()->setIndexBuffer(nullptr);
+    context()->setPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
-    ID3D11ShaderResourceView *Srv[] = {ParticleRender_Srv};
-    context()->PSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
+    RSShaderResourceView *Srv[] = {ParticleRender_Srv};
+    context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
 
-    context()->Draw(3, 0);
+    context()->draw(3, 0);
 
-    ZeroMemory(Srv, sizeof(Srv));
-    context()->PSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
-    context()->OMSetBlendState(nullptr, nullptr, 0xFFFFFFFF);
-    static ID3D11RenderTargetView *NullRtv = nullptr;
-    context()->OMSetRenderTargets(1, &NullRtv, nullptr);
+    std::fill(std::begin(Srv), std::end(Srv), nullptr);
+    context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
+    context()->setRenderTargets(0, nullptr, nullptr);
   }
 }
 
 bool RSPass_PriticleTileRender::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
+  CoarseCullingShader = compileComputePipeline(
+      "./Assets/Shaders/ptc_coarse_compute.hlsl", "Main");
+  FAIL_NULL_RETURN(CoarseCullingShader);
 
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/ptc_coarse_compute.hlsl", "Main", "cs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  TileCullingShader =
+      compileComputePipeline("./Assets/Shaders/ptc_cull_compute.hlsl", "Main");
+  FAIL_NULL_RETURN(TileCullingShader);
 
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &CoarseCullingShader);
-  RS_RELEASE(ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  TileRenderShader = compileComputePipeline(
+      "./Assets/Shaders/ptc_render_compute.hlsl", "Main");
+  FAIL_NULL_RETURN(TileRenderShader);
 
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/ptc_cull_compute.hlsl", "Main", "cs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BlendVertexShader =
+      compileShader("./Assets/Shaders/ptc_blend_vertex.hlsl", "Main", "vs_5_0");
+  FAIL_NULL_RETURN(BlendVertexShader);
 
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &TileCullingShader);
-  RS_RELEASE(ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/ptc_render_compute.hlsl", "Main", "cs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &TileRenderShader);
-  RS_RELEASE(ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/ptc_blend_vertex.hlsl", "Main", "vs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &BlendVertexShader);
-  RS_RELEASE(ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/ptc_blend_pixel.hlsl", "Main", "ps_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreatePixelShader(ShaderBlob->GetBufferPointer(),
-                                   ShaderBlob->GetBufferSize(), nullptr,
-                                   &BlendPixelShader);
-  RS_RELEASE(ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BlendPixelShader =
+      compileShader("./Assets/Shaders/ptc_blend_pixel.hlsl", "Main", "ps_5_0");
+  FAIL_NULL_RETURN(BlendPixelShader);
 
   return true;
 }
 
 bool RSPass_PriticleTileRender::createViews() {
-  HRESULT Hr = S_OK;
-
-  Hr = dx::CreateDDSTextureFromFile(device(),
-                                    L"./Assets/Textures/particle_atlas.dds",
-                                    nullptr, &ParticleTex_Srv);
-  if (FAILED(Hr)) {
+  if (!rs_tool::createDDSTextureFromFile(G_RSRoot->getDevices(),
+                                         "./Assets/Textures/particle_atlas.dds",
+                                         nullptr, &ParticleTex_Srv)) {
     return false;
   }
 
@@ -3839,44 +3805,29 @@ bool RSPass_PriticleTileRender::createViews() {
 }
 
 bool RSPass_PriticleTileRender::createSampler() {
-  HRESULT Hr = S_OK;
-  D3D11_SAMPLER_DESC SampDesc = {};
-  ZeroMemory(&SampDesc, sizeof(SampDesc));
-  SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  SampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SampDesc.MinLOD = 0;
-  SampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-  Hr = device()->CreateSamplerState(&SampDesc, &LinearClampSampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LinearClampSampler = G_RSRoot->getDevices()->createSampler(
+      makeLinearSamplerInfo(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
+  FAIL_NULL_RETURN(LinearClampSampler);
 
   return true;
 }
 
 bool RSPass_PriticleTileRender::createBlend() {
-  HRESULT Hr = S_OK;
-
-  D3D11_BLEND_DESC BldDesc = {};
-  ZeroMemory(&BldDesc, sizeof(D3D11_BLEND_DESC));
-  BldDesc.AlphaToCoverageEnable = false;
-  BldDesc.IndependentBlendEnable = false;
-  BldDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-  BldDesc.RenderTarget[0].BlendEnable = true;
-  BldDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
-  BldDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-  BldDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-  BldDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ZERO;
-  BldDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-  BldDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-  Hr = device()->CreateBlendState(&BldDesc, &ParticleBlendState);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  RS_GRAPHICS_PIPELINE_DESC Desc = {};
+  Desc.VertexShader = BlendVertexShader;
+  Desc.PixelShader = BlendPixelShader;
+  Desc.ColorTargetCount = 1;
+  Desc.ColorFormats[0] =
+      G_RSRoot->getDevices()->getHighDynamicTexture()->getDesc().Format;
+  Desc.Blend[0].Enable = true;
+  Desc.Blend[0].SrcColor = VK_BLEND_FACTOR_ONE;
+  Desc.Blend[0].DstColor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+  Desc.Blend[0].ColorOp = VK_BLEND_OP_ADD;
+  Desc.Blend[0].SrcAlpha = VK_BLEND_FACTOR_ZERO;
+  Desc.Blend[0].DstAlpha = VK_BLEND_FACTOR_ZERO;
+  Desc.Blend[0].AlphaOp = VK_BLEND_OP_ADD;
+  BlendPipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(BlendPipeline);
 
   return true;
 }
