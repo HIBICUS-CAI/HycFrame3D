@@ -1491,7 +1491,7 @@ RSPass_Shadow::RSPass_Shadow(std::string &Name,
                              PASS_TYPE Type,
                              RSRoot_DX11 *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
-      AniVertexShader(nullptr), RasterizerState(nullptr),
+      AniVertexShader(nullptr), StaticPipeline(nullptr), AniPipeline(nullptr),
       DepthStencilView({nullptr}), DrawCallType(DRAWCALL_TYPE::OPACITY),
       DrawCallPipe(nullptr), ViewProjStructedBuffer(nullptr),
       ViewProjStructedBufferSrv(nullptr), InstanceStructedBuffer(nullptr),
@@ -1501,7 +1501,7 @@ RSPass_Shadow::RSPass_Shadow(std::string &Name,
 RSPass_Shadow::RSPass_Shadow(const RSPass_Shadow &Source)
     : RSPass_Base(Source), VertexShader(Source.VertexShader),
       AniVertexShader(Source.AniVertexShader),
-      RasterizerState(Source.RasterizerState),
+      StaticPipeline(Source.StaticPipeline), AniPipeline(Source.AniPipeline),
       DepthStencilView(Source.DepthStencilView),
       DrawCallType(Source.DrawCallType), DrawCallPipe(Source.DrawCallPipe),
       ViewProjStructedBuffer(Source.ViewProjStructedBuffer),
@@ -1509,7 +1509,20 @@ RSPass_Shadow::RSPass_Shadow(const RSPass_Shadow &Source)
       InstanceStructedBuffer(Source.InstanceStructedBuffer),
       InstanceStructedBufferSrv(Source.InstanceStructedBufferSrv),
       BonesStructedBuffer(Source.BonesStructedBuffer),
-      BonesStructedBufferSrv(Source.BonesStructedBufferSrv) {}
+      BonesStructedBufferSrv(Source.BonesStructedBufferSrv) {
+  if (HasBeenInited) {
+    RS_ADDREF(VertexShader);
+    RS_ADDREF(AniVertexShader);
+    RS_ADDREF(StaticPipeline);
+    RS_ADDREF(AniPipeline);
+    RS_ADDREF(ViewProjStructedBuffer);
+    RS_ADDREF(ViewProjStructedBufferSrv);
+    RS_ADDREF(InstanceStructedBuffer);
+    RS_ADDREF(InstanceStructedBufferSrv);
+    RS_ADDREF(BonesStructedBuffer);
+    RS_ADDREF(BonesStructedBufferSrv);
+  }
+}
 
 RSPass_Shadow::~RSPass_Shadow() {}
 
@@ -1547,11 +1560,14 @@ bool RSPass_Shadow::initPass() {
 void RSPass_Shadow::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(AniVertexShader);
-  RS_RELEASE(RasterizerState);
+  RS_RELEASE(StaticPipeline);
+  RS_RELEASE(AniPipeline);
   RS_RELEASE(ViewProjStructedBufferSrv);
   RS_RELEASE(ViewProjStructedBuffer);
   RS_RELEASE(InstanceStructedBufferSrv);
   RS_RELEASE(InstanceStructedBuffer);
+  RS_RELEASE(BonesStructedBufferSrv);
+  RS_RELEASE(BonesStructedBuffer);
 
   G_RSRoot->getResourceManager()->deleteResource("light-depth-light-other");
   G_RSRoot->getResourceManager()->deleteResource("light-depth-light-dep0");
@@ -1561,18 +1577,9 @@ void RSPass_Shadow::releasePass() {
 }
 
 void RSPass_Shadow::execuatePass() {
-  ID3D11RenderTargetView *NullRtv = nullptr;
-  // STContext()->VSSetShader(mVertexShader, nullptr, 0);
-  context()->PSSetShader(nullptr, nullptr, 0);
-  context()->RSSetState(RasterizerState);
-
   dx::XMMATRIX Mat = {};
-  UINT Stride = sizeof(vertex_type::TangentVertex);
-  UINT AniStride = sizeof(vertex_type::AnimationVertex);
-  UINT Offset = 0;
   auto ShadowLights = G_RSRoot->getLightsContainer()->getShadowLightsArray();
   UINT ShadowSize = static_cast<UINT>(ShadowLights->size());
-  D3D11_MAPPED_SUBRESOURCE Msr = {};
 
   static std::string A_NAME = "AnimationVertex";
   static const auto ANIMAT_LAYOUT =
@@ -1580,13 +1587,11 @@ void RSPass_Shadow::execuatePass() {
           A_NAME);
 
   for (UINT I = 0; I < ShadowSize; I++) {
-    context()->OMSetRenderTargets(1, &NullRtv, DepthStencilView[I]);
-    context()->RSSetViewports(1, &G_ViewPort);
-    context()->ClearDepthStencilView(DepthStencilView[I], D3D11_CLEAR_DEPTH,
-                                     1.f, 0);
+    context()->setRenderTargets(0, nullptr, DepthStencilView[I]);
+    context()->setViewport(G_ViewPort);
+    context()->clearDepthStencilView(DepthStencilView[I], 1.f);
 
-    context()->Map(ViewProjStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    ViewProj *VpData = static_cast<ViewProj *>(Msr.pData);
+    ViewProj *VpData = static_cast<ViewProj *>(ViewProjStructedBuffer->map());
     auto Light = (*ShadowLights)[I];
     auto LCam = Light->getRSLightCamera();
     Mat = dx::XMLoadFloat4x4(&(LCam->getRSCameraInfo()->ViewMatrix));
@@ -1595,19 +1600,18 @@ void RSPass_Shadow::execuatePass() {
     Mat = dx::XMLoadFloat4x4(&(LCam->getRSCameraInfo()->ProjMatrix));
     Mat = dx::XMMatrixTranspose(Mat);
     dx::XMStoreFloat4x4(&VpData[0].ProjMat, Mat);
-    context()->Unmap(ViewProjStructedBuffer, 0);
+    ViewProjStructedBuffer->unmap();
 
-    context()->VSSetShaderResources(0, 1, &ViewProjStructedBufferSrv);
+    context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 0, 1,
+                                  &ViewProjStructedBufferSrv);
 
     for (auto &Draw : DrawCallPipe->Data) {
       if (Draw.MeshData.InputLayout == ANIMAT_LAYOUT) {
-        context()->VSSetShader(AniVertexShader, nullptr, 0);
-        context()->IASetVertexBuffers(0, 1, &Draw.MeshData.VertexBuffer,
-                                      &AniStride, &Offset);
+        context()->setPipelineState(AniPipeline);
+        context()->setVertexBuffer(Draw.MeshData.VertexBuffer);
 
-        context()->Map(BonesStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
-                       &Msr);
-        dx::XMFLOAT4X4 *BData = static_cast<dx::XMFLOAT4X4 *>(Msr.pData);
+        dx::XMFLOAT4X4 *BData =
+            static_cast<dx::XMFLOAT4X4 *>(BonesStructedBuffer->map());
         void *RawBoneData = Draw.InstanceData.BonesArrayPtr;
         std::vector<std::vector<RS_SUBMESH_BONE_DATA>> *Bones = nullptr;
         Bones = static_cast<decltype(Bones)>(RawBoneData);
@@ -1628,20 +1632,20 @@ void RSPass_Shadow::execuatePass() {
             }
           }
         }
-        context()->Unmap(BonesStructedBuffer, 0);
+        BonesStructedBuffer->unmap(BoneInsSize * MAX_STRUCTURED_BUFFER_SIZE *
+                                   sizeof(dx::XMFLOAT4X4));
 
-        context()->VSSetShaderResources(3, 1, &BonesStructedBufferSrv);
+        context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 3, 1,
+                                      &BonesStructedBufferSrv);
       } else {
-        context()->VSSetShader(VertexShader, nullptr, 0);
-        context()->IASetVertexBuffers(0, 1, &Draw.MeshData.VertexBuffer,
-                                      &Stride, &Offset);
+        context()->setPipelineState(StaticPipeline);
+        context()->setVertexBuffer(Draw.MeshData.VertexBuffer);
       }
 
       auto InsVecPtr = Draw.InstanceData.DataArrayPtr;
       auto Size = InsVecPtr->size();
-      context()->Map(InstanceStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
-                     &Msr);
-      RS_INSTANCE_DATA *InsData = static_cast<RS_INSTANCE_DATA *>(Msr.pData);
+      RS_INSTANCE_DATA *InsData =
+          static_cast<RS_INSTANCE_DATA *>(InstanceStructedBuffer->map());
       for (size_t I = 0; I < Size; I++) {
         Mat = dx::XMLoadFloat4x4(&(*InsVecPtr)[I].WorldMatrix);
         Mat = dx::XMMatrixTranspose(Mat);
@@ -1650,174 +1654,113 @@ void RSPass_Shadow::execuatePass() {
         InsData[I].CustomizedData1 = (*InsVecPtr)[I].CustomizedData1;
         InsData[I].CustomizedData2 = (*InsVecPtr)[I].CustomizedData2;
       }
-      context()->Unmap(InstanceStructedBuffer, 0);
+      InstanceStructedBuffer->unmap(Size * sizeof(RS_INSTANCE_DATA));
 
-      context()->IASetInputLayout(Draw.MeshData.InputLayout);
-      context()->IASetPrimitiveTopology(Draw.MeshData.TopologyType);
-      /*STContext()->IASetVertexBuffers(
-          0, 1, &call.mMeshData.mVertexBuffer,
-          &stride, &offset);*/
-      context()->IASetIndexBuffer(Draw.MeshData.IndexBuffer,
-                                  DXGI_FORMAT_R32_UINT, 0);
-      context()->VSSetShaderResources(1, 1, &InstanceStructedBufferSrv);
+      context()->setPrimitiveTopology(Draw.MeshData.TopologyType);
+      context()->setIndexBuffer(Draw.MeshData.IndexBuffer);
+      context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 1, 1,
+                                    &InstanceStructedBufferSrv);
 
-      context()->DrawIndexedInstanced(
+      context()->drawIndexedInstanced(
           Draw.MeshData.IndexSize,
           static_cast<UINT>(Draw.InstanceData.DataArrayPtr->size()), 0, 0, 0);
 
       if (Draw.MeshData.InputLayout == ANIMAT_LAYOUT) {
-        ID3D11ShaderResourceView *NullSrv = nullptr;
-        context()->VSSetShaderResources(3, 1, &NullSrv);
+        RSShaderResourceView *NullSrv = nullptr;
+        context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 3, 1, &NullSrv);
       }
     }
   }
 
-  context()->OMSetRenderTargets(1, &NullRtv, nullptr);
-  context()->RSSetState(nullptr);
+  context()->setRenderTargets(0, nullptr, nullptr);
 }
 
 bool RSPass_Shadow::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
+  VertexShader =
+      compileShader("./Assets/Shaders/light_vertex.hlsl", "main", "vs_5_0");
+  FAIL_NULL_RETURN(VertexShader);
 
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/light_vertex.hlsl",
-                                      "main", "vs_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &VertexShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  D3D_SHADER_MACRO Macro[] = {{"ANIMATION_VERTEX", "1"}, {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/light_vertex.hlsl",
-                                      "main", "vs_5_0", &ShaderBlob, Macro);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &AniVertexShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  rs_tool::SHADER_MACRO Macro[] = {{"ANIMATION_VERTEX", "1"},
+                                   {nullptr, nullptr}};
+  AniVertexShader = compileShader("./Assets/Shaders/light_vertex.hlsl", "main",
+                                  "vs_5_0", Macro);
+  FAIL_NULL_RETURN(AniVertexShader);
 
   return true;
 }
 
 bool RSPass_Shadow::createStates() {
-  HRESULT Hr = S_OK;
-  D3D11_RASTERIZER_DESC ShadowRasterDesc = {};
-  ZeroMemory(&ShadowRasterDesc, sizeof(ShadowRasterDesc));
+  // the rasterizer state is a part of the pipeline state objects, the bias
+  // values keep their d3d11 meaning on the float depth buffer
+  auto Static = G_RSRoot->getStaticResources();
 
-  ShadowRasterDesc.FillMode = D3D11_FILL_SOLID;
-  ShadowRasterDesc.CullMode = D3D11_CULL_BACK;
-  ShadowRasterDesc.FrontCounterClockwise = FALSE;
-  ShadowRasterDesc.DepthBias = 50000;
-  ShadowRasterDesc.SlopeScaledDepthBias = 1.f;
-  ShadowRasterDesc.DepthBiasClamp = 0.f;
-  ShadowRasterDesc.DepthClipEnable = TRUE;
-  ShadowRasterDesc.ScissorEnable = FALSE;
-  ShadowRasterDesc.MultisampleEnable = FALSE;
-  ShadowRasterDesc.AntialiasedLineEnable = FALSE;
+  RS_GRAPHICS_PIPELINE_DESC Desc = {};
+  Desc.VertexShader = VertexShader;
+  Desc.InputLayout = Static->getStaticInputLayout("TangentVertex");
+  Desc.FillMode = VK_POLYGON_MODE_FILL;
+  Desc.CullMode = VK_CULL_MODE_BACK_BIT;
+  Desc.FrontFace = VK_FRONT_FACE_CLOCKWISE;
+  Desc.DepthBiasEnable = true;
+  Desc.DepthBiasConstant = 50000.f;
+  Desc.DepthBiasSlope = 1.f;
+  Desc.DepthBiasClamp = 0.f;
+  Desc.DepthClipEnable = true;
+  Desc.DepthFormat = DEPTH_FORMAT;
+  StaticPipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(StaticPipeline);
 
-  Hr = device()->CreateRasterizerState(&ShadowRasterDesc, &RasterizerState);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  Desc.VertexShader = AniVertexShader;
+  Desc.InputLayout = Static->getStaticInputLayout("AnimationVertex");
+  AniPipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(AniPipeline);
 
   return true;
 }
 
 bool RSPass_Shadow::createBuffers() {
-  HRESULT Hr = S_OK;
-  D3D11_BUFFER_DESC BufDesc = {};
+  InstanceStructedBuffer = createDynamicStructuredBuffer(
+      sizeof(RS_INSTANCE_DATA), MAX_INSTANCE_SIZE);
+  FAIL_NULL_RETURN(InstanceStructedBuffer);
 
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_DYNAMIC;
-  BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  BufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  BufDesc.ByteWidth = MAX_INSTANCE_SIZE * sizeof(RS_INSTANCE_DATA);
-  BufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-  BufDesc.StructureByteStride = sizeof(RS_INSTANCE_DATA);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &InstanceStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BonesStructedBuffer = createDynamicStructuredBuffer(
+      sizeof(dx::XMFLOAT4X4),
+      MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE);
+  FAIL_NULL_RETURN(BonesStructedBuffer);
 
-  BufDesc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE *
-                      static_cast<UINT>(sizeof(dx::XMFLOAT4X4));
-  BufDesc.StructureByteStride = sizeof(dx::XMFLOAT4X4);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &BonesStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  BufDesc.ByteWidth = sizeof(ViewProj);
-  BufDesc.StructureByteStride = sizeof(ViewProj);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &ViewProjStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewProjStructedBuffer = createDynamicStructuredBuffer(sizeof(ViewProj), 1);
+  FAIL_NULL_RETURN(ViewProjStructedBuffer);
 
   return true;
 }
 
 bool RSPass_Shadow::createViews() {
-  HRESULT Hr = S_OK;
-  ID3D11Texture2D *DepthTex = nullptr;
-  D3D11_TEXTURE2D_DESC TexDesc = {};
-  TexDesc.Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
-  TexDesc.Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
-  TexDesc.MipLevels = 1;
-  TexDesc.ArraySize = MAX_SHADOW_SIZE;
-  TexDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.SampleDesc.Quality = 0;
-  TexDesc.Usage = D3D11_USAGE_DEFAULT;
-  TexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-  TexDesc.CPUAccessFlags = 0;
-  TexDesc.MiscFlags = 0;
-  Hr = device()->CreateTexture2D(&TexDesc, nullptr, &DepthTex);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  auto Devices = G_RSRoot->getDevices();
 
-  D3D11_DEPTH_STENCIL_VIEW_DESC DsvDesc = {};
-  DsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-  DsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DARRAY;
-  DsvDesc.Texture2DArray.MipSlice = 0;
-  DsvDesc.Texture2DArray.ArraySize = 1;
+  RS_TEXTURE_DESC TexDesc = {};
+  TexDesc.Format = DEPTH_FORMAT;
+  TexDesc.Width = Devices->getCurrWndWidth();
+  TexDesc.Height = Devices->getCurrWndHeight();
+  TexDesc.ArrayLayers = MAX_SHADOW_SIZE;
+  TexDesc.Usage =
+      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+  RSTexture *DepthTex = Devices->createTexture(TexDesc);
+  FAIL_NULL_RETURN(DepthTex);
+
+  RS_TEXTURE_VIEW_DESC DsvDesc = {};
+  DsvDesc.ViewType = VK_IMAGE_VIEW_TYPE_2D;
+  DsvDesc.LayerCount = 1;
   for (UINT I = 0; I < MAX_SHADOW_SIZE; I++) {
-    DsvDesc.Texture2DArray.FirstArraySlice = D3D11CalcSubresource(0, I, 1);
-    Hr = device()->CreateDepthStencilView(DepthTex, &DsvDesc,
-                                          &(DepthStencilView[I]));
-    if (FAILED(Hr)) {
-      return false;
-    }
+    DsvDesc.BaseLayer = I;
+    DepthStencilView[I] = Devices->createDepthStencilView(DepthTex, &DsvDesc);
+    FAIL_NULL_RETURN(DepthStencilView[I]);
   }
 
-  ID3D11ShaderResourceView *Srv = nullptr;
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-  SrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
-  SrvDesc.Texture2DArray.FirstArraySlice = 0;
-  SrvDesc.Texture2DArray.MostDetailedMip = 0;
-  SrvDesc.Texture2DArray.MipLevels = 1;
-  SrvDesc.Texture2DArray.ArraySize = MAX_SHADOW_SIZE;
-  Hr = device()->CreateShaderResourceView(DepthTex, &SrvDesc, &Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  RS_TEXTURE_VIEW_DESC SrvDesc = {};
+  SrvDesc.ViewType = VK_IMAGE_VIEW_TYPE_2D_ARRAY;
+  SrvDesc.LayerCount = MAX_SHADOW_SIZE;
+  RSShaderResourceView *Srv =
+      Devices->createShaderResourceView(DepthTex, &SrvDesc);
+  FAIL_NULL_RETURN(Srv);
 
   RS_RESOURCE_INFO Dti = {};
   Dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
@@ -1835,30 +1778,18 @@ bool RSPass_Shadow::createViews() {
   Dti.Dsv = DepthStencilView[3];
   G_RSRoot->getResourceManager()->addResource("light-depth-light-dep3", Dti);
 
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementWidth = MAX_INSTANCE_SIZE;
-  Hr = device()->CreateShaderResourceView(InstanceStructedBuffer, &SrvDesc,
-                                          &InstanceStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  InstanceStructedBufferSrv = createStructuredSrv(
+      InstanceStructedBuffer, sizeof(RS_INSTANCE_DATA), MAX_INSTANCE_SIZE);
+  FAIL_NULL_RETURN(InstanceStructedBufferSrv);
 
-  SrvDesc.Buffer.ElementWidth =
-      MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE;
-  Hr = device()->CreateShaderResourceView(BonesStructedBuffer, &SrvDesc,
-                                          &BonesStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BonesStructedBufferSrv = createStructuredSrv(
+      BonesStructedBuffer, sizeof(dx::XMFLOAT4X4),
+      MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE);
+  FAIL_NULL_RETURN(BonesStructedBufferSrv);
 
-  SrvDesc.Buffer.ElementWidth = 1;
-  Hr = device()->CreateShaderResourceView(ViewProjStructedBuffer, &SrvDesc,
-                                          &ViewProjStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewProjStructedBufferSrv =
+      createStructuredSrv(ViewProjStructedBuffer, sizeof(ViewProj), 1);
+  FAIL_NULL_RETURN(ViewProjStructedBufferSrv);
 
   return true;
 }
