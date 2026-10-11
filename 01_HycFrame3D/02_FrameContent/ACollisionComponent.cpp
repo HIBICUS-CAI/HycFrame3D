@@ -14,7 +14,7 @@
 #pragma clang diagnostic ignored "-Wreorder-ctor"
 #pragma clang diagnostic ignored "-Wbraced-scalar-init"
 #endif // __clang__
-#include <bullet/btBulletCollisionCommon.h>
+#include <btBulletCollisionCommon.h>
 #if __clang__
 #pragma clang diagnostic pop
 #endif // __clang__
