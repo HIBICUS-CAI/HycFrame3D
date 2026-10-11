@@ -392,15 +392,14 @@ private:
 
 class RSPass_SkyShpere : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11PixelShader *PixelShader;
-  ID3D11RasterizerState *RasterizerState;
-  ID3D11DepthStencilState *DepthStencilState;
-  ID3D11SamplerState *LinearWrapSampler;
-  ID3D11RenderTargetView *RenderTargerView;
-  ID3D11DepthStencilView *DepthStencilView;
-  ID3D11Buffer *SkyShpereInfoStructedBuffer;
-  ID3D11ShaderResourceView *SkyShpereInfoStructedBufferSrv;
+  RSShader *VertexShader;
+  RSShader *PixelShader;
+  RSPipelineState *Pipeline;
+  RSSampler *LinearWrapSampler;
+  RSRenderTargetView *RenderTargerView;
+  RSDepthStencilView *DepthStencilView;
+  RSBuffer *SkyShpereInfoStructedBuffer;
+  RSShaderResourceView *SkyShpereInfoStructedBufferSrv;
   RS_SUBMESH_DATA SkySphereMesh;
   RS_CAM_INFO *RSCameraInfo;
 
