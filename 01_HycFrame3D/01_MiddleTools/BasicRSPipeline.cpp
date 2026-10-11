@@ -26,8 +26,10 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <iterator>
 #include <DirectXColors.h>
 #include <DirectXPackedVector.h>
 #include <string>
@@ -3067,7 +3069,15 @@ RSPass_PriticleEmitSimulate::RSPass_PriticleEmitSimulate(
       SimulEmitterStructedBuffer(Source.SimulEmitterStructedBuffer),
       TimeConstantBuffer(Source.TimeConstantBuffer),
       LinearWrapSampler(Source.LinearWrapSampler),
-      RSCameraInfo(Source.RSCameraInfo) {}
+      RSCameraInfo(Source.RSCameraInfo) {
+  if (HasBeenInited) {
+    RS_ADDREF(InitDeadListShader);
+    RS_ADDREF(ResetParticlesShader);
+    RS_ADDREF(EmitParticleShader);
+    RS_ADDREF(SimulateShader);
+    RS_ADDREF(LinearWrapSampler);
+  }
+}
 
 RSPass_PriticleEmitSimulate::~RSPass_PriticleEmitSimulate() {}
 
@@ -3114,6 +3124,7 @@ void RSPass_PriticleEmitSimulate::releasePass() {
   RS_RELEASE(EmitParticleShader);
   RS_RELEASE(ResetParticlesShader);
   RS_RELEASE(InitDeadListShader);
+  RS_RELEASE(LinearWrapSampler);
 }
 
 void RSPass_PriticleEmitSimulate::execuatePass() {
@@ -3123,73 +3134,82 @@ void RSPass_PriticleEmitSimulate::execuatePass() {
 
   if (RSParticleContainerPtr->getResetFlg()) {
     {
-      context()->CSSetShader(InitDeadListShader, nullptr, 0);
-      ID3D11UnorderedAccessView *Uav[] = {DeadList_Uav};
+      context()->setPipelineState(InitDeadListShader);
+      RSUnorderedAccessView *Uav[] = {DeadList_Uav};
       UINT InitialCount[] = {0};
-      context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav,
-                                           InitialCount);
+      context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                         static_cast<UINT>(std::size(Uav)), Uav,
+                                         InitialCount);
 
-      context()->Dispatch(rs_tool::align(PTC_MAX_PARTICLE_SIZE, 256) / 256, 1,
+      context()->dispatch(rs_tool::align(PTC_MAX_PARTICLE_SIZE, 256) / 256, 1,
                           1);
 
-      ZeroMemory(Uav, sizeof(Uav));
-      context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, nullptr);
+      std::fill(std::begin(Uav), std::end(Uav), nullptr);
+      context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                         static_cast<UINT>(std::size(Uav)),
+                                         Uav);
     }
 
     {
-      context()->CSSetShader(ResetParticlesShader, nullptr, 0);
-      ID3D11UnorderedAccessView *Uav[] = {PartA_Uav, PartB_Uav};
+      context()->setPipelineState(ResetParticlesShader);
+      RSUnorderedAccessView *Uav[] = {PartA_Uav, PartB_Uav};
       UINT InitialCount[] = {static_cast<UINT>(-1), static_cast<UINT>(-1)};
-      context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav,
-                                           InitialCount);
+      context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                         static_cast<UINT>(std::size(Uav)), Uav,
+                                         InitialCount);
 
-      context()->Dispatch(rs_tool::align(PTC_MAX_PARTICLE_SIZE, 256) / 256, 1,
+      context()->dispatch(rs_tool::align(PTC_MAX_PARTICLE_SIZE, 256) / 256, 1,
                           1);
 
-      ZeroMemory(Uav, sizeof(Uav));
-      context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, nullptr);
+      std::fill(std::begin(Uav), std::end(Uav), nullptr);
+      context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                         static_cast<UINT>(std::size(Uav)),
+                                         Uav);
     }
 
     RSParticleContainerPtr->finishResetRSParticleSystem();
   }
 
   {
-    context()->CSSetShader(EmitParticleShader, nullptr, 0);
-    ID3D11UnorderedAccessView *Uav[] = {PartA_Uav, PartB_Uav, DeadList_Uav};
-    ID3D11ShaderResourceView *Srv[] = {RandomTex_Srv};
-    ID3D11Buffer *CBuffer[] = {EmitterConstantBuffer, DeadListConstantBuffer,
-                               TimeConstantBuffer};
-    ID3D11SamplerState *Sam[] = {LinearWrapSampler};
+    context()->setPipelineState(EmitParticleShader);
+    RSUnorderedAccessView *Uav[] = {PartA_Uav, PartB_Uav, DeadList_Uav};
+    RSShaderResourceView *Srv[] = {RandomTex_Srv};
+    RSBuffer *CBuffer[] = {EmitterConstantBuffer, DeadListConstantBuffer,
+                           TimeConstantBuffer};
+    RSSampler *Sam[] = {LinearWrapSampler};
     UINT InitialCount[] = {static_cast<UINT>(-1), static_cast<UINT>(-1),
                            static_cast<UINT>(-1)};
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, InitialCount);
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
-    context()->CSSetConstantBuffers(0, ARRAYSIZE(CBuffer), CBuffer);
-    context()->CSSetSamplers(0, ARRAYSIZE(Sam), Sam);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav,
+                                       InitialCount);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(CBuffer)),
+                                  CBuffer);
+    context()->setSamplers(RS_SHADER_STAGE::COMPUTE, 0,
+                           static_cast<UINT>(std::size(Sam)), Sam);
 
     auto Emitters = RSParticleContainerPtr->getAllParticleEmitters();
-    D3D11_MAPPED_SUBRESOURCE Msr = {};
-    context()->Map(TimeConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    PTC_TIME_CONSTANT *Time = static_cast<PTC_TIME_CONSTANT *>(Msr.pData);
+    PTC_TIME_CONSTANT *Time =
+        static_cast<PTC_TIME_CONSTANT *>(TimeConstantBuffer->map());
     static float Timer = 0.f;
     Time->DeltaTime = G_DeltaTimeInSecond;
     Timer += G_DeltaTimeInSecond;
     Time->TotalTime = Timer;
-    context()->Unmap(TimeConstantBuffer, 0);
+    TimeConstantBuffer->unmap();
     for (auto &Emitter : *Emitters) {
       auto &RSInfo = Emitter->getRSParticleEmitterInfo();
       RSInfo.Accumulation += RSInfo.EmitNumPerSecond * G_DeltaTimeInSecond;
       if (RSInfo.Accumulation > 1.f) {
         float IntegerPart = 0.0f;
-        float Fraction = modf(RSInfo.Accumulation, &IntegerPart);
+        float Fraction = std::modf(RSInfo.Accumulation, &IntegerPart);
         RSInfo.EmitSize = (int)IntegerPart;
         RSInfo.Accumulation = Fraction;
       }
 
-      context()->Map(EmitterConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
-                     &Msr);
       RS_PARTICLE_EMITTER_INFO *EmitterCon =
-          static_cast<RS_PARTICLE_EMITTER_INFO *>(Msr.pData);
+          static_cast<RS_PARTICLE_EMITTER_INFO *>(EmitterConstantBuffer->map());
       EmitterCon->EmitterIndex = RSInfo.EmitterIndex;
       EmitterCon->EmitNumPerSecond = RSInfo.EmitNumPerSecond;
       EmitterCon->EmitSize = RSInfo.EmitSize;
@@ -3208,25 +3228,26 @@ void RSPass_PriticleEmitSimulate::execuatePass() {
       EmitterCon->TextureID = RSInfo.TextureID;
       EmitterCon->StreakFlag = RSInfo.StreakFlag;
       EmitterCon->MiscFlag = RSInfo.MiscFlag;
-      context()->Unmap(EmitterConstantBuffer, 0);
-      context()->CopyStructureCount(DeadListConstantBuffer, 0, DeadList_Uav);
+      EmitterConstantBuffer->unmap();
+      context()->copyStructureCount(DeadListConstantBuffer, 0, DeadList_Uav);
 
       int ThreadGroupNum = rs_tool::align(RSInfo.EmitSize, 1024) / 1024;
-      context()->Dispatch(ThreadGroupNum, 1, 1);
+      context()->dispatch(ThreadGroupNum, 1, 1);
     }
 
-    ZeroMemory(Uav, sizeof(Uav));
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, nullptr);
-    ZeroMemory(Srv, sizeof(Srv));
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
+    std::fill(std::begin(Uav), std::end(Uav), nullptr);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav);
+    std::fill(std::begin(Srv), std::end(Srv), nullptr);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
   }
 
   {
-    D3D11_MAPPED_SUBRESOURCE Msr = {};
     dx::XMMATRIX Mat = {};
 
-    context()->Map(CameraConstantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    CAMERA_STATUS *CamStatus = static_cast<CAMERA_STATUS *>(Msr.pData);
+    CAMERA_STATUS *CamStatus =
+        static_cast<CAMERA_STATUS *>(CameraConstantBuffer->map());
     Mat = dx::XMLoadFloat4x4(&RSCameraInfo->ViewMatrix);
     Mat = dx::XMMatrixTranspose(Mat);
     dx::XMStoreFloat4x4(&(CamStatus->View), Mat);
@@ -3243,128 +3264,73 @@ void RSPass_PriticleEmitSimulate::execuatePass() {
     Mat = dx::XMMatrixTranspose(Mat);
     dx::XMStoreFloat4x4(&(CamStatus->ViewProj), Mat);
     CamStatus->EyePosition = RSCameraInfo->EyePosition;
-    context()->Unmap(CameraConstantBuffer, 0);
+    CameraConstantBuffer->unmap();
 
     static auto EmitterArray = RSParticleContainerPtr->getAllParticleEmitters();
     auto Size = EmitterArray->size();
-    context()->Map(SimulEmitterStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0,
-                   &Msr);
     SIMULATE_EMITTER_INFO *Emitter =
-        static_cast<SIMULATE_EMITTER_INFO *>(Msr.pData);
+        static_cast<SIMULATE_EMITTER_INFO *>(SimulEmitterStructedBuffer->map());
     for (size_t I = 0; I < Size; I++) {
       Emitter[I].WorldPosition =
           (*(*EmitterArray)[I]).getRSParticleEmitterInfo().Position;
     }
-    context()->Unmap(SimulEmitterStructedBuffer, 0);
+    SimulEmitterStructedBuffer->unmap(Size * sizeof(SIMULATE_EMITTER_INFO));
 
-    ID3D11Buffer *CBuf[] = {CameraConstantBuffer, TimeConstantBuffer};
-    ID3D11ShaderResourceView *Srv[] = {DepthTex_Srv,
-                                       SimulEmitterStructedBuffer_Srv};
-    ID3D11UnorderedAccessView *Uav[] = {PartA_Uav,        PartB_Uav,
-                                        DeadList_Uav,     AliveIndex_Uav,
-                                        ViewSpacePos_Uav, MaxRadius_Uav};
+    RSBuffer *CBuf[] = {CameraConstantBuffer, TimeConstantBuffer};
+    RSShaderResourceView *Srv[] = {DepthTex_Srv,
+                                   SimulEmitterStructedBuffer_Srv};
+    RSUnorderedAccessView *Uav[] = {PartA_Uav,        PartB_Uav,
+                                    DeadList_Uav,     AliveIndex_Uav,
+                                    ViewSpacePos_Uav, MaxRadius_Uav};
     UINT InitialCount[] = {static_cast<UINT>(-1), static_cast<UINT>(-1),
                            static_cast<UINT>(-1), 0,
                            static_cast<UINT>(-1), static_cast<UINT>(-1)};
 
-    context()->CSSetShader(SimulateShader, nullptr, 0);
-    context()->CSSetConstantBuffers(0, ARRAYSIZE(CBuf), CBuf);
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, InitialCount);
+    context()->setPipelineState(SimulateShader);
+    context()->setConstantBuffers(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(CBuf)), CBuf);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav,
+                                       InitialCount);
     static int ThreadGroupNum =
         rs_tool::align(PTC_MAX_PARTICLE_SIZE, 256) / 256;
-    context()->Dispatch(ThreadGroupNum, 1, 1);
+    context()->dispatch(ThreadGroupNum, 1, 1);
 
-    ZeroMemory(Uav, sizeof(Uav));
-    context()->CSSetUnorderedAccessViews(0, ARRAYSIZE(Uav), Uav, nullptr);
-    ZeroMemory(Srv, sizeof(Srv));
-    context()->CSSetShaderResources(0, ARRAYSIZE(Srv), Srv);
+    std::fill(std::begin(Uav), std::end(Uav), nullptr);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
+                                       static_cast<UINT>(std::size(Uav)), Uav);
+    std::fill(std::begin(Srv), std::end(Srv), nullptr);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0,
+                                  static_cast<UINT>(std::size(Srv)), Srv);
   }
 }
 
 bool RSPass_PriticleEmitSimulate::createSampler() {
-  HRESULT Hr = S_OK;
-  D3D11_SAMPLER_DESC SampDesc = {};
-  ZeroMemory(&SampDesc, sizeof(SampDesc));
-  SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  SampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-  SampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-  SampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-  SampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SampDesc.MinLOD = 0;
-  SampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-
-  Hr = device()->CreateSamplerState(&SampDesc, &LinearWrapSampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LinearWrapSampler = G_RSRoot->getDevices()->createSampler(
+      makeLinearSamplerInfo(VK_SAMPLER_ADDRESS_MODE_REPEAT));
+  FAIL_NULL_RETURN(LinearWrapSampler);
 
   return true;
 }
 
 bool RSPass_PriticleEmitSimulate::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
+  InitDeadListShader =
+      compileComputePipeline("./Assets/Shaders/ptc_init_compute.hlsl", "Main");
+  FAIL_NULL_RETURN(InitDeadListShader);
 
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/ptc_init_compute.hlsl", "Main", "cs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ResetParticlesShader =
+      compileComputePipeline("./Assets/Shaders/ptc_reset_compute.hlsl", "Main");
+  FAIL_NULL_RETURN(ResetParticlesShader);
 
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &InitDeadListShader);
-  RS_RELEASE(ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  EmitParticleShader =
+      compileComputePipeline("./Assets/Shaders/ptc_emit_compute.hlsl", "Main");
+  FAIL_NULL_RETURN(EmitParticleShader);
 
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/ptc_reset_compute.hlsl", "Main", "cs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &ResetParticlesShader);
-  RS_RELEASE(ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/ptc_emit_compute.hlsl", "Main", "cs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &EmitParticleShader);
-  RS_RELEASE(ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/ptc_simulate_compute.hlsl", "Main", "cs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &SimulateShader);
-  RS_RELEASE(ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  SimulateShader = compileComputePipeline(
+      "./Assets/Shaders/ptc_simulate_compute.hlsl", "Main");
+  FAIL_NULL_RETURN(SimulateShader);
 
   return true;
 }

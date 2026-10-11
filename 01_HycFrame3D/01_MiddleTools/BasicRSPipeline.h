@@ -550,27 +550,28 @@ class RSPass_PriticleEmitSimulate : public RSPass_Base {
 private:
   class RSParticlesContainer *RSParticleContainerPtr;
 
-  ID3D11ComputeShader *InitDeadListShader;
-  ID3D11ComputeShader *ResetParticlesShader;
-  ID3D11ComputeShader *EmitParticleShader;
-  ID3D11ComputeShader *SimulateShader;
+  // compute shaders are held as their pipeline states
+  RSPipelineState *InitDeadListShader;
+  RSPipelineState *ResetParticlesShader;
+  RSPipelineState *EmitParticleShader;
+  RSPipelineState *SimulateShader;
 
-  ID3D11ShaderResourceView *DepthTex_Srv;
-  ID3D11ShaderResourceView *RandomTex_Srv;
-  ID3D11ShaderResourceView *SimulEmitterStructedBuffer_Srv;
-  ID3D11UnorderedAccessView *DeadList_Uav;
-  ID3D11UnorderedAccessView *PartA_Uav;
-  ID3D11UnorderedAccessView *PartB_Uav;
-  ID3D11UnorderedAccessView *AliveIndex_Uav;
-  ID3D11UnorderedAccessView *ViewSpacePos_Uav;
-  ID3D11UnorderedAccessView *MaxRadius_Uav;
-  ID3D11Buffer *EmitterConstantBuffer;
-  ID3D11Buffer *CameraConstantBuffer;
-  ID3D11Buffer *DeadListConstantBuffer;
-  ID3D11Buffer *SimulEmitterStructedBuffer;
-  ID3D11Buffer *TimeConstantBuffer;
+  RSShaderResourceView *DepthTex_Srv;
+  RSShaderResourceView *RandomTex_Srv;
+  RSShaderResourceView *SimulEmitterStructedBuffer_Srv;
+  RSUnorderedAccessView *DeadList_Uav;
+  RSUnorderedAccessView *PartA_Uav;
+  RSUnorderedAccessView *PartB_Uav;
+  RSUnorderedAccessView *AliveIndex_Uav;
+  RSUnorderedAccessView *ViewSpacePos_Uav;
+  RSUnorderedAccessView *MaxRadius_Uav;
+  RSBuffer *EmitterConstantBuffer;
+  RSBuffer *CameraConstantBuffer;
+  RSBuffer *DeadListConstantBuffer;
+  RSBuffer *SimulEmitterStructedBuffer;
+  RSBuffer *TimeConstantBuffer;
 
-  ID3D11SamplerState *LinearWrapSampler;
+  RSSampler *LinearWrapSampler;
 
   RS_CAM_INFO *RSCameraInfo;
 
