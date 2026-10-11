@@ -359,7 +359,21 @@ RSSampler::~RSSampler() {
 }
 
 bool RSSampler::create(const VkSamplerCreateInfo &Info) {
-  return vkCreateSampler(Devices->getDevice(), &Info, nullptr, &Sampler) ==
+  // d3d11 always supports 16x anisotropy, vulkan needs the feature
+  VkSamplerCreateInfo Fixed = Info;
+  if (Fixed.anisotropyEnable) {
+    VkPhysicalDeviceFeatures Supported = {};
+    vkGetPhysicalDeviceFeatures(Devices->getPhysicalDevice(), &Supported);
+    float MaxAnisotropy =
+        Devices->getPhysicalDeviceProperties().limits.maxSamplerAnisotropy;
+    if (!Supported.samplerAnisotropy) {
+      Fixed.anisotropyEnable = VK_FALSE;
+      Fixed.maxAnisotropy = 1.f;
+    } else if (Fixed.maxAnisotropy > MaxAnisotropy) {
+      Fixed.maxAnisotropy = MaxAnisotropy;
+    }
+  }
+  return vkCreateSampler(Devices->getDevice(), &Fixed, nullptr, &Sampler) ==
          VK_SUCCESS;
 }
 
