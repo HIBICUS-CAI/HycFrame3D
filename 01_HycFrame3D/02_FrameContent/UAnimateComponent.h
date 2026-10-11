@@ -2,7 +2,7 @@
 
 #include "UiComponent.h"
 
-#include <directxmath.h>
+#include <DirectXMath.h>
 #include <unordered_map>
 
 struct ANIMATE_INFO {

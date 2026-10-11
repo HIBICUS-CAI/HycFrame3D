@@ -26,8 +26,8 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
-#include <directxcolors.h>
-#include <directxpackedvector.h>
+#include <DirectXColors.h>
+#include <DirectXPackedVector.h>
 #include <string>
 #include <vector>
 

@@ -2,7 +2,7 @@
 
 #include "ActorComponent.h"
 
-#include <directxmath.h>
+#include <DirectXMath.h>
 #include <vector>
 
 class AMeshComponent : public ActorComponent {
