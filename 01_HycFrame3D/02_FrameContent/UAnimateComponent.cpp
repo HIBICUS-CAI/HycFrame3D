@@ -5,12 +5,11 @@
 #include "USpriteComponent.h"
 #include "UiObject.h"
 
-#include <DDSTextureLoader11.h>
 #include <RSCommon.h>
 #include <RSDevices.h>
 #include <RSResourceManager.h>
 #include <RSRoot_DX11.h>
-#include <WICTextureLoader11.h>
+#include <RSTextureLoader.h>
 
 #include <vector>
 
@@ -62,37 +61,20 @@ bool UAnimateComponent::loadAnimate(const std::string &AniName,
                                     UINT MaxCount,
                                     bool RepeatFlg,
                                     float SwitchTime) {
-  std::wstring TexPathWStr = L"";
-  HRESULT Hr = S_OK;
-  ID3D11ShaderResourceView *Srv = nullptr;
-  TexPathWStr = std::wstring(AniPath.begin(), AniPath.end());
-  TexPathWStr = L"./Assets/Textures/" + TexPathWStr;
+  RSShaderResourceView *Srv = nullptr;
+  std::string TexPath = "./Assets/Textures/" + AniPath;
 
   auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
   auto IfExist = ResourceManager->getMeshSrv(AniPath);
 
   if (IfExist) {
-  } else if (AniPath.find(".dds") != std::string::npos ||
-             AniPath.find(".DDS") != std::string::npos) {
-    Hr = DirectX::CreateDDSTextureFromFile(
-        getRSDX11RootInstance()->getDevices()->getDevice(), TexPathWStr.c_str(),
-        nullptr, &Srv);
-    if (SUCCEEDED(Hr)) {
-      getRSDX11RootInstance()->getResourceManager()->addMeshSrv(AniPath, Srv);
-    } else {
-      P_LOG(LOG_ERROR, "fail to load texture : {}", AniPath);
-      return false;
-    }
+  } else if (rs_tool::createTextureFromFile(
+                 getRSDX11RootInstance()->getDevices(), TexPath, nullptr,
+                 &Srv)) {
+    getRSDX11RootInstance()->getResourceManager()->addMeshSrv(AniPath, Srv);
   } else {
-    Hr = DirectX::CreateWICTextureFromFile(
-        getRSDX11RootInstance()->getDevices()->getDevice(), TexPathWStr.c_str(),
-        nullptr, &Srv);
-    if (SUCCEEDED(Hr)) {
-      getRSDX11RootInstance()->getResourceManager()->addMeshSrv(AniPath, Srv);
-    } else {
-      P_LOG(LOG_ERROR, "fail to load texture : {}", AniPath);
-      return false;
-    }
+    P_LOG(LOG_ERROR, "fail to load texture : {}", AniPath);
+    return false;
   }
 
   ANIMATE_INFO *Ani = new ANIMATE_INFO();
