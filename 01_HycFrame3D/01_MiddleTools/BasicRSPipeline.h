@@ -469,59 +469,59 @@ class RSPass_PriticleSetUp : public RSPass_Base {
 private:
   RS_TILING_CONSTANT TilingConstant;
 
-  ID3D11Buffer *ParticleRenderBuffer;
-  ID3D11ShaderResourceView *ParticleRender_Srv;
-  ID3D11UnorderedAccessView *ParticleRender_Uav;
+  RSBuffer *ParticleRenderBuffer;
+  RSShaderResourceView *ParticleRender_Srv;
+  RSUnorderedAccessView *ParticleRender_Uav;
 
-  ID3D11Buffer *ParticlePartA;
-  ID3D11ShaderResourceView *PartA_Srv;
-  ID3D11UnorderedAccessView *PartA_Uav;
+  RSBuffer *ParticlePartA;
+  RSShaderResourceView *PartA_Srv;
+  RSUnorderedAccessView *PartA_Uav;
 
-  ID3D11Buffer *ParticlePartB;
-  ID3D11UnorderedAccessView *PartB_Uav;
+  RSBuffer *ParticlePartB;
+  RSUnorderedAccessView *PartB_Uav;
 
-  ID3D11Buffer *ViewspacePosBuffer;
-  ID3D11ShaderResourceView *ViewSpacePos_Srv;
-  ID3D11UnorderedAccessView *ViewSpacePos_Uav;
+  RSBuffer *ViewspacePosBuffer;
+  RSShaderResourceView *ViewSpacePos_Srv;
+  RSUnorderedAccessView *ViewSpacePos_Uav;
 
-  ID3D11Buffer *MaxRadiusBuffer;
-  ID3D11ShaderResourceView *MaxRadius_Srv;
-  ID3D11UnorderedAccessView *MaxRadius_Uav;
+  RSBuffer *MaxRadiusBuffer;
+  RSShaderResourceView *MaxRadius_Srv;
+  RSUnorderedAccessView *MaxRadius_Uav;
 
-  ID3D11Buffer *StridedCoarseCullBuffer;
-  ID3D11ShaderResourceView *StridedCoarseCull_Srv;
-  ID3D11UnorderedAccessView *StridedCoarseCull_Uav;
+  RSBuffer *StridedCoarseCullBuffer;
+  RSShaderResourceView *StridedCoarseCull_Srv;
+  RSUnorderedAccessView *StridedCoarseCull_Uav;
 
-  ID3D11Buffer *StridedCoarseCullCounterBuffer;
-  ID3D11ShaderResourceView *StridedCoarseCullCounter_Srv;
-  ID3D11UnorderedAccessView *StridedCoarseCullCounter_Uav;
+  RSBuffer *StridedCoarseCullCounterBuffer;
+  RSShaderResourceView *StridedCoarseCullCounter_Srv;
+  RSUnorderedAccessView *StridedCoarseCullCounter_Uav;
 
-  ID3D11Buffer *TiledIndexBuffer;
-  ID3D11ShaderResourceView *TiledIndex_Srv;
-  ID3D11UnorderedAccessView *TiledIndex_Uav;
+  RSBuffer *TiledIndexBuffer;
+  RSShaderResourceView *TiledIndex_Srv;
+  RSUnorderedAccessView *TiledIndex_Uav;
 
-  ID3D11Buffer *DeadListBuffer;
-  ID3D11UnorderedAccessView *DeadList_Uav;
+  RSBuffer *DeadListBuffer;
+  RSUnorderedAccessView *DeadList_Uav;
 
-  ID3D11Buffer *AliveIndexBuffer;
-  ID3D11ShaderResourceView *AliveIndex_Srv;
-  ID3D11UnorderedAccessView *AliveIndex_Uav;
+  RSBuffer *AliveIndexBuffer;
+  RSShaderResourceView *AliveIndex_Srv;
+  RSUnorderedAccessView *AliveIndex_Uav;
 
-  ID3D11Buffer *DeadListConstantBuffer;
-  ID3D11Buffer *ActiveListConstantBuffer;
+  RSBuffer *DeadListConstantBuffer;
+  RSBuffer *ActiveListConstantBuffer;
 
-  ID3D11Buffer *EmitterConstantBuffer;
-  ID3D11Buffer *CameraConstantBuffer;
-  ID3D11Buffer *TilingConstantBuffer;
-  ID3D11Buffer *TimeConstantBuffer;
+  RSBuffer *EmitterConstantBuffer;
+  RSBuffer *CameraConstantBuffer;
+  RSBuffer *TilingConstantBuffer;
+  RSBuffer *TimeConstantBuffer;
 
-  ID3D11Buffer *DebugCounterBuffer;
+  RSBuffer *DebugCounterBuffer;
 
-  ID3D11Texture2D *ParticleRandomTexture;
-  ID3D11ShaderResourceView *ParticleRandom_Srv;
+  RSTexture *ParticleRandomTexture;
+  RSShaderResourceView *ParticleRandom_Srv;
 
-  ID3D11Buffer *SimulEmitterStructedBuffer;
-  ID3D11ShaderResourceView *SimulEmitterStructedBuffer_Srv;
+  RSBuffer *SimulEmitterStructedBuffer;
+  RSShaderResourceView *SimulEmitterStructedBuffer_Srv;
 
 public:
   RSPass_PriticleSetUp(std::string &Name,
