@@ -5,7 +5,7 @@ struct VS_OUTPUT
     float3 TangentW : TANGENT;
     float4 TexCoordL : TEXCOORD;
     float2 SizeW : SIZE;
-    bool IsBillboard : FLAG;
+    uint IsBillboard : FLAG;
 };
 
 struct GS_OUTPUT

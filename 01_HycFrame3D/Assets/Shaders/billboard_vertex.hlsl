@@ -13,7 +13,7 @@ struct VS_OUTPUT
     float3 TangentW : TANGENT;
     float4 TexCoordL : TEXCOORD;
     float2 SizeW : SIZE;
-    bool IsBillboard : FLAG;
+    uint IsBillboard : FLAG;
 };
 
 struct MATERIAL
@@ -49,11 +49,11 @@ VS_OUTPUT main(VS_INPUT _in, uint _instanceID : SV_InstanceID)
     _out.SizeW = gInstances[_instanceID].gCustomizedData1.xy;
     if (gInstances[_instanceID].gCustomizedData1.z > 0.0f)
     {
-        _out.IsBillboard = true;
+        _out.IsBillboard = 1;
     }
     else
     {
-        _out.IsBillboard = false;
+        _out.IsBillboard = 0;
     }
 
     return _out;
