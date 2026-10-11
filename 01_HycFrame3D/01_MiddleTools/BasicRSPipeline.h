@@ -305,18 +305,19 @@ private:
 
 class RSPass_Shadow : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11VertexShader *AniVertexShader;
-  ID3D11RasterizerState *RasterizerState;
-  std::array<ID3D11DepthStencilView *, MAX_SHADOW_SIZE> DepthStencilView;
+  RSShader *VertexShader;
+  RSShader *AniVertexShader;
+  RSPipelineState *StaticPipeline;
+  RSPipelineState *AniPipeline;
+  std::array<RSDepthStencilView *, MAX_SHADOW_SIZE> DepthStencilView;
   DRAWCALL_TYPE DrawCallType;
   RSDrawCallsPipe *DrawCallPipe;
-  ID3D11Buffer *ViewProjStructedBuffer;
-  ID3D11ShaderResourceView *ViewProjStructedBufferSrv;
-  ID3D11Buffer *InstanceStructedBuffer;
-  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
-  ID3D11Buffer *BonesStructedBuffer;
-  ID3D11ShaderResourceView *BonesStructedBufferSrv;
+  RSBuffer *ViewProjStructedBuffer;
+  RSShaderResourceView *ViewProjStructedBufferSrv;
+  RSBuffer *InstanceStructedBuffer;
+  RSShaderResourceView *InstanceStructedBufferSrv;
+  RSBuffer *BonesStructedBuffer;
+  RSShaderResourceView *BonesStructedBufferSrv;
 
 public:
   RSPass_Shadow(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
