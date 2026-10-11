@@ -1,19 +1,26 @@
 #include "PrintLog.h"
 
+#include <assert.h>
+#include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+
+#ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN (1)
 #endif // !WIN32_LEAN_AND_MEAN
-
-#include <assert.h>
-#include <stdio.h>
 #include <windows.h>
+#else
+// there is no debugger output channel outside windows, use stderr instead
+static void OutputDebugString(const char *Str) { fputs(Str, stderr); }
+#endif // _WIN32
 
 // FOR SETTING LOG LEVEL ------------------------------
 #define LOG_LEVEL_FOR_SETTING (LOG_DEBUG)
 // FOR SETTING LOG LEVEL ------------------------------
 
 int vDebugPrintF(const char *Format, va_list ArgList) {
-  const UINT32 MAX_CHARS = 1024;
+  const uint32_t MAX_CHARS = 1024;
   static char LogBuffer[MAX_CHARS];
 
   int CharsWritten = vsnprintf(LogBuffer, MAX_CHARS, Format, ArgList);
