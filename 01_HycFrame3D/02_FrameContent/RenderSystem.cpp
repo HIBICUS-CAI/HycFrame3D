@@ -15,7 +15,7 @@
 #include <RSParticlesContainer.h>
 #include <RSPipelinesManager.h>
 #include <RSResourceManager.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 #include <WM_Interface.h>
 
 RenderSystem::RenderSystem(SystemExecutive *SysExecutive)
@@ -27,7 +27,7 @@ RenderSystem::~RenderSystem() {}
 
 bool RenderSystem::init() {
   if (!RenderSystemRoot) {
-    RenderSystemRoot = new RSRoot_DX11();
+    RenderSystemRoot = new RSRoot_VK();
     if (!RenderSystemRoot->startUp(window::getWindowPtr()->getWndHandle())) {
       return false;
     }
@@ -79,13 +79,13 @@ bool RenderSystem::init() {
                    ->getCurrentSceneNode()
                    ->getIBLSpecular();
 
-  getRSDX11RootInstance()->getParticlesContainer()->resetRSParticleSystem();
+  getRSVKRootInstance()->getParticlesContainer()->resetRSParticleSystem();
 
   return true;
 }
 
 void RenderSystem::run(const Timer &Timer) {
-  RenderSystemRoot = getRSDX11RootInstance();
+  RenderSystemRoot = getRSVKRootInstance();
 #ifdef _DEBUG
   assert(RenderSystemRoot);
 #endif // _DEBUG

@@ -26,7 +26,7 @@ protected:
 public:
   RSPass_Base(const std::string &Name,
               PASS_TYPE Type,
-              class RSRoot_DX11 *RootPtr);
+              class RSRoot_VK *RootPtr);
 
   RSPass_Base(const RSPass_Base &Source);
 

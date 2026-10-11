@@ -10,11 +10,11 @@
 #include "RSPass_Base.h"
 
 #include "RSDevices.h"
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 
 RSPass_Base::RSPass_Base(const std::string &Name,
                          PASS_TYPE Type,
-                         RSRoot_DX11 *RootPtr)
+                         RSRoot_VK *RootPtr)
     : PassName(Name), PassType(Type), ExecuateOrderInTopic(RS_INVALID_ORDER),
       Devices(RootPtr->getDevices()), Context(nullptr), HasBeenInited(false) {}
 

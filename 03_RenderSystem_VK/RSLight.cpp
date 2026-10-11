@@ -14,7 +14,7 @@
 #include "RSDrawCallsPool.h"
 #include "RSMeshHelper.h"
 #include "RSResourceManager.h"
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 
 RSLight::RSLight(const LIGHT_INFO *Info)
     : LightType(Info->Type), EnabledShadowFlag(Info->ShadowFlag),
@@ -133,7 +133,7 @@ void RSLight::updateBloomColor() {
 }
 
 void RSLight::uploadLightDrawCall() {
-  static auto DrawCallPool = getRSDX11RootInstance()->getDrawCallsPool();
+  static auto DrawCallPool = getRSVKRootInstance()->getDrawCallsPool();
   if (BloomLightFlag) {
     DrawCallPool->addDrawCallToPipe(DRAWCALL_TYPE::LIGHT, BloomDrawCallData);
   }
@@ -141,7 +141,7 @@ void RSLight::uploadLightDrawCall() {
 
 void RSLight::releaseLightBloom(bool DeleteByFrameworkFlag) {
   if (BloomLightFlag && !DeleteByFrameworkFlag) {
-    getRSDX11RootInstance()->getMeshHelper()->releaseSubMesh(BloomMeshData);
+    getRSVKRootInstance()->getMeshHelper()->releaseSubMesh(BloomMeshData);
   }
 }
 

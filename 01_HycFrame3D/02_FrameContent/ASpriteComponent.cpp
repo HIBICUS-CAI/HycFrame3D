@@ -6,7 +6,7 @@
 #include "SceneNode.h"
 
 #include <RSMeshHelper.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 
 ASpriteComponent::ASpriteComponent(const std::string &CompName,
                                    ActorObject *ActorOwner)
@@ -60,7 +60,7 @@ bool ASpriteComponent::createGeoPointWithTexture(SceneNode *Scene,
   }
 
   RS_SUBMESH_DATA Point =
-      getRSDX11RootInstance()
+      getRSVKRootInstance()
           ->getMeshHelper()
           ->getGeoGenerator()
           ->createPointWithTexture(LAYOUT_TYPE::NORMAL_TANGENT_TEX,

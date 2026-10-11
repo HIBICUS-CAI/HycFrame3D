@@ -17,7 +17,7 @@
 
 class RSResourceManager {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
   std::unordered_map<std::string, RS_RESOURCE_INFO> ResourceMap;
   std::unordered_map<std::string, RSShaderResourceView *> MeshSrvMap;
 
@@ -28,7 +28,7 @@ public:
   RSResourceManager();
   ~RSResourceManager();
 
-  bool startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_VK *RootPtr);
   void cleanAndStop();
 
   void addResource(const std::string &Name, const RS_RESOURCE_INFO &Resource);

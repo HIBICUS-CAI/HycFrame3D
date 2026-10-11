@@ -7,7 +7,7 @@
 #include "UiObject.h"
 
 #include <RSMeshHelper.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 
 USpriteComponent::USpriteComponent(const std::string &CompName,
                                    UiObject *UiOwner)
@@ -46,7 +46,7 @@ bool USpriteComponent::createSpriteMesh(SceneNode *Scene,
   }
 
   RS_SUBMESH_DATA Sprite =
-      getRSDX11RootInstance()
+      getRSVKRootInstance()
           ->getMeshHelper()
           ->getGeoGenerator()
           ->createSpriteRect(LAYOUT_TYPE::NORMAL_TANGENT_TEX, TexName);

@@ -2,7 +2,7 @@
 
 #include <RSMeshHelper.h>
 #include <RSPipelinesManager.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 
 void registerSPInput(ObjectFactory *Factory) {
 #ifdef _DEBUG
@@ -69,10 +69,10 @@ void testASpInput(AInputComponent *Aic, const Timer &Timer) {
   if (input::isKeyPushedInSingle(KB_P)) {
     static bool Simp = true;
     if (Simp) {
-      getRSDX11RootInstance()->getPipelinesManager()->setPipeline(
+      getRSVKRootInstance()->getPipelinesManager()->setPipeline(
           "light-pipeline");
     } else {
-      getRSDX11RootInstance()->getPipelinesManager()->setPipeline(
+      getRSVKRootInstance()->getPipelinesManager()->setPipeline(
           "simple-pipeline");
     }
     Simp = !Simp;

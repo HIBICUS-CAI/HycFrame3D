@@ -1,5 +1,5 @@
 ﻿//---------------------------------------------------------------
-// File: RSRoot_DX11.cpp
+// File: RSRoot_VK.cpp
 // Proj: RenderSystem_VK
 // Info: 保存并提供此RenderSystem相关的重要内容引用
 // Date: 2021.9.13
@@ -7,7 +7,7 @@
 // Comt: NULL
 //---------------------------------------------------------------
 
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 
 #include "RSCamerasContainer.h"
 #include "RSDevices.h"
@@ -22,25 +22,25 @@
 
 #include <cassert>
 
-static RSRoot_DX11 *G_RSRoot_DX11_Instance = nullptr;
+static RSRoot_VK *G_RSRoot_VK_Instance = nullptr;
 
-RSRoot_DX11 *getRSDX11RootInstance() {
-  if (!G_RSRoot_DX11_Instance) {
+RSRoot_VK *getRSVKRootInstance() {
+  if (!G_RSRoot_VK_Instance) {
     assert(false && "rs_root_dx11_hasnt_been_built");
   }
-  return G_RSRoot_DX11_Instance;
+  return G_RSRoot_VK_Instance;
 }
 
-RSRoot_DX11::RSRoot_DX11()
+RSRoot_VK::RSRoot_VK()
     : DevicesPtr(nullptr), PipelinesManagerPtr(nullptr),
       DrawCallsPoolPtr(nullptr), ResourceManagerPtr(nullptr),
       StaticResourcesPtr(nullptr), CamerasContainerPtr(nullptr),
       LightsContainerPtr(nullptr), ParticlesContainerPtr(nullptr),
       MeshHelperPtr(nullptr) {}
 
-RSRoot_DX11::~RSRoot_DX11() {}
+RSRoot_VK::~RSRoot_VK() {}
 
-bool RSRoot_DX11::startUp(SDL_Window *WndHandle) {
+bool RSRoot_VK::startUp(SDL_Window *WndHandle) {
   DevicesPtr = new RSDevices();
   if (!DevicesPtr->startUp(this, WndHandle)) {
     return false;
@@ -86,16 +86,16 @@ bool RSRoot_DX11::startUp(SDL_Window *WndHandle) {
     return false;
   }
 
-  if (G_RSRoot_DX11_Instance) {
+  if (G_RSRoot_VK_Instance) {
     assert(false && "rs_root_dx11_should_be_singleton");
     return false;
   }
-  G_RSRoot_DX11_Instance = this;
+  G_RSRoot_VK_Instance = this;
 
   return true;
 }
 
-void RSRoot_DX11::cleanAndStop() {
+void RSRoot_VK::cleanAndStop() {
   // command buffers and resources below may still be used by the gpu
   if (DevicesPtr) {
     DevicesPtr->waitIdle();
@@ -157,39 +157,39 @@ void RSRoot_DX11::cleanAndStop() {
 
   rs_tool::finalizeShaderCompiler();
 
-  if (G_RSRoot_DX11_Instance == this) {
-    G_RSRoot_DX11_Instance = nullptr;
+  if (G_RSRoot_VK_Instance == this) {
+    G_RSRoot_VK_Instance = nullptr;
   }
 }
 
-RSDevices *RSRoot_DX11::getDevices() const { return DevicesPtr; }
+RSDevices *RSRoot_VK::getDevices() const { return DevicesPtr; }
 
-RSPipelinesManager *RSRoot_DX11::getPipelinesManager() const {
+RSPipelinesManager *RSRoot_VK::getPipelinesManager() const {
   return PipelinesManagerPtr;
 }
 
-RSDrawCallsPool *RSRoot_DX11::getDrawCallsPool() const {
+RSDrawCallsPool *RSRoot_VK::getDrawCallsPool() const {
   return DrawCallsPoolPtr;
 }
 
-RSResourceManager *RSRoot_DX11::getResourceManager() const {
+RSResourceManager *RSRoot_VK::getResourceManager() const {
   return ResourceManagerPtr;
 }
 
-RSStaticResources *RSRoot_DX11::getStaticResources() const {
+RSStaticResources *RSRoot_VK::getStaticResources() const {
   return StaticResourcesPtr;
 }
 
-RSCamerasContainer *RSRoot_DX11::getCamerasContainer() const {
+RSCamerasContainer *RSRoot_VK::getCamerasContainer() const {
   return CamerasContainerPtr;
 }
 
-RSLightsContainer *RSRoot_DX11::getLightsContainer() const {
+RSLightsContainer *RSRoot_VK::getLightsContainer() const {
   return LightsContainerPtr;
 }
 
-RSParticlesContainer *RSRoot_DX11::getParticlesContainer() const {
+RSParticlesContainer *RSRoot_VK::getParticlesContainer() const {
   return ParticlesContainerPtr;
 }
 
-RSMeshHelper *RSRoot_DX11::getMeshHelper() const { return MeshHelperPtr; }
+RSMeshHelper *RSRoot_VK::getMeshHelper() const { return MeshHelperPtr; }

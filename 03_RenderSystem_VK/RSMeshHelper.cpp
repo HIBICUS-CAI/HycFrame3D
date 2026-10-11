@@ -11,7 +11,7 @@
 
 #include "RSDevices.h"
 #include "RSResourceManager.h"
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 #include "RSStaticResources.h"
 #include "RSTextureLoader.h"
 
@@ -27,7 +27,7 @@ RSMeshHelper::RSMeshHelper()
 
 RSMeshHelper::~RSMeshHelper() {}
 
-bool RSMeshHelper::startUp(RSRoot_DX11 *RootPtr,
+bool RSMeshHelper::startUp(RSRoot_VK *RootPtr,
                            RSResourceManager *ResManagerPtr) {
   if (!RootPtr || !ResManagerPtr) {
     return false;
@@ -222,7 +222,7 @@ void RSMeshHelper::releaseSubMesh(RS_SUBMESH_DATA &MeshData) {
 static bool G_SpriteRectHasBuilt = false;
 static RS_SUBMESH_DATA G_SpriteData = {};
 
-RSGeometryGenerator::RSGeometryGenerator(RSRoot_DX11 *RootPtr)
+RSGeometryGenerator::RSGeometryGenerator(RSRoot_VK *RootPtr)
     : MeshHelper(RootPtr->getMeshHelper()), Devices(RootPtr->getDevices()),
       ResourceManager(RootPtr->getResourceManager()) {}
 

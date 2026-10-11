@@ -10,7 +10,7 @@
 #include "RSDevices.h"
 
 #include "RSCommandContext.h"
-#include "RSRoot_DX11.h"
+#include "RSRoot_VK.h"
 
 #include <SDL.h>
 #include <SDL_vulkan.h>
@@ -96,7 +96,7 @@ RSDevices::RSDevices()
 
 RSDevices::~RSDevices() {}
 
-bool RSDevices::startUp(RSRoot_DX11 *RootPtr, SDL_Window *WndHandle) {
+bool RSDevices::startUp(RSRoot_VK *RootPtr, SDL_Window *WndHandle) {
   if (!RootPtr || !WndHandle) {
     return false;
   }

@@ -15,7 +15,7 @@
 
 class RSDrawCallsPool {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
 
   std::array<RSDrawCallsPipe, static_cast<size_t>(DRAWCALL_TYPE::MAX)>
       DrawCallsPipeArray;
@@ -24,7 +24,7 @@ public:
   RSDrawCallsPool();
   ~RSDrawCallsPool();
 
-  bool startUp(class RSRoot_DX11 *RootPtr);
+  bool startUp(class RSRoot_VK *RootPtr);
   void cleanAndStop();
 
   void addDrawCallToPipe(DRAWCALL_TYPE Type, const RS_DRAWCALL_DATA &DrawCall);

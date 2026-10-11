@@ -5,7 +5,7 @@
 
 #include <RSParticleEmitter.h>
 #include <RSParticlesContainer.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 
 #include <vector>
 
@@ -26,14 +26,14 @@ bool AParticleComponent::init() {
 void AParticleComponent::update(const Timer &Timer) { syncDataFromTransform(); }
 
 void AParticleComponent::destory() {
-  getRSDX11RootInstance()->getParticlesContainer()->deleteRSParticleEmitter(
+  getRSVKRootInstance()->getParticlesContainer()->deleteRSParticleEmitter(
       getCompName());
 }
 
 void AParticleComponent::createEmitter(
     const PARTICLE_EMITTER_INFO *EmitterInfo) {
   RSParticleEmitterPtr =
-      getRSDX11RootInstance()->getParticlesContainer()->createRSParticleEmitter(
+      getRSVKRootInstance()->getParticlesContainer()->createRSParticleEmitter(
           getCompName(), EmitterInfo);
 }
 

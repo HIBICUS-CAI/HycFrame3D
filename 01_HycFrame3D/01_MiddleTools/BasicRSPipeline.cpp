@@ -14,7 +14,7 @@
 #include <RSPipeline.h>
 #include <RSPipelinesManager.h>
 #include <RSResourceManager.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 #include <RSShaderCompile.h>
 #include <RSStaticResources.h>
 #include <RSTextureLoader.h>
@@ -49,7 +49,7 @@
     }                                                                          \
   }
 
-static RSRoot_DX11 *G_RSRoot = nullptr;
+static RSRoot_VK *G_RSRoot = nullptr;
 static RSPass_PriticleSetUp *G_ParticleSetUpPass = nullptr;
 static RSPipeline *G_BasicPipeline = nullptr;
 static RSPipeline *G_SimplePipeline = nullptr;
@@ -382,7 +382,7 @@ bool createBasicPipeline() {
     }
   }
 
-  G_RSRoot = getRSDX11RootInstance();
+  G_RSRoot = getRSVKRootInstance();
   std::string Name = "";
 
   Name = "mrt-pass";
@@ -665,7 +665,7 @@ bool createBasicPipeline() {
   return true;
 }
 
-RSPass_MRT::RSPass_MRT(std::string &Name, PASS_TYPE Type, RSRoot_DX11 *Root)
+RSPass_MRT::RSPass_MRT(std::string &Name, PASS_TYPE Type, RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       AniVertexShader(nullptr), PixelShader(nullptr), NDPixelShader(nullptr),
       StaticPipeline(nullptr), AniPipeline(nullptr),
@@ -789,8 +789,7 @@ void RSPass_MRT::execuatePass() {
 
   static std::string A_NAME = "AnimationVertex";
   static const auto ANIMAT_LAYOUT =
-      getRSDX11RootInstance()->getStaticResources()->getStaticInputLayout(
-          A_NAME);
+      getRSVKRootInstance()->getStaticResources()->getStaticInputLayout(A_NAME);
 
   for (auto &Draw : DrawCallPipe->Data) {
     if (Draw.MeshData.InputLayout == ANIMAT_LAYOUT) {
@@ -1010,7 +1009,7 @@ bool RSPass_MRT::createPipelines() {
   return true;
 }
 
-RSPass_Ssao::RSPass_Ssao(std::string &Name, PASS_TYPE Type, RSRoot_DX11 *Root)
+RSPass_Ssao::RSPass_Ssao(std::string &Name, PASS_TYPE Type, RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       PixelShader(nullptr), CompressVertexShader(nullptr),
       CompressPixelShader(nullptr), SsaoPipeline(nullptr),
@@ -1388,9 +1387,7 @@ bool RSPass_Ssao::createPipelines() {
   return true;
 }
 
-RSPass_KBBlur::RSPass_KBBlur(std::string &Name,
-                             PASS_TYPE Type,
-                             RSRoot_DX11 *Root)
+RSPass_KBBlur::RSPass_KBBlur(std::string &Name, PASS_TYPE Type, RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), HoriBlurShader(nullptr),
       VertBlurShader(nullptr), SsaoTexUav(nullptr), GeoBufferSrv(nullptr),
       DepthMapSrv(nullptr) {}
@@ -1438,9 +1435,9 @@ void RSPass_KBBlur::execuatePass() {
 
   static const UINT LoopCount = G_RenderEffectConfig.SsaoBlurCount;
   static UINT Width =
-      getRSDX11RootInstance()->getDevices()->getCurrWndWidth() / 2;
+      getRSVKRootInstance()->getDevices()->getCurrWndWidth() / 2;
   static UINT Height =
-      getRSDX11RootInstance()->getDevices()->getCurrWndHeight() / 2;
+      getRSVKRootInstance()->getDevices()->getCurrWndHeight() / 2;
   UINT DispatchVert = rs_tool::align(Width, 256) / 256;
   UINT DispatchHori = rs_tool::align(Height, 256) / 256;
 
@@ -1488,9 +1485,7 @@ bool RSPass_KBBlur::createViews() {
   return true;
 }
 
-RSPass_Shadow::RSPass_Shadow(std::string &Name,
-                             PASS_TYPE Type,
-                             RSRoot_DX11 *Root)
+RSPass_Shadow::RSPass_Shadow(std::string &Name, PASS_TYPE Type, RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       AniVertexShader(nullptr), StaticPipeline(nullptr), AniPipeline(nullptr),
       DepthStencilView({nullptr}), DrawCallType(DRAWCALL_TYPE::OPACITY),
@@ -1584,8 +1579,7 @@ void RSPass_Shadow::execuatePass() {
 
   static std::string A_NAME = "AnimationVertex";
   static const auto ANIMAT_LAYOUT =
-      getRSDX11RootInstance()->getStaticResources()->getStaticInputLayout(
-          A_NAME);
+      getRSVKRootInstance()->getStaticResources()->getStaticInputLayout(A_NAME);
 
   for (UINT I = 0; I < ShadowSize; I++) {
     context()->setRenderTargets(0, nullptr, DepthStencilView[I]);
@@ -1799,7 +1793,7 @@ bool RSPass_Shadow::createSamplers() { return true; }
 
 RSPass_Defered::RSPass_Defered(std::string &Name,
                                PASS_TYPE Type,
-                               RSRoot_DX11 *Root)
+                               RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       PixelShader(nullptr), Pipeline(nullptr), RenderTargetView(nullptr),
       LinearWrapSampler(nullptr), PointClampSampler(nullptr),
@@ -1920,7 +1914,7 @@ void RSPass_Defered::execuatePass() {
 
   Ambient *AmbData = static_cast<Ambient *>(AmbientStructedBuffer->map());
   dx::XMFLOAT4 AmbientL =
-      getRSDX11RootInstance()->getLightsContainer()->getCurrentAmbientLight();
+      getRSVKRootInstance()->getLightsContainer()->getCurrentAmbientLight();
   AmbData[0].AmbientV = AmbientL;
   AmbientStructedBuffer->unmap();
 
@@ -2154,7 +2148,7 @@ bool RSPass_Defered::createPipelines() {
 
 RSPass_SkyShpere::RSPass_SkyShpere(std::string &Name,
                                    PASS_TYPE Type,
-                                   RSRoot_DX11 *Root)
+                                   RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       PixelShader(nullptr), Pipeline(nullptr), LinearWrapSampler(nullptr),
       RenderTargerView(nullptr), DepthStencilView(nullptr),
@@ -2329,7 +2323,7 @@ bool RSPass_SkyShpere::createSamplers() {
   return true;
 }
 
-RSPass_Bloom::RSPass_Bloom(std::string &Name, PASS_TYPE Type, RSRoot_DX11 *Root)
+RSPass_Bloom::RSPass_Bloom(std::string &Name, PASS_TYPE Type, RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       PixelShader(nullptr), Pipeline(nullptr),
       DrawCallType(DRAWCALL_TYPE::LIGHT), DrawCallPipe(nullptr),
@@ -2546,7 +2540,7 @@ bool RSPass_Bloom::createPipelines() {
 
 RSPass_PriticleSetUp::RSPass_PriticleSetUp(std::string &Name,
                                            PASS_TYPE Type,
-                                           RSRoot_DX11 *Root)
+                                           RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), TilingConstant({}),
       ParticleRenderBuffer(nullptr), ParticleRender_Srv(nullptr),
       ParticleRender_Uav(nullptr), ParticlePartA(nullptr), PartA_Srv(nullptr),
@@ -2625,8 +2619,8 @@ bool RSPass_PriticleSetUp::initPass() {
     return true;
   }
 
-  int Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
-  int Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
+  int Width = getRSVKRootInstance()->getDevices()->getCurrWndWidth();
+  int Height = getRSVKRootInstance()->getDevices()->getCurrWndHeight();
 
   TilingConstant.NumTilesX =
       rs_tool::align(Width, PTC_TILE_X_SIZE) / PTC_TILE_X_SIZE;
@@ -2650,7 +2644,7 @@ bool RSPass_PriticleSetUp::initPass() {
     return false;
   }
 
-  auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
+  auto ResourceManager = getRSVKRootInstance()->getResourceManager();
   RS_RESOURCE_INFO ResInfo;
 
   ResInfo = {};
@@ -2774,7 +2768,7 @@ bool RSPass_PriticleSetUp::initPass() {
 }
 
 void RSPass_PriticleSetUp::releasePass() {
-  auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
+  auto ResourceManager = getRSVKRootInstance()->getResourceManager();
   ResourceManager->deleteResource(PTC_RENDER_BUFFER_NAME);
   ResourceManager->deleteResource(PTC_A_NAME);
   ResourceManager->deleteResource(PTC_B_NAME);
@@ -3037,7 +3031,7 @@ bool RSPass_PriticleSetUp::createViews() {
 
 RSPass_PriticleEmitSimulate::RSPass_PriticleEmitSimulate(std::string &Name,
                                                          PASS_TYPE Type,
-                                                         RSRoot_DX11 *Root)
+                                                         RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), RSParticleContainerPtr(nullptr),
       InitDeadListShader(nullptr), ResetParticlesShader(nullptr),
       EmitParticleShader(nullptr), SimulateShader(nullptr),
@@ -3091,14 +3085,13 @@ bool RSPass_PriticleEmitSimulate::initPass() {
     return true;
   }
 
-  RSParticleContainerPtr = getRSDX11RootInstance()->getParticlesContainer();
+  RSParticleContainerPtr = getRSVKRootInstance()->getParticlesContainer();
   if (!RSParticleContainerPtr) {
     return false;
   }
 
   RSCameraInfo =
-      getRSDX11RootInstance()->getCamerasContainer()->getRSCameraInfo(
-          "temp-cam");
+      getRSVKRootInstance()->getCamerasContainer()->getRSCameraInfo("temp-cam");
   if (!RSCameraInfo) {
     return false;
   }
@@ -3335,7 +3328,7 @@ bool RSPass_PriticleEmitSimulate::createShaders() {
 }
 
 bool RSPass_PriticleEmitSimulate::checkResources() {
-  auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
+  auto ResourceManager = getRSVKRootInstance()->getResourceManager();
   if (!ResourceManager) {
     return false;
   }
@@ -3419,7 +3412,7 @@ bool RSPass_PriticleEmitSimulate::checkResources() {
 
 RSPass_PriticleTileRender::RSPass_PriticleTileRender(std::string &Name,
                                                      PASS_TYPE Type,
-                                                     RSRoot_DX11 *Root)
+                                                     RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), CoarseCullingShader(nullptr),
       TileCullingShader(nullptr), TileRenderShader(nullptr),
       BlendVertexShader(nullptr), BlendPixelShader(nullptr),
@@ -3485,8 +3478,7 @@ bool RSPass_PriticleTileRender::initPass() {
   }
 
   RSCameraInfo =
-      getRSDX11RootInstance()->getCamerasContainer()->getRSCameraInfo(
-          "temp-cam");
+      getRSVKRootInstance()->getCamerasContainer()->getRSCameraInfo("temp-cam");
   if (!RSCameraInfo) {
     return false;
   }
@@ -3742,8 +3734,7 @@ void RSPass_PriticleTileRender::execuatePass() {
   }
 
   {
-    static auto Rtv =
-        getRSDX11RootInstance()->getDevices()->getHighDynamicRtv();
+    static auto Rtv = getRSVKRootInstance()->getDevices()->getHighDynamicRtv();
     static VkViewport VP = {};
     VP.width = 1280.f;
     VP.height = 720.f;
@@ -3833,7 +3824,7 @@ bool RSPass_PriticleTileRender::createBlend() {
 }
 
 bool RSPass_PriticleTileRender::checkResources() {
-  auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
+  auto ResourceManager = getRSVKRootInstance()->getResourceManager();
   if (!ResourceManager) {
     return false;
   }
@@ -3930,9 +3921,7 @@ bool RSPass_PriticleTileRender::checkResources() {
   return true;
 }
 
-RSPass_Sprite::RSPass_Sprite(std::string &Name,
-                             PASS_TYPE Type,
-                             RSRoot_DX11 *Root)
+RSPass_Sprite::RSPass_Sprite(std::string &Name, PASS_TYPE Type, RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       PixelShader(nullptr), Pipeline(nullptr), RenderTargetView(nullptr),
       DrawCallType(DRAWCALL_TYPE::MAX), DrawCallPipe(nullptr),
@@ -4131,7 +4120,7 @@ bool RSPass_Sprite::createSamplers() {
 
 RSPass_SimpleLight::RSPass_SimpleLight(std::string &Name,
                                        PASS_TYPE Type,
-                                       RSRoot_DX11 *Root)
+                                       RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       PixelShader(nullptr), Pipeline(nullptr), RenderTargetView(nullptr),
       LinearWrapSampler(nullptr), GeoBufferSrv(nullptr), SsaoSrv(nullptr),
@@ -4271,7 +4260,7 @@ bool RSPass_SimpleLight::createPipelines() {
 
 RSPass_Billboard::RSPass_Billboard(std::string &Name,
                                    PASS_TYPE Type,
-                                   RSRoot_DX11 *Root)
+                                   RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       GeometryShader(nullptr), PixelShader(nullptr), Pipeline(nullptr),
       RenderTargetView(nullptr), DepthStencilView(nullptr),
@@ -4497,7 +4486,7 @@ bool RSPass_Billboard::createSamplers() {
 
 RSPass_Tonemapping::RSPass_Tonemapping(std::string &Name,
                                        PASS_TYPE Type,
-                                       RSRoot_DX11 *Root)
+                                       RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), AverLuminShader(nullptr),
       DynamicExposureShader(nullptr), ToneMapShader(nullptr), HdrUav(nullptr),
       HdrSrv(nullptr), AverageLuminBufferArray({nullptr, nullptr}),
@@ -4564,8 +4553,8 @@ void RSPass_Tonemapping::execuatePass() {
   static RSUnorderedAccessView *NullUav = nullptr;
   static RSShaderResourceView *NullSrv = nullptr;
 
-  UINT Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
-  UINT Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
+  UINT Width = getRSVKRootInstance()->getDevices()->getCurrWndWidth();
+  UINT Height = getRSVKRootInstance()->getDevices()->getCurrWndHeight();
   UINT DispatchX = rs_tool::align(Width, 32) / 32;
   UINT DispatchY = rs_tool::align(Height, 32) / 32;
 
@@ -4683,7 +4672,7 @@ bool RSPass_Tonemapping::createViews() {
 
 RSPass_BloomHdr::RSPass_BloomHdr(std::string &Name,
                                  PASS_TYPE Type,
-                                 RSRoot_DX11 *Root)
+                                 RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), FilterPixelShader(nullptr),
       KABlurHoriShader(nullptr), KABlurVertShader(nullptr),
       BlurHoriShader(nullptr), BlurVertShader(nullptr), UpSampleShader(nullptr),
@@ -4787,8 +4776,8 @@ void RSPass_BloomHdr::releasePass() {
 void RSPass_BloomHdr::execuatePass() {
   static RSUnorderedAccessView *NullUav = nullptr;
   static RSShaderResourceView *NullSrv = nullptr;
-  UINT Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
-  UINT Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
+  UINT Width = getRSVKRootInstance()->getDevices()->getCurrWndWidth();
+  UINT Height = getRSVKRootInstance()->getDevices()->getCurrWndHeight();
   UINT DispatchX = rs_tool::align(Width, 16) / 16;
   UINT DispatchY = rs_tool::align(Height, 16) / 16;
 
@@ -5038,7 +5027,7 @@ bool RSPass_BloomHdr::createSampler() {
 
 RSPass_ToSwapChain::RSPass_ToSwapChain(std::string &Name,
                                        PASS_TYPE Type,
-                                       RSRoot_DX11 *Root)
+                                       RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       PixelShader(nullptr), Pipeline(nullptr), VertexBuffer(nullptr),
       IndexBuffer(nullptr), SwapChainRtv(nullptr), HdrSrv(nullptr),
@@ -5170,7 +5159,7 @@ bool RSPass_ToSwapChain::createPipelines() {
   return true;
 }
 
-RSPass_FXAA::RSPass_FXAA(std::string &Name, PASS_TYPE Type, RSRoot_DX11 *Root)
+RSPass_FXAA::RSPass_FXAA(std::string &Name, PASS_TYPE Type, RSRoot_VK *Root)
     : RSPass_Base(Name, Type, Root), FXAAShader(nullptr), HdrUav(nullptr),
       CopyTex(nullptr), CopySrv(nullptr), LinearBorderSampler(nullptr) {}
 

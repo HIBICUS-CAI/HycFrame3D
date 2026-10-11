@@ -1,5 +1,5 @@
 ﻿//---------------------------------------------------------------
-// File: RSRoot_DX11.h
+// File: RSRoot_VK.h
 // Proj: RenderSystem_VK
 // Info: 保存并提供此RenderSystem相关的重要内容引用
 // Date: 2021.9.13
@@ -11,9 +11,9 @@
 
 #include "RSCommon.h"
 
-class RSRoot_DX11 *getRSDX11RootInstance();
+class RSRoot_VK *getRSVKRootInstance();
 
-class RSRoot_DX11 {
+class RSRoot_VK {
 private:
   class RSDevices *DevicesPtr;
   class RSPipelinesManager *PipelinesManagerPtr;
@@ -26,8 +26,8 @@ private:
   class RSMeshHelper *MeshHelperPtr;
 
 public:
-  RSRoot_DX11();
-  ~RSRoot_DX11();
+  RSRoot_VK();
+  ~RSRoot_VK();
 
   bool startUp(struct SDL_Window *WndHandle);
   void cleanAndStop();

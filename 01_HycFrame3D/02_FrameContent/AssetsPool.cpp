@@ -5,7 +5,7 @@
 
 #include <FormatUtility.h>
 #include <RSMeshHelper.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 
 AssetsPool::AssetsPool(SceneNode &SceneNode)
     : SceneNodeOwner(SceneNode), SubMeshPool({}), SubMeshToMesh({}),
@@ -145,7 +145,7 @@ void AssetsPool::deleteAllAssets() {
       continue;
     }
 
-    getRSDX11RootInstance()->getMeshHelper()->releaseSubMesh(
+    getRSVKRootInstance()->getMeshHelper()->releaseSubMesh(
         SubMeshData.second.MeshData);
   }
   SubMeshPool.clear();

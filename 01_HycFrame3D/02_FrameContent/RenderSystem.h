@@ -6,7 +6,7 @@
 
 class RenderSystem : public System {
 private:
-  class RSRoot_DX11 *RenderSystemRoot;
+  class RSRoot_VK *RenderSystemRoot;
   class AssetsPool *AssetsPool;
   class RSShaderResourceView *IblEnvTex;
   class RSShaderResourceView *IblDiffTex;

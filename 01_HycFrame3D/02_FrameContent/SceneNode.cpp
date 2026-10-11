@@ -8,7 +8,7 @@
 #include <RSCamera.h>
 #include <RSCamerasContainer.h>
 #include <RSDevices.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 #include <RSTextureLoader.h>
 #include <RSVkObjects.h>
 
@@ -25,7 +25,7 @@ SceneNode::SceneNode(const std::string &Name, SceneManager *SceneManager)
   if (Name != "temp-loading-scene") {
     std::string Cam = "temp-cam";
     CameraAmbientInfo.RSCameraPtr =
-        getRSDX11RootInstance()->getCamerasContainer()->getRSCamera(Cam);
+        getRSVKRootInstance()->getCamerasContainer()->getRSCamera(Cam);
     assert(ObjectContainerPtr && ComponentContainerPtr && AssetsPoolPtr &&
            PhysicsWorldPtr && CameraAmbientInfo.RSCameraPtr &&
            "new scene fail");
@@ -78,7 +78,7 @@ void SceneNode::loadIBLTexture(const std::string &Env,
                                const std::string &Spec) {
   bool Result = false;
   RSShaderResourceView *Srv = nullptr;
-  RSDevices *Devices = getRSDX11RootInstance()->getDevices();
+  RSDevices *Devices = getRSVKRootInstance()->getDevices();
 
   if (Env != "") {
     Result = rs_tool::createDDSTextureFromFile(

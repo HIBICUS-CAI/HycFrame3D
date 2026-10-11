@@ -5,7 +5,7 @@
 #include <RSDevices.h>
 #include <RSMeshHelper.h>
 #include <RSResourceManager.h>
-#include <RSRoot_DX11.h>
+#include <RSRoot_VK.h>
 #include <RSTextureLoader.h>
 #include <TextUtility.h>
 
@@ -422,8 +422,8 @@ void loadByBinary(const std::string &FilePath,
   LAYOUT_TYPE LayoutType = Animated
                                ? LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE
                                : LAYOUT_TYPE::NORMAL_TANGENT_TEX;
-  getRSDX11RootInstance()->getMeshHelper()->processSubMesh(OutResult, &SI,
-                                                           LayoutType);
+  getRSVKRootInstance()->getMeshHelper()->processSubMesh(OutResult, &SI,
+                                                         LayoutType);
 
   InFile.close();
 }
@@ -607,8 +607,8 @@ void loadByJson(const std::string &FilePath,
     LAYOUT_TYPE LayoutType = Animated
                                  ? LAYOUT_TYPE::NORMAL_TANGENT_TEX_WEIGHT_BONE
                                  : LAYOUT_TYPE::NORMAL_TANGENT_TEX;
-    getRSDX11RootInstance()->getMeshHelper()->processSubMesh(OutResult, &SI,
-                                                             LayoutType);
+    getRSVKRootInstance()->getMeshHelper()->processSubMesh(OutResult, &SI,
+                                                           LayoutType);
   }
 
   if (Animated && OutAnimData) {
@@ -766,7 +766,7 @@ void loadByJson(const std::string &FilePath,
 void addTextureToSubMesh(RS_SUBMESH_DATA *OutResult,
                          const std::string &FilePath,
                          MESH_TEXTURE_TYPE Type) {
-  RSRoot_DX11 *Root = getRSDX11RootInstance();
+  RSRoot_VK *Root = getRSVKRootInstance();
 
   std::string Path = "./Assets/Textures/" + FilePath;
   RSShaderResourceView *Srv = nullptr;
