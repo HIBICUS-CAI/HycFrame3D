@@ -229,25 +229,27 @@ private:
 
 class RSPass_Ssao : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11PixelShader *PixelShader;
-  ID3D11VertexShader *CompressVertexShader;
-  ID3D11PixelShader *CompressPixelShader;
-  ID3D11RenderTargetView *RenderTargetView;
-  ID3D11ShaderResourceView *NotCompressSrv;
-  ID3D11RenderTargetView *CompressRtv;
-  ID3D11SamplerState *SamplePointClamp;
-  ID3D11SamplerState *SampleLinearClamp;
-  ID3D11SamplerState *SampleDepthMap;
-  ID3D11SamplerState *SampleLinearWrap;
-  ID3D11Buffer *SsaoInfoStructedBuffer;
-  ID3D11ShaderResourceView *SsaoInfoStructedBufferSrv;
-  ID3D11ShaderResourceView *GeoBufferSrv;
-  ID3D11ShaderResourceView *DepthMapSrv;
-  ID3D11ShaderResourceView *RandomMapSrv;
+  RSShader *VertexShader;
+  RSShader *PixelShader;
+  RSShader *CompressVertexShader;
+  RSShader *CompressPixelShader;
+  RSPipelineState *SsaoPipeline;
+  RSPipelineState *CompressPipeline;
+  RSRenderTargetView *RenderTargetView;
+  RSShaderResourceView *NotCompressSrv;
+  RSRenderTargetView *CompressRtv;
+  RSSampler *SamplePointClamp;
+  RSSampler *SampleLinearClamp;
+  RSSampler *SampleDepthMap;
+  RSSampler *SampleLinearWrap;
+  RSBuffer *SsaoInfoStructedBuffer;
+  RSShaderResourceView *SsaoInfoStructedBufferSrv;
+  RSShaderResourceView *GeoBufferSrv;
+  RSShaderResourceView *DepthMapSrv;
+  RSShaderResourceView *RandomMapSrv;
   std::array<dx::XMFLOAT4, 14> OffsetVec;
-  ID3D11Buffer *VertexBuffer;
-  ID3D11Buffer *IndexBuffer;
+  RSBuffer *VertexBuffer;
+  RSBuffer *IndexBuffer;
   RS_CAM_INFO *RSCameraInfo;
 
 public:
@@ -270,15 +272,17 @@ private:
   bool createTextures();
   bool createViews();
   bool createSamplers();
+  bool createPipelines();
 };
 
 class RSPass_KBBlur : public RSPass_Base {
 private:
-  ID3D11ComputeShader *HoriBlurShader;
-  ID3D11ComputeShader *VertBlurShader;
-  ID3D11UnorderedAccessView *SsaoTexUav;
-  ID3D11ShaderResourceView *GeoBufferSrv;
-  ID3D11ShaderResourceView *DepthMapSrv;
+  // compute shaders are held as their pipeline states
+  RSPipelineState *HoriBlurShader;
+  RSPipelineState *VertBlurShader;
+  RSUnorderedAccessView *SsaoTexUav;
+  RSShaderResourceView *GeoBufferSrv;
+  RSShaderResourceView *DepthMapSrv;
 
 public:
   RSPass_KBBlur(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
