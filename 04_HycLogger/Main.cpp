@@ -3,12 +3,15 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/spdlog.h>
 
+#include <algorithm>
+#include <cassert>
 #include <chrono>
 #include <ctime>
 #include <cstring>
 #include <unordered_map>
 
 int main(int Argc, char **Args) {
+#ifdef _WIN32
   SetConsoleTitleA("HycFrame3D Logger");
 
   HANDLE ConsoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -25,6 +28,7 @@ int main(int Argc, char **Args) {
     std::printf("Failed to change the font: %d\n",
                 static_cast<int>(GetLastError()));
   }
+#endif // _WIN32
 
   hyc::tcp::sockSysStartUp();
 
