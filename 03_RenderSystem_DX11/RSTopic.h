@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSTopic.h
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 描述一个具体的主题并提供执行与操作方式
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
@@ -17,7 +17,7 @@ private:
   bool AssemblyFinishFlag;
   UINT ExecuateOrderInPipeline;
   std::vector<class RSPass_Base *> PassArray;
-  ID3D11DeviceContext *MTContext;
+  class RSCommandContext *Context;
 
 public:
   RSTopic(const std::string &Name);
@@ -34,7 +34,7 @@ public:
   void setExecuateOrder(UINT Order);
   UINT getExecuateOrder() const;
 
-  void setMTContext(ID3D11DeviceContext *ContextPtr);
+  void setContext(class RSCommandContext *ContextPtr);
 
   void insertPass(class RSPass_Base *Pass);
   void erasePass(class RSPass_Base *Pass);

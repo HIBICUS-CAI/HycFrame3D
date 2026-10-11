@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSPass_Base.h
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 描述一个抽象的渲染通道并提供基础信息的操作与获取方式
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
@@ -17,9 +17,8 @@ private:
   const PASS_TYPE PassType;
   UINT ExecuateOrderInTopic;
 
-  ID3D11Device *Device;
-  ID3D11DeviceContext *STContext;
-  ID3D11DeviceContext *MTContext;
+  class RSDevices *Devices;
+  class RSCommandContext *Context;
 
 protected:
   bool HasBeenInited;
@@ -39,17 +38,11 @@ public:
   void setExecuateOrder(UINT Order) { ExecuateOrderInTopic = Order; }
   UINT getExecuateOrder() const { return ExecuateOrderInTopic; }
 
-  void setMTContext(ID3D11DeviceContext *MTContextPtr) {
-    MTContext = MTContextPtr;
-  }
+  // every topic records into its own command context
+  void setContext(class RSCommandContext *ContextPtr) { Context = ContextPtr; }
 
-  ID3D11Device *device() const { return Device; }
-  ID3D11DeviceContext *context() const {
-    if (MTContext) {
-      return MTContext;
-    }
-    return STContext;
-  }
+  class RSDevices *device() const { return Devices; }
+  class RSCommandContext *context() const { return Context; }
 
 public:
   virtual RSPass_Base *clonePass() = 0;
