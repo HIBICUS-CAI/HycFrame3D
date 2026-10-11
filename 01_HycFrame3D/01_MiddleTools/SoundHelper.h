@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
-#include <xaudio2.h>
 
-using SOUND_HANDLE = IXAudio2SourceVoice *;
+// opaque handle of a loaded sound and the voice which plays it
+using SOUND_HANDLE = struct SOUND_VOICE *;
 using LOAD_HANDLE = std::string;
 
 bool soundHasInited();
