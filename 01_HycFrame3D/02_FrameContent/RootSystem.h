@@ -8,7 +8,7 @@ private:
   class ObjectFactory *ObjectFactoryPtr;
   class SystemExecutive *SystemExecutivePtr;
 
-  Timer Timer;
+  ::Timer Timer;
 
 public:
   RootSystem();
