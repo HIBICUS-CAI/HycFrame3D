@@ -2,7 +2,7 @@
 
 #include "Hyc3DCommon.h"
 
-#include <directxmath.h>
+#include <DirectXMath.h>
 #include <map>
 #include <set>
 
