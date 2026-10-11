@@ -184,6 +184,7 @@ private:
   void beginRendering();
   void endRendering();
   void flushPendingClears();
+  void applyViewport(const VkViewport &ViewPort);
 
   //-------------------------------------------------------------
   // descriptors
