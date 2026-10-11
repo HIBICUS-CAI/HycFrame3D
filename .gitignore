@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 01_HycFrame3D/RenderSystem_StaticResources/
 01_HycFrame3D/Assets/Configs/AutoCreated_AdapterInfoInSystem.txt
+# CMake build directories
+/build*/
