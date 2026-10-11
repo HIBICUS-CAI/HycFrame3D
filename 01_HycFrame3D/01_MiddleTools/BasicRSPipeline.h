@@ -427,20 +427,21 @@ private:
 
 class RSPass_Bloom : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11PixelShader *PixelShader;
+  RSShader *VertexShader;
+  RSShader *PixelShader;
+  RSPipelineState *Pipeline;
   DRAWCALL_TYPE DrawCallType;
   RSDrawCallsPipe *DrawCallPipe;
-  ID3D11Buffer *ViewProjStructedBuffer;
-  ID3D11ShaderResourceView *ViewProjStructedBufferSrv;
-  ID3D11Buffer *InstanceStructedBuffer;
-  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
-  ID3D11RenderTargetView *Rtv;
-  ID3D11DepthStencilView *DepthDsv;
+  RSBuffer *ViewProjStructedBuffer;
+  RSShaderResourceView *ViewProjStructedBufferSrv;
+  RSBuffer *InstanceStructedBuffer;
+  RSShaderResourceView *InstanceStructedBufferSrv;
+  RSRenderTargetView *Rtv;
+  RSDepthStencilView *DepthDsv;
   RS_CAM_INFO *RSCameraInfo;
-  ID3D11Buffer *VertexBuffer;
-  ID3D11Buffer *IndexBuffer;
-  ID3D11SamplerState *Sampler;
+  RSBuffer *VertexBuffer;
+  RSBuffer *IndexBuffer;
+  RSSampler *Sampler;
 
 public:
   RSPass_Bloom(std::string &Name, PASS_TYPE Type, class RSRoot_DX11 *Root);
@@ -461,6 +462,7 @@ private:
   bool createBuffers();
   bool createViews();
   bool createSamplers();
+  bool createPipelines();
 };
 
 class RSPass_PriticleSetUp : public RSPass_Base {

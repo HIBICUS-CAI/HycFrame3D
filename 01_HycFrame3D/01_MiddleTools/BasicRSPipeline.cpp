@@ -2329,24 +2329,37 @@ bool RSPass_SkyShpere::createSamplers() {
 
 RSPass_Bloom::RSPass_Bloom(std::string &Name, PASS_TYPE Type, RSRoot_DX11 *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
-      PixelShader(nullptr), DrawCallType(DRAWCALL_TYPE::LIGHT),
-      DrawCallPipe(nullptr), ViewProjStructedBuffer(nullptr),
-      ViewProjStructedBufferSrv(nullptr), InstanceStructedBuffer(nullptr),
-      InstanceStructedBufferSrv(nullptr), Rtv(nullptr), DepthDsv(nullptr),
-      RSCameraInfo(nullptr), VertexBuffer(nullptr), IndexBuffer(nullptr),
-      Sampler(nullptr) {}
+      PixelShader(nullptr), Pipeline(nullptr),
+      DrawCallType(DRAWCALL_TYPE::LIGHT), DrawCallPipe(nullptr),
+      ViewProjStructedBuffer(nullptr), ViewProjStructedBufferSrv(nullptr),
+      InstanceStructedBuffer(nullptr), InstanceStructedBufferSrv(nullptr),
+      Rtv(nullptr), DepthDsv(nullptr), RSCameraInfo(nullptr),
+      VertexBuffer(nullptr), IndexBuffer(nullptr), Sampler(nullptr) {}
 
 RSPass_Bloom::RSPass_Bloom(const RSPass_Bloom &Source)
     : RSPass_Base(Source), VertexShader(Source.VertexShader),
-      PixelShader(Source.PixelShader), DrawCallType(Source.DrawCallType),
-      DrawCallPipe(Source.DrawCallPipe),
+      PixelShader(Source.PixelShader), Pipeline(Source.Pipeline),
+      DrawCallType(Source.DrawCallType), DrawCallPipe(Source.DrawCallPipe),
       ViewProjStructedBuffer(Source.ViewProjStructedBuffer),
       ViewProjStructedBufferSrv(Source.ViewProjStructedBufferSrv),
       InstanceStructedBuffer(Source.InstanceStructedBuffer),
       InstanceStructedBufferSrv(Source.InstanceStructedBufferSrv),
       Rtv(Source.Rtv), DepthDsv(Source.DepthDsv),
       RSCameraInfo(Source.RSCameraInfo), VertexBuffer(Source.VertexBuffer),
-      IndexBuffer(Source.IndexBuffer), Sampler(Source.Sampler) {}
+      IndexBuffer(Source.IndexBuffer), Sampler(Source.Sampler) {
+  if (HasBeenInited) {
+    RS_ADDREF(VertexShader);
+    RS_ADDREF(PixelShader);
+    RS_ADDREF(Pipeline);
+    RS_ADDREF(ViewProjStructedBuffer);
+    RS_ADDREF(ViewProjStructedBufferSrv);
+    RS_ADDREF(InstanceStructedBuffer);
+    RS_ADDREF(InstanceStructedBufferSrv);
+    RS_ADDREF(VertexBuffer);
+    RS_ADDREF(IndexBuffer);
+    RS_ADDREF(Sampler);
+  }
+}
 
 RSPass_Bloom::~RSPass_Bloom() {}
 
@@ -2369,6 +2382,9 @@ bool RSPass_Bloom::initPass() {
   if (!createSamplers()) {
     return false;
   }
+  if (!createPipelines()) {
+    return false;
+  }
 
   DrawCallPipe = G_RSRoot->getDrawCallsPool()->getDrawCallsPipe(DrawCallType);
 
@@ -2388,42 +2404,40 @@ void RSPass_Bloom::releasePass() {
 
   RS_RELEASE(VertexShader);
   RS_RELEASE(PixelShader);
+  RS_RELEASE(Pipeline);
   RS_RELEASE(ViewProjStructedBufferSrv);
   RS_RELEASE(InstanceStructedBufferSrv);
   RS_RELEASE(ViewProjStructedBuffer);
+  RS_RELEASE(InstanceStructedBuffer);
   RS_RELEASE(VertexBuffer);
   RS_RELEASE(IndexBuffer);
   RS_RELEASE(Sampler);
 }
 
 void RSPass_Bloom::execuatePass() {
-  context()->OMSetRenderTargets(1, &Rtv, DepthDsv);
-  context()->RSSetViewports(1, &G_ViewPort);
-  context()->VSSetShader(VertexShader, nullptr, 0);
-  context()->PSSetShader(PixelShader, nullptr, 0);
+  context()->setRenderTargets(1, &Rtv, DepthDsv);
+  context()->setViewport(G_ViewPort);
+  context()->setPipelineState(Pipeline);
 
   dx::XMMATRIX Mat = {};
-  UINT Stride = sizeof(vertex_type::ColorVertex);
-  UINT Offset = 0;
 
-  D3D11_MAPPED_SUBRESOURCE Msr = {};
-  context()->Map(ViewProjStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-  ViewProj *VpData = static_cast<ViewProj *>(Msr.pData);
+  ViewProj *VpData = static_cast<ViewProj *>(ViewProjStructedBuffer->map());
   Mat = dx::XMLoadFloat4x4(&RSCameraInfo->ViewMatrix);
   Mat = dx::XMMatrixTranspose(Mat);
   dx::XMStoreFloat4x4(&VpData[0].ViewMat, Mat);
   Mat = dx::XMLoadFloat4x4(&RSCameraInfo->ProjMatrix);
   Mat = dx::XMMatrixTranspose(Mat);
   dx::XMStoreFloat4x4(&VpData[0].ProjMat, Mat);
-  context()->Unmap(ViewProjStructedBuffer, 0);
+  ViewProjStructedBuffer->unmap();
 
-  context()->VSSetShaderResources(0, 1, &ViewProjStructedBufferSrv);
+  context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 0, 1,
+                                &ViewProjStructedBufferSrv);
 
   for (auto &Draw : DrawCallPipe->Data) {
     auto InsVecPtr = Draw.InstanceData.DataArrayPtr;
     auto Size = InsVecPtr->size();
-    context()->Map(InstanceStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    RS_INSTANCE_DATA *InsData = static_cast<RS_INSTANCE_DATA *>(Msr.pData);
+    RS_INSTANCE_DATA *InsData =
+        static_cast<RS_INSTANCE_DATA *>(InstanceStructedBuffer->map());
     for (size_t I = 0; I < Size; I++) {
       Mat = dx::XMLoadFloat4x4(&(*InsVecPtr)[I].WorldMatrix);
       Mat = dx::XMMatrixTranspose(Mat);
@@ -2432,177 +2446,68 @@ void RSPass_Bloom::execuatePass() {
       InsData[I].CustomizedData1 = (*InsVecPtr)[I].CustomizedData1;
       InsData[I].CustomizedData2 = (*InsVecPtr)[I].CustomizedData2;
     }
-    context()->Unmap(InstanceStructedBuffer, 0);
+    InstanceStructedBuffer->unmap(Size * sizeof(RS_INSTANCE_DATA));
 
-    context()->IASetInputLayout(Draw.MeshData.InputLayout);
-    context()->IASetPrimitiveTopology(Draw.MeshData.TopologyType);
-    context()->IASetVertexBuffers(0, 1, &Draw.MeshData.VertexBuffer, &Stride,
-                                  &Offset);
-    context()->IASetIndexBuffer(Draw.MeshData.IndexBuffer, DXGI_FORMAT_R32_UINT,
-                                0);
-    context()->VSSetShaderResources(1, 1, &InstanceStructedBufferSrv);
+    context()->setPrimitiveTopology(Draw.MeshData.TopologyType);
+    context()->setVertexBuffer(Draw.MeshData.VertexBuffer);
+    context()->setIndexBuffer(Draw.MeshData.IndexBuffer);
+    context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 1, 1,
+                                  &InstanceStructedBufferSrv);
 
-    context()->DrawIndexedInstanced(
+    context()->drawIndexedInstanced(
         Draw.MeshData.IndexSize,
         static_cast<UINT>(Draw.InstanceData.DataArrayPtr->size()), 0, 0, 0);
   }
 
-  static ID3D11RenderTargetView *NullRtv[] = {nullptr};
-  static ID3D11ShaderResourceView *NullSrv[] = {nullptr};
-  context()->OMSetRenderTargets(1, NullRtv, nullptr);
-  context()->VSSetShaderResources(0, 1, NullSrv);
+  static RSShaderResourceView *NullSrv[] = {nullptr};
+  context()->setRenderTargets(0, nullptr, nullptr);
+  context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 0, 1, NullSrv);
 }
 
 bool RSPass_Bloom::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
-
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/bloom_vertex.hlsl",
-                                      "main", "vs_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &VertexShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  VertexShader =
+      compileShader("./Assets/Shaders/bloom_vertex.hlsl", "main", "vs_5_0");
+  FAIL_NULL_RETURN(VertexShader);
 
   const std::string PixelFactor =
       hyc::str::sFormat("{:+f}f", G_RenderEffectConfig.BloomLightPixelFactor);
   if (G_RenderEffectConfig.BloomOff) {
-    D3D_SHADER_MACRO Macro[] = {{"PIXEL_FACTOR", PixelFactor.c_str()},
-                                {nullptr, nullptr}};
-    Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/bloom_pixel.hlsl",
-                                        "main", "ps_5_0", &ShaderBlob, Macro);
-    if (FAILED(Hr)) {
-      return false;
-    }
+    rs_tool::SHADER_MACRO Macro[] = {{"PIXEL_FACTOR", PixelFactor.c_str()},
+                                     {nullptr, nullptr}};
+    PixelShader = compileShader("./Assets/Shaders/bloom_pixel.hlsl", "main",
+                                "ps_5_0", Macro);
   } else {
-    D3D_SHADER_MACRO Macro[] = {{"BLOOM_ON", "1"},
-                                {"PIXEL_FACTOR", PixelFactor.c_str()},
-                                {nullptr, nullptr}};
-    Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/bloom_pixel.hlsl",
-                                        "main", "ps_5_0", &ShaderBlob, Macro);
-    if (FAILED(Hr)) {
-      return false;
-    }
+    rs_tool::SHADER_MACRO Macro[] = {{"BLOOM_ON", "1"},
+                                     {"PIXEL_FACTOR", PixelFactor.c_str()},
+                                     {nullptr, nullptr}};
+    PixelShader = compileShader("./Assets/Shaders/bloom_pixel.hlsl", "main",
+                                "ps_5_0", Macro);
   }
-
-  Hr = device()->CreatePixelShader(ShaderBlob->GetBufferPointer(),
-                                   ShaderBlob->GetBufferSize(), nullptr,
-                                   &PixelShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  FAIL_NULL_RETURN(PixelShader);
 
   return true;
 }
 
 bool RSPass_Bloom::createSamplers() {
-  HRESULT Hr = S_OK;
-  D3D11_SAMPLER_DESC SamDesc = {};
-  ZeroMemory(&SamDesc, sizeof(SamDesc));
-
-  SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-  SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-  SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-  SamDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SamDesc.MinLOD = 0;
-  SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SamDesc, &Sampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  Sampler = G_RSRoot->getDevices()->createSampler(
+      makeLinearSamplerInfo(VK_SAMPLER_ADDRESS_MODE_REPEAT));
+  FAIL_NULL_RETURN(Sampler);
 
   return true;
 }
 
 bool RSPass_Bloom::createBuffers() {
-  HRESULT Hr = S_OK;
-  D3D11_BUFFER_DESC BufDesc = {};
+  InstanceStructedBuffer = createDynamicStructuredBuffer(
+      sizeof(RS_INSTANCE_DATA), MAX_INSTANCE_SIZE);
+  FAIL_NULL_RETURN(InstanceStructedBuffer);
 
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_DYNAMIC;
-  BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  BufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  BufDesc.ByteWidth = MAX_INSTANCE_SIZE * sizeof(RS_INSTANCE_DATA);
-  BufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-  BufDesc.StructureByteStride = sizeof(RS_INSTANCE_DATA);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &InstanceStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewProjStructedBuffer = createDynamicStructuredBuffer(sizeof(ViewProj), 1);
+  FAIL_NULL_RETURN(ViewProjStructedBuffer);
 
-  BufDesc.ByteWidth = sizeof(ViewProj);
-  BufDesc.StructureByteStride = sizeof(ViewProj);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &ViewProjStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  vertex_type::TangentVertex V[4] = {};
-  V[0].Position = dx::XMFLOAT3(-1.0f, -1.0f, 0.0f);
-  V[1].Position = dx::XMFLOAT3(-1.0f, +1.0f, 0.0f);
-  V[2].Position = dx::XMFLOAT3(+1.0f, +1.0f, 0.0f);
-  V[3].Position = dx::XMFLOAT3(+1.0f, -1.0f, 0.0f);
-  V[0].Normal = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-  V[1].Normal = dx::XMFLOAT3(1.0f, 0.0f, 0.0f);
-  V[2].Normal = dx::XMFLOAT3(2.0f, 0.0f, 0.0f);
-  V[3].Normal = dx::XMFLOAT3(3.0f, 0.0f, 0.0f);
-  V[0].Tangent = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-  V[1].Tangent = dx::XMFLOAT3(1.0f, 0.0f, 0.0f);
-  V[2].Tangent = dx::XMFLOAT3(2.0f, 0.0f, 0.0f);
-  V[3].Tangent = dx::XMFLOAT3(3.0f, 0.0f, 0.0f);
-  V[0].TexCoord = dx::XMFLOAT2(0.0f, 1.0f);
-  V[1].TexCoord = dx::XMFLOAT2(0.0f, 0.0f);
-  V[2].TexCoord = dx::XMFLOAT2(1.0f, 0.0f);
-  V[3].TexCoord = dx::XMFLOAT2(1.0f, 1.0f);
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-  BufDesc.ByteWidth = sizeof(vertex_type::TangentVertex) * 4;
-  BufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.MiscFlags = 0;
-  BufDesc.StructureByteStride = 0;
-  D3D11_SUBRESOURCE_DATA VInitData = {};
-  ZeroMemory(&VInitData, sizeof(VInitData));
-  VInitData.pSysMem = V;
-  Hr = device()->CreateBuffer(&BufDesc, &VInitData, &VertexBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  UINT Indices[6] = {0, 1, 2, 0, 2, 3};
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-  BufDesc.ByteWidth = sizeof(UINT) * 6;
-  BufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.StructureByteStride = 0;
-  BufDesc.MiscFlags = 0;
-  D3D11_SUBRESOURCE_DATA IInitData = {};
-  ZeroMemory(&IInitData, sizeof(IInitData));
-  IInitData.pSysMem = Indices;
-  Hr = device()->CreateBuffer(&BufDesc, &IInitData, &IndexBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  return true;
+  return createScreenQuad(&VertexBuffer, &IndexBuffer);
 }
 
 bool RSPass_Bloom::createViews() {
-  HRESULT Hr = S_OK;
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-
   Rtv = G_RSRoot->getDevices()->getHighDynamicRtv();
 
   DepthDsv = G_RSRoot->getResourceManager()->getResource("mrt-depth")->Dsv;
@@ -2610,22 +2515,29 @@ bool RSPass_Bloom::createViews() {
     return false;
   }
 
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementWidth = MAX_INSTANCE_SIZE;
-  Hr = device()->CreateShaderResourceView(InstanceStructedBuffer, &SrvDesc,
-                                          &InstanceStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  InstanceStructedBufferSrv = createStructuredSrv(
+      InstanceStructedBuffer, sizeof(RS_INSTANCE_DATA), MAX_INSTANCE_SIZE);
+  FAIL_NULL_RETURN(InstanceStructedBufferSrv);
 
-  SrvDesc.Buffer.ElementWidth = 1;
-  Hr = device()->CreateShaderResourceView(ViewProjStructedBuffer, &SrvDesc,
-                                          &ViewProjStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewProjStructedBufferSrv =
+      createStructuredSrv(ViewProjStructedBuffer, sizeof(ViewProj), 1);
+  FAIL_NULL_RETURN(ViewProjStructedBufferSrv);
+
+  return true;
+}
+
+bool RSPass_Bloom::createPipelines() {
+  RS_GRAPHICS_PIPELINE_DESC Desc = {};
+  Desc.VertexShader = VertexShader;
+  Desc.PixelShader = PixelShader;
+  Desc.InputLayout =
+      G_RSRoot->getStaticResources()->getStaticInputLayout("ColorVertex");
+  Desc.ColorTargetCount = 1;
+  Desc.ColorFormats[0] =
+      G_RSRoot->getDevices()->getHighDynamicTexture()->getDesc().Format;
+  Desc.DepthFormat = DEPTH_FORMAT;
+  Pipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(Pipeline);
 
   return true;
 }
