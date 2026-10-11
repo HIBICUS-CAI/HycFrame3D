@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSResourceManager.cpp
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 保存并管理所有被创建的资源
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
@@ -10,6 +10,9 @@
 #include "RSResourceManager.h"
 
 #include "RSRoot_DX11.h"
+#include "RSVkObjects.h"
+
+#include <cassert>
 
 #define R_LOCK ResDataLock.lock()
 #define R_UNLOCK ResDataLock.unlock()
@@ -76,7 +79,7 @@ void RSResourceManager::addResource(const std::string &Name,
 }
 
 void RSResourceManager::addMeshSrv(const std::string &Name,
-                                   ID3D11ShaderResourceView *MeshSrv) {
+                                   RSShaderResourceView *MeshSrv) {
   M_LOCK;
   if (MeshSrvMap.find(Name) == MeshSrvMap.end()) {
     MeshSrvMap.insert({Name, MeshSrv});
@@ -97,7 +100,7 @@ RS_RESOURCE_INFO *RSResourceManager::getResource(const std::string &Name) {
   }
 }
 
-ID3D11ShaderResourceView *
+RSShaderResourceView *
 RSResourceManager::getMeshSrv(const std::string &Name) {
   M_LOCK;
   auto Found = MeshSrvMap.find(Name);
