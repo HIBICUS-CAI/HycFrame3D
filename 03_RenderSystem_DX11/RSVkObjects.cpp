@@ -585,8 +585,14 @@ bool RSPipelineState::createGraphics(const RS_GRAPHICS_PIPELINE_DESC &Desc) {
 
     VkPipelineRasterizationStateCreateInfo Raster = {};
     Raster.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
-    Raster.depthClampEnable = Desc.DepthClipEnable ? VK_FALSE : VK_TRUE;
-    Raster.polygonMode = Desc.FillMode;
+    // disabling depth clip in d3d11 clamps the depth, both depend on
+    // optional features in vulkan and fall back to the default states
+    VkPhysicalDeviceFeatures Supported = {};
+    vkGetPhysicalDeviceFeatures(Devices->getPhysicalDevice(), &Supported);
+    Raster.depthClampEnable =
+        (!Desc.DepthClipEnable && Supported.depthClamp) ? VK_TRUE : VK_FALSE;
+    Raster.polygonMode =
+        Supported.fillModeNonSolid ? Desc.FillMode : VK_POLYGON_MODE_FILL;
     Raster.cullMode = Desc.CullMode;
     Raster.frontFace = Desc.FrontFace;
     Raster.depthBiasEnable = Desc.DepthBiasEnable ? VK_TRUE : VK_FALSE;
