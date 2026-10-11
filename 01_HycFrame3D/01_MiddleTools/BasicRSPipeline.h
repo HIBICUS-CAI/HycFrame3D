@@ -343,28 +343,29 @@ private:
 
 class RSPass_Defered : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11PixelShader *PixelShader;
-  ID3D11RenderTargetView *RenderTargetView;
-  ID3D11SamplerState *LinearWrapSampler;
-  ID3D11SamplerState *PointClampSampler;
-  ID3D11SamplerState *ShadowTexSampler;
-  ID3D11Buffer *LightInfoStructedBuffer;
-  ID3D11ShaderResourceView *LightInfoStructedBufferSrv;
-  ID3D11Buffer *LightStructedBuffer;
-  ID3D11ShaderResourceView *LightStructedBufferSrv;
-  ID3D11Buffer *AmbientStructedBuffer;
-  ID3D11ShaderResourceView *AmbientStructedBufferSrv;
-  ID3D11Buffer *ShadowStructedBuffer;
-  ID3D11ShaderResourceView *ShadowStructedBufferSrv;
-  ID3D11Buffer *CameraStructedBuffer;
-  ID3D11ShaderResourceView *CameraStructedBufferSrv;
-  ID3D11ShaderResourceView *GeoBufferSrv;
-  ID3D11ShaderResourceView *AnisotropicSrv;
-  ID3D11ShaderResourceView *SsaoSrv;
-  ID3D11ShaderResourceView *ShadowDepthSrv;
-  ID3D11Buffer *VertexBuffer;
-  ID3D11Buffer *IndexBuffer;
+  RSShader *VertexShader;
+  RSShader *PixelShader;
+  RSPipelineState *Pipeline;
+  RSRenderTargetView *RenderTargetView;
+  RSSampler *LinearWrapSampler;
+  RSSampler *PointClampSampler;
+  RSSampler *ShadowTexSampler;
+  RSBuffer *LightInfoStructedBuffer;
+  RSShaderResourceView *LightInfoStructedBufferSrv;
+  RSBuffer *LightStructedBuffer;
+  RSShaderResourceView *LightStructedBufferSrv;
+  RSBuffer *AmbientStructedBuffer;
+  RSShaderResourceView *AmbientStructedBufferSrv;
+  RSBuffer *ShadowStructedBuffer;
+  RSShaderResourceView *ShadowStructedBufferSrv;
+  RSBuffer *CameraStructedBuffer;
+  RSShaderResourceView *CameraStructedBufferSrv;
+  RSShaderResourceView *GeoBufferSrv;
+  RSShaderResourceView *AnisotropicSrv;
+  RSShaderResourceView *SsaoSrv;
+  RSShaderResourceView *ShadowDepthSrv;
+  RSBuffer *VertexBuffer;
+  RSBuffer *IndexBuffer;
   RS_CAM_INFO *RSCameraInfo;
 
 public:
@@ -386,6 +387,7 @@ private:
   bool createBuffers();
   bool createViews();
   bool createSamplers();
+  bool createPipelines();
 };
 
 class RSPass_SkyShpere : public RSPass_Base {
