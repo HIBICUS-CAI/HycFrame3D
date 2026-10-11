@@ -12,6 +12,8 @@
 #include <RSStaticResources.h>
 #include <TextUtility.h>
 
+#include <iterator>
+
 using namespace hyc::text;
 
 ObjectFactory::ObjectFactory()
@@ -440,7 +442,7 @@ void ObjectFactory::createActorComp(SceneNode *Scene,
     float Pos[3] = {0.f};
     float Ang[3] = {0.f};
     float Sca[3] = {0.f};
-    for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
+    for (UINT I = 0, E = static_cast<UINT>(std::size(Pos)); I < E; I++) {
       Pos[I] = getJsonNode(Json, JsonPath + "/atc-init-position/" +
                                      hyc::str::toString(I))
                    ->GetFloat();
@@ -806,7 +808,7 @@ void ObjectFactory::createUiComp(SceneNode *Scene,
     float Pos[3] = {0.f};
     float Ang[3] = {0.f};
     float Sca[3] = {0.f};
-    for (UINT I = 0, E = ARRAYSIZE(Pos); I < E; I++) {
+    for (UINT I = 0, E = static_cast<UINT>(std::size(Pos)); I < E; I++) {
       Pos[I] = getJsonNode(Json, JsonPath + "/utc-init-position/" +
                                      hyc::str::toString(I))
                    ->GetFloat();
