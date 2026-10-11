@@ -770,14 +770,15 @@ private:
 
 class RSPass_Tonemapping : public RSPass_Base {
 private:
-  ID3D11ComputeShader *AverLuminShader;
-  ID3D11ComputeShader *DynamicExposureShader;
-  ID3D11ComputeShader *ToneMapShader;
-  ID3D11UnorderedAccessView *HdrUav;
-  ID3D11ShaderResourceView *HdrSrv;
-  std::array<ID3D11Buffer *, 2> AverageLuminBufferArray;
-  std::array<ID3D11ShaderResourceView *, 2> AverageLuminSrvArray;
-  std::array<ID3D11UnorderedAccessView *, 2> AverageLuminUavArray;
+  // compute shaders are held as their pipeline states
+  RSPipelineState *AverLuminShader;
+  RSPipelineState *DynamicExposureShader;
+  RSPipelineState *ToneMapShader;
+  RSUnorderedAccessView *HdrUav;
+  RSShaderResourceView *HdrSrv;
+  std::array<RSBuffer *, 2> AverageLuminBufferArray;
+  std::array<RSShaderResourceView *, 2> AverageLuminSrvArray;
+  std::array<RSUnorderedAccessView *, 2> AverageLuminUavArray;
 
 public:
   RSPass_Tonemapping(std::string &Name,
