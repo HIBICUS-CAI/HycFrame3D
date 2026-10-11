@@ -5,6 +5,10 @@
 #include <array>
 #include <vector>
 
+class RSShader;
+class RSSampler;
+class RSPipelineState;
+
 bool createBasicPipeline();
 
 #ifdef __clang__
@@ -181,22 +185,24 @@ struct OnlyProj {
 
 class RSPass_MRT : public RSPass_Base {
 private:
-  ID3D11VertexShader *VertexShader;
-  ID3D11VertexShader *AniVertexShader;
-  ID3D11PixelShader *PixelShader;
-  ID3D11PixelShader *NDPixelShader;
+  RSShader *VertexShader;
+  RSShader *AniVertexShader;
+  RSShader *PixelShader;
+  RSShader *NDPixelShader;
+  RSPipelineState *StaticPipeline;
+  RSPipelineState *AniPipeline;
   DRAWCALL_TYPE DrawCallType;
   RSDrawCallsPipe *DrawCallPipe;
-  ID3D11Buffer *ViewProjStructedBuffer;
-  ID3D11ShaderResourceView *ViewProjStructedBufferSrv;
-  ID3D11Buffer *InstanceStructedBuffer;
-  ID3D11ShaderResourceView *InstanceStructedBufferSrv;
-  ID3D11Buffer *BonesStructedBuffer;
-  ID3D11ShaderResourceView *BonesStructedBufferSrv;
-  ID3D11SamplerState *LinearSampler;
-  ID3D11RenderTargetView *GeoBufferRtv;
-  ID3D11RenderTargetView *AnisotropicRtv;
-  ID3D11DepthStencilView *DepthDsv;
+  RSBuffer *ViewProjStructedBuffer;
+  RSShaderResourceView *ViewProjStructedBufferSrv;
+  RSBuffer *InstanceStructedBuffer;
+  RSShaderResourceView *InstanceStructedBufferSrv;
+  RSBuffer *BonesStructedBuffer;
+  RSShaderResourceView *BonesStructedBufferSrv;
+  RSSampler *LinearSampler;
+  RSRenderTargetView *GeoBufferRtv;
+  RSRenderTargetView *AnisotropicRtv;
+  RSDepthStencilView *DepthDsv;
   RS_CAM_INFO *RSCameraInfo;
 
 public:
@@ -218,6 +224,7 @@ private:
   bool createBuffers();
   bool createViews();
   bool createSamplers();
+  bool createPipelines();
 };
 
 class RSPass_Ssao : public RSPass_Base {
@@ -887,6 +894,6 @@ private:
 
 void setPipelineDeltaTime(float DeltaMilliSecond);
 
-void setPipelineIBLTextures(ID3D11ShaderResourceView *EnvSrv,
-                            ID3D11ShaderResourceView *DiffSrv,
-                            ID3D11ShaderResourceView *SpecSrv);
+void setPipelineIBLTextures(RSShaderResourceView *EnvSrv,
+                            RSShaderResourceView *DiffSrv,
+                            RSShaderResourceView *SpecSrv);

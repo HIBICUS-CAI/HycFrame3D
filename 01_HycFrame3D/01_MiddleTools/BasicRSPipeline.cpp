@@ -1,9 +1,9 @@
 #include "BasicRSPipeline.h"
 
-#include <DDSTextureLoader11.h>
 #include <FormatUtility.h>
 #include <RSCamera.h>
 #include <RSCamerasContainer.h>
+#include <RSCommandContext.h>
 #include <RSDevices.h>
 #include <RSDrawCallsPool.h>
 #include <RSLight.h>
@@ -17,13 +17,15 @@
 #include <RSRoot_DX11.h>
 #include <RSShaderCompile.h>
 #include <RSStaticResources.h>
+#include <RSTextureLoader.h>
 #include <RSTopic.h>
 #include <RSUtilityFunctions.h>
+#include <RSVkObjects.h>
 #include <TextUtility.h>
-#include <WICTextureLoader11.h>
 #include <WM_Interface.h>
 
 #include <algorithm>
+#include <cfloat>
 #include <cstdlib>
 #include <ctime>
 #include <DirectXColors.h>
@@ -49,14 +51,14 @@ static RSRoot_DX11 *G_RSRoot = nullptr;
 static RSPass_PriticleSetUp *G_ParticleSetUpPass = nullptr;
 static RSPipeline *G_BasicPipeline = nullptr;
 static RSPipeline *G_SimplePipeline = nullptr;
-static D3D11_VIEWPORT G_ViewPort = {};
+static VkViewport G_ViewPort = {};
 
 static float G_DeltaTimeInSecond = 0.f;
 
-static ID3D11ShaderResourceView *G_IblBrdfSrv = nullptr;
-static ID3D11ShaderResourceView *G_EnviMapSrv = nullptr;
-static ID3D11ShaderResourceView *G_DiffMapSrv = nullptr;
-static ID3D11ShaderResourceView *G_SpecMapSrv = nullptr;
+static RSShaderResourceView *G_IblBrdfSrv = nullptr;
+static RSShaderResourceView *G_EnviMapSrv = nullptr;
+static RSShaderResourceView *G_DiffMapSrv = nullptr;
+static RSShaderResourceView *G_SpecMapSrv = nullptr;
 
 enum class SAMPLER_LEVEL {
   POINT = 0,
@@ -104,13 +106,113 @@ struct RENDER_EFFECT_CONFIG {
 
 static RENDER_EFFECT_CONFIG G_RenderEffectConfig = {};
 
+namespace {
+
+constexpr VkFormat DEPTH_FORMAT = VK_FORMAT_D32_SFLOAT;
+
+RSShader *compileShader(const std::string &FileName,
+                        const std::string &EntryPoint,
+                        const std::string &ShaderModel,
+                        const rs_tool::SHADER_MACRO *Macros = nullptr) {
+  std::vector<uint32_t> Spirv = {};
+  if (!rs_tool::compileShaderFromFile(FileName, EntryPoint, ShaderModel, Spirv,
+                                      Macros)) {
+    return nullptr;
+  }
+  return G_RSRoot->getDevices()->createShader(std::move(Spirv));
+}
+
+VkSamplerCreateInfo makeSamplerInfo(VkFilter Filter,
+                                    VkSamplerMipmapMode MipMode,
+                                    VkSamplerAddressMode Address) {
+  VkSamplerCreateInfo Info = {};
+  Info.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+  Info.magFilter = Filter;
+  Info.minFilter = Filter;
+  Info.mipmapMode = MipMode;
+  Info.addressModeU = Address;
+  Info.addressModeV = Address;
+  Info.addressModeW = Address;
+  Info.compareOp = VK_COMPARE_OP_NEVER;
+  Info.minLod = 0.f;
+  Info.maxLod = VK_LOD_CLAMP_NONE;
+  Info.borderColor = VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK;
+  return Info;
+}
+
+VkSamplerCreateInfo makePointSamplerInfo(VkSamplerAddressMode Address) {
+  return makeSamplerInfo(VK_FILTER_NEAREST, VK_SAMPLER_MIPMAP_MODE_NEAREST,
+                         Address);
+}
+
+VkSamplerCreateInfo makeLinearSamplerInfo(VkSamplerAddressMode Address) {
+  return makeSamplerInfo(VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_LINEAR,
+                         Address);
+}
+
+VkSamplerCreateInfo makeConfigSamplerInfo(VkSamplerAddressMode Address) {
+  VkSamplerCreateInfo Info = makeLinearSamplerInfo(Address);
+  switch (G_RenderEffectConfig.SamplerLevel) {
+  case SAMPLER_LEVEL::POINT:
+    Info = makePointSamplerInfo(Address);
+    break;
+  case SAMPLER_LEVEL::BILINEAR:
+    break;
+  case SAMPLER_LEVEL::ANISO_8X:
+    Info.anisotropyEnable = VK_TRUE;
+    Info.maxAnisotropy = 8.f;
+    break;
+  case SAMPLER_LEVEL::ANISO_16X:
+  default:
+    Info.anisotropyEnable = VK_TRUE;
+    Info.maxAnisotropy = 16.f;
+    break;
+  }
+  return Info;
+}
+
+RSTexture *createTexture2D(VkFormat Format,
+                           UINT Width,
+                           UINT Height,
+                           VkImageUsageFlags Usage,
+                           UINT MipLevels = 1) {
+  RS_TEXTURE_DESC Desc = {};
+  Desc.Type = VK_IMAGE_TYPE_2D;
+  Desc.Format = Format;
+  Desc.Width = Width;
+  Desc.Height = Height;
+  Desc.MipLevels = MipLevels;
+  Desc.Usage = Usage;
+  return G_RSRoot->getDevices()->createTexture(Desc);
+}
+
+RSBuffer *createDynamicStructuredBuffer(UINT ElementSize, UINT ElementCount) {
+  RS_BUFFER_DESC Desc = {};
+  Desc.Size = static_cast<VkDeviceSize>(ElementSize) * ElementCount;
+  Desc.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+  Desc.Memory = RS_MEMORY_USAGE::DYNAMIC;
+  Desc.StructureStride = ElementSize;
+  return G_RSRoot->getDevices()->createBuffer(Desc);
+}
+
+RSShaderResourceView *createStructuredSrv(RSBuffer *Buffer,
+                                          UINT ElementSize,
+                                          UINT ElementCount) {
+  RS_BUFFER_VIEW_DESC Desc = {};
+  Desc.ElementSize = ElementSize;
+  Desc.NumElements = ElementCount;
+  return G_RSRoot->getDevices()->createShaderResourceView(Buffer, Desc);
+}
+
+} // namespace
+
 void setPipelineDeltaTime(float DeltaMilliSecond) {
   G_DeltaTimeInSecond = DeltaMilliSecond / 1000.f;
 }
 
-void setPipelineIBLTextures(ID3D11ShaderResourceView *EnvSrv,
-                            ID3D11ShaderResourceView *DiffSrv,
-                            ID3D11ShaderResourceView *SpecSrv) {
+void setPipelineIBLTextures(RSShaderResourceView *EnvSrv,
+                            RSShaderResourceView *DiffSrv,
+                            RSShaderResourceView *SpecSrv) {
   G_EnviMapSrv = EnvSrv;
   G_DiffMapSrv = DiffSrv;
   G_SpecMapSrv = SpecSrv;
@@ -478,14 +580,14 @@ bool createBasicPipeline() {
     G_RSRoot->getPipelinesManager()->changeToNextPipeline();
   }
 
-  G_ViewPort.Width =
+  G_ViewPort.width =
       static_cast<float>(G_RSRoot->getDevices()->getCurrWndWidth());
-  G_ViewPort.Height =
+  G_ViewPort.height =
       static_cast<float>(G_RSRoot->getDevices()->getCurrWndHeight());
-  G_ViewPort.MinDepth = 0.f;
-  G_ViewPort.MaxDepth = 1.f;
-  G_ViewPort.TopLeftX = 0.f;
-  G_ViewPort.TopLeftY = 0.f;
+  G_ViewPort.minDepth = 0.f;
+  G_ViewPort.maxDepth = 1.f;
+  G_ViewPort.x = 0.f;
+  G_ViewPort.y = 0.f;
 
   return true;
 }
@@ -493,6 +595,7 @@ bool createBasicPipeline() {
 RSPass_MRT::RSPass_MRT(std::string &Name, PASS_TYPE Type, RSRoot_DX11 *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       AniVertexShader(nullptr), PixelShader(nullptr), NDPixelShader(nullptr),
+      StaticPipeline(nullptr), AniPipeline(nullptr),
       DrawCallType(DRAWCALL_TYPE::OPACITY), DrawCallPipe(nullptr),
       ViewProjStructedBuffer(nullptr), ViewProjStructedBufferSrv(nullptr),
       InstanceStructedBuffer(nullptr), InstanceStructedBufferSrv(nullptr),
@@ -503,8 +606,9 @@ RSPass_MRT::RSPass_MRT(std::string &Name, PASS_TYPE Type, RSRoot_DX11 *Root)
 RSPass_MRT::RSPass_MRT(const RSPass_MRT &Source)
     : RSPass_Base(Source), VertexShader(Source.VertexShader),
       AniVertexShader(Source.AniVertexShader), PixelShader(Source.PixelShader),
-      NDPixelShader(Source.NDPixelShader), DrawCallType(Source.DrawCallType),
-      DrawCallPipe(Source.DrawCallPipe),
+      NDPixelShader(Source.NDPixelShader),
+      StaticPipeline(Source.StaticPipeline), AniPipeline(Source.AniPipeline),
+      DrawCallType(Source.DrawCallType), DrawCallPipe(Source.DrawCallPipe),
       ViewProjStructedBuffer(Source.ViewProjStructedBuffer),
       ViewProjStructedBufferSrv(Source.ViewProjStructedBufferSrv),
       InstanceStructedBuffer(Source.InstanceStructedBuffer),
@@ -519,6 +623,8 @@ RSPass_MRT::RSPass_MRT(const RSPass_MRT &Source)
     RS_ADDREF(AniVertexShader);
     RS_ADDREF(PixelShader);
     RS_ADDREF(NDPixelShader);
+    RS_ADDREF(StaticPipeline);
+    RS_ADDREF(AniPipeline);
     RS_ADDREF(ViewProjStructedBuffer);
     RS_ADDREF(ViewProjStructedBufferSrv);
     RS_ADDREF(InstanceStructedBuffer);
@@ -550,6 +656,9 @@ bool RSPass_MRT::initPass() {
   if (!createSamplers()) {
     return false;
   }
+  if (!createPipelines()) {
+    return false;
+  }
 
   DrawCallType = DRAWCALL_TYPE::OPACITY;
   DrawCallPipe = G_RSRoot->getDrawCallsPool()->getDrawCallsPipe(DrawCallType);
@@ -566,6 +675,8 @@ void RSPass_MRT::releasePass() {
   RS_RELEASE(AniVertexShader);
   RS_RELEASE(PixelShader);
   RS_RELEASE(NDPixelShader);
+  RS_RELEASE(StaticPipeline);
+  RS_RELEASE(AniPipeline);
   RS_RELEASE(ViewProjStructedBuffer);
   RS_RELEASE(ViewProjStructedBufferSrv);
   RS_RELEASE(InstanceStructedBuffer);
@@ -580,35 +691,28 @@ void RSPass_MRT::releasePass() {
 }
 
 void RSPass_MRT::execuatePass() {
-  ID3D11RenderTargetView *NullRtv = nullptr;
-  static ID3D11RenderTargetView *MRtv[] = {GeoBufferRtv, AnisotropicRtv};
-  context()->OMSetRenderTargets(2, MRtv, DepthDsv);
-  context()->RSSetViewports(1, &G_ViewPort);
-  context()->ClearRenderTargetView(GeoBufferRtv, dx::Colors::Transparent);
-  context()->ClearRenderTargetView(AnisotropicRtv, dx::Colors::Transparent);
-  context()->ClearDepthStencilView(DepthDsv, D3D11_CLEAR_DEPTH, 1.f, 0);
-  // STContext()->VSSetShader(mVertexShader, nullptr, 0);
-  context()->PSSetShader(PixelShader, nullptr, 0);
+  RSRenderTargetView *MRtv[] = {GeoBufferRtv, AnisotropicRtv};
+  context()->setRenderTargets(2, MRtv, DepthDsv);
+  context()->setViewport(G_ViewPort);
+  context()->clearRenderTargetView(GeoBufferRtv, dx::Colors::Transparent);
+  context()->clearRenderTargetView(AnisotropicRtv, dx::Colors::Transparent);
+  context()->clearDepthStencilView(DepthDsv, 1.f);
 
-  context()->PSSetSamplers(0, 1, &LinearSampler);
+  context()->setSamplers(RS_SHADER_STAGE::PIXEL, 0, 1, &LinearSampler);
 
   dx::XMMATRIX Mat = {};
-  UINT Stride = sizeof(vertex_type::TangentVertex);
-  UINT AniStride = sizeof(vertex_type::AnimationVertex);
-  UINT Offset = 0;
 
-  D3D11_MAPPED_SUBRESOURCE Msr = {};
-  context()->Map(ViewProjStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-  ViewProj *VpData = static_cast<ViewProj *>(Msr.pData);
+  ViewProj *VpData = static_cast<ViewProj *>(ViewProjStructedBuffer->map());
   Mat = dx::XMLoadFloat4x4(&RSCameraInfo->ViewMatrix);
   Mat = dx::XMMatrixTranspose(Mat);
   dx::XMStoreFloat4x4(&VpData[0].ViewMat, Mat);
   Mat = dx::XMLoadFloat4x4(&RSCameraInfo->ProjMatrix);
   Mat = dx::XMMatrixTranspose(Mat);
   dx::XMStoreFloat4x4(&VpData[0].ProjMat, Mat);
-  context()->Unmap(ViewProjStructedBuffer, 0);
+  ViewProjStructedBuffer->unmap();
 
-  context()->VSSetShaderResources(0, 1, &ViewProjStructedBufferSrv);
+  context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 0, 1,
+                                &ViewProjStructedBufferSrv);
 
   static std::string A_NAME = "AnimationVertex";
   static const auto ANIMAT_LAYOUT =
@@ -617,12 +721,11 @@ void RSPass_MRT::execuatePass() {
 
   for (auto &Draw : DrawCallPipe->Data) {
     if (Draw.MeshData.InputLayout == ANIMAT_LAYOUT) {
-      context()->VSSetShader(AniVertexShader, nullptr, 0);
-      context()->IASetVertexBuffers(0, 1, &Draw.MeshData.VertexBuffer,
-                                    &AniStride, &Offset);
+      context()->setPipelineState(AniPipeline);
+      context()->setVertexBuffer(Draw.MeshData.VertexBuffer);
 
-      context()->Map(BonesStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-      dx::XMFLOAT4X4 *BData = static_cast<dx::XMFLOAT4X4 *>(Msr.pData);
+      dx::XMFLOAT4X4 *BData =
+          static_cast<dx::XMFLOAT4X4 *>(BonesStructedBuffer->map());
       void *RawBoneData = Draw.InstanceData.BonesArrayPtr;
       std::vector<std::vector<RS_SUBMESH_BONE_DATA>> *BonesPtr = nullptr;
       BonesPtr = static_cast<decltype(BonesPtr)>(RawBoneData);
@@ -643,19 +746,20 @@ void RSPass_MRT::execuatePass() {
           }
         }
       }
-      context()->Unmap(BonesStructedBuffer, 0);
+      BonesStructedBuffer->unmap(BoneInsSize * MAX_STRUCTURED_BUFFER_SIZE *
+                                 sizeof(dx::XMFLOAT4X4));
 
-      context()->VSSetShaderResources(2, 1, &BonesStructedBufferSrv);
+      context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 2, 1,
+                                    &BonesStructedBufferSrv);
     } else {
-      context()->VSSetShader(VertexShader, nullptr, 0);
-      context()->IASetVertexBuffers(0, 1, &Draw.MeshData.VertexBuffer, &Stride,
-                                    &Offset);
+      context()->setPipelineState(StaticPipeline);
+      context()->setVertexBuffer(Draw.MeshData.VertexBuffer);
     }
 
     auto InsVecPtr = Draw.InstanceData.DataArrayPtr;
     auto Size = InsVecPtr->size();
-    context()->Map(InstanceStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-    RS_INSTANCE_DATA *InsDataPtr = static_cast<RS_INSTANCE_DATA *>(Msr.pData);
+    RS_INSTANCE_DATA *InsDataPtr =
+        static_cast<RS_INSTANCE_DATA *>(InstanceStructedBuffer->map());
     for (size_t I = 0; I < Size; I++) {
       Mat = dx::XMLoadFloat4x4(&(*InsVecPtr)[I].WorldMatrix);
       Mat = dx::XMMatrixTranspose(Mat);
@@ -664,212 +768,102 @@ void RSPass_MRT::execuatePass() {
       InsDataPtr[I].CustomizedData1 = (*InsVecPtr)[I].CustomizedData1;
       InsDataPtr[I].CustomizedData2 = (*InsVecPtr)[I].CustomizedData2;
     }
-    context()->Unmap(InstanceStructedBuffer, 0);
+    InstanceStructedBuffer->unmap(Size * sizeof(RS_INSTANCE_DATA));
 
-    context()->IASetInputLayout(Draw.MeshData.InputLayout);
-    context()->IASetPrimitiveTopology(Draw.MeshData.TopologyType);
-    /*STContext()->IASetVertexBuffers(
-        0, 1, &call.mMeshData.mVertexBuffer, &stride, &offset);*/
-    context()->IASetIndexBuffer(Draw.MeshData.IndexBuffer, DXGI_FORMAT_R32_UINT,
-                                0);
-    context()->VSSetShaderResources(1, 1, &InstanceStructedBufferSrv);
-    ID3D11ShaderResourceView *MatSrv =
+    context()->setPrimitiveTopology(Draw.MeshData.TopologyType);
+    context()->setIndexBuffer(Draw.MeshData.IndexBuffer);
+    context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 1, 1,
+                                  &InstanceStructedBufferSrv);
+    RSShaderResourceView *MatSrv =
         G_RSRoot->getStaticResources()->getMaterialSrv();
-    context()->PSSetShaderResources(0, 1, &MatSrv);
+    context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 0, 1, &MatSrv);
     for (UINT I = 0, E = static_cast<UINT>(MESH_TEXTURE_TYPE::SIZE); I < E;
          I++) {
       if (Draw.TextureData[I].EnabledFlag) {
-        context()->PSSetShaderResources(I + 1, 1, &(Draw.TextureData[I].Srv));
+        context()->setShaderResources(RS_SHADER_STAGE::PIXEL, I + 1, 1,
+                                      &(Draw.TextureData[I].Srv));
       }
     }
 
-    context()->DrawIndexedInstanced(
+    context()->drawIndexedInstanced(
         Draw.MeshData.IndexSize,
         static_cast<UINT>(Draw.InstanceData.DataArrayPtr->size()), 0, 0, 0);
 
     if (Draw.MeshData.InputLayout == ANIMAT_LAYOUT) {
-      ID3D11ShaderResourceView *NullSrv = nullptr;
-      context()->VSSetShaderResources(2, 1, &NullSrv);
+      RSShaderResourceView *NullSrv = nullptr;
+      context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 2, 1, &NullSrv);
     }
   }
 
-  context()->OMSetRenderTargets(1, &NullRtv, nullptr);
+  context()->setRenderTargets(0, nullptr, nullptr);
 }
 
 bool RSPass_MRT::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
+  VertexShader =
+      compileShader("./Assets/Shaders/mrt_vertex.hlsl", "main", "vs_5_0");
+  FAIL_NULL_RETURN(VertexShader);
 
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/mrt_vertex.hlsl",
-                                      "main", "vs_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  rs_tool::SHADER_MACRO Macro[] = {{"ANIMATION_VERTEX", "1"},
+                                   {nullptr, nullptr}};
+  AniVertexShader = compileShader("./Assets/Shaders/mrt_vertex.hlsl", "main",
+                                  "vs_5_0", Macro);
+  FAIL_NULL_RETURN(AniVertexShader);
 
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &VertexShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  PixelShader =
+      compileShader("./Assets/Shaders/mrt_pixel.hlsl", "main", "ps_5_0");
+  FAIL_NULL_RETURN(PixelShader);
 
-  D3D_SHADER_MACRO Macro[] = {{"ANIMATION_VERTEX", "1"}, {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/mrt_vertex.hlsl",
-                                      "main", "vs_5_0", &ShaderBlob, Macro);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &AniVertexShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/mrt_pixel.hlsl",
-                                      "main", "ps_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreatePixelShader(ShaderBlob->GetBufferPointer(),
-                                   ShaderBlob->GetBufferSize(), nullptr,
-                                   &PixelShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/mrt_nd_pixel.hlsl",
-                                      "main", "ps_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreatePixelShader(ShaderBlob->GetBufferPointer(),
-                                   ShaderBlob->GetBufferSize(), nullptr,
-                                   &NDPixelShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  NDPixelShader =
+      compileShader("./Assets/Shaders/mrt_nd_pixel.hlsl", "main", "ps_5_0");
+  FAIL_NULL_RETURN(NDPixelShader);
 
   return true;
 }
 
 bool RSPass_MRT::createBuffers() {
-  HRESULT Hr = S_OK;
-  D3D11_BUFFER_DESC BDC = {};
+  InstanceStructedBuffer = createDynamicStructuredBuffer(
+      sizeof(RS_INSTANCE_DATA), MAX_INSTANCE_SIZE);
+  FAIL_NULL_RETURN(InstanceStructedBuffer);
 
-  ZeroMemory(&BDC, sizeof(BDC));
-  BDC.Usage = D3D11_USAGE_DYNAMIC;
-  BDC.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  BDC.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  BDC.ByteWidth = MAX_INSTANCE_SIZE * sizeof(RS_INSTANCE_DATA);
-  BDC.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-  BDC.StructureByteStride = sizeof(RS_INSTANCE_DATA);
-  Hr = device()->CreateBuffer(&BDC, nullptr, &InstanceStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BonesStructedBuffer = createDynamicStructuredBuffer(
+      sizeof(dx::XMFLOAT4X4),
+      MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE);
+  FAIL_NULL_RETURN(BonesStructedBuffer);
 
-  BDC.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE *
-                  static_cast<UINT>(sizeof(dx::XMFLOAT4X4));
-  BDC.StructureByteStride = sizeof(dx::XMFLOAT4X4);
-  Hr = device()->CreateBuffer(&BDC, nullptr, &BonesStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  BDC.ByteWidth = sizeof(ViewProj);
-  BDC.StructureByteStride = sizeof(ViewProj);
-  Hr = device()->CreateBuffer(&BDC, nullptr, &ViewProjStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewProjStructedBuffer = createDynamicStructuredBuffer(sizeof(ViewProj), 1);
+  FAIL_NULL_RETURN(ViewProjStructedBuffer);
 
   return true;
 }
 
 bool RSPass_MRT::createViews() {
-  HRESULT Hr = S_OK;
-  D3D11_TEXTURE2D_DESC TexDesc = {};
-  D3D11_RENDER_TARGET_VIEW_DESC RtvDesc = {};
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-  D3D11_DEPTH_STENCIL_VIEW_DESC DsvDesc = {};
-  ID3D11ShaderResourceView *Srv = nullptr;
+  InstanceStructedBufferSrv = createStructuredSrv(
+      InstanceStructedBuffer, sizeof(RS_INSTANCE_DATA), MAX_INSTANCE_SIZE);
+  FAIL_NULL_RETURN(InstanceStructedBufferSrv);
 
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementWidth = MAX_INSTANCE_SIZE;
-  Hr = device()->CreateShaderResourceView(InstanceStructedBuffer, &SrvDesc,
-                                          &InstanceStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  BonesStructedBufferSrv = createStructuredSrv(
+      BonesStructedBuffer, sizeof(dx::XMFLOAT4X4),
+      MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE);
+  FAIL_NULL_RETURN(BonesStructedBufferSrv);
 
-  SrvDesc.Buffer.ElementWidth =
-      MAX_STRUCTURED_BUFFER_SIZE * MAX_STRUCTURED_BUFFER_SIZE;
-  Hr = device()->CreateShaderResourceView(BonesStructedBuffer, &SrvDesc,
-                                          &BonesStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ViewProjStructedBufferSrv =
+      createStructuredSrv(ViewProjStructedBuffer, sizeof(ViewProj), 1);
+  FAIL_NULL_RETURN(ViewProjStructedBufferSrv);
 
-  SrvDesc.Buffer.ElementWidth = 1;
-  Hr = device()->CreateShaderResourceView(ViewProjStructedBuffer, &SrvDesc,
-                                          &ViewProjStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  ZeroMemory(&TexDesc, sizeof(TexDesc));
-  ZeroMemory(&RtvDesc, sizeof(RtvDesc));
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  ZeroMemory(&DsvDesc, sizeof(DsvDesc));
+  auto Devices = G_RSRoot->getDevices();
+  UINT Width = Devices->getCurrWndWidth();
+  UINT Height = Devices->getCurrWndHeight();
   RS_RESOURCE_INFO RDI = {};
 
-  ID3D11Texture2D *Texture = nullptr;
-  TexDesc.Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
-  TexDesc.Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
-  TexDesc.MipLevels = 1;
-  TexDesc.ArraySize = 1;
-  TexDesc.Format = DXGI_FORMAT_R24G8_TYPELESS;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.SampleDesc.Quality = 0;
-  TexDesc.Usage = D3D11_USAGE_DEFAULT;
-  TexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
-  TexDesc.CPUAccessFlags = 0;
-  TexDesc.MiscFlags = 0;
-  Hr = device()->CreateTexture2D(&TexDesc, nullptr, &Texture);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  DsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-  DsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-  DsvDesc.Texture2D.MipSlice = 0;
-  Hr = device()->CreateDepthStencilView(Texture, &DsvDesc, &DepthDsv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  SrvDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-  SrvDesc.Texture2D.MostDetailedMip = 0;
-  SrvDesc.Texture2D.MipLevels = 1;
-  Hr = device()->CreateShaderResourceView(Texture, &SrvDesc, &Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  // d24s8 isn't required by vulkan, the stencil isn't used anyway
+  RSTexture *Texture = createTexture2D(
+      DEPTH_FORMAT, Width, Height,
+      VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+  FAIL_NULL_RETURN(Texture);
+  DepthDsv = Devices->createDepthStencilView(Texture);
+  FAIL_NULL_RETURN(DepthDsv);
+  RSShaderResourceView *Srv = Devices->createShaderResourceView(Texture);
+  FAIL_NULL_RETURN(Srv);
 
   RDI = {};
   RDI.Type = RS_RESOURCE_TYPE::TEXTURE2D;
@@ -878,37 +872,14 @@ bool RSPass_MRT::createViews() {
   RDI.Srv = Srv;
   G_RSRoot->getResourceManager()->addResource("mrt-depth", RDI);
 
-  TexDesc.Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
-  TexDesc.Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
-  TexDesc.MipLevels = 1;
-  TexDesc.ArraySize = 1;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.Usage = D3D11_USAGE_DEFAULT;
-  TexDesc.CPUAccessFlags = 0;
-  TexDesc.MiscFlags = 0;
-  TexDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
-  TexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-  Hr = device()->CreateTexture2D(&TexDesc, nullptr, &Texture);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  RtvDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
-  RtvDesc.Texture2D.MipSlice = 0;
-  RtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-  Hr = device()->CreateRenderTargetView(Texture, &RtvDesc, &GeoBufferRtv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  SrvDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-  SrvDesc.Texture2D.MostDetailedMip = 0;
-  SrvDesc.Texture2D.MipLevels = 1;
-  Hr = device()->CreateShaderResourceView(Texture, &SrvDesc, &Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  Texture = createTexture2D(
+      VK_FORMAT_R32G32B32A32_UINT, Width, Height,
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+  FAIL_NULL_RETURN(Texture);
+  GeoBufferRtv = Devices->createRenderTargetView(Texture);
+  FAIL_NULL_RETURN(GeoBufferRtv);
+  Srv = Devices->createShaderResourceView(Texture);
+  FAIL_NULL_RETURN(Srv);
 
   RDI = {};
   RDI.Type = RS_RESOURCE_TYPE::TEXTURE2D;
@@ -917,37 +888,14 @@ bool RSPass_MRT::createViews() {
   RDI.Srv = Srv;
   G_RSRoot->getResourceManager()->addResource("mrt-geo-buffer", RDI);
 
-  TexDesc.Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
-  TexDesc.Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
-  TexDesc.MipLevels = 1;
-  TexDesc.ArraySize = 1;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.Usage = D3D11_USAGE_DEFAULT;
-  TexDesc.CPUAccessFlags = 0;
-  TexDesc.MiscFlags = 0;
-  TexDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  TexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-  Hr = device()->CreateTexture2D(&TexDesc, nullptr, &Texture);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  RtvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  RtvDesc.Texture2D.MipSlice = 0;
-  RtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-  Hr = device()->CreateRenderTargetView(Texture, &RtvDesc, &AnisotropicRtv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  SrvDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-  SrvDesc.Texture2D.MostDetailedMip = 0;
-  SrvDesc.Texture2D.MipLevels = 1;
-  Hr = device()->CreateShaderResourceView(Texture, &SrvDesc, &Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  Texture = createTexture2D(
+      VK_FORMAT_R16G16B16A16_SFLOAT, Width, Height,
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+  FAIL_NULL_RETURN(Texture);
+  AnisotropicRtv = Devices->createRenderTargetView(Texture);
+  FAIL_NULL_RETURN(AnisotropicRtv);
+  Srv = Devices->createShaderResourceView(Texture);
+  FAIL_NULL_RETURN(Srv);
 
   RDI = {};
   RDI.Type = RS_RESOURCE_TYPE::TEXTURE2D;
@@ -960,39 +908,31 @@ bool RSPass_MRT::createViews() {
 }
 
 bool RSPass_MRT::createSamplers() {
-  HRESULT Hr = S_OK;
-  D3D11_SAMPLER_DESC SampDesc = {};
-  ZeroMemory(&SampDesc, sizeof(SampDesc));
-  auto FilterLevel = G_RenderEffectConfig.SamplerLevel;
-  switch (FilterLevel) {
-  case SAMPLER_LEVEL::POINT:
-    SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-    break;
-  case SAMPLER_LEVEL::BILINEAR:
-    SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    break;
-  case SAMPLER_LEVEL::ANISO_8X:
-    SampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-    SampDesc.MaxAnisotropy = 8;
-    break;
-  case SAMPLER_LEVEL::ANISO_16X:
-    SampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-    SampDesc.MaxAnisotropy = 16;
-    break;
-  default:
-    return false;
-  }
-  SampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-  SampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-  SampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-  SampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SampDesc.MinLOD = 0;
-  SampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+  LinearSampler = G_RSRoot->getDevices()->createSampler(
+      makeConfigSamplerInfo(VK_SAMPLER_ADDRESS_MODE_REPEAT));
+  FAIL_NULL_RETURN(LinearSampler);
 
-  Hr = device()->CreateSamplerState(&SampDesc, &LinearSampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  return true;
+}
+
+bool RSPass_MRT::createPipelines() {
+  auto Static = G_RSRoot->getStaticResources();
+
+  RS_GRAPHICS_PIPELINE_DESC Desc = {};
+  Desc.VertexShader = VertexShader;
+  Desc.PixelShader = PixelShader;
+  Desc.InputLayout = Static->getStaticInputLayout("TangentVertex");
+  Desc.ColorTargetCount = 2;
+  Desc.ColorFormats[0] = VK_FORMAT_R32G32B32A32_UINT;
+  Desc.ColorFormats[1] = VK_FORMAT_R16G16B16A16_SFLOAT;
+  Desc.DepthFormat = DEPTH_FORMAT;
+  StaticPipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(StaticPipeline);
+
+  Desc.VertexShader = AniVertexShader;
+  Desc.InputLayout = Static->getStaticInputLayout("AnimationVertex");
+  AniPipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(AniPipeline);
 
   return true;
 }
