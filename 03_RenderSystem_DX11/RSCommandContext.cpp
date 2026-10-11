@@ -819,6 +819,17 @@ void RSCommandContext::bindDescriptors(RSPipelineState *Pipeline,
         }
       } else if (View && View->getKind() == RS_VIEW_KIND::STRUCTURED_BUFFER) {
         Range = View->getBufferRange(DynamicAlignment);
+#ifdef _DEBUG
+        // c++ structures and shader structures must agree on the stride
+        uint32_t ElementSize = View->getBufferViewDesc().ElementSize;
+        if (Binding.ElementStride && ElementSize != Binding.ElementStride) {
+          std::fprintf(stderr,
+                       "[[[WARNING]]] : stride of %s is %u in shader but %u "
+                       "in buffer view\n",
+                       Binding.Name.c_str(), Binding.ElementStride,
+                       ElementSize);
+        }
+#endif // _DEBUG
       }
       if (!Range.Buffer) {
         Range = Devices->getDummyBuffer()->getCurrentRange(DynamicAlignment);
