@@ -10,9 +10,9 @@ namespace dx = DirectX;
 struct CAMERA_AND_AMBIENT {
   class RSCamera *RSCameraPtr = nullptr;
   dx::XMFLOAT4 AmbientFactor = {};
-  struct ID3D11ShaderResourceView *IBLEnvironmentTexture = nullptr;
-  struct ID3D11ShaderResourceView *IBLDiffuseTexture = nullptr;
-  struct ID3D11ShaderResourceView *IBLSpecularTexture = nullptr;
+  class RSShaderResourceView *IBLEnvironmentTexture = nullptr;
+  class RSShaderResourceView *IBLDiffuseTexture = nullptr;
+  class RSShaderResourceView *IBLSpecularTexture = nullptr;
 };
 
 class SceneNode {
@@ -40,9 +40,9 @@ public:
   void loadIBLTexture(const std::string &Env,
                       const std::string &Diff,
                       const std::string &Spec);
-  struct ID3D11ShaderResourceView *getIBLEnvironment();
-  struct ID3D11ShaderResourceView *getIBLDiffuse();
-  struct ID3D11ShaderResourceView *getIBLSpecular();
+  class RSShaderResourceView *getIBLEnvironment();
+  class RSShaderResourceView *getIBLDiffuse();
+  class RSShaderResourceView *getIBLSpecular();
 
   class RSCamera *getMainCamera();
 
