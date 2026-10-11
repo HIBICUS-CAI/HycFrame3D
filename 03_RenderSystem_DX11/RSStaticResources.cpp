@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSStaticResources.cpp
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 保存并提供所有常用的资源及其引用
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
@@ -12,16 +12,17 @@
 #include "RSDevices.h"
 #include "RSPipeline.h"
 #include "RSRoot_DX11.h"
-#include "RSShaderCompile.h"
 #include "RSTopic.h"
 #include "RSUtilityFunctions.h"
+#include "RSVkObjects.h"
 
 #include <TextUtility.h>
 
+#include <cassert>
+#include <cstring>
+
 RSStaticResources::RSStaticResources()
-    : RenderSystemRoot(nullptr), VertexShaderMap({}), GeometryShaderMap({}),
-      PixelShaderMap({}), ComputeShaderMap({}), RasterizerStateMap({}),
-      DepthStencilStateMap({}), BlendStateMap({}), SamplerMap({}),
+    : RenderSystemRoot(nullptr), ShaderMap({}), SamplerMap({}),
       InputLayoutMap({}), StaticPipelineMap({}), StaticTopicMap({}),
       MaterialVector({}), MaterialIndexMap({}), MaterialBuffer(nullptr),
       MaterialBufferSrv(nullptr) {}
@@ -38,7 +39,7 @@ bool RSStaticResources::startUp(RSRoot_DX11 *RootPtr) {
   if (!compileStaticShaders()) {
     return false;
   }
-  if (!buildStaticStates()) {
+  if (!buildStaticSamplers()) {
     return false;
   }
   if (!buildStaticInputLayouts()) {
@@ -58,48 +59,18 @@ bool RSStaticResources::startUp(RSRoot_DX11 *RootPtr) {
 }
 
 void RSStaticResources::cleanAndStop() {
-  for (auto &VShader : VertexShaderMap) {
-    SAFE_RELEASE(VShader.second);
+  for (auto &Shader : ShaderMap) {
+    SAFE_RELEASE(Shader.second);
   }
-  VertexShaderMap.clear();
+  ShaderMap.clear();
 
-  for (auto &GShader : GeometryShaderMap) {
-    SAFE_RELEASE(GShader.second);
-  }
-  GeometryShaderMap.clear();
-
-  for (auto &PShader : PixelShaderMap) {
-    SAFE_RELEASE(PShader.second);
-  }
-  PixelShaderMap.clear();
-
-  for (auto &CShader : ComputeShaderMap) {
-    SAFE_RELEASE(CShader.second);
-  }
-  ComputeShaderMap.clear();
-
-  for (auto &RState : RasterizerStateMap) {
-    SAFE_RELEASE(RState.second);
-  }
-  RasterizerStateMap.clear();
-
-  for (auto &DState : DepthStencilStateMap) {
-    SAFE_RELEASE(DState.second);
-  }
-  DepthStencilStateMap.clear();
-
-  for (auto &BState : BlendStateMap) {
-    SAFE_RELEASE(BState.second);
-  }
-  BlendStateMap.clear();
-
-  for (auto &SState : SamplerMap) {
-    SAFE_RELEASE(SState.second);
+  for (auto &Sampler : SamplerMap) {
+    SAFE_RELEASE(Sampler.second);
   }
   SamplerMap.clear();
 
   for (auto &Layout : InputLayoutMap) {
-    SAFE_RELEASE(Layout.second);
+    delete Layout.second;
   }
   InputLayoutMap.clear();
 
@@ -120,7 +91,7 @@ void RSStaticResources::cleanAndStop() {
   MaterialVector.clear();
   MaterialIndexMap.clear();
   SAFE_RELEASE(MaterialBufferSrv);
-  SAFE_RELEASE(MaterialBuffer)
+  SAFE_RELEASE(MaterialBuffer);
 }
 
 bool RSStaticResources::compileStaticShaders() {
@@ -129,126 +100,52 @@ bool RSStaticResources::compileStaticShaders() {
   // TEMP----------------------
 }
 
-bool RSStaticResources::buildStaticStates() {
+bool RSStaticResources::buildStaticSamplers() {
   // TEMP----------------------
   return true;
   // TEMP----------------------
 }
 
 bool RSStaticResources::buildStaticInputLayouts() {
-  ID3DBlob *ShaderBlob = nullptr;
-  ID3D11InputLayout *InputLayout = nullptr;
-  HRESULT Hr = S_OK;
+  // vertex shader inputs are matched to these elements by semantic when a
+  // pipeline state object is created
+  using namespace vertex_type;
 
-  {
-    Hr = rs_tool::compileShaderFromFile(
-        L"RenderSystem_StaticResources/InputLayouts/input_layout_basic.hlsl",
-        "main", "vs_5_0", &ShaderBlob);
-    FAIL_HR_RETURN(Hr);
+  InputLayoutMap.insert(
+      {"BasicVertex",
+       new RSInputLayout(
+           "BasicVertex", sizeof(BasicVertex),
+           {{"POSITION", 0, VK_FORMAT_R32G32B32_SFLOAT, 0},
+            {"NORMAL", 0, VK_FORMAT_R32G32B32_SFLOAT, 12},
+            {"TEXCOORD", 0, VK_FORMAT_R32G32_SFLOAT, 24}})});
 
-    D3D11_INPUT_ELEMENT_DESC Layout[] = {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24,
-         D3D11_INPUT_PER_VERTEX_DATA, 0}};
-    UINT NumInputLayouts = ARRAYSIZE(Layout);
+  InputLayoutMap.insert(
+      {"ColorVertex",
+       new RSInputLayout(
+           "ColorVertex", sizeof(ColorVertex),
+           {{"POSITION", 0, VK_FORMAT_R32G32B32_SFLOAT, 0},
+            {"NORMAL", 0, VK_FORMAT_R32G32B32_SFLOAT, 12},
+            {"COLOR", 0, VK_FORMAT_R32G32B32A32_SFLOAT, 24}})});
 
-    Hr = RenderSystemRoot->getDevices()->getDevice()->CreateInputLayout(
-        Layout, NumInputLayouts, ShaderBlob->GetBufferPointer(),
-        ShaderBlob->GetBufferSize(), &InputLayout);
-    ShaderBlob->Release();
-    FAIL_HR_RETURN(Hr);
-    InputLayoutMap.insert({"BasicVertex", InputLayout});
-    ShaderBlob = nullptr;
-    InputLayout = nullptr;
-  }
+  InputLayoutMap.insert(
+      {"TangentVertex",
+       new RSInputLayout(
+           "TangentVertex", sizeof(TangentVertex),
+           {{"POSITION", 0, VK_FORMAT_R32G32B32_SFLOAT, 0},
+            {"NORMAL", 0, VK_FORMAT_R32G32B32_SFLOAT, 12},
+            {"TANGENT", 0, VK_FORMAT_R32G32B32_SFLOAT, 24},
+            {"TEXCOORD", 0, VK_FORMAT_R32G32_SFLOAT, 36}})});
 
-  {
-    Hr = rs_tool::compileShaderFromFile(
-        L"RenderSystem_StaticResources/InputLayouts/input_layout_color.hlsl",
-        "main", "vs_5_0", &ShaderBlob);
-    FAIL_HR_RETURN(Hr);
-
-    D3D11_INPUT_ELEMENT_DESC Layout[] = {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24,
-         D3D11_INPUT_PER_VERTEX_DATA, 0}};
-    UINT NumInputLayouts = ARRAYSIZE(Layout);
-
-    Hr = RenderSystemRoot->getDevices()->getDevice()->CreateInputLayout(
-        Layout, NumInputLayouts, ShaderBlob->GetBufferPointer(),
-        ShaderBlob->GetBufferSize(), &InputLayout);
-    ShaderBlob->Release();
-    FAIL_HR_RETURN(Hr);
-    InputLayoutMap.insert({"ColorVertex", InputLayout});
-    ShaderBlob = nullptr;
-    InputLayout = nullptr;
-  }
-
-  {
-    Hr = rs_tool::compileShaderFromFile(
-        L"RenderSystem_StaticResources/InputLayouts/input_layout_tangent."
-        L"hlsl",
-        "main", "vs_5_0", &ShaderBlob);
-    FAIL_HR_RETURN(Hr);
-
-    D3D11_INPUT_ELEMENT_DESC Layout[] = {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36,
-         D3D11_INPUT_PER_VERTEX_DATA, 0}};
-    UINT NumInputLayouts = ARRAYSIZE(Layout);
-
-    Hr = RenderSystemRoot->getDevices()->getDevice()->CreateInputLayout(
-        Layout, NumInputLayouts, ShaderBlob->GetBufferPointer(),
-        ShaderBlob->GetBufferSize(), &InputLayout);
-    ShaderBlob->Release();
-    FAIL_HR_RETURN(Hr);
-    InputLayoutMap.insert({"TangentVertex", InputLayout});
-    ShaderBlob = nullptr;
-    InputLayout = nullptr;
-  }
-
-  {
-    Hr = rs_tool::compileShaderFromFile(
-        L"RenderSystem_StaticResources/InputLayouts/input_layout_animation."
-        L"hlsl",
-        "main", "vs_5_0", &ShaderBlob);
-    FAIL_HR_RETURN(Hr);
-
-    D3D11_INPUT_ELEMENT_DESC Layout[] = {
-        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 24,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 36,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"BLENDWEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 44,
-         D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"BLENDINDICES", 0, DXGI_FORMAT_R32G32B32A32_UINT, 0, 60,
-         D3D11_INPUT_PER_VERTEX_DATA, 0}};
-    UINT NumInputLayouts = ARRAYSIZE(Layout);
-
-    Hr = RenderSystemRoot->getDevices()->getDevice()->CreateInputLayout(
-        Layout, NumInputLayouts, ShaderBlob->GetBufferPointer(),
-        ShaderBlob->GetBufferSize(), &InputLayout);
-    ShaderBlob->Release();
-    FAIL_HR_RETURN(Hr);
-    InputLayoutMap.insert({"AnimationVertex", InputLayout});
-    ShaderBlob = nullptr;
-    InputLayout = nullptr;
-  }
+  InputLayoutMap.insert(
+      {"AnimationVertex",
+       new RSInputLayout(
+           "AnimationVertex", sizeof(AnimationVertex),
+           {{"POSITION", 0, VK_FORMAT_R32G32B32_SFLOAT, 0},
+            {"NORMAL", 0, VK_FORMAT_R32G32B32_SFLOAT, 12},
+            {"TANGENT", 0, VK_FORMAT_R32G32B32_SFLOAT, 24},
+            {"TEXCOORD", 0, VK_FORMAT_R32G32_SFLOAT, 36},
+            {"BLENDWEIGHT", 0, VK_FORMAT_R32G32B32A32_SFLOAT, 44},
+            {"BLENDINDICES", 0, VK_FORMAT_R32G32B32A32_UINT, 60}})});
 
   return true;
 }
@@ -310,106 +207,37 @@ bool RSStaticResources::buildStaticMaterials() {
     MaterialIndexMap.insert({MaterialName, I});
   }
 
-  HRESULT Hr = S_OK;
-  D3D11_BUFFER_DESC BufDesc = {};
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-  auto DevicePtr = RenderSystemRoot->getDevices()->getDevice();
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
+  auto Devices = RenderSystemRoot->getDevices();
 
-  BufDesc.Usage = D3D11_USAGE_DYNAMIC;
-  BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  BufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  BufDesc.ByteWidth = MAX_STRUCTURED_BUFFER_SIZE * sizeof(RS_MATERIAL_DATA);
-  BufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-  BufDesc.StructureByteStride = sizeof(RS_MATERIAL_DATA);
-  Hr = DevicePtr->CreateBuffer(&BufDesc, nullptr, &MaterialBuffer);
-  FAIL_HR_RETURN(Hr);
+  RS_BUFFER_DESC BufDesc = {};
+  BufDesc.Size = MAX_STRUCTURED_BUFFER_SIZE * sizeof(RS_MATERIAL_DATA);
+  BufDesc.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+  BufDesc.Memory = RS_MEMORY_USAGE::DYNAMIC;
+  BufDesc.StructureStride = sizeof(RS_MATERIAL_DATA);
+  MaterialBuffer = Devices->createBuffer(BufDesc);
+  FAIL_NULL_RETURN(MaterialBuffer);
 
-  SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementWidth = MAX_STRUCTURED_BUFFER_SIZE;
-  Hr = DevicePtr->CreateShaderResourceView(MaterialBuffer, &SrvDesc,
-                                           &MaterialBufferSrv);
-  FAIL_HR_RETURN(Hr);
+  RS_BUFFER_VIEW_DESC SrvDesc = {};
+  SrvDesc.NumElements = MAX_STRUCTURED_BUFFER_SIZE;
+  SrvDesc.ElementSize = sizeof(RS_MATERIAL_DATA);
+  MaterialBufferSrv = Devices->createShaderResourceView(MaterialBuffer, SrvDesc);
+  FAIL_NULL_RETURN(MaterialBufferSrv);
 
   remapMaterialData();
 
   return true;
 }
 
-ID3D11VertexShader *
-RSStaticResources::getStaticVertexShader(const std::string &ShaderName) {
-  auto Found = VertexShaderMap.find(ShaderName);
-  if (Found != VertexShaderMap.end()) {
+RSShader *RSStaticResources::getStaticShader(const std::string &ShaderName) {
+  auto Found = ShaderMap.find(ShaderName);
+  if (Found != ShaderMap.end()) {
     return Found->second;
   } else {
     return nullptr;
   }
 }
 
-ID3D11GeometryShader *
-RSStaticResources::getStaticGeometryShader(const std::string &ShaderName) {
-  auto Found = GeometryShaderMap.find(ShaderName);
-  if (Found != GeometryShaderMap.end()) {
-    return Found->second;
-  } else {
-    return nullptr;
-  }
-}
-
-ID3D11PixelShader *
-RSStaticResources::getStaticPixelShader(const std::string &ShaderName) {
-  auto Found = PixelShaderMap.find(ShaderName);
-  if (Found != PixelShaderMap.end()) {
-    return Found->second;
-  } else {
-    return nullptr;
-  }
-}
-
-ID3D11ComputeShader *
-RSStaticResources::getStaticComputeShader(const std::string &ShaderName) {
-  auto Found = ComputeShaderMap.find(ShaderName);
-  if (Found != ComputeShaderMap.end()) {
-    return Found->second;
-  } else {
-    return nullptr;
-  }
-}
-
-ID3D11RasterizerState *
-RSStaticResources::getStaticRasterizerState(const std::string &StateName) {
-  auto Found = RasterizerStateMap.find(StateName);
-  if (Found != RasterizerStateMap.end()) {
-    return Found->second;
-  } else {
-    return nullptr;
-  }
-}
-
-ID3D11DepthStencilState *
-RSStaticResources::getStaticDepthStencilState(const std::string &StateName) {
-  auto Found = DepthStencilStateMap.find(StateName);
-  if (Found != DepthStencilStateMap.end()) {
-    return Found->second;
-  } else {
-    return nullptr;
-  }
-}
-
-ID3D11BlendState *
-RSStaticResources::getStaticBlendState(const std::string &StateName) {
-  auto Found = BlendStateMap.find(StateName);
-  if (Found != BlendStateMap.end()) {
-    return Found->second;
-  } else {
-    return nullptr;
-  }
-}
-
-ID3D11SamplerState *
-RSStaticResources::getStaticSampler(const std::string &SamplerName) {
+RSSampler *RSStaticResources::getStaticSampler(const std::string &SamplerName) {
   auto Found = SamplerMap.find(SamplerName);
   if (Found != SamplerMap.end()) {
     return Found->second;
@@ -418,7 +246,7 @@ RSStaticResources::getStaticSampler(const std::string &SamplerName) {
   }
 }
 
-ID3D11InputLayout *
+const RSInputLayout *
 RSStaticResources::getStaticInputLayout(const std::string &LayoutName) {
   auto Found = InputLayoutMap.find(LayoutName);
   if (Found != InputLayoutMap.end()) {
@@ -456,12 +284,9 @@ UINT RSStaticResources::getStaticMaterialIndex(
 }
 
 void RSStaticResources::remapMaterialData() {
-  auto ContextPtr = RenderSystemRoot->getDevices()->getSTContext();
-  D3D11_MAPPED_SUBRESOURCE msr = {};
-  ContextPtr->Map(MaterialBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &msr);
-  RS_MATERIAL_DATA *MaterialData = (RS_MATERIAL_DATA *)msr.pData;
-  memcpy_s(MaterialData, MaterialVector.size() * sizeof(RS_MATERIAL_DATA),
-           MaterialVector.data(),
-           MaterialVector.size() * sizeof(RS_MATERIAL_DATA));
-  ContextPtr->Unmap(MaterialBuffer, 0);
+  RS_MATERIAL_DATA *MaterialData =
+      static_cast<RS_MATERIAL_DATA *>(MaterialBuffer->map());
+  std::memcpy(MaterialData, MaterialVector.data(),
+              MaterialVector.size() * sizeof(RS_MATERIAL_DATA));
+  MaterialBuffer->unmap();
 }
