@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSTopic.cpp
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 描述一个具体的主题并提供执行与操作方式
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
@@ -16,13 +16,13 @@
 RSTopic::RSTopic(const std::string &Name)
     : TopicName(Name), AssemblyFinishFlag(true),
       ExecuateOrderInPipeline(RS_INVALID_ORDER), PassArray({}),
-      MTContext(nullptr) {}
+      Context(nullptr) {}
 
 RSTopic::RSTopic(const RSTopic &Source)
     : TopicName(Source.TopicName),
       AssemblyFinishFlag(Source.AssemblyFinishFlag),
       ExecuateOrderInPipeline(Source.ExecuateOrderInPipeline), PassArray({}),
-      MTContext(Source.MTContext) {
+      Context(Source.Context) {
   PassArray.reserve(Source.PassArray.size());
   for (auto &Topic : Source.PassArray) {
     RSPass_Base *OneMore = Topic->clonePass();
@@ -42,10 +42,10 @@ void RSTopic::setExecuateOrder(UINT Order) { ExecuateOrderInPipeline = Order; }
 
 UINT RSTopic::getExecuateOrder() const { return ExecuateOrderInPipeline; }
 
-void RSTopic::setMTContext(ID3D11DeviceContext *ContextPtr) {
-  MTContext = ContextPtr;
+void RSTopic::setContext(RSCommandContext *ContextPtr) {
+  Context = ContextPtr;
   for (auto &Pass : PassArray) {
-    Pass->setMTContext(ContextPtr);
+    Pass->setContext(ContextPtr);
   }
 }
 

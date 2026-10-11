@@ -1,6 +1,6 @@
-﻿//---------------------------------------------------------------
+//---------------------------------------------------------------
 // File: RSPipeline.h
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 描述一个具体的流水线并提供执行与操作方式
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
@@ -11,23 +11,10 @@
 
 #include "RSCommon.h"
 
-struct TOPIC_THREAD {
-  ID3D11DeviceContext *DeferredContext = nullptr;
-  ID3D11CommandList *CommandList = nullptr;
-  HANDLE ThreadHandle = nullptr;
-  HANDLE BeginEvent = nullptr;
-  HANDLE FinishEvent = nullptr;
-  bool ExitFlag = false;
-
-  struct ARGUMENT_LIST {
-    class RSTopic *TopicPtr = nullptr;
-    HANDLE BeginEventPtr = nullptr;
-    HANDLE FinishEventPtr = nullptr;
-    bool *ExitFlagPtr = nullptr;
-    ID3D11DeviceContext *DeferredContext = nullptr;
-    ID3D11CommandList **CommandListPtr = nullptr;
-  } ArgumentList = {};
-};
+#include <condition_variable>
+#include <cstdint>
+#include <mutex>
+#include <thread>
 
 class RSPipeline {
 private:
@@ -35,11 +22,19 @@ private:
   bool AssemblyFinishFlag;
 
   std::vector<class RSTopic *> TopicArray;
-  std::vector<TOPIC_THREAD> TopicThreads;
-  std::vector<HANDLE> FinishEvents;
-
-  ID3D11DeviceContext *ImmediateContext;
+  // one command context per topic, submitted in topic order
+  std::vector<class RSCommandContext *> TopicContexts;
+  class RSDevices *Devices;
   bool MultipleThreadModeFlag;
+
+  // workers record topics in parallel, one thread per topic
+  std::vector<std::thread> TopicThreads;
+  std::mutex ThreadLock;
+  std::condition_variable BeginCondition;
+  std::condition_variable FinishCondition;
+  uint64_t WorkGeneration;
+  size_t RemainingWork;
+  bool ExitFlag;
 
 public:
   RSPipeline(const std::string &_name);
@@ -62,6 +57,10 @@ public:
   void execuatePipeline();
   void releasePipeline();
 
+  // threads only run when the pipeline executes, nothing to suspend
   void suspendAllThread();
   void resumeAllThread();
+
+private:
+  void topicThreadFunc(size_t TopicIndex);
 };
