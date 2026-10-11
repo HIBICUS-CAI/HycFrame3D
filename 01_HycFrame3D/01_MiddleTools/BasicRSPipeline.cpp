@@ -122,6 +122,22 @@ RSShader *compileShader(const std::string &FileName,
   return G_RSRoot->getDevices()->createShader(std::move(Spirv));
 }
 
+// a compute shader is held as its pipeline state, the shader module isn't
+// needed after the pipeline gets created
+RSPipelineState *
+compileComputePipeline(const std::string &FileName,
+                       const std::string &EntryPoint,
+                       const rs_tool::SHADER_MACRO *Macros = nullptr) {
+  RSShader *Shader = compileShader(FileName, EntryPoint, "cs_5_0", Macros);
+  if (!Shader) {
+    return nullptr;
+  }
+  RSPipelineState *Pipeline =
+      G_RSRoot->getDevices()->createComputePipeline(Shader);
+  Shader->Release();
+  return Pipeline;
+}
+
 VkSamplerCreateInfo makeSamplerInfo(VkFilter Filter,
                                     VkSamplerMipmapMode MipMode,
                                     VkSamplerAddressMode Address) {
@@ -171,6 +187,20 @@ VkSamplerCreateInfo makeConfigSamplerInfo(VkSamplerAddressMode Address) {
   return Info;
 }
 
+// linear filtering of depth formats is optional in vulkan
+VkSamplerCreateInfo fitDepthSamplerInfo(VkSamplerCreateInfo Info) {
+  VkFormatProperties Props = {};
+  vkGetPhysicalDeviceFormatProperties(
+      G_RSRoot->getDevices()->getPhysicalDevice(), DEPTH_FORMAT, &Props);
+  if (!(Props.optimalTilingFeatures &
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
+    Info.magFilter = VK_FILTER_NEAREST;
+    Info.minFilter = VK_FILTER_NEAREST;
+    Info.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+  }
+  return Info;
+}
+
 RSTexture *createTexture2D(VkFormat Format,
                            UINT Width,
                            UINT Height,
@@ -202,6 +232,48 @@ RSShaderResourceView *createStructuredSrv(RSBuffer *Buffer,
   Desc.ElementSize = ElementSize;
   Desc.NumElements = ElementCount;
   return G_RSRoot->getDevices()->createShaderResourceView(Buffer, Desc);
+}
+
+RSBuffer *createImmutableBuffer(VkBufferUsageFlags Usage,
+                                const void *Data,
+                                VkDeviceSize Size) {
+  RS_BUFFER_DESC Desc = {};
+  Desc.Size = Size;
+  Desc.Usage = Usage;
+  Desc.Memory = RS_MEMORY_USAGE::GPU_ONLY;
+  return G_RSRoot->getDevices()->createBuffer(Desc, Data);
+}
+
+// two triangles covering the screen, the normal x and tangent x store the
+// vertex index for shaders using vertex input
+bool createScreenQuad(RSBuffer **OutVertexBuffer, RSBuffer **OutIndexBuffer) {
+  vertex_type::TangentVertex V[4] = {};
+  V[0].Position = dx::XMFLOAT3(-1.0f, -1.0f, 0.0f);
+  V[1].Position = dx::XMFLOAT3(-1.0f, +1.0f, 0.0f);
+  V[2].Position = dx::XMFLOAT3(+1.0f, +1.0f, 0.0f);
+  V[3].Position = dx::XMFLOAT3(+1.0f, -1.0f, 0.0f);
+  V[0].Normal = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+  V[1].Normal = dx::XMFLOAT3(1.0f, 0.0f, 0.0f);
+  V[2].Normal = dx::XMFLOAT3(2.0f, 0.0f, 0.0f);
+  V[3].Normal = dx::XMFLOAT3(3.0f, 0.0f, 0.0f);
+  V[0].Tangent = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
+  V[1].Tangent = dx::XMFLOAT3(1.0f, 0.0f, 0.0f);
+  V[2].Tangent = dx::XMFLOAT3(2.0f, 0.0f, 0.0f);
+  V[3].Tangent = dx::XMFLOAT3(3.0f, 0.0f, 0.0f);
+  V[0].TexCoord = dx::XMFLOAT2(0.0f, 1.0f);
+  V[1].TexCoord = dx::XMFLOAT2(0.0f, 0.0f);
+  V[2].TexCoord = dx::XMFLOAT2(1.0f, 0.0f);
+  V[3].TexCoord = dx::XMFLOAT2(1.0f, 1.0f);
+  *OutVertexBuffer =
+      createImmutableBuffer(VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, V, sizeof(V));
+  FAIL_NULL_RETURN(*OutVertexBuffer);
+
+  UINT Indices[6] = {0, 1, 2, 0, 2, 3};
+  *OutIndexBuffer = createImmutableBuffer(VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                          Indices, sizeof(Indices));
+  FAIL_NULL_RETURN(*OutIndexBuffer);
+
+  return true;
 }
 
 } // namespace
@@ -940,7 +1012,8 @@ bool RSPass_MRT::createPipelines() {
 RSPass_Ssao::RSPass_Ssao(std::string &Name, PASS_TYPE Type, RSRoot_DX11 *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
       PixelShader(nullptr), CompressVertexShader(nullptr),
-      CompressPixelShader(nullptr), RenderTargetView(nullptr),
+      CompressPixelShader(nullptr), SsaoPipeline(nullptr),
+      CompressPipeline(nullptr), RenderTargetView(nullptr),
       NotCompressSrv(nullptr), CompressRtv(nullptr), SamplePointClamp(nullptr),
       SampleLinearClamp(nullptr), SampleDepthMap(nullptr),
       SampleLinearWrap(nullptr), SsaoInfoStructedBuffer(nullptr),
@@ -953,6 +1026,8 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao &Source)
       PixelShader(Source.PixelShader),
       CompressVertexShader(Source.CompressVertexShader),
       CompressPixelShader(Source.CompressPixelShader),
+      SsaoPipeline(Source.SsaoPipeline),
+      CompressPipeline(Source.CompressPipeline),
       RenderTargetView(Source.RenderTargetView),
       NotCompressSrv(Source.NotCompressSrv), CompressRtv(Source.CompressRtv),
       SamplePointClamp(Source.SamplePointClamp),
@@ -970,6 +1045,8 @@ RSPass_Ssao::RSPass_Ssao(const RSPass_Ssao &Source)
     RS_ADDREF(PixelShader);
     RS_ADDREF(CompressVertexShader);
     RS_ADDREF(CompressPixelShader);
+    RS_ADDREF(SsaoPipeline);
+    RS_ADDREF(CompressPipeline);
     RS_ADDREF(SamplePointClamp);
     RS_ADDREF(SampleLinearClamp);
     RS_ADDREF(SampleDepthMap);
@@ -1003,6 +1080,9 @@ bool RSPass_Ssao::initPass() {
     return false;
   }
   if (!createSamplers()) {
+    return false;
+  }
+  if (!createPipelines()) {
     return false;
   }
 
@@ -1047,6 +1127,8 @@ void RSPass_Ssao::releasePass() {
   RS_RELEASE(PixelShader);
   RS_RELEASE(CompressVertexShader);
   RS_RELEASE(CompressPixelShader);
+  RS_RELEASE(SsaoPipeline);
+  RS_RELEASE(CompressPipeline);
   RS_RELEASE(SamplePointClamp);
   RS_RELEASE(SampleLinearClamp);
   RS_RELEASE(SampleDepthMap);
@@ -1062,22 +1144,14 @@ void RSPass_Ssao::releasePass() {
 }
 
 void RSPass_Ssao::execuatePass() {
-  ID3D11RenderTargetView *NullRtv = nullptr;
-  ID3D11ShaderResourceView *NullSrv = nullptr;
-  context()->OMSetRenderTargets(1, &RenderTargetView, nullptr);
-  context()->RSSetViewports(1, &G_ViewPort);
-  context()->VSSetShader(VertexShader, nullptr, 0);
-  context()->PSSetShader(PixelShader, nullptr, 0);
-  context()->RSSetState(nullptr);
+  RSShaderResourceView *NullSrv = nullptr;
+  context()->setRenderTargets(1, &RenderTargetView, nullptr);
+  context()->setViewport(G_ViewPort);
+  context()->setPipelineState(SsaoPipeline);
 
   dx::XMMATRIX Mat = {};
-  UINT Stride = sizeof(vertex_type::TangentVertex);
-  UINT Offset = 0;
 
-  D3D11_MAPPED_SUBRESOURCE Msr = {};
-
-  context()->Map(SsaoInfoStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-  SsaoInfo *SsaoData = static_cast<SsaoInfo *>(Msr.pData);
+  SsaoInfo *SsaoData = static_cast<SsaoInfo *>(SsaoInfoStructedBuffer->map());
 
   Mat = dx::XMLoadFloat4x4(&RSCameraInfo->ProjMatrix);
   Mat = dx::XMMatrixTranspose(Mat);
@@ -1105,200 +1179,77 @@ void RSPass_Ssao::execuatePass() {
   SsaoData[0].OcclusionFadeStart = G_RenderEffectConfig.SsaoStart;
   SsaoData[0].OcclusionFadeEnd = G_RenderEffectConfig.SsaoEnd;
   SsaoData[0].SurfaceEpsilon = G_RenderEffectConfig.SsaoEpsilon;
-  context()->Unmap(SsaoInfoStructedBuffer, 0);
+  SsaoInfoStructedBuffer->unmap();
 
-  context()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  context()->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &Offset);
-  context()->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-  context()->VSSetShaderResources(0, 1, &SsaoInfoStructedBufferSrv);
-  context()->PSSetShaderResources(0, 1, &SsaoInfoStructedBufferSrv);
-  context()->PSSetShaderResources(1, 1, &GeoBufferSrv);
-  context()->PSSetShaderResources(2, 1, &DepthMapSrv);
-  context()->PSSetShaderResources(3, 1, &RandomMapSrv);
+  context()->setPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+  context()->setVertexBuffer(VertexBuffer);
+  context()->setIndexBuffer(IndexBuffer);
+  context()->setShaderResources(RS_SHADER_STAGE::VERTEX, 0, 1,
+                                &SsaoInfoStructedBufferSrv);
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 0, 1,
+                                &SsaoInfoStructedBufferSrv);
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 1, 1, &GeoBufferSrv);
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 2, 1, &DepthMapSrv);
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 3, 1, &RandomMapSrv);
 
-  context()->PSSetSamplers(0, 1, &SamplePointClamp);
-  context()->PSSetSamplers(1, 1, &SampleLinearClamp);
-  context()->PSSetSamplers(2, 1, &SampleDepthMap);
-  context()->PSSetSamplers(3, 1, &SampleLinearWrap);
+  context()->setSamplers(RS_SHADER_STAGE::PIXEL, 0, 1, &SamplePointClamp);
+  context()->setSamplers(RS_SHADER_STAGE::PIXEL, 1, 1, &SampleLinearClamp);
+  context()->setSamplers(RS_SHADER_STAGE::PIXEL, 2, 1, &SampleDepthMap);
+  context()->setSamplers(RS_SHADER_STAGE::PIXEL, 3, 1, &SampleLinearWrap);
 
-  context()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+  context()->drawIndexedInstanced(6, 1, 0, 0, 0);
 
-  context()->OMSetRenderTargets(1, &CompressRtv, nullptr);
-  context()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  context()->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &Offset);
-  context()->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
-  context()->RSSetViewports(1, &G_ViewPort);
-  context()->VSSetShader(CompressVertexShader, nullptr, 0);
-  context()->PSSetShader(CompressPixelShader, nullptr, 0);
-  context()->PSSetSamplers(0, 1, &SampleLinearWrap);
-  context()->PSSetShaderResources(0, 1, &NotCompressSrv);
+  context()->setRenderTargets(1, &CompressRtv, nullptr);
+  context()->setPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+  context()->setVertexBuffer(VertexBuffer);
+  context()->setIndexBuffer(IndexBuffer);
+  // the full size viewport is clipped to the half size target like d3d11,
+  // the pixel shader doubles texcoords for it
+  context()->setViewport(G_ViewPort);
+  context()->setPipelineState(CompressPipeline);
+  context()->setSamplers(RS_SHADER_STAGE::PIXEL, 0, 1, &SampleLinearWrap);
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 0, 1, &NotCompressSrv);
 
-  context()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+  context()->drawIndexedInstanced(6, 1, 0, 0, 0);
 
-  context()->OMSetRenderTargets(1, &NullRtv, nullptr);
-  context()->RSSetState(nullptr);
-  context()->PSSetShaderResources(1, 1, &NullSrv);
-  context()->PSSetShaderResources(2, 1, &NullSrv);
-  context()->PSSetShaderResources(3, 1, &NullSrv);
+  context()->setRenderTargets(0, nullptr, nullptr);
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 1, 1, &NullSrv);
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 2, 1, &NullSrv);
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 3, 1, &NullSrv);
 }
 
 bool RSPass_Ssao::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
+  VertexShader =
+      compileShader("./Assets/Shaders/ssao_vertex.hlsl", "main", "vs_5_0");
+  FAIL_NULL_RETURN(VertexShader);
 
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/ssao_vertex.hlsl",
-                                      "main", "vs_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  PixelShader =
+      compileShader("./Assets/Shaders/ssao_pixel.hlsl", "main", "ps_5_0");
+  FAIL_NULL_RETURN(PixelShader);
 
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &VertexShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  CompressVertexShader =
+      compileShader("./Assets/Shaders/compress_vertex.hlsl", "main", "vs_5_0");
+  FAIL_NULL_RETURN(CompressVertexShader);
 
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/ssao_pixel.hlsl",
-                                      "main", "ps_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreatePixelShader(ShaderBlob->GetBufferPointer(),
-                                   ShaderBlob->GetBufferSize(), nullptr,
-                                   &PixelShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(
-      L"./Assets/Shaders/compress_vertex.hlsl", "main", "vs_5_0",
-      &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &CompressVertexShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr =
-      rs_tool::compileShaderFromFile(L"./Assets/Shaders/compress_pixel.hlsl",
-                                     "main", "ps_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreatePixelShader(ShaderBlob->GetBufferPointer(),
-                                   ShaderBlob->GetBufferSize(), nullptr,
-                                   &CompressPixelShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  CompressPixelShader =
+      compileShader("./Assets/Shaders/compress_pixel.hlsl", "main", "ps_5_0");
+  FAIL_NULL_RETURN(CompressPixelShader);
 
   return true;
 }
 
 bool RSPass_Ssao::createBuffers() {
-  HRESULT Hr = S_OK;
-  D3D11_BUFFER_DESC BufDesc = {};
+  SsaoInfoStructedBuffer = createDynamicStructuredBuffer(sizeof(SsaoInfo), 1);
+  FAIL_NULL_RETURN(SsaoInfoStructedBuffer);
 
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_DYNAMIC;
-  BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  BufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  BufDesc.ByteWidth = sizeof(SsaoInfo);
-  BufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-  BufDesc.StructureByteStride = sizeof(SsaoInfo);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &SsaoInfoStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  vertex_type::TangentVertex V[4] = {};
-  V[0].Position = dx::XMFLOAT3(-1.0f, -1.0f, 0.0f);
-  V[1].Position = dx::XMFLOAT3(-1.0f, +1.0f, 0.0f);
-  V[2].Position = dx::XMFLOAT3(+1.0f, +1.0f, 0.0f);
-  V[3].Position = dx::XMFLOAT3(+1.0f, -1.0f, 0.0f);
-  V[0].Normal = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-  V[1].Normal = dx::XMFLOAT3(1.0f, 0.0f, 0.0f);
-  V[2].Normal = dx::XMFLOAT3(2.0f, 0.0f, 0.0f);
-  V[3].Normal = dx::XMFLOAT3(3.0f, 0.0f, 0.0f);
-  V[0].Tangent = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-  V[1].Tangent = dx::XMFLOAT3(1.0f, 0.0f, 0.0f);
-  V[2].Tangent = dx::XMFLOAT3(2.0f, 0.0f, 0.0f);
-  V[3].Tangent = dx::XMFLOAT3(3.0f, 0.0f, 0.0f);
-  V[0].TexCoord = dx::XMFLOAT2(0.0f, 1.0f);
-  V[1].TexCoord = dx::XMFLOAT2(0.0f, 0.0f);
-  V[2].TexCoord = dx::XMFLOAT2(1.0f, 0.0f);
-  V[3].TexCoord = dx::XMFLOAT2(1.0f, 1.0f);
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-  BufDesc.ByteWidth = sizeof(vertex_type::TangentVertex) * 4;
-  BufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.MiscFlags = 0;
-  BufDesc.StructureByteStride = 0;
-  D3D11_SUBRESOURCE_DATA VInitData = {};
-  ZeroMemory(&VInitData, sizeof(VInitData));
-  VInitData.pSysMem = V;
-  Hr = device()->CreateBuffer(&BufDesc, &VInitData, &VertexBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  UINT Indices[6] = {0, 1, 2, 0, 2, 3};
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-  BufDesc.ByteWidth = sizeof(UINT) * 6;
-  BufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.StructureByteStride = 0;
-  BufDesc.MiscFlags = 0;
-  D3D11_SUBRESOURCE_DATA IInitData = {};
-  ZeroMemory(&IInitData, sizeof(IInitData));
-  IInitData.pSysMem = Indices;
-  Hr = device()->CreateBuffer(&BufDesc, &IInitData, &IndexBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  return true;
+  return createScreenQuad(&VertexBuffer, &IndexBuffer);
 }
 
 bool RSPass_Ssao::createTextures() {
-  HRESULT Hr = S_OK;
+  auto Devices = G_RSRoot->getDevices();
   RS_RESOURCE_INFO Dti = {};
-  D3D11_TEXTURE2D_DESC TexDesc = {};
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-  D3D11_RENDER_TARGET_VIEW_DESC RtvDesc = {};
-  D3D11_UNORDERED_ACCESS_VIEW_DESC UavDesc = {};
-  D3D11_SUBRESOURCE_DATA InitData = {};
-  ZeroMemory(&TexDesc, sizeof(TexDesc));
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  ZeroMemory(&RtvDesc, sizeof(RtvDesc));
-  ZeroMemory(&UavDesc, sizeof(UavDesc));
-  ZeroMemory(&InitData, sizeof(InitData));
 
-  ID3D11Texture2D *Texture = nullptr;
-  ID3D11RenderTargetView *Rtv = nullptr;
-  ID3D11ShaderResourceView *Srv = nullptr;
-  ID3D11UnorderedAccessView *Uav = nullptr;
-
-  dx::PackedVector::XMCOLOR *Random = nullptr;
-  Random = new dx::PackedVector::XMCOLOR[256 * 256];
+  std::vector<dx::PackedVector::XMCOLOR> Random(256 * 256);
   int Basic = 1;
   int Range = 100;
   dx::XMFLOAT3 V = {0.f, 0.f, 0.f};
@@ -1313,34 +1264,20 @@ bool RSPass_Ssao::createTextures() {
     }
   }
 
-  InitData.SysMemPitch = 256 * sizeof(dx::PackedVector::XMCOLOR);
-  InitData.pSysMem = Random;
+  RS_SUBRESOURCE_DATA InitData = {};
+  InitData.Data = Random.data();
+  InitData.RowPitch = 256 * sizeof(dx::PackedVector::XMCOLOR);
+  InitData.SlicePitch = InitData.RowPitch * 256;
 
+  RS_TEXTURE_DESC TexDesc = {};
+  TexDesc.Format = VK_FORMAT_R8G8B8A8_UNORM;
   TexDesc.Width = 256;
   TexDesc.Height = 256;
-  TexDesc.MipLevels = 1;
-  TexDesc.ArraySize = 1;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.Usage = D3D11_USAGE_DEFAULT;
-  TexDesc.CPUAccessFlags = 0;
-  TexDesc.MiscFlags = 0;
-  TexDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  TexDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  Hr = device()->CreateTexture2D(&TexDesc, &InitData, &Texture);
-
-  delete[] Random;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  SrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-  SrvDesc.Texture2D.MostDetailedMip = 0;
-  SrvDesc.Texture2D.MipLevels = 1;
-  Hr = device()->CreateShaderResourceView(Texture, &SrvDesc, &Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  TexDesc.Usage = VK_IMAGE_USAGE_SAMPLED_BIT;
+  RSTexture *Texture = Devices->createTexture(TexDesc, &InitData);
+  FAIL_NULL_RETURN(Texture);
+  RSShaderResourceView *Srv = Devices->createShaderResourceView(Texture);
+  FAIL_NULL_RETURN(Srv);
 
   Dti = {};
   Dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
@@ -1348,37 +1285,16 @@ bool RSPass_Ssao::createTextures() {
   Dti.Srv = Srv;
   G_RSRoot->getResourceManager()->addResource("random-tex-ssao", Dti);
 
-  TexDesc.Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth();
-  TexDesc.Height = getRSDX11RootInstance()->getDevices()->getCurrWndHeight();
-  TexDesc.MipLevels = 1;
-  TexDesc.ArraySize = 1;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.Usage = D3D11_USAGE_DEFAULT;
-  TexDesc.CPUAccessFlags = 0;
-  TexDesc.MiscFlags = 0;
-  TexDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  TexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-  Hr = device()->CreateTexture2D(&TexDesc, nullptr, &Texture);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  RtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  RtvDesc.Texture2D.MipSlice = 0;
-  RtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-  Hr = device()->CreateRenderTargetView(Texture, &RtvDesc, &Rtv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  SrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-  SrvDesc.Texture2D.MostDetailedMip = 0;
-  SrvDesc.Texture2D.MipLevels = 1;
-  Hr = device()->CreateShaderResourceView(Texture, &SrvDesc, &Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  UINT Width = Devices->getCurrWndWidth();
+  UINT Height = Devices->getCurrWndHeight();
+  Texture = createTexture2D(
+      VK_FORMAT_R8G8B8A8_UNORM, Width, Height,
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+  FAIL_NULL_RETURN(Texture);
+  RSRenderTargetView *Rtv = Devices->createRenderTargetView(Texture);
+  FAIL_NULL_RETURN(Rtv);
+  Srv = Devices->createShaderResourceView(Texture);
+  FAIL_NULL_RETURN(Srv);
 
   Dti = {};
   Dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
@@ -1387,47 +1303,17 @@ bool RSPass_Ssao::createTextures() {
   Dti.Srv = Srv;
   G_RSRoot->getResourceManager()->addResource("ssao-tex-ssao", Dti);
 
-  TexDesc.Width = getRSDX11RootInstance()->getDevices()->getCurrWndWidth() / 2;
-  TexDesc.Height =
-      getRSDX11RootInstance()->getDevices()->getCurrWndHeight() / 2;
-  TexDesc.MipLevels = 1;
-  TexDesc.ArraySize = 1;
-  TexDesc.SampleDesc.Count = 1;
-  TexDesc.Usage = D3D11_USAGE_DEFAULT;
-  TexDesc.CPUAccessFlags = 0;
-  TexDesc.MiscFlags = 0;
-  TexDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  TexDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE |
-                      D3D11_BIND_UNORDERED_ACCESS;
-  Hr = device()->CreateTexture2D(&TexDesc, nullptr, &Texture);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  RtvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  RtvDesc.Texture2D.MipSlice = 0;
-  RtvDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-  Hr = device()->CreateRenderTargetView(Texture, &RtvDesc, &Rtv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  SrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-  SrvDesc.Texture2D.MostDetailedMip = 0;
-  SrvDesc.Texture2D.MipLevels = 1;
-  Hr = device()->CreateShaderResourceView(Texture, &SrvDesc, &Srv);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  UavDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-  UavDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-  UavDesc.Texture2D.MipSlice = 0;
-  Hr = device()->CreateUnorderedAccessView(Texture, &UavDesc, &Uav);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  Texture = createTexture2D(VK_FORMAT_R8G8B8A8_UNORM, Width / 2, Height / 2,
+                            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                VK_IMAGE_USAGE_SAMPLED_BIT |
+                                VK_IMAGE_USAGE_STORAGE_BIT);
+  FAIL_NULL_RETURN(Texture);
+  Rtv = Devices->createRenderTargetView(Texture);
+  FAIL_NULL_RETURN(Rtv);
+  Srv = Devices->createShaderResourceView(Texture);
+  FAIL_NULL_RETURN(Srv);
+  RSUnorderedAccessView *Uav = Devices->createUnorderedAccessView(Texture);
+  FAIL_NULL_RETURN(Uav);
 
   Dti = {};
   Dti.Type = RS_RESOURCE_TYPE::TEXTURE2D;
@@ -1454,73 +1340,49 @@ bool RSPass_Ssao::createViews() {
                     ->getResource("ssao-tex-compress-ssao")
                     ->Rtv;
 
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-  HRESULT Hr = S_OK;
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementWidth = 1;
-  Hr = device()->CreateShaderResourceView(SsaoInfoStructedBuffer, &SrvDesc,
-                                          &SsaoInfoStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  SsaoInfoStructedBufferSrv =
+      createStructuredSrv(SsaoInfoStructedBuffer, sizeof(SsaoInfo), 1);
+  FAIL_NULL_RETURN(SsaoInfoStructedBufferSrv);
 
   return true;
 }
 
 bool RSPass_Ssao::createSamplers() {
-  HRESULT Hr = S_OK;
-  D3D11_SAMPLER_DESC SamDesc = {};
-  ZeroMemory(&SamDesc, sizeof(SamDesc));
+  auto Devices = G_RSRoot->getDevices();
 
-  SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-  SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SamDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SamDesc.MinLOD = 0;
-  SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SamDesc, &SamplePointClamp);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  SamplePointClamp = Devices->createSampler(
+      makePointSamplerInfo(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
+  FAIL_NULL_RETURN(SamplePointClamp);
 
-  SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SamDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SamDesc.MinLOD = 0;
-  SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SamDesc, &SampleLinearClamp);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  SampleLinearClamp = Devices->createSampler(
+      makeLinearSamplerInfo(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
+  FAIL_NULL_RETURN(SampleLinearClamp);
 
-  SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-  SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-  SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-  SamDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-  SamDesc.MinLOD = 0;
-  SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SamDesc, &SampleDepthMap);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  // the comparison func was ignored by d3d11 with a non comparison filter
+  SampleDepthMap = Devices->createSampler(fitDepthSamplerInfo(
+      makeLinearSamplerInfo(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER)));
+  FAIL_NULL_RETURN(SampleDepthMap);
 
-  SamDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-  SamDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-  SamDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-  SamDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-  SamDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SamDesc.MinLOD = 0;
-  SamDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SamDesc, &SampleLinearWrap);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  SampleLinearWrap = Devices->createSampler(
+      makeLinearSamplerInfo(VK_SAMPLER_ADDRESS_MODE_REPEAT));
+  FAIL_NULL_RETURN(SampleLinearWrap);
+
+  return true;
+}
+
+bool RSPass_Ssao::createPipelines() {
+  RS_GRAPHICS_PIPELINE_DESC Desc = {};
+  Desc.VertexShader = VertexShader;
+  Desc.PixelShader = PixelShader;
+  Desc.ColorTargetCount = 1;
+  Desc.ColorFormats[0] = VK_FORMAT_R8G8B8A8_UNORM;
+  SsaoPipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(SsaoPipeline);
+
+  Desc.VertexShader = CompressVertexShader;
+  Desc.PixelShader = CompressPixelShader;
+  CompressPipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(CompressPipeline);
 
   return true;
 }
@@ -1569,9 +1431,9 @@ void RSPass_KBBlur::releasePass() {
 }
 
 void RSPass_KBBlur::execuatePass() {
-  ID3D11ShaderResourceView *Srv[] = {GeoBufferSrv, DepthMapSrv};
-  static ID3D11UnorderedAccessView *NullUav = nullptr;
-  static ID3D11ShaderResourceView *NullSrv[] = {nullptr, nullptr};
+  RSShaderResourceView *Srv[] = {GeoBufferSrv, DepthMapSrv};
+  static RSUnorderedAccessView *NullUav = nullptr;
+  static RSShaderResourceView *NullSrv[] = {nullptr, nullptr};
 
   static const UINT LoopCount = G_RenderEffectConfig.SsaoBlurCount;
   static UINT Width =
@@ -1582,55 +1444,34 @@ void RSPass_KBBlur::execuatePass() {
   UINT DispatchHori = rs_tool::align(Height, 256) / 256;
 
   for (UINT I = 0; I < LoopCount; I++) {
-    context()->CSSetShader(HoriBlurShader, nullptr, 0);
-    context()->CSSetUnorderedAccessViews(0, 1, &SsaoTexUav, nullptr);
-    context()->CSSetShaderResources(0, 2, Srv);
-    context()->Dispatch(DispatchVert, Height, 1);
-    context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
-    context()->CSSetShaderResources(0, 2, NullSrv);
+    context()->setPipelineState(HoriBlurShader);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                       &SsaoTexUav);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 2, Srv);
+    context()->dispatch(DispatchVert, Height, 1);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                       &NullUav);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 2, NullSrv);
 
-    context()->CSSetShader(VertBlurShader, nullptr, 0);
-    context()->CSSetUnorderedAccessViews(0, 1, &SsaoTexUav, nullptr);
-    context()->CSSetShaderResources(0, 2, Srv);
-    context()->Dispatch(Width, DispatchHori, 1);
-    context()->CSSetUnorderedAccessViews(0, 1, &NullUav, nullptr);
-    context()->CSSetShaderResources(0, 2, NullSrv);
+    context()->setPipelineState(VertBlurShader);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                       &SsaoTexUav);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 2, Srv);
+    context()->dispatch(Width, DispatchHori, 1);
+    context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0, 1,
+                                       &NullUav);
+    context()->setShaderResources(RS_SHADER_STAGE::COMPUTE, 0, 2, NullSrv);
   }
 }
 
 bool RSPass_KBBlur::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
+  HoriBlurShader =
+      compileComputePipeline("./Assets/Shaders/ssao_compute.hlsl", "HMain");
+  FAIL_NULL_RETURN(HoriBlurShader);
 
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/ssao_compute.hlsl",
-                                      "HMain", "cs_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &HoriBlurShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/ssao_compute.hlsl",
-                                      "VMain", "cs_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateComputeShader(ShaderBlob->GetBufferPointer(),
-                                     ShaderBlob->GetBufferSize(), nullptr,
-                                     &VertBlurShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  VertBlurShader =
+      compileComputePipeline("./Assets/Shaders/ssao_compute.hlsl", "VMain");
+  FAIL_NULL_RETURN(VertBlurShader);
 
   return true;
 }
