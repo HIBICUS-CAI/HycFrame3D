@@ -1,12 +1,12 @@
 #include "RootSystem.h"
 
-int WinMain(_In_ HINSTANCE Instance,
-            _In_opt_ HINSTANCE PrevInstance,
-            _In_ LPSTR CmdLine,
-            _In_ int CmdShow) {
+int main(int Argc, char **Argv) {
+  (void)Argc;
+  (void)Argv;
+
   RootSystem Root;
 
-  if (Root.startUp(Instance, CmdShow)) {
+  if (Root.startUp()) {
     Root.runGameLoop();
   }
 

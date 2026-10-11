@@ -15,7 +15,7 @@ RootSystem::RootSystem()
 
 RootSystem::~RootSystem() {}
 
-bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
+bool RootSystem::startUp() {
   ConnectionManager::createInstance();
   if (!ConnectionManager::instance()->initConnections()) {
     return false;
@@ -27,9 +27,9 @@ bool RootSystem::startUp(HINSTANCE Instance, int CmdShow) {
   }
   if (!window::createWindow("a game wnd dont know how to name",
 #ifdef _DEBUG
-                            Instance, CmdShow, 1280, 720, false))
+                            1280, 720, false))
 #else
-                            Instance, CmdShow, 1280, 720, true))
+                            1280, 720, true))
 #endif // _DEBUG
   {
     P_LOG(LOG_ERROR, "failed to create window");
@@ -84,19 +84,13 @@ void RootSystem::cleanAndStop() {
 }
 
 void RootSystem::runGameLoop() {
-  MSG Msg = {0};
-  while (WM_QUIT != Msg.message) {
-    if (PeekMessage(&Msg, nullptr, 0, 0, PM_REMOVE)) {
-      TranslateMessage(&Msg);
-      DispatchMessage(&Msg);
-    } else {
-      Timer.timeIn();
+  while (window::pollMessages()) {
+    Timer.timeIn();
 
-      SceneManagerPtr->checkLoadStatus();
-      SystemExecutivePtr->runAllSystems(Timer);
-      ConnectionManager::instance()->executeConnections();
+    SceneManagerPtr->checkLoadStatus();
+    SystemExecutivePtr->runAllSystems(Timer);
+    ConnectionManager::instance()->executeConnections();
 
-      Timer.timeOut();
-    }
+    Timer.timeOut();
   }
 }
