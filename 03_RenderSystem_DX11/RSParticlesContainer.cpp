@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSParticlesContainer.cpp
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 保存并管理所有的粒子发射器
 // Date: 2021.11.11
 // Mail: cai_genkan@outlook.com

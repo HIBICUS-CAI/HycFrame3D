@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSParticleEmitter.cpp
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 描述并具体执行一个粒子发射器的具体机能
 // Date: 2021.11.11
 // Mail: cai_genkan@outlook.com

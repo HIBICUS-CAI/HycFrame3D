@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSCamerasContainer.h
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 对所有的摄像机进行引用及简单处理
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com

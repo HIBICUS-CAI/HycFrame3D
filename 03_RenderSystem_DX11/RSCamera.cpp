@@ -1,6 +1,6 @@
 ﻿//---------------------------------------------------------------
 // File: RSCamera.cpp
-// Proj: RenderSystem_DX11
+// Proj: RenderSystem_VK
 // Info: 对一个摄像头的基本内容进行描述及相关处理
 // Date: 2021.9.13
 // Mail: cai_genkan@outlook.com
