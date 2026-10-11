@@ -124,7 +124,7 @@ bool createBasicPipeline() {
     TomlNode Node = {};
     std::string ErrorMess = "";
     if (!loadTomlAndParse(Config,
-                          ".\\Assets\\Configs\\render-effect-config.toml",
+                          "./Assets/Configs/render-effect-config.toml",
                           ErrorMess)) {
       return false;
     }
@@ -700,7 +700,7 @@ bool RSPass_MRT::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\mrt_vertex.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/mrt_vertex.hlsl",
                                       "main", "vs_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -716,7 +716,7 @@ bool RSPass_MRT::createShaders() {
   }
 
   D3D_SHADER_MACRO Macro[] = {{"ANIMATION_VERTEX", "1"}, {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\mrt_vertex.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/mrt_vertex.hlsl",
                                       "main", "vs_5_0", &ShaderBlob, Macro);
   if (FAILED(Hr)) {
     return false;
@@ -731,7 +731,7 @@ bool RSPass_MRT::createShaders() {
     return false;
   }
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\mrt_pixel.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/mrt_pixel.hlsl",
                                       "main", "ps_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -746,7 +746,7 @@ bool RSPass_MRT::createShaders() {
     return false;
   }
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\mrt_nd_pixel.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/mrt_nd_pixel.hlsl",
                                       "main", "ps_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -1206,7 +1206,7 @@ bool RSPass_Ssao::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ssao_vertex.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/ssao_vertex.hlsl",
                                       "main", "vs_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -1221,7 +1221,7 @@ bool RSPass_Ssao::createShaders() {
     return false;
   }
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ssao_pixel.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/ssao_pixel.hlsl",
                                       "main", "ps_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -1237,7 +1237,7 @@ bool RSPass_Ssao::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\compress_vertex.hlsl", "main", "vs_5_0",
+      L"./Assets/Shaders/compress_vertex.hlsl", "main", "vs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -1253,7 +1253,7 @@ bool RSPass_Ssao::createShaders() {
   }
 
   Hr =
-      rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\compress_pixel.hlsl",
+      rs_tool::compileShaderFromFile(L"./Assets/Shaders/compress_pixel.hlsl",
                                      "main", "ps_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -1662,7 +1662,7 @@ bool RSPass_KBBlur::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ssao_compute.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/ssao_compute.hlsl",
                                       "HMain", "cs_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -1677,7 +1677,7 @@ bool RSPass_KBBlur::createShaders() {
     return false;
   }
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\ssao_compute.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/ssao_compute.hlsl",
                                       "VMain", "cs_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -1899,7 +1899,7 @@ bool RSPass_Shadow::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\light_vertex.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/light_vertex.hlsl",
                                       "main", "vs_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -1915,7 +1915,7 @@ bool RSPass_Shadow::createShaders() {
   }
 
   D3D_SHADER_MACRO Macro[] = {{"ANIMATION_VERTEX", "1"}, {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\light_vertex.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/light_vertex.hlsl",
                                       "main", "vs_5_0", &ShaderBlob, Macro);
   if (FAILED(Hr)) {
     return false;
@@ -2313,7 +2313,7 @@ bool RSPass_Defered::createShaders() {
   HRESULT Hr = S_OK;
 
   Hr =
-      rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\defered_vertex.hlsl",
+      rs_tool::compileShaderFromFile(L"./Assets/Shaders/defered_vertex.hlsl",
                                      "main", "vs_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -2332,7 +2332,7 @@ bool RSPass_Defered::createShaders() {
   std::transform(ModelName.begin(), ModelName.end(), ModelName.begin(),
                  static_cast<int (*)(int)>(std::toupper));
   D3D_SHADER_MACRO Macro[] = {{ModelName.c_str(), "1"}, {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\defered_pixel.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/defered_pixel.hlsl",
                                       "main", "ps_5_0", &ShaderBlob, Macro);
   if (FAILED(Hr)) {
     return false;
@@ -2618,7 +2618,7 @@ bool RSPass_SkyShpere::initPass() {
           "this is not a bug about loading skybox texture failed :)");
   HRESULT Hr = dx::CreateDDSTextureFromFile(
       G_RSRoot->getDevices()->getDevice(),
-      L".\\RenderSystem_StaticResources\\Textures\\ibl_brdf.dds", nullptr,
+      L"./RenderSystem_StaticResources/Textures/ibl_brdf.dds", nullptr,
       &G_IblBrdfSrv);
   if (FAILED(Hr)) {
     return false;
@@ -2698,7 +2698,7 @@ bool RSPass_SkyShpere::createShaders() {
   HRESULT Hr = S_OK;
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\skysphere_vertex.hlsl", "main", "vs_5_0",
+      L"./Assets/Shaders/skysphere_vertex.hlsl", "main", "vs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -2714,7 +2714,7 @@ bool RSPass_SkyShpere::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\skysphere_pixel.hlsl", "main", "ps_5_0",
+      L"./Assets/Shaders/skysphere_pixel.hlsl", "main", "ps_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -2946,7 +2946,7 @@ bool RSPass_Bloom::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\bloom_vertex.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/bloom_vertex.hlsl",
                                       "main", "vs_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -2966,7 +2966,7 @@ bool RSPass_Bloom::createShaders() {
   if (G_RenderEffectConfig.BloomOff) {
     D3D_SHADER_MACRO Macro[] = {{"PIXEL_FACTOR", PixelFactor.c_str()},
                                 {nullptr, nullptr}};
-    Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\bloom_pixel.hlsl",
+    Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/bloom_pixel.hlsl",
                                         "main", "ps_5_0", &ShaderBlob, Macro);
     if (FAILED(Hr)) {
       return false;
@@ -2975,7 +2975,7 @@ bool RSPass_Bloom::createShaders() {
     D3D_SHADER_MACRO Macro[] = {{"BLOOM_ON", "1"},
                                 {"PIXEL_FACTOR", PixelFactor.c_str()},
                                 {nullptr, nullptr}};
-    Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\bloom_pixel.hlsl",
+    Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/bloom_pixel.hlsl",
                                         "main", "ps_5_0", &ShaderBlob, Macro);
     if (FAILED(Hr)) {
       return false;
@@ -4009,7 +4009,7 @@ bool RSPass_PriticleEmitSimulate::createShaders() {
   HRESULT Hr = S_OK;
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\ptc_init_compute.hlsl", "Main", "cs_5_0",
+      L"./Assets/Shaders/ptc_init_compute.hlsl", "Main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4024,7 +4024,7 @@ bool RSPass_PriticleEmitSimulate::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\ptc_reset_compute.hlsl", "Main", "cs_5_0",
+      L"./Assets/Shaders/ptc_reset_compute.hlsl", "Main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4039,7 +4039,7 @@ bool RSPass_PriticleEmitSimulate::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\ptc_emit_compute.hlsl", "Main", "cs_5_0",
+      L"./Assets/Shaders/ptc_emit_compute.hlsl", "Main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4054,7 +4054,7 @@ bool RSPass_PriticleEmitSimulate::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\ptc_simulate_compute.hlsl", "Main", "cs_5_0",
+      L"./Assets/Shaders/ptc_simulate_compute.hlsl", "Main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4485,7 +4485,7 @@ bool RSPass_PriticleTileRender::createShaders() {
   HRESULT Hr = S_OK;
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\ptc_coarse_compute.hlsl", "Main", "cs_5_0",
+      L"./Assets/Shaders/ptc_coarse_compute.hlsl", "Main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4500,7 +4500,7 @@ bool RSPass_PriticleTileRender::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\ptc_cull_compute.hlsl", "Main", "cs_5_0",
+      L"./Assets/Shaders/ptc_cull_compute.hlsl", "Main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4515,7 +4515,7 @@ bool RSPass_PriticleTileRender::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\ptc_render_compute.hlsl", "Main", "cs_5_0",
+      L"./Assets/Shaders/ptc_render_compute.hlsl", "Main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4530,7 +4530,7 @@ bool RSPass_PriticleTileRender::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\ptc_blend_vertex.hlsl", "Main", "vs_5_0",
+      L"./Assets/Shaders/ptc_blend_vertex.hlsl", "Main", "vs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4545,7 +4545,7 @@ bool RSPass_PriticleTileRender::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\ptc_blend_pixel.hlsl", "Main", "ps_5_0",
+      L"./Assets/Shaders/ptc_blend_pixel.hlsl", "Main", "ps_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4566,7 +4566,7 @@ bool RSPass_PriticleTileRender::createViews() {
   HRESULT Hr = S_OK;
 
   Hr = dx::CreateDDSTextureFromFile(device(),
-                                    L".\\Assets\\Textures\\particle_atlas.dds",
+                                    L"./Assets/Textures/particle_atlas.dds",
                                     nullptr, &ParticleTex_Srv);
   if (FAILED(Hr)) {
     return false;
@@ -4860,7 +4860,7 @@ bool RSPass_Sprite::createShaders() {
   ID3DBlob *ShaderBlob = nullptr;
   HRESULT Hr = S_OK;
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\sprite_vertex.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/sprite_vertex.hlsl",
                                       "main", "vs_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -4875,7 +4875,7 @@ bool RSPass_Sprite::createShaders() {
     return false;
   }
 
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\sprite_pixel.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/sprite_pixel.hlsl",
                                       "main", "ps_5_0", &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -5090,7 +5090,7 @@ bool RSPass_SimpleLight::createShaders() {
   HRESULT Hr = S_OK;
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\simplylit_vertex.hlsl", "main", "vs_5_0",
+      L"./Assets/Shaders/simplylit_vertex.hlsl", "main", "vs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -5106,7 +5106,7 @@ bool RSPass_SimpleLight::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\simplylit_pixel.hlsl", "main", "ps_5_0",
+      L"./Assets/Shaders/simplylit_pixel.hlsl", "main", "ps_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -5380,7 +5380,7 @@ bool RSPass_Billboard::createShaders() {
   HRESULT Hr = S_OK;
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\billboard_vertex.hlsl", "main", "vs_5_0",
+      L"./Assets/Shaders/billboard_vertex.hlsl", "main", "vs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -5396,7 +5396,7 @@ bool RSPass_Billboard::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\billboard_geometry.hlsl", "main", "gs_5_0",
+      L"./Assets/Shaders/billboard_geometry.hlsl", "main", "gs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -5412,7 +5412,7 @@ bool RSPass_Billboard::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\billboard_pixel.hlsl", "main", "ps_5_0",
+      L"./Assets/Shaders/billboard_pixel.hlsl", "main", "ps_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -5660,7 +5660,7 @@ bool RSPass_Tonemapping::createShaders() {
   HRESULT Hr = S_OK;
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\average_lumin_compute.hlsl", "main", "cs_5_0",
+      L"./Assets/Shaders/average_lumin_compute.hlsl", "main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -5689,7 +5689,7 @@ bool RSPass_Tonemapping::createShaders() {
                                   {"INV_FACTOR", InvFactorStr.c_str()},
                                   {nullptr, nullptr}};
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\dynamic_exposure_compute.hlsl", "main", "cs_5_0",
+      L"./Assets/Shaders/dynamic_exposure_compute.hlsl", "main", "cs_5_0",
       &ShaderBlob, ExpoMacro);
   if (FAILED(Hr)) {
     return false;
@@ -5714,7 +5714,7 @@ bool RSPass_Tonemapping::createShaders() {
     Macro[0] = {"STATIC_EXPOSURE", StaticV.c_str()};
   }
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\tonemap_compute.hlsl", "main", "cs_5_0",
+      L"./Assets/Shaders/tonemap_compute.hlsl", "main", "cs_5_0",
       &ShaderBlob, Macro);
   if (FAILED(Hr)) {
     return false;
@@ -6040,7 +6040,7 @@ bool RSPass_BloomHdr::createShaders() {
   D3D_SHADER_MACRO PickMacro[] = {{"MIN_VALUE", PickMinValue.c_str()},
                                   {nullptr, nullptr}};
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\bloom_pick_compute.hlsl", "main", "cs_5_0",
+      L"./Assets/Shaders/bloom_pick_compute.hlsl", "main", "cs_5_0",
       &ShaderBlob, PickMacro);
   if (FAILED(Hr)) {
     return false;
@@ -6079,7 +6079,7 @@ bool RSPass_BloomHdr::createShaders() {
                                   {"WEIGHT_ARRAY", WeightArray.c_str()},
                                   {nullptr, nullptr}};
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\gauss_blur_compute.hlsl", "HMain", "cs_5_0",
+      L"./Assets/Shaders/gauss_blur_compute.hlsl", "HMain", "cs_5_0",
       &ShaderBlob, BlurMacro);
   if (FAILED(Hr)) {
     return false;
@@ -6095,7 +6095,7 @@ bool RSPass_BloomHdr::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\gauss_blur_compute.hlsl", "VMain", "cs_5_0",
+      L"./Assets/Shaders/gauss_blur_compute.hlsl", "VMain", "cs_5_0",
       &ShaderBlob, BlurMacro);
   if (FAILED(Hr)) {
     return false;
@@ -6111,7 +6111,7 @@ bool RSPass_BloomHdr::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\karis_average_compute.hlsl", "HMain", "cs_5_0",
+      L"./Assets/Shaders/karis_average_compute.hlsl", "HMain", "cs_5_0",
       &ShaderBlob, BlurMacro);
   if (FAILED(Hr)) {
     return false;
@@ -6127,7 +6127,7 @@ bool RSPass_BloomHdr::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\karis_average_compute.hlsl", "VMain", "cs_5_0",
+      L"./Assets/Shaders/karis_average_compute.hlsl", "VMain", "cs_5_0",
       &ShaderBlob, BlurMacro);
   if (FAILED(Hr)) {
     return false;
@@ -6143,7 +6143,7 @@ bool RSPass_BloomHdr::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\bloom_upsample_compute.hlsl", "main", "cs_5_0",
+      L"./Assets/Shaders/bloom_upsample_compute.hlsl", "main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -6159,7 +6159,7 @@ bool RSPass_BloomHdr::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\bloom_blend_compute.hlsl", "main", "cs_5_0",
+      L"./Assets/Shaders/bloom_blend_compute.hlsl", "main", "cs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -6445,7 +6445,7 @@ bool RSPass_ToSwapChain::createShaders() {
   HRESULT Hr = S_OK;
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\copy_texture_vertex.hlsl", "main", "vs_5_0",
+      L"./Assets/Shaders/copy_texture_vertex.hlsl", "main", "vs_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -6461,7 +6461,7 @@ bool RSPass_ToSwapChain::createShaders() {
   }
 
   Hr = rs_tool::compileShaderFromFile(
-      L".\\Assets\\Shaders\\copy_texture_pixel.hlsl", "main", "ps_5_0",
+      L"./Assets/Shaders/copy_texture_pixel.hlsl", "main", "ps_5_0",
       &ShaderBlob);
   if (FAILED(Hr)) {
     return false;
@@ -6608,7 +6608,7 @@ bool RSPass_FXAA::createShaders() {
                               {"EDGE_SEARCH_STEP", SearchStepStr.c_str()},
                               {"EDGE_GUESS", BorderGuessStr.c_str()},
                               {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(L".\\Assets\\Shaders\\fxaa_compute.hlsl",
+  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/fxaa_compute.hlsl",
                                       "main", "cs_5_0", &ShaderBlob, Macro);
   if (FAILED(Hr)) {
     return false;

@@ -43,7 +43,7 @@ bool RSDevices::startUp(RSRoot_DX11 *RootPtr, HWND WndHandle) {
     TomlNode Node = {};
     std::string ErrorMess = "";
     if (!loadTomlAndParse(ConfigRoot,
-                          ".\\Assets\\Configs\\render-device-config.toml",
+                          "./Assets/Configs/render-device-config.toml",
                           ErrorMess)) {
       return false;
     }
@@ -171,7 +171,7 @@ bool RSDevices::createDevices(HWND WndHandle, UINT Width, UINT Height) {
     }
 
     std::wofstream File(
-        L".\\Assets\\Configs\\AutoCreated_AdapterInfoInSystem.txt");
+        L"./Assets/Configs/AutoCreated_AdapterInfoInSystem.txt");
     Index = 0;
     for (const auto &AdapInfo : AllAdapters) {
       std::wstring Info = L"--------------------\nAdapter Info in Index : " +

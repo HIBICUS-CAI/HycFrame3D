@@ -66,7 +66,7 @@ bool UAnimateComponent::loadAnimate(const std::string &AniName,
   HRESULT Hr = S_OK;
   ID3D11ShaderResourceView *Srv = nullptr;
   TexPathWStr = std::wstring(AniPath.begin(), AniPath.end());
-  TexPathWStr = L".\\Assets\\Textures\\" + TexPathWStr;
+  TexPathWStr = L"./Assets/Textures/" + TexPathWStr;
 
   auto ResourceManager = getRSDX11RootInstance()->getResourceManager();
   auto IfExist = ResourceManager->getMeshSrv(AniPath);

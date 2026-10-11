@@ -223,7 +223,7 @@ void RSMeshHelper::createTexSrv(
     }
 
     WStr = std::wstring(Tex.begin(), Tex.end());
-    WStr = L".\\Assets\\Textures\\" + WStr;
+    WStr = L"./Assets/Textures/" + WStr;
     if (Tex.find(".dds") != std::string::npos ||
         Tex.find(".DDS") != std::string::npos) {
       Hr = dx::CreateDDSTextureFromFile(Devices->getDevice(), WStr.c_str(),
@@ -1705,7 +1705,7 @@ RSGeometryGenerator::createSpriteRect(LAYOUT_TYPE LayoutType,
   static HRESULT Hr = S_OK;
   ID3D11ShaderResourceView *Srv = nullptr;
   WStr = std::wstring(TexturePath.begin(), TexturePath.end());
-  WStr = L".\\Assets\\Textures\\" + WStr;
+  WStr = L"./Assets/Textures/" + WStr;
   if (TexturePath.find(".dds") != std::string::npos ||
       TexturePath.find(".DDS") != std::string::npos) {
     Hr = dx::CreateDDSTextureFromFile(Devices->getDevice(), WStr.c_str(),

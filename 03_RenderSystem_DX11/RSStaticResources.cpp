@@ -142,7 +142,7 @@ bool RSStaticResources::buildStaticInputLayouts() {
 
   {
     Hr = rs_tool::compileShaderFromFile(
-        L"RenderSystem_StaticResources\\InputLayouts\\input_layout_basic.hlsl",
+        L"RenderSystem_StaticResources/InputLayouts/input_layout_basic.hlsl",
         "main", "vs_5_0", &ShaderBlob);
     FAIL_HR_RETURN(Hr);
 
@@ -167,7 +167,7 @@ bool RSStaticResources::buildStaticInputLayouts() {
 
   {
     Hr = rs_tool::compileShaderFromFile(
-        L"RenderSystem_StaticResources\\InputLayouts\\input_layout_color.hlsl",
+        L"RenderSystem_StaticResources/InputLayouts/input_layout_color.hlsl",
         "main", "vs_5_0", &ShaderBlob);
     FAIL_HR_RETURN(Hr);
 
@@ -192,7 +192,7 @@ bool RSStaticResources::buildStaticInputLayouts() {
 
   {
     Hr = rs_tool::compileShaderFromFile(
-        L"RenderSystem_StaticResources\\InputLayouts\\input_layout_tangent."
+        L"RenderSystem_StaticResources/InputLayouts/input_layout_tangent."
         L"hlsl",
         "main", "vs_5_0", &ShaderBlob);
     FAIL_HR_RETURN(Hr);
@@ -220,7 +220,7 @@ bool RSStaticResources::buildStaticInputLayouts() {
 
   {
     Hr = rs_tool::compileShaderFromFile(
-        L"RenderSystem_StaticResources\\InputLayouts\\input_layout_animation."
+        L"RenderSystem_StaticResources/InputLayouts/input_layout_animation."
         L"hlsl",
         "main", "vs_5_0", &ShaderBlob);
     FAIL_HR_RETURN(Hr);
@@ -270,7 +270,7 @@ bool RSStaticResources::buildStaticMaterials() {
   JsonFile MaterialFile = {};
   if (!loadJsonAndParse(
           MaterialFile,
-          "RenderSystem_StaticResources\\Materials\\static-materials.json")) {
+          "RenderSystem_StaticResources/Materials/static-materials.json")) {
     return false;
   }
 

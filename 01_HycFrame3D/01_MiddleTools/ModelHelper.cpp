@@ -31,7 +31,7 @@ void loadModelFile(const std::string &FilePath,
                    RS_SUBMESH_DATA *OutResult,
                    SUBMESH_BONES *OutBoneData,
                    MESH_ANIMATION_DATA **OutAnimData) {
-  std::string Path = ".\\Assets\\Models\\" + FilePath;
+  std::string Path = "./Assets/Models/" + FilePath;
 
   switch (Type) {
   case MODEL_FILE_TYPE::BIN:
@@ -775,7 +775,7 @@ void addTextureToSubMesh(RS_SUBMESH_DATA *OutResult,
   ID3D11ShaderResourceView *Srv = nullptr;
 
   WStr = std::wstring(FilePath.begin(), FilePath.end());
-  WStr = L".\\Assets\\Textures\\" + WStr;
+  WStr = L"./Assets/Textures/" + WStr;
 
   if (Root->getResourceManager()->getMeshSrv(FilePath)) {
     OutResult->Textures[static_cast<size_t>(Type)] = FilePath;
