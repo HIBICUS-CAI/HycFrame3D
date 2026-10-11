@@ -54,6 +54,12 @@ bool pollMessages() {
   return KeepRunning;
 }
 
+void postQuitMessage() {
+  SDL_Event Event = {};
+  Event.type = SDL_QUIT;
+  SDL_PushEvent(&Event);
+}
+
 void cleanAndStop() {
   if (G_Wnd) {
     delete G_Wnd;

@@ -18,6 +18,9 @@ WindowSDL2 WINDOWMANAGER_EXPORT *getWindowPtr();
 // dispatch all pending window messages, return false after quit requested
 bool WINDOWMANAGER_EXPORT pollMessages();
 
+// request the message loop to quit like PostQuitMessage
+void WINDOWMANAGER_EXPORT postQuitMessage();
+
 void WINDOWMANAGER_EXPORT cleanAndStop();
 
 } // namespace window
