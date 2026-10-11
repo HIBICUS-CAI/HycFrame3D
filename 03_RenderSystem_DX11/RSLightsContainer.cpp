@@ -15,13 +15,13 @@
 
 #include <algorithm>
 
-#define LOCK EnterCriticalSection(&DataLock)
-#define UNLOCK LeaveCriticalSection(&DataLock)
+#define LOCK DataLock.lock()
+#define UNLOCK DataLock.unlock()
 
 RSLightsContainer::RSLightsContainer()
     : RenderSystemRoot(nullptr), LightsMap({}), AmbientLightsMap({}),
       CurrentAmbient({0.f, 0.f, 0.f, 0.f}), LightsArray({}),
-      ShadowLightsArray({}), ShadowLightIndeicesArray({}), DataLock({}) {}
+      ShadowLightsArray({}), ShadowLightIndeicesArray({}) {}
 
 RSLightsContainer::~RSLightsContainer() {}
 
@@ -31,7 +31,6 @@ bool RSLightsContainer::startUp(RSRoot_DX11 *RootPtr) {
   }
 
   RenderSystemRoot = RootPtr;
-  InitializeCriticalSection(&DataLock);
 
   return true;
 }
@@ -45,7 +44,6 @@ void RSLightsContainer::cleanAndStop() {
   ShadowLightsArray.clear();
   ShadowLightIndeicesArray.clear();
   AmbientLightsMap.clear();
-  DeleteCriticalSection(&DataLock);
 }
 
 bool LightLessCompare(RSLight *A, RSLight *B) {

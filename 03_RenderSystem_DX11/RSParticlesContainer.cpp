@@ -11,12 +11,12 @@
 
 #include "RSRoot_DX11.h"
 
-#define LOCK EnterCriticalSection(&DataLock)
-#define UNLOCK LeaveCriticalSection(&DataLock)
+#define LOCK DataLock.lock()
+#define UNLOCK DataLock.unlock()
 
 RSParticlesContainer::RSParticlesContainer()
     : RenderSystemRoot(nullptr), ResetFlag(true), ParticleEmitterArray({}),
-      ParticleEmitterMap({}), DataLock({}) {}
+      ParticleEmitterMap({}) {}
 
 RSParticlesContainer::~RSParticlesContainer() {}
 
@@ -26,7 +26,6 @@ bool RSParticlesContainer::startUp(RSRoot_DX11 *RootPtr) {
   }
   RenderSystemRoot = RootPtr;
 
-  InitializeCriticalSection(&DataLock);
 
   ParticleEmitterArray.reserve(MAX_INSTANCE_SIZE);
 
@@ -37,7 +36,6 @@ void RSParticlesContainer::cleanAndStop() {
   ParticleEmitterMap.clear();
   ParticleEmitterArray.clear();
 
-  DeleteCriticalSection(&DataLock);
 }
 
 bool RSParticlesContainer::getResetFlg() { return ResetFlag; }
