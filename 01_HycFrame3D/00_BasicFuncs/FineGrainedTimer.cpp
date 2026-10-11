@@ -2,10 +2,7 @@
 
 #include <cassert>
 
-Timer::Timer()
-    : Litmp({}), Qt1(0), Qt2(0), Dft(0.), Dff(0.), Dfm(0.), ActiveFlag(false) {
-  (void)ActiveFlag;
-}
+Timer::Timer() : Qt1(), Qt2(), Dft(0.), ActiveFlag(false) { (void)ActiveFlag; }
 
 Timer::~Timer() {}
 
@@ -15,17 +12,12 @@ void Timer::timeIn() {
   ActiveFlag = true;
 #endif // _DEBUG
 
-  QueryPerformanceFrequency(&Litmp);
-  Dff = static_cast<double>(Litmp.QuadPart);
-  QueryPerformanceCounter(&Litmp);
-  Qt1 = Litmp.QuadPart;
+  Qt1 = Clock::now();
 }
 
 void Timer::timeOut() {
-  QueryPerformanceCounter(&Litmp);
-  Qt2 = Litmp.QuadPart;
-  Dfm = 1000. * static_cast<double>(Qt2 - Qt1);
-  Dft = Dfm / Dff;
+  Qt2 = Clock::now();
+  Dft = std::chrono::duration<double, std::milli>(Qt2 - Qt1).count();
 
   if (Dft > 33.3333333333) {
     Dft = 33.3333333333;
