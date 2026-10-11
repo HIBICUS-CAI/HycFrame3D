@@ -599,34 +599,35 @@ private:
 
 class RSPass_PriticleTileRender : public RSPass_Base {
 private:
-  ID3D11ComputeShader *CoarseCullingShader;
-  ID3D11ComputeShader *TileCullingShader;
-  ID3D11ComputeShader *TileRenderShader;
-  ID3D11VertexShader *BlendVertexShader;
-  ID3D11PixelShader *BlendPixelShader;
+  // compute shaders are held as their pipeline states
+  RSPipelineState *CoarseCullingShader;
+  RSPipelineState *TileCullingShader;
+  RSPipelineState *TileRenderShader;
+  RSShader *BlendVertexShader;
+  RSShader *BlendPixelShader;
+  RSPipelineState *BlendPipeline;
 
-  ID3D11Buffer *CameraConstantBuffer;
-  ID3D11Buffer *TilingConstantBuffer;
-  ID3D11Buffer *ActiveListConstantBuffer;
-  ID3D11ShaderResourceView *DepthTex_Srv;
-  ID3D11ShaderResourceView *ViewSpacePos_Srv;
-  ID3D11ShaderResourceView *MaxRadius_Srv;
-  ID3D11ShaderResourceView *PartA_Srv;
-  ID3D11ShaderResourceView *AliveIndex_Srv;
-  ID3D11UnorderedAccessView *AliveIndex_Uav;
-  ID3D11ShaderResourceView *CoarseTileIndex_Srv;
-  ID3D11UnorderedAccessView *CoarseTileIndex_Uav;
-  ID3D11ShaderResourceView *CoarseTileIndexCounter_Srv;
-  ID3D11UnorderedAccessView *CoarseTileIndexCounter_Uav;
-  ID3D11ShaderResourceView *TiledIndex_Srv;
-  ID3D11UnorderedAccessView *TiledIndex_Uav;
-  ID3D11ShaderResourceView *ParticleRender_Srv;
-  ID3D11UnorderedAccessView *ParticleRender_Uav;
+  RSBuffer *CameraConstantBuffer;
+  RSBuffer *TilingConstantBuffer;
+  RSBuffer *ActiveListConstantBuffer;
+  RSShaderResourceView *DepthTex_Srv;
+  RSShaderResourceView *ViewSpacePos_Srv;
+  RSShaderResourceView *MaxRadius_Srv;
+  RSShaderResourceView *PartA_Srv;
+  RSShaderResourceView *AliveIndex_Srv;
+  RSUnorderedAccessView *AliveIndex_Uav;
+  RSShaderResourceView *CoarseTileIndex_Srv;
+  RSUnorderedAccessView *CoarseTileIndex_Uav;
+  RSShaderResourceView *CoarseTileIndexCounter_Srv;
+  RSUnorderedAccessView *CoarseTileIndexCounter_Uav;
+  RSShaderResourceView *TiledIndex_Srv;
+  RSUnorderedAccessView *TiledIndex_Uav;
+  RSShaderResourceView *ParticleRender_Srv;
+  RSUnorderedAccessView *ParticleRender_Uav;
 
-  ID3D11SamplerState *LinearClampSampler;
-  ID3D11BlendState *ParticleBlendState;
+  RSSampler *LinearClampSampler;
 
-  ID3D11ShaderResourceView *ParticleTex_Srv;
+  RSShaderResourceView *ParticleTex_Srv;
 
   RS_CAM_INFO *RSCameraInfo;
 
