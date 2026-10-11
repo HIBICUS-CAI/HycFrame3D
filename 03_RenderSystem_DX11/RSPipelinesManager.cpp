@@ -14,12 +14,12 @@
 #include "RSPipeline.h"
 #include "RSRoot_DX11.h"
 
-#define LOCK EnterCriticalSection(&DataLock)
-#define UNLOCK LeaveCriticalSection(&DataLock)
+#define LOCK DataLock.lock()
+#define UNLOCK DataLock.unlock()
 
 RSPipelinesManager::RSPipelinesManager()
     : RenderSystemRoot(nullptr), CurrentPipeline(nullptr),
-      NextPipeline(nullptr), PipelineMap({}), DataLock({}) {}
+      NextPipeline(nullptr), PipelineMap({}) {}
 
 RSPipelinesManager::~RSPipelinesManager() {}
 
@@ -29,7 +29,6 @@ bool RSPipelinesManager::startUp(RSRoot_DX11 *RootPtr) {
   }
 
   RenderSystemRoot = RootPtr;
-  InitializeCriticalSection(&DataLock);
 
   return true;
 }
@@ -44,7 +43,6 @@ void RSPipelinesManager::cleanAndStop() {
   }
 
   PipelineMap.clear();
-  DeleteCriticalSection(&DataLock);
 }
 
 void RSPipelinesManager::addPipeline(const std::string &Name,

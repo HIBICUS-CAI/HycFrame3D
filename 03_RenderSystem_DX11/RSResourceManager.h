@@ -11,6 +11,8 @@
 
 #include "RSCommon.h"
 
+#include <mutex>
+
 #include <unordered_map>
 
 class RSResourceManager {
@@ -19,8 +21,8 @@ private:
   std::unordered_map<std::string, RS_RESOURCE_INFO> ResourceMap;
   std::unordered_map<std::string, ID3D11ShaderResourceView *> MeshSrvMap;
 
-  CRITICAL_SECTION ResDataLock;
-  CRITICAL_SECTION MesDataLock;
+  std::recursive_mutex ResDataLock;
+  std::recursive_mutex MesDataLock;
 
 public:
   RSResourceManager();

@@ -11,14 +11,13 @@
 
 #include "RSRoot_DX11.h"
 
-#define R_LOCK EnterCriticalSection(&ResDataLock)
-#define R_UNLOCK LeaveCriticalSection(&ResDataLock)
-#define M_LOCK EnterCriticalSection(&MesDataLock)
-#define M_UNLOCK LeaveCriticalSection(&MesDataLock)
+#define R_LOCK ResDataLock.lock()
+#define R_UNLOCK ResDataLock.unlock()
+#define M_LOCK MesDataLock.lock()
+#define M_UNLOCK MesDataLock.unlock()
 
 RSResourceManager::RSResourceManager()
-    : RenderSystemRoot(nullptr), ResourceMap({}), MeshSrvMap({}),
-      ResDataLock({}), MesDataLock({}) {}
+    : RenderSystemRoot(nullptr), ResourceMap({}), MeshSrvMap({}) {}
 
 RSResourceManager::~RSResourceManager() {}
 
@@ -29,8 +28,6 @@ bool RSResourceManager::startUp(RSRoot_DX11 *RootPtr) {
 
   RenderSystemRoot = RootPtr;
 
-  InitializeCriticalSection(&ResDataLock);
-  InitializeCriticalSection(&MesDataLock);
 
   return true;
 }
@@ -67,8 +64,6 @@ void RSResourceManager::cleanAndStop() {
   MeshSrvMap.clear();
   ResourceMap.clear();
 
-  DeleteCriticalSection(&ResDataLock);
-  DeleteCriticalSection(&MesDataLock);
 }
 
 void RSResourceManager::addResource(const std::string &Name,

@@ -11,13 +11,15 @@
 
 #include "RSCommon.h"
 
+#include <mutex>
+
 #include <unordered_map>
 
 class RSCamerasContainer {
 private:
   class RSRoot_DX11 *RenderSystemRoot;
 
-  CRITICAL_SECTION DataLock;
+  std::recursive_mutex DataLock;
 
   std::unordered_map<std::string, class RSCamera *> CameraMap;
 

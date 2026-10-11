@@ -11,6 +11,8 @@
 
 #include "RSCommon.h"
 
+#include <mutex>
+
 #include "RSParticleEmitter.h"
 
 #include <unordered_map>
@@ -24,7 +26,7 @@ private:
   std::vector<RSParticleEmitter *> ParticleEmitterArray;
   std::unordered_map<std::string, RSParticleEmitter *> ParticleEmitterMap;
 
-  CRITICAL_SECTION DataLock;
+  std::recursive_mutex DataLock;
 
 public:
   RSParticlesContainer();
@@ -47,6 +49,6 @@ public:
   void startRSParticleEmitter(const std::string &Name);
   void pauseRSParticleEmitter(const std::string &Name);
 
-  inline void lockContainer() { EnterCriticalSection(&DataLock); }
-  inline void unlockContainer() { LeaveCriticalSection(&DataLock); }
+  inline void lockContainer() { DataLock.lock(); }
+  inline void unlockContainer() { DataLock.unlock(); }
 };

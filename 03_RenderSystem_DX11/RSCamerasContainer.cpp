@@ -12,11 +12,11 @@
 #include "RSCamera.h"
 #include "RSRoot_DX11.h"
 
-#define LOCK EnterCriticalSection(&(this->DataLock))
-#define UNLOCK LeaveCriticalSection(&(this->DataLock))
+#define LOCK DataLock.lock()
+#define UNLOCK DataLock.unlock()
 
 RSCamerasContainer::RSCamerasContainer()
-    : RenderSystemRoot(nullptr), DataLock({}), CameraMap({}) {}
+    : RenderSystemRoot(nullptr), CameraMap({}) {}
 
 RSCamerasContainer::~RSCamerasContainer() {}
 
@@ -26,7 +26,6 @@ bool RSCamerasContainer::startUp(RSRoot_DX11 *RootPtr) {
   }
 
   RenderSystemRoot = RootPtr;
-  InitializeCriticalSection(&DataLock);
 
   return true;
 }
@@ -36,7 +35,6 @@ void RSCamerasContainer::cleanAndStop() {
     delete Cam.second;
   }
   CameraMap.clear();
-  DeleteCriticalSection(&DataLock);
 }
 
 RSCamera *RSCamerasContainer::createRSCamera(const std::string &Name,

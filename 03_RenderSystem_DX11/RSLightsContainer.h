@@ -11,6 +11,8 @@
 
 #include "RSCommon.h"
 
+#include <mutex>
+
 #include <unordered_map>
 
 class RSLightsContainer {
@@ -26,7 +28,7 @@ private:
   std::vector<class RSLight *> ShadowLightsArray;
   std::vector<INT> ShadowLightIndeicesArray;
 
-  CRITICAL_SECTION DataLock;
+  std::recursive_mutex DataLock;
 
 public:
   RSLightsContainer();
@@ -57,8 +59,8 @@ public:
                         const RS_SUBMESH_DATA &MeshData);
   void uploadLightBloomDrawCall();
 
-  void lockContainer() { EnterCriticalSection(&DataLock); }
-  void unlockContainer() { LeaveCriticalSection(&DataLock); }
+  void lockContainer() { DataLock.lock(); }
+  void unlockContainer() { DataLock.unlock(); }
 
 private:
   const DirectX::XMFLOAT4 &getAmbientLight(const std::string &Name);

@@ -11,6 +11,8 @@
 
 #include "RSCommon.h"
 
+#include <mutex>
+
 #include <unordered_map>
 
 class RSPipelinesManager {
@@ -19,7 +21,7 @@ private:
   class RSPipeline *CurrentPipeline;
   class RSPipeline *NextPipeline;
   std::unordered_map<std::string, class RSPipeline *> PipelineMap;
-  CRITICAL_SECTION DataLock;
+  std::recursive_mutex DataLock;
 
 public:
   RSPipelinesManager();
