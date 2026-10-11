@@ -5,11 +5,12 @@
 #include "ObjectContainer.h"
 #include "PhysicsWorld.h"
 
-#include <DDSTextureLoader11.h>
 #include <RSCamera.h>
 #include <RSCamerasContainer.h>
 #include <RSDevices.h>
 #include <RSRoot_DX11.h>
+#include <RSTextureLoader.h>
+#include <RSVkObjects.h>
 
 #include <vector>
 
@@ -75,53 +76,44 @@ const DirectX::XMFLOAT4 &SceneNode::getCurrentAmbientFactor() {
 void SceneNode::loadIBLTexture(const std::string &Env,
                                const std::string &Diff,
                                const std::string &Spec) {
-  std::wstring WStr = L"";
-  HRESULT Hr = S_OK;
-  ID3D11ShaderResourceView *Srv = nullptr;
+  bool Result = false;
+  RSShaderResourceView *Srv = nullptr;
+  RSDevices *Devices = getRSDX11RootInstance()->getDevices();
 
   if (Env != "") {
-    WStr = std::wstring(Env.begin(), Env.end());
-    WStr = L"./Assets/Textures/" + WStr;
-    Hr = DirectX::CreateDDSTextureFromFile(
-        getRSDX11RootInstance()->getDevices()->getDevice(), WStr.c_str(),
-        nullptr, &Srv);
-    assert(!FAILED(Hr) && "fail to load IBL env texture");
-    (void)Hr;
+    Result = rs_tool::createDDSTextureFromFile(
+        Devices, "./Assets/Textures/" + Env, nullptr, &Srv);
+    assert(Result && "fail to load IBL env texture");
+    (void)Result;
     CameraAmbientInfo.IBLEnvironmentTexture = Srv;
   }
 
   if (Diff != "") {
-    WStr = std::wstring(Diff.begin(), Diff.end());
-    WStr = L"./Assets/Textures/" + WStr;
-    Hr = DirectX::CreateDDSTextureFromFile(
-        getRSDX11RootInstance()->getDevices()->getDevice(), WStr.c_str(),
-        nullptr, &Srv);
-    assert(!FAILED(Hr) && "fail to load IBL diff texture");
-    (void)Hr;
+    Result = rs_tool::createDDSTextureFromFile(
+        Devices, "./Assets/Textures/" + Diff, nullptr, &Srv);
+    assert(Result && "fail to load IBL diff texture");
+    (void)Result;
     CameraAmbientInfo.IBLDiffuseTexture = Srv;
   }
 
   if (Spec != "") {
-    WStr = std::wstring(Spec.begin(), Spec.end());
-    WStr = L"./Assets/Textures/" + WStr;
-    Hr = DirectX::CreateDDSTextureFromFile(
-        getRSDX11RootInstance()->getDevices()->getDevice(), WStr.c_str(),
-        nullptr, &Srv);
-    assert(!FAILED(Hr) && "fail to load IBL spec texture");
-    (void)Hr;
+    Result = rs_tool::createDDSTextureFromFile(
+        Devices, "./Assets/Textures/" + Spec, nullptr, &Srv);
+    assert(Result && "fail to load IBL spec texture");
+    (void)Result;
     CameraAmbientInfo.IBLSpecularTexture = Srv;
   }
 }
 
-ID3D11ShaderResourceView *SceneNode::getIBLEnvironment() {
+RSShaderResourceView *SceneNode::getIBLEnvironment() {
   return CameraAmbientInfo.IBLEnvironmentTexture;
 }
 
-ID3D11ShaderResourceView *SceneNode::getIBLDiffuse() {
+RSShaderResourceView *SceneNode::getIBLDiffuse() {
   return CameraAmbientInfo.IBLDiffuseTexture;
 }
 
-ID3D11ShaderResourceView *SceneNode::getIBLSpecular() {
+RSShaderResourceView *SceneNode::getIBLSpecular() {
   return CameraAmbientInfo.IBLSpecularTexture;
 }
 

@@ -8,9 +8,9 @@ class RenderSystem : public System {
 private:
   class RSRoot_DX11 *RenderSystemRoot;
   class AssetsPool *AssetsPool;
-  struct ID3D11ShaderResourceView *IblEnvTex;
-  struct ID3D11ShaderResourceView *IblDiffTex;
-  struct ID3D11ShaderResourceView *IblSpecTex;
+  class RSShaderResourceView *IblEnvTex;
+  class RSShaderResourceView *IblDiffTex;
+  class RSShaderResourceView *IblSpecTex;
 
 public:
   RenderSystem(class SystemExecutive *SysExecutive);
