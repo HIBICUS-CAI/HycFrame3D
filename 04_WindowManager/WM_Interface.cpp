@@ -2,12 +2,18 @@
 
 #include "WM_Interface.h"
 
+#include <SDL.h>
+
 namespace window {
 
-WindowWIN32 *G_Wnd = nullptr;
+WindowSDL2 *G_Wnd = nullptr;
 
 bool startUp() {
-  G_Wnd = new WindowWIN32();
+  if (SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
+    return false;
+  }
+
+  G_Wnd = new WindowSDL2();
 
   if (G_Wnd) {
     return true;
@@ -17,19 +23,14 @@ bool startUp() {
 }
 
 bool createWindow(const char *WndName,
-                  HINSTANCE HInstance,
-                  int CmdShow,
-                  UINT Width,
-                  UINT Height,
+                  unsigned int Width,
+                  unsigned int Height,
                   bool AsFullScreen) {
   if (!G_Wnd) {
     return false;
   }
 
-  HRESULT Hr = G_Wnd->createWindow(WndName, HInstance, CmdShow, Width, Height,
-                                   AsFullScreen);
-
-  if (FAILED(Hr)) {
+  if (!G_Wnd->createWindow(WndName, Width, Height, AsFullScreen)) {
     delete G_Wnd;
     G_Wnd = nullptr;
     return false;
@@ -38,13 +39,27 @@ bool createWindow(const char *WndName,
   return true;
 }
 
-WindowWIN32 *getWindowPtr() { return G_Wnd; }
+WindowSDL2 *getWindowPtr() { return G_Wnd; }
+
+bool pollMessages() {
+  SDL_Event Event = {};
+  bool KeepRunning = true;
+  // other modules observe events through SDL event watchers
+  while (SDL_PollEvent(&Event)) {
+    if (Event.type == SDL_QUIT) {
+      KeepRunning = false;
+    }
+  }
+
+  return KeepRunning;
+}
 
 void cleanAndStop() {
   if (G_Wnd) {
     delete G_Wnd;
     G_Wnd = nullptr;
   }
+  SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 }
 
 } // namespace window
