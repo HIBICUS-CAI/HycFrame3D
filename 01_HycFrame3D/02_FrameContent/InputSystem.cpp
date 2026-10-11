@@ -9,6 +9,7 @@
 #include "UInputComponent.h"
 
 #include <ID_Interface.h>
+#include <WM_Interface.h>
 
 InputSystem::InputSystem(SystemExecutive *SysExecutive)
     : System("input-system", SysExecutive), AInputArrayPtr(nullptr),
@@ -74,7 +75,7 @@ void InputSystem::run(const Timer &Timer) {
   // TEMP----------------------------------
   if (input::isKeyDownInSingle(KB_RALT) &&
       input::isKeyDownInSingle(KB_BACKSPACE)) {
-    PostQuitMessage(0);
+    window::postQuitMessage();
   }
   // TEMP----------------------------------
 }
