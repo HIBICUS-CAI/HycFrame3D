@@ -24,14 +24,14 @@
 #include <TextUtility.h>
 #include <WM_Interface.h>
 
+#include <DirectXColors.h>
+#include <DirectXPackedVector.h>
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
 #include <iterator>
-#include <DirectXColors.h>
-#include <DirectXPackedVector.h>
 #include <string>
 #include <vector>
 
@@ -227,9 +227,8 @@ RSBuffer *createDynamicStructuredBuffer(UINT ElementSize, UINT ElementCount) {
   return G_RSRoot->getDevices()->createBuffer(Desc);
 }
 
-RSShaderResourceView *createStructuredSrv(RSBuffer *Buffer,
-                                          UINT ElementSize,
-                                          UINT ElementCount) {
+RSShaderResourceView *
+createStructuredSrv(RSBuffer *Buffer, UINT ElementSize, UINT ElementCount) {
   RS_BUFFER_VIEW_DESC Desc = {};
   Desc.ElementSize = ElementSize;
   Desc.NumElements = ElementCount;
@@ -946,9 +945,9 @@ bool RSPass_MRT::createViews() {
   RDI.Srv = Srv;
   G_RSRoot->getResourceManager()->addResource("mrt-depth", RDI);
 
-  Texture = createTexture2D(
-      VK_FORMAT_R32G32B32A32_UINT, Width, Height,
-      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+  Texture = createTexture2D(VK_FORMAT_R32G32B32A32_UINT, Width, Height,
+                            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                VK_IMAGE_USAGE_SAMPLED_BIT);
   FAIL_NULL_RETURN(Texture);
   GeoBufferRtv = Devices->createRenderTargetView(Texture);
   FAIL_NULL_RETURN(GeoBufferRtv);
@@ -962,9 +961,9 @@ bool RSPass_MRT::createViews() {
   RDI.Srv = Srv;
   G_RSRoot->getResourceManager()->addResource("mrt-geo-buffer", RDI);
 
-  Texture = createTexture2D(
-      VK_FORMAT_R16G16B16A16_SFLOAT, Width, Height,
-      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+  Texture = createTexture2D(VK_FORMAT_R16G16B16A16_SFLOAT, Width, Height,
+                            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                VK_IMAGE_USAGE_SAMPLED_BIT);
   FAIL_NULL_RETURN(Texture);
   AnisotropicRtv = Devices->createRenderTargetView(Texture);
   FAIL_NULL_RETURN(AnisotropicRtv);
@@ -1289,9 +1288,9 @@ bool RSPass_Ssao::createTextures() {
 
   UINT Width = Devices->getCurrWndWidth();
   UINT Height = Devices->getCurrWndHeight();
-  Texture = createTexture2D(
-      VK_FORMAT_R8G8B8A8_UNORM, Width, Height,
-      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+  Texture = createTexture2D(VK_FORMAT_R8G8B8A8_UNORM, Width, Height,
+                            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
+                                VK_IMAGE_USAGE_SAMPLED_BIT);
   FAIL_NULL_RETURN(Texture);
   RSRenderTargetView *Rtv = Devices->createRenderTargetView(Texture);
   FAIL_NULL_RETURN(Rtv);
@@ -1966,7 +1965,8 @@ void RSPass_Defered::execuatePass() {
   }
   LightInfoStructedBuffer->unmap();
 
-  RS_LIGHT_INFO *LData = static_cast<RS_LIGHT_INFO *>(LightStructedBuffer->map());
+  RS_LIGHT_INFO *LData =
+      static_cast<RS_LIGHT_INFO *>(LightStructedBuffer->map());
   UINT LightIndex = 0;
   for (auto &L : *Lights) {
     LData[LightIndex++] = *(L->getRSLightInfo());
@@ -2798,7 +2798,6 @@ void RSPass_PriticleSetUp::releasePass() {
 
 void RSPass_PriticleSetUp::execuatePass() {}
 
-
 bool RSPass_PriticleSetUp::createBuffers() {
   auto Devices = G_RSRoot->getDevices();
   RS_BUFFER_DESC BufDesc = {};
@@ -2995,9 +2994,10 @@ bool RSPass_PriticleSetUp::createViews() {
   FAIL_NULL_RETURN(StridedCoarseCullCounter_Uav);
 
   // D3D11_BUFFER_UAV_FLAG_COUNTER
-  ViewDesc = Structured(sizeof(RS_ALIVE_INDEX_BUFFER_ELEMENT),
-                        PTC_MAX_PARTICLE_SIZE);
-  AliveIndex_Srv = Devices->createShaderResourceView(AliveIndexBuffer, ViewDesc);
+  ViewDesc =
+      Structured(sizeof(RS_ALIVE_INDEX_BUFFER_ELEMENT), PTC_MAX_PARTICLE_SIZE);
+  AliveIndex_Srv =
+      Devices->createShaderResourceView(AliveIndexBuffer, ViewDesc);
   FAIL_NULL_RETURN(AliveIndex_Srv);
   ViewDesc.WithCounter = true;
   AliveIndex_Uav =
@@ -3007,7 +3007,8 @@ bool RSPass_PriticleSetUp::createViews() {
   UINT NumElements = TilingConstant.NumTilesX * TilingConstant.NumTilesY *
                      PTC_TILE_BUFFER_SIZE;
   ViewDesc = Typed(VK_FORMAT_R32_UINT, sizeof(UINT), NumElements);
-  TiledIndex_Srv = Devices->createShaderResourceView(TiledIndexBuffer, ViewDesc);
+  TiledIndex_Srv =
+      Devices->createShaderResourceView(TiledIndexBuffer, ViewDesc);
   FAIL_NULL_RETURN(TiledIndex_Srv);
   TiledIndex_Uav =
       Devices->createUnorderedAccessView(TiledIndexBuffer, ViewDesc);
@@ -3026,9 +3027,9 @@ bool RSPass_PriticleSetUp::createViews() {
   ParticleRandom_Srv = Devices->createShaderResourceView(ParticleRandomTexture);
   FAIL_NULL_RETURN(ParticleRandom_Srv);
 
-  SimulEmitterStructedBuffer_Srv =
-      createStructuredSrv(SimulEmitterStructedBuffer,
-                          sizeof(SIMULATE_EMITTER_INFO), MAX_PARTICLE_EMITTER_SIZE);
+  SimulEmitterStructedBuffer_Srv = createStructuredSrv(
+      SimulEmitterStructedBuffer, sizeof(SIMULATE_EMITTER_INFO),
+      MAX_PARTICLE_EMITTER_SIZE);
   FAIL_NULL_RETURN(SimulEmitterStructedBuffer_Srv);
 
   return true;
@@ -3145,9 +3146,8 @@ void RSPass_PriticleEmitSimulate::execuatePass() {
                           1);
 
       std::fill(std::begin(Uav), std::end(Uav), nullptr);
-      context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
-                                         static_cast<UINT>(std::size(Uav)),
-                                         Uav);
+      context()->setUnorderedAccessViews(
+          RS_SHADER_STAGE::COMPUTE, 0, static_cast<UINT>(std::size(Uav)), Uav);
     }
 
     {
@@ -3162,9 +3162,8 @@ void RSPass_PriticleEmitSimulate::execuatePass() {
                           1);
 
       std::fill(std::begin(Uav), std::end(Uav), nullptr);
-      context()->setUnorderedAccessViews(RS_SHADER_STAGE::COMPUTE, 0,
-                                         static_cast<UINT>(std::size(Uav)),
-                                         Uav);
+      context()->setUnorderedAccessViews(
+          RS_SHADER_STAGE::COMPUTE, 0, static_cast<UINT>(std::size(Uav)), Uav);
     }
 
     RSParticleContainerPtr->finishResetRSParticleSystem();
