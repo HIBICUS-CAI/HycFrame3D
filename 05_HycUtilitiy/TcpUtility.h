@@ -9,6 +9,7 @@
 
 #include "FormatUtility.h"
 
+#ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
@@ -17,14 +18,38 @@
 #include <ws2tcpip.h>
 
 #pragma comment(lib, "ws2_32.lib")
+#else
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <unistd.h>
+
+#include <cerrno>
+#endif // _WIN32
 
 #include <cassert>
-#include <codecvt>
 #include <cstdio>
-#include <locale>
+#include <cstdlib>
+#include <cstring>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <vector>
+
+#ifndef _WIN32
+using SOCKET = int;
+constexpr SOCKET INVALID_SOCKET = -1;
+constexpr int NO_ERROR = 0;
+inline int closesocket(SOCKET Socket) { return close(Socket); }
+#endif // !_WIN32
+
+#ifdef MSG_NOSIGNAL
+// do not raise SIGPIPE when the peer has been closed
+constexpr int SEND_FLAGS = MSG_NOSIGNAL;
+#else
+constexpr int SEND_FLAGS = 0;
+#endif // MSG_NOSIGNAL
 
 #define TCP_RECV(_SOCKET_PTR, _START_POS, _HAS_READ, _NEED_SIZE)               \
   while (_HAS_READ < _NEED_SIZE) {                                             \
@@ -37,6 +62,7 @@ namespace tcp {
 
 enum class ADDRFAM { INET = AF_INET, INET6 = AF_INET6 };
 
+#ifdef _WIN32
 inline int getWsaError() { return WSAGetLastError(); }
 
 inline void generateErrorInfo(const std::string &CallStack) {
@@ -54,7 +80,19 @@ inline void generateErrorInfo(const std::string &CallStack) {
   MessageBoxA(NULL, ErrorMessage.c_str(), "Tcp Error", MB_ABORTRETRYIGNORE);
   exit(-1);
 }
+#else
+inline int getWsaError() { return errno; }
 
+inline void generateErrorInfo(const std::string &CallStack) {
+  int ErrorNum = getWsaError();
+  std::string ErrorMessage = str::sFormat(
+      "{} : {} - {}", ErrorNum, std::string(std::strerror(ErrorNum)), CallStack);
+  std::fprintf(stderr, "[Tcp Error] %s\n", ErrorMessage.c_str());
+  exit(-1);
+}
+#endif // _WIN32
+
+#ifdef _WIN32
 inline bool sockSysStartUp() {
   WSADATA WsaData = {};
   int Res = WSAStartup(MAKEWORD(2, 2), &WsaData);
@@ -67,6 +105,11 @@ inline bool sockSysStartUp() {
 }
 
 inline void sockSysTerminate() { WSACleanup(); }
+#else
+inline bool sockSysStartUp() { return true; }
+
+inline void sockSysTerminate() {}
+#endif // _WIN32
 
 class SocketAddress {
 private:
@@ -134,8 +177,7 @@ uint32_t SocketAddress::getSize() const { return sizeof(sockaddr); }
 std::string SocketAddress::toString() const {
   const sockaddr_in *AddrPtr = getAsSockAddrIn();
   char Temp[128] = "", Result[128] = "";
-  InetNtopA(AddrPtr->sin_family, const_cast<in_addr *>(&AddrPtr->sin_addr),
-            Temp, sizeof(Temp));
+  inet_ntop(AddrPtr->sin_family, &AddrPtr->sin_addr, Temp, sizeof(Temp));
 
   std::sprintf(Result, "%s:%d", Temp, ntohs(AddrPtr->sin_port));
   return std::string(Result);
@@ -143,12 +185,12 @@ std::string SocketAddress::toString() const {
 
 uint32_t &SocketAddress::getIP4Ref() {
   return *reinterpret_cast<uint32_t *>(
-      &(getAsSockAddrIn()->sin_addr.S_un.S_addr));
+      &(getAsSockAddrIn()->sin_addr.s_addr));
 }
 
 const uint32_t &SocketAddress::getIP4Ref() const {
   return *reinterpret_cast<const uint32_t *>(
-      &(getAsSockAddrIn()->sin_addr.S_un.S_addr));
+      &(getAsSockAddrIn()->sin_addr.s_addr));
 }
 
 sockaddr_in *SocketAddress::getAsSockAddrIn() {
@@ -270,7 +312,7 @@ public:
 
   int32_t send(const void *Data, size_t Size) {
     int BytesSentCount = ::send(RawSocket, static_cast<const char *>(Data),
-                                static_cast<int>(Size), 0);
+                                static_cast<int>(Size), SEND_FLAGS);
 
     if (BytesSentCount < 0) {
       generateErrorInfo("tcpSend");
@@ -282,20 +324,19 @@ public:
 
   template <typename T>
   int32_t sendAs(const T &Data) {
-    const void *DataPtr = &Data;
-    int DataSize = sizeof(T);
+    if constexpr (std::is_same_v<T, std::string>) {
+      auto StrSize = Data.size();
+      auto SentSize = sendAs<int>(static_cast<int>(StrSize));
+      const void *DataPtr = Data.c_str();
+      SentSize += send(DataPtr, StrSize);
 
-    return send(DataPtr, DataSize);
-  }
+      return SentSize;
+    } else {
+      const void *DataPtr = &Data;
+      int DataSize = sizeof(T);
 
-  template <>
-  int32_t sendAs<std::string>(const std::string &Data) {
-    auto StrSize = Data.size();
-    auto SentSize = sendAs<int>(static_cast<int>(StrSize));
-    const void *DataPtr = Data.c_str();
-    SentSize += send(DataPtr, StrSize);
-
-    return SentSize;
+      return send(DataPtr, DataSize);
+    }
   }
 
   int32_t receive(void *Buffer, size_t Size) {
@@ -312,23 +353,22 @@ public:
 
   template <typename T>
   int32_t receiveAs(T &OutData) {
-    auto DataSize = sizeof(T);
-    auto Received = receive(&OutData, DataSize);
-    TCP_RECV(this, &OutData, Received, DataSize);
-    return Received;
-  }
-
-  template <>
-  int32_t receiveAs<std::string>(std::string &OutData) {
-    int StrSize = 0;
-    auto LenReceived = receiveAs<int>(StrSize);
-    TCP_RECV(this, &StrSize, LenReceived, sizeof(int));
-    auto DataSize = static_cast<size_t>(StrSize);
-    OutData.resize(DataSize);
-    char *DataBuffer = const_cast<char *>(OutData.data());
-    auto StrReceived = receive(DataBuffer, DataSize);
-    TCP_RECV(this, DataBuffer, StrReceived, DataSize);
-    return LenReceived + StrReceived;
+    if constexpr (std::is_same_v<T, std::string>) {
+      int StrSize = 0;
+      auto LenReceived = receiveAs<int>(StrSize);
+      TCP_RECV(this, &StrSize, LenReceived, sizeof(int));
+      auto DataSize = static_cast<size_t>(StrSize);
+      OutData.resize(DataSize);
+      char *DataBuffer = const_cast<char *>(OutData.data());
+      auto StrReceived = receive(DataBuffer, DataSize);
+      TCP_RECV(this, DataBuffer, StrReceived, DataSize);
+      return LenReceived + StrReceived;
+    } else {
+      auto DataSize = sizeof(T);
+      auto Received = receive(&OutData, DataSize);
+      TCP_RECV(this, &OutData, Received, DataSize);
+      return Received;
+    }
   }
 };
 
