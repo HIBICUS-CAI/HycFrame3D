@@ -1,6 +1,7 @@
 #include "RSUtilityFunctions.h"
 
 #include <cassert>
+#include <cmath>
 #include <fstream>
 #include <stdlib.h>
 #include <time.h>
@@ -35,7 +36,7 @@ float randomVariance(float Median, float Variance) {
 }
 
 float gauss1D(float X, float Sigma) {
-  return expf(-1.f * X * X / (2.f * Sigma * Sigma));
+  return std::exp(-1.f * X * X / (2.f * Sigma * Sigma));
 }
 
 void calcGaussWeight1D(uint32_t KernelSize,
