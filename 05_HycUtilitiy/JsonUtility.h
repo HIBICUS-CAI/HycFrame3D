@@ -13,10 +13,10 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #endif // __clang__
-#include <rapidjson\document.h>
-#include <rapidjson\filereadstream.h>
-#include <rapidjson\istreamwrapper.h>
-#include <rapidjson\pointer.h>
+#include <rapidjson/document.h>
+#include <rapidjson/filereadstream.h>
+#include <rapidjson/istreamwrapper.h>
+#include <rapidjson/pointer.h>
 #if __clang__
 #pragma clang diagnostic pop
 #endif // __clang__

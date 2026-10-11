@@ -9,7 +9,7 @@
 
 #include "HycType.h"
 
-#include <spdlog\fmt\fmt.h>
+#include <spdlog/fmt/fmt.h>
 
 #include <string>
 

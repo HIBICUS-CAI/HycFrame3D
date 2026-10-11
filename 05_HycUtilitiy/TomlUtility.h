@@ -11,7 +11,7 @@
 #include "StdStringUtility.h"
 
 #include <string>
-#include <toml11\toml.hpp>
+#include <toml11/toml.hpp>
 
 namespace hyc {
 namespace text {
