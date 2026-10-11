@@ -211,7 +211,7 @@ void RSMeshHelper::createSubMeshMaterial(RS_SUBMESH_DATA *OutResult,
   RS_MATERIAL_INFO *MaterialPtr = &(OutResult->Material);
   static_assert(sizeof(RS_MATERIAL_INFO) == sizeof(MATERIAL_INFO),
                 "material info layouts must be same");
-  std::memcpy(MaterialPtr, Info, sizeof(MATERIAL_INFO));
+  std::memcpy(static_cast<void *>(MaterialPtr), Info, sizeof(MATERIAL_INFO));
 }
 
 void RSMeshHelper::releaseSubMesh(RS_SUBMESH_DATA &MeshData) {
