@@ -2,8 +2,6 @@
 
 #include "Hyc3DCommon.h"
 
-#include <Windows.h>
-
 class RootSystem {
 private:
   class SceneManager *SceneManagerPtr;
@@ -16,7 +14,7 @@ public:
   RootSystem();
   ~RootSystem();
 
-  bool startUp(HINSTANCE Instance, int CmdShow);
+  bool startUp();
   void cleanAndStop();
   void runGameLoop();
 };
