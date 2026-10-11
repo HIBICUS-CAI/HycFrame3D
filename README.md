@@ -43,7 +43,7 @@ cd 01_HycFrame3D
 
 ### 検証レイヤー
 
-Debug ビルドでは Vulkan 検証レイヤーが常に有効です。
+Debug ビルドでは Vulkan 検証レイヤーが既定で有効です（`HYC_VK_VALIDATION=0` で無効）。
 Release ビルドでは環境変数 `HYC_VK_VALIDATION=1` で有効になります。
 
 ### GPU のない環境での確認
