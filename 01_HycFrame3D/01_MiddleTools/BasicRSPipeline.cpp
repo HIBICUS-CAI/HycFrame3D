@@ -1800,7 +1800,7 @@ RSPass_Defered::RSPass_Defered(std::string &Name,
                                PASS_TYPE Type,
                                RSRoot_DX11 *Root)
     : RSPass_Base(Name, Type, Root), VertexShader(nullptr),
-      PixelShader(nullptr), RenderTargetView(nullptr),
+      PixelShader(nullptr), Pipeline(nullptr), RenderTargetView(nullptr),
       LinearWrapSampler(nullptr), PointClampSampler(nullptr),
       ShadowTexSampler(nullptr), LightInfoStructedBuffer(nullptr),
       LightInfoStructedBufferSrv(nullptr), LightStructedBuffer(nullptr),
@@ -1813,7 +1813,7 @@ RSPass_Defered::RSPass_Defered(std::string &Name,
 
 RSPass_Defered::RSPass_Defered(const RSPass_Defered &Source)
     : RSPass_Base(Source), VertexShader(Source.VertexShader),
-      PixelShader(Source.PixelShader),
+      PixelShader(Source.PixelShader), Pipeline(Source.Pipeline),
       RenderTargetView(Source.RenderTargetView),
       LinearWrapSampler(Source.LinearWrapSampler),
       PointClampSampler(Source.PointClampSampler),
@@ -1831,7 +1831,28 @@ RSPass_Defered::RSPass_Defered(const RSPass_Defered &Source)
       GeoBufferSrv(Source.GeoBufferSrv), AnisotropicSrv(Source.AnisotropicSrv),
       SsaoSrv(Source.SsaoSrv), ShadowDepthSrv(Source.ShadowDepthSrv),
       VertexBuffer(Source.VertexBuffer), IndexBuffer(Source.IndexBuffer),
-      RSCameraInfo(Source.RSCameraInfo) {}
+      RSCameraInfo(Source.RSCameraInfo) {
+  if (HasBeenInited) {
+    RS_ADDREF(VertexShader);
+    RS_ADDREF(PixelShader);
+    RS_ADDREF(Pipeline);
+    RS_ADDREF(LinearWrapSampler);
+    RS_ADDREF(PointClampSampler);
+    RS_ADDREF(ShadowTexSampler);
+    RS_ADDREF(LightInfoStructedBuffer);
+    RS_ADDREF(LightInfoStructedBufferSrv);
+    RS_ADDREF(LightStructedBuffer);
+    RS_ADDREF(LightStructedBufferSrv);
+    RS_ADDREF(AmbientStructedBuffer);
+    RS_ADDREF(AmbientStructedBufferSrv);
+    RS_ADDREF(ShadowStructedBuffer);
+    RS_ADDREF(ShadowStructedBufferSrv);
+    RS_ADDREF(CameraStructedBuffer);
+    RS_ADDREF(CameraStructedBufferSrv);
+    RS_ADDREF(VertexBuffer);
+    RS_ADDREF(IndexBuffer);
+  }
+}
 
 RSPass_Defered::~RSPass_Defered() {}
 
@@ -1856,6 +1877,9 @@ bool RSPass_Defered::initPass() {
   if (!createSamplers()) {
     return false;
   }
+  if (!createPipelines()) {
+    return false;
+  }
 
   RSCameraInfo = G_RSRoot->getCamerasContainer()->getRSCameraInfo("temp-cam");
 
@@ -1867,6 +1891,7 @@ bool RSPass_Defered::initPass() {
 void RSPass_Defered::releasePass() {
   RS_RELEASE(VertexShader);
   RS_RELEASE(PixelShader);
+  RS_RELEASE(Pipeline);
   RS_RELEASE(LinearWrapSampler);
   RS_RELEASE(PointClampSampler);
   RS_RELEASE(ShadowTexSampler);
@@ -1878,32 +1903,28 @@ void RSPass_Defered::releasePass() {
   RS_RELEASE(AmbientStructedBufferSrv);
   RS_RELEASE(ShadowStructedBuffer);
   RS_RELEASE(ShadowStructedBufferSrv);
+  RS_RELEASE(CameraStructedBuffer);
+  RS_RELEASE(CameraStructedBufferSrv);
   RS_RELEASE(VertexBuffer);
   RS_RELEASE(IndexBuffer);
 }
 
 void RSPass_Defered::execuatePass() {
-  context()->OMSetRenderTargets(1, &RenderTargetView, nullptr);
-  context()->RSSetViewports(1, &G_ViewPort);
-  context()->ClearRenderTargetView(RenderTargetView, dx::Colors::DarkGreen);
-  context()->VSSetShader(VertexShader, nullptr, 0);
-  context()->PSSetShader(PixelShader, nullptr, 0);
+  context()->setRenderTargets(1, &RenderTargetView, nullptr);
+  context()->setViewport(G_ViewPort);
+  context()->clearRenderTargetView(RenderTargetView, dx::Colors::DarkGreen);
+  context()->setPipelineState(Pipeline);
 
   dx::XMMATRIX Mat = {};
-  UINT Stride = sizeof(vertex_type::TangentVertex);
-  UINT Offset = 0;
 
-  D3D11_MAPPED_SUBRESOURCE Msr = {};
-  context()->Map(AmbientStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-  Ambient *AmbData = static_cast<Ambient *>(Msr.pData);
+  Ambient *AmbData = static_cast<Ambient *>(AmbientStructedBuffer->map());
   dx::XMFLOAT4 AmbientL =
       getRSDX11RootInstance()->getLightsContainer()->getCurrentAmbientLight();
   AmbData[0].AmbientV = AmbientL;
-  context()->Unmap(AmbientStructedBuffer, 0);
+  AmbientStructedBuffer->unmap();
 
   static auto Lights = G_RSRoot->getLightsContainer()->getLightsArray();
-  context()->Map(LightInfoStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-  LightInfo *LiData = static_cast<LightInfo *>(Msr.pData);
+  LightInfo *LiData = static_cast<LightInfo *>(LightInfoStructedBuffer->map());
   LiData[0].CameraPos = RSCameraInfo->EyePosition;
   UINT DNum = 0;
   UINT SNum = 0;
@@ -1941,18 +1962,16 @@ void RSPass_Defered::execuatePass() {
       break;
     }
   }
-  context()->Unmap(LightInfoStructedBuffer, 0);
+  LightInfoStructedBuffer->unmap();
 
-  context()->Map(LightStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-  RS_LIGHT_INFO *LData = static_cast<RS_LIGHT_INFO *>(Msr.pData);
+  RS_LIGHT_INFO *LData = static_cast<RS_LIGHT_INFO *>(LightStructedBuffer->map());
   UINT LightIndex = 0;
   for (auto &L : *Lights) {
     LData[LightIndex++] = *(L->getRSLightInfo());
   }
-  context()->Unmap(LightStructedBuffer, 0);
+  LightStructedBuffer->unmap(LightIndex * sizeof(RS_LIGHT_INFO));
 
-  context()->Map(ShadowStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-  ShadowInfo *SData = static_cast<ShadowInfo *>(Msr.pData);
+  ShadowInfo *SData = static_cast<ShadowInfo *>(ShadowStructedBuffer->map());
   auto ShadowLights = G_RSRoot->getLightsContainer()->getShadowLightsArray();
   UINT ShadowSize = static_cast<UINT>(ShadowLights->size());
   for (UINT I = 0; I < ShadowSize; I++) {
@@ -1971,188 +1990,90 @@ void RSPass_Defered::execuatePass() {
       dx::XMMatrixTranspose(dx::XMLoadFloat4x4(&RSCameraInfo->ViewMatrix) *
                             dx::XMLoadFloat4x4(&RSCameraInfo->ProjMatrix) * T);
   dx::XMStoreFloat4x4(&SData[0].SSAOMat, Mat);
-  context()->Unmap(ShadowStructedBuffer, 0);
+  ShadowStructedBuffer->unmap();
 
-  context()->Map(CameraStructedBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &Msr);
-  ViewProj *VpData = static_cast<ViewProj *>(Msr.pData);
+  ViewProj *VpData = static_cast<ViewProj *>(CameraStructedBuffer->map());
   Mat = dx::XMLoadFloat4x4(&RSCameraInfo->InvViewMatrix);
   Mat = dx::XMMatrixTranspose(Mat);
   dx::XMStoreFloat4x4(&VpData[0].ViewMat, Mat);
   Mat = dx::XMLoadFloat4x4(&RSCameraInfo->InvProjMatrix);
   Mat = dx::XMMatrixTranspose(Mat);
   dx::XMStoreFloat4x4(&VpData[0].ProjMat, Mat);
-  context()->Unmap(CameraStructedBuffer, 0);
+  CameraStructedBuffer->unmap();
 
   static auto DepthSrv =
       G_RSRoot->getResourceManager()->getResource("mrt-depth")->Srv;
   static auto MaterialSrv = G_RSRoot->getStaticResources()->getMaterialSrv();
-  ID3D11ShaderResourceView *Srvs[] = {AmbientStructedBufferSrv,
-                                      LightInfoStructedBufferSrv,
-                                      LightStructedBufferSrv,
-                                      ShadowStructedBufferSrv,
-                                      CameraStructedBufferSrv,
-                                      MaterialSrv,
-                                      GeoBufferSrv,
-                                      AnisotropicSrv,
-                                      SsaoSrv,
-                                      ShadowDepthSrv,
-                                      G_IblBrdfSrv,
-                                      G_DiffMapSrv,
-                                      G_SpecMapSrv,
-                                      DepthSrv};
-  context()->PSSetShaderResources(0, 14, Srvs);
+  RSShaderResourceView *Srvs[] = {AmbientStructedBufferSrv,
+                                  LightInfoStructedBufferSrv,
+                                  LightStructedBufferSrv,
+                                  ShadowStructedBufferSrv,
+                                  CameraStructedBufferSrv,
+                                  MaterialSrv,
+                                  GeoBufferSrv,
+                                  AnisotropicSrv,
+                                  SsaoSrv,
+                                  ShadowDepthSrv,
+                                  G_IblBrdfSrv,
+                                  G_DiffMapSrv,
+                                  G_SpecMapSrv,
+                                  DepthSrv};
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 0, 14, Srvs);
 
-  static ID3D11SamplerState *Samps[] = {PointClampSampler, LinearWrapSampler,
-                                        ShadowTexSampler};
-  context()->PSSetSamplers(0, 3, Samps);
+  RSSampler *Samps[] = {PointClampSampler, LinearWrapSampler, ShadowTexSampler};
+  context()->setSamplers(RS_SHADER_STAGE::PIXEL, 0, 3, Samps);
 
-  context()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-  context()->IASetVertexBuffers(0, 1, &VertexBuffer, &Stride, &Offset);
-  context()->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+  context()->setPrimitiveTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+  context()->setVertexBuffer(VertexBuffer);
+  context()->setIndexBuffer(IndexBuffer);
 
-  context()->DrawIndexedInstanced(6, 1, 0, 0, 0);
+  context()->drawIndexedInstanced(6, 1, 0, 0, 0);
 
-  ID3D11RenderTargetView *RtvNull = nullptr;
-  context()->OMSetRenderTargets(1, &RtvNull, nullptr);
-  static ID3D11ShaderResourceView *Nullsrvs[] = {
+  context()->setRenderTargets(0, nullptr, nullptr);
+  static RSShaderResourceView *Nullsrvs[] = {
       nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
       nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
-  context()->PSSetShaderResources(0, 14, Nullsrvs);
+  context()->setShaderResources(RS_SHADER_STAGE::PIXEL, 0, 14, Nullsrvs);
 }
 
 bool RSPass_Defered::createShaders() {
-  ID3DBlob *ShaderBlob = nullptr;
-  HRESULT Hr = S_OK;
-
-  Hr =
-      rs_tool::compileShaderFromFile(L"./Assets/Shaders/defered_vertex.hlsl",
-                                     "main", "vs_5_0", &ShaderBlob);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreateVertexShader(ShaderBlob->GetBufferPointer(),
-                                    ShaderBlob->GetBufferSize(), nullptr,
-                                    &VertexShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  VertexShader =
+      compileShader("./Assets/Shaders/defered_vertex.hlsl", "main", "vs_5_0");
+  FAIL_NULL_RETURN(VertexShader);
 
   std::string ModelName = G_RenderEffectConfig.LightModel;
   std::transform(ModelName.begin(), ModelName.end(), ModelName.begin(),
                  static_cast<int (*)(int)>(std::toupper));
-  D3D_SHADER_MACRO Macro[] = {{ModelName.c_str(), "1"}, {nullptr, nullptr}};
-  Hr = rs_tool::compileShaderFromFile(L"./Assets/Shaders/defered_pixel.hlsl",
-                                      "main", "ps_5_0", &ShaderBlob, Macro);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  Hr = device()->CreatePixelShader(ShaderBlob->GetBufferPointer(),
-                                   ShaderBlob->GetBufferSize(), nullptr,
-                                   &PixelShader);
-  ShaderBlob->Release();
-  ShaderBlob = nullptr;
-  if (FAILED(Hr)) {
-    return false;
-  }
+  rs_tool::SHADER_MACRO Macro[] = {{ModelName.c_str(), "1"},
+                                   {nullptr, nullptr}};
+  PixelShader = compileShader("./Assets/Shaders/defered_pixel.hlsl", "main",
+                              "ps_5_0", Macro);
+  FAIL_NULL_RETURN(PixelShader);
 
   return true;
 }
 
 bool RSPass_Defered::createBuffers() {
-  HRESULT Hr = S_OK;
-  D3D11_BUFFER_DESC BufDesc = {};
-
-  vertex_type::TangentVertex V[4] = {};
-  V[0].Position = dx::XMFLOAT3(-1.0f, -1.0f, 0.0f);
-  V[1].Position = dx::XMFLOAT3(-1.0f, +1.0f, 0.0f);
-  V[2].Position = dx::XMFLOAT3(+1.0f, +1.0f, 0.0f);
-  V[3].Position = dx::XMFLOAT3(+1.0f, -1.0f, 0.0f);
-  V[0].Normal = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-  V[1].Normal = dx::XMFLOAT3(1.0f, 0.0f, 0.0f);
-  V[2].Normal = dx::XMFLOAT3(2.0f, 0.0f, 0.0f);
-  V[3].Normal = dx::XMFLOAT3(3.0f, 0.0f, 0.0f);
-  V[0].Tangent = dx::XMFLOAT3(0.0f, 0.0f, 0.0f);
-  V[1].Tangent = dx::XMFLOAT3(1.0f, 0.0f, 0.0f);
-  V[2].Tangent = dx::XMFLOAT3(2.0f, 0.0f, 0.0f);
-  V[3].Tangent = dx::XMFLOAT3(3.0f, 0.0f, 0.0f);
-  V[0].TexCoord = dx::XMFLOAT2(0.0f, 1.0f);
-  V[1].TexCoord = dx::XMFLOAT2(0.0f, 0.0f);
-  V[2].TexCoord = dx::XMFLOAT2(1.0f, 0.0f);
-  V[3].TexCoord = dx::XMFLOAT2(1.0f, 1.0f);
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-  BufDesc.ByteWidth = sizeof(vertex_type::TangentVertex) * 4;
-  BufDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.MiscFlags = 0;
-  BufDesc.StructureByteStride = 0;
-  D3D11_SUBRESOURCE_DATA VInitData = {};
-  ZeroMemory(&VInitData, sizeof(VInitData));
-  VInitData.pSysMem = V;
-  Hr = device()->CreateBuffer(&BufDesc, &VInitData, &VertexBuffer);
-  if (FAILED(Hr)) {
+  if (!createScreenQuad(&VertexBuffer, &IndexBuffer)) {
     return false;
   }
 
-  UINT Indices[6] = {0, 1, 2, 0, 2, 3};
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_IMMUTABLE;
-  BufDesc.ByteWidth = sizeof(UINT) * 6;
-  BufDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
-  BufDesc.CPUAccessFlags = 0;
-  BufDesc.StructureByteStride = 0;
-  BufDesc.MiscFlags = 0;
-  D3D11_SUBRESOURCE_DATA IInitData = {};
-  ZeroMemory(&IInitData, sizeof(IInitData));
-  IInitData.pSysMem = Indices;
-  Hr = device()->CreateBuffer(&BufDesc, &IInitData, &IndexBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LightStructedBuffer =
+      createDynamicStructuredBuffer(sizeof(RS_LIGHT_INFO), MAX_LIGHT_SIZE);
+  FAIL_NULL_RETURN(LightStructedBuffer);
 
-  ZeroMemory(&BufDesc, sizeof(BufDesc));
-  BufDesc.Usage = D3D11_USAGE_DYNAMIC;
-  BufDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-  BufDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-  BufDesc.ByteWidth = MAX_LIGHT_SIZE * sizeof(RS_LIGHT_INFO);
-  BufDesc.MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
-  BufDesc.StructureByteStride = sizeof(RS_LIGHT_INFO);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &LightStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  AmbientStructedBuffer = createDynamicStructuredBuffer(sizeof(Ambient), 1);
+  FAIL_NULL_RETURN(AmbientStructedBuffer);
 
-  BufDesc.ByteWidth = sizeof(Ambient);
-  BufDesc.StructureByteStride = sizeof(Ambient);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &AmbientStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LightInfoStructedBuffer = createDynamicStructuredBuffer(sizeof(LightInfo), 1);
+  FAIL_NULL_RETURN(LightInfoStructedBuffer);
 
-  BufDesc.ByteWidth = sizeof(LightInfo);
-  BufDesc.StructureByteStride = sizeof(LightInfo);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &LightInfoStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ShadowStructedBuffer =
+      createDynamicStructuredBuffer(sizeof(ShadowInfo), MAX_SHADOW_SIZE);
+  FAIL_NULL_RETURN(ShadowStructedBuffer);
 
-  BufDesc.ByteWidth = MAX_SHADOW_SIZE * sizeof(ShadowInfo);
-  BufDesc.StructureByteStride = sizeof(ShadowInfo);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &ShadowStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
-
-  BufDesc.ByteWidth = sizeof(ViewProj);
-  BufDesc.StructureByteStride = sizeof(ViewProj);
-  Hr = device()->CreateBuffer(&BufDesc, nullptr, &CameraStructedBuffer);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  CameraStructedBuffer = createDynamicStructuredBuffer(sizeof(ViewProj), 1);
+  FAIL_NULL_RETURN(CameraStructedBuffer);
 
   return true;
 }
@@ -2171,106 +2092,60 @@ bool RSPass_Defered::createViews() {
                        ->getResource("light-depth-light-other")
                        ->Srv;
 
-  HRESULT Hr = S_OK;
-  D3D11_SHADER_RESOURCE_VIEW_DESC SrvDesc = {};
-  ZeroMemory(&SrvDesc, sizeof(SrvDesc));
-  SrvDesc.Format = DXGI_FORMAT_UNKNOWN;
-  SrvDesc.ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
-  SrvDesc.Buffer.ElementWidth = MAX_LIGHT_SIZE;
-  Hr = device()->CreateShaderResourceView(LightStructedBuffer, &SrvDesc,
-                                          &LightStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LightStructedBufferSrv = createStructuredSrv(
+      LightStructedBuffer, sizeof(RS_LIGHT_INFO), MAX_LIGHT_SIZE);
+  FAIL_NULL_RETURN(LightStructedBufferSrv);
 
-  SrvDesc.Buffer.ElementWidth = 1;
-  Hr = device()->CreateShaderResourceView(LightInfoStructedBuffer, &SrvDesc,
-                                          &LightInfoStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LightInfoStructedBufferSrv =
+      createStructuredSrv(LightInfoStructedBuffer, sizeof(LightInfo), 1);
+  FAIL_NULL_RETURN(LightInfoStructedBufferSrv);
 
-  Hr = device()->CreateShaderResourceView(AmbientStructedBuffer, &SrvDesc,
-                                          &AmbientStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  AmbientStructedBufferSrv =
+      createStructuredSrv(AmbientStructedBuffer, sizeof(Ambient), 1);
+  FAIL_NULL_RETURN(AmbientStructedBufferSrv);
 
-  Hr = device()->CreateShaderResourceView(CameraStructedBuffer, &SrvDesc,
-                                          &CameraStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  CameraStructedBufferSrv =
+      createStructuredSrv(CameraStructedBuffer, sizeof(ViewProj), 1);
+  FAIL_NULL_RETURN(CameraStructedBufferSrv);
 
-  SrvDesc.Buffer.ElementWidth = MAX_SHADOW_SIZE;
-  Hr = device()->CreateShaderResourceView(ShadowStructedBuffer, &SrvDesc,
-                                          &ShadowStructedBufferSrv);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  ShadowStructedBufferSrv = createStructuredSrv(
+      ShadowStructedBuffer, sizeof(ShadowInfo), MAX_SHADOW_SIZE);
+  FAIL_NULL_RETURN(ShadowStructedBufferSrv);
 
   return true;
 }
 
 bool RSPass_Defered::createSamplers() {
-  HRESULT Hr = S_OK;
-  D3D11_SAMPLER_DESC SampDesc = {};
-  ZeroMemory(&SampDesc, sizeof(SampDesc));
-  auto FilterLevel = G_RenderEffectConfig.SamplerLevel;
-  switch (FilterLevel) {
-  case SAMPLER_LEVEL::POINT:
-    SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-    break;
-  case SAMPLER_LEVEL::BILINEAR:
-    SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    break;
-  case SAMPLER_LEVEL::ANISO_8X:
-    SampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-    SampDesc.MaxAnisotropy = 8;
-    break;
-  case SAMPLER_LEVEL::ANISO_16X:
-    SampDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-    SampDesc.MaxAnisotropy = 16;
-    break;
-  default:
-    return false;
-  }
-  SampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-  SampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-  SampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-  SampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SampDesc.MinLOD = 0;
-  SampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SampDesc, &LinearWrapSampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  auto Devices = G_RSRoot->getDevices();
 
-  ZeroMemory(&SampDesc, sizeof(SampDesc));
-  SampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
-  SampDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SampDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SampDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
-  SampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-  SampDesc.MinLOD = 0;
-  SampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SampDesc, &PointClampSampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  LinearWrapSampler = Devices->createSampler(
+      makeConfigSamplerInfo(VK_SAMPLER_ADDRESS_MODE_REPEAT));
+  FAIL_NULL_RETURN(LinearWrapSampler);
 
-  ZeroMemory(&SampDesc, sizeof(SampDesc));
-  SampDesc.Filter = D3D11_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-  SampDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
-  SampDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
-  SampDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-  SampDesc.ComparisonFunc = D3D11_COMPARISON_LESS_EQUAL;
-  SampDesc.MinLOD = 0;
-  SampDesc.MaxLOD = D3D11_FLOAT32_MAX;
-  Hr = device()->CreateSamplerState(&SampDesc, &ShadowTexSampler);
-  if (FAILED(Hr)) {
-    return false;
-  }
+  PointClampSampler = Devices->createSampler(
+      makePointSamplerInfo(VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE));
+  FAIL_NULL_RETURN(PointClampSampler);
+
+  VkSamplerCreateInfo ShadowInfo =
+      makeSamplerInfo(VK_FILTER_LINEAR, VK_SAMPLER_MIPMAP_MODE_NEAREST,
+                      VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER);
+  ShadowInfo.compareEnable = VK_TRUE;
+  ShadowInfo.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+  ShadowTexSampler = Devices->createSampler(fitDepthSamplerInfo(ShadowInfo));
+  FAIL_NULL_RETURN(ShadowTexSampler);
+
+  return true;
+}
+
+bool RSPass_Defered::createPipelines() {
+  RS_GRAPHICS_PIPELINE_DESC Desc = {};
+  Desc.VertexShader = VertexShader;
+  Desc.PixelShader = PixelShader;
+  Desc.ColorTargetCount = 1;
+  Desc.ColorFormats[0] =
+      G_RSRoot->getDevices()->getHighDynamicTexture()->getDesc().Format;
+  Pipeline = G_RSRoot->getDevices()->createGraphicsPipeline(Desc);
+  FAIL_NULL_RETURN(Pipeline);
 
   return true;
 }
